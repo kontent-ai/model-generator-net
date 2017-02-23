@@ -1,21 +1,4 @@
-# Kentico Cloud dotnet models generator utility
-
-This utility will generate strongly typed models based on your Content Types in your Kentico Cloud project.
-
-## Get the tool
-
-TODO: add download link.
-
-## How to use
-
-```
-KenticoCloudDotNetGenerators.exe --projectid "<projectid>" --namespace "<custom-namespace>" --outputdir "<output-directory>"
-```
-
-## Example output
-
-```
-using System;
+﻿using System;
 using System.Collections.Generic;
 using KenticoCloud.Delivery;
 
@@ -34,8 +17,3 @@ namespace KenticoCloudModels
         public ContentItemSystemAttributes System { get; set; }
     }
 }
-```
-
-## Contribution guidelines
-
-TODO
