@@ -70,7 +70,7 @@ namespace KenticoCloudDotNetGenerators
                 {
                     codeGenerators.Add(GetClassCodeGenerator(contentType));
                 }
-                catch (InvalidIdentifierException e)
+                catch (InvalidIdentifierException)
                 {
                     Console.WriteLine($"Warning: Skipping Content Type '{contentType.System.Codename}'. Can't create valid C# Identifier from its name.");
                 }
@@ -96,11 +96,11 @@ namespace KenticoCloudDotNetGenerators
                     var property = Property.FromContentType(element.Codename, element.Type);
                     classDefinition.AddProperty(property);
                 }
-                catch (InvalidOperationException e)
+                catch (InvalidOperationException)
                 {
                     Console.WriteLine($"Warning: Element '{element.Codename}' is already present in Content Type '{classDefinition.ClassName}'.");
                 }
-                catch (InvalidIdentifierException e)
+                catch (InvalidIdentifierException)
                 {
                     Console.WriteLine($"Warning: Can't create valid C# Identifier from '{element.Codename}'. Skipping element.");
                 }
@@ -114,7 +114,7 @@ namespace KenticoCloudDotNetGenerators
             {
                 classDefinition.AddSystemProperty();
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
                 Console.WriteLine($"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
             }

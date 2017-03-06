@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace KenticoCloudDotNetGenerators.Tests
 {
@@ -45,7 +46,9 @@ namespace KenticoCloudDotNetGenerators.Tests
             var classCodeGenerator = new ClassCodeGenerator(classDefinition);
             
             string compiledCode = classCodeGenerator.GenerateCode();
-            string expectedCode = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "/Assets/CompleteContentType_CompiledCode.txt");
+
+            string executingPath = System.IO.Directory.GetCurrentDirectory();
+            string expectedCode = File.ReadAllText(executingPath + "/test/Assets/CompleteContentType_CompiledCode.txt");
 
             Assert.AreEqual(expectedCode, compiledCode);
         }
@@ -70,8 +73,8 @@ namespace KenticoCloudDotNetGenerators.Tests
                 assemblyName: Path.GetRandomFileName(),
                 syntaxTrees: new[] { CSharpSyntaxTree.ParseText(compiledCode) },
                 references: new[] {
-                    MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                    MetadataReference.CreateFromFile(Path.GetFullPath(AppDomain.CurrentDomain.BaseDirectory + "/KenticoCloud.Delivery.dll"))
+                    MetadataReference.CreateFromFile(typeof(Object).GetTypeInfo().Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(KenticoCloud.Delivery.DeliveryClient).GetTypeInfo().Assembly.Location)
                 },
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
