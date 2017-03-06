@@ -9,7 +9,7 @@ TODO: add download link.
 ## How to use
 
 ```
-CloudModelGenerator.exe --projectid "<projectid>" --namespace "<custom-namespace>" --outputdir "<output-directory>"
+CloudModelGenerator.exe -projectid "<projectid>" -namespace "<custom-namespace>" -outputdir "<output-directory>"
 ```
 
 ## Example output
