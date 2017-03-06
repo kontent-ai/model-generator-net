@@ -1,10 +1,13 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/t6dgpiamopwugu8v/branch/master?svg=true)](https://ci.appveyor.com/project/kentico/cloud-generators-net/branch/master)
+
+
 # Kentico Cloud dotnet models generator utility
 
 This utility will generate strongly typed models based on your Content Types in your Kentico Cloud project.
 
 ## Get the tool
 
-TODO: add download link.
+Latest successful build: [Download](https://ci.appveyor.com/api/projects/kentico/cloud-generators-net/artifacts/artifacts/CloudModelGenerator.zip)
 
 ## How to use
 
