@@ -12,16 +12,12 @@ namespace KenticoCloudDotNetGenerators.Tests
         public void IntegrationTest()
         {
             const string PROJECT_ID = "e1167a11-75af-4a08-ad84-0582b463b010";
-            var options = new Options()
-            {
-                Namespace = "CustomNamespace",
-                OutputDir = Path.GetTempPath() + "/TestOutput/",
-                ProjectId = PROJECT_ID
-            };
+            const string @namespace = "CustomNamespace";
+            string outputDir = Path.GetTempPath() + "/TestOutput/";
 
-            new CodeGenerator(options).Run();
+            new CodeGenerator(PROJECT_ID, outputDir, @namespace).Generate();
 
-            Assert.AreEqual(11, Directory.GetFiles(options.OutputDir).Count());
+            Assert.AreEqual(11, Directory.GetFiles(Path.GetFullPath(outputDir)).Count());
         }
     }
 }

@@ -21,7 +21,7 @@ namespace KenticoCloudDotNetGenerators.Tests
             var classDefinition = new ClassDefinition("Class name");
             classDefinition.AddProperty(Property.FromContentType("element_1", "text"));
 
-            Assert.AreEqual(1, classDefinition.Properties.Count());            
+            Assert.AreEqual(1, classDefinition.Properties.Count());
         }
 
         [TestCase]
@@ -31,7 +31,7 @@ namespace KenticoCloudDotNetGenerators.Tests
 
             var userDefinedSystemProperty = Property.FromContentType("system", "text");
             definition.AddProperty(userDefinedSystemProperty);
-            
+
             Assert.AreEqual(userDefinedSystemProperty, definition.Properties.First());
         }
 

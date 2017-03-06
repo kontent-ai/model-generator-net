@@ -44,7 +44,7 @@ namespace KenticoCloudDotNetGenerators.Tests
             classDefinition.AddSystemProperty();
 
             var classCodeGenerator = new ClassCodeGenerator(classDefinition);
-            
+
             string compiledCode = classCodeGenerator.GenerateCode();
 
             string executingPath = System.IO.Directory.GetCurrentDirectory();
@@ -52,7 +52,7 @@ namespace KenticoCloudDotNetGenerators.Tests
 
             Assert.AreEqual(expectedCode, compiledCode);
         }
-        
+
         [TestCase]
         public void IntegrationTest_GeneratedCodeCompilesWithoutErrors()
         {
@@ -88,7 +88,7 @@ namespace KenticoCloudDotNetGenerators.Tests
                     IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
                         diagnostic.IsWarningAsError ||
                         diagnostic.Severity == DiagnosticSeverity.Error);
-                    
+
                     foreach (Diagnostic diagnostic in failures)
                     {
                         compilationErrors += String.Format("{0}: {1}\n", diagnostic.Id, diagnostic.GetMessage());

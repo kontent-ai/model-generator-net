@@ -9,48 +9,29 @@ namespace KenticoCloudDotNetGenerators
 {
     public class CodeGenerator
     {
-        private Options _options;
+        private readonly string _projectId;
+        private readonly string _namespace;
+        private readonly string _outputDir;
 
-        public CodeGenerator(Options options)
+        public CodeGenerator(string projectId, string outputDir, string @namespace = null)
         {
-            _options = options;
-        }
-
-        public void Run()
-        {
-            if (!IsProjectId(_options.ProjectId))
-            {
-                Console.WriteLine("Invalid Project ID!");
-                return;
-            }
+            _projectId = projectId;
+            _namespace = @namespace;
 
             // Reslove relative path to full path
-            _options.OutputDir = Path.GetFullPath(_options.OutputDir).TrimEnd('\\') + "\\";
-
-            Console.WriteLine("Starting class generation...");
-            Console.WriteLine("ProjectId: {0}", _options.ProjectId);
-            Console.WriteLine("OutputDir: {0}", _options.OutputDir);
-            Console.WriteLine("Namespace: {0}", _options.Namespace);
-
-            GenerateClassesToOutputDirectory();
+            _outputDir = Path.GetFullPath(outputDir).TrimEnd('\\') + "\\";
         }
 
-        private static bool IsProjectId(string projectId)
-        {
-            Guid guid;
-            return Guid.TryParse(projectId, out guid);
-        }
-
-        private void GenerateClassesToOutputDirectory()
+        public void Generate()
         {
             // Make sure the output dir exists
-            Directory.CreateDirectory(_options.OutputDir);
+            Directory.CreateDirectory(_outputDir);
 
             var classCodeGenerators = GetClassCodeGenerators();
 
             foreach (var codeGenerator in classCodeGenerators)
             {
-                string outputPath = _options.OutputDir + codeGenerator.ClassDefinition.ClassName + ".cs";
+                string outputPath = _outputDir + codeGenerator.ClassDefinition.ClassName + ".cs";
                 File.WriteAllText(outputPath, codeGenerator.GenerateCode());
             }
 
@@ -59,7 +40,7 @@ namespace KenticoCloudDotNetGenerators
 
         private IEnumerable<ClassCodeGenerator> GetClassCodeGenerators()
         {
-            var client = new DeliveryClient(_options.ProjectId);
+            var client = new DeliveryClient(_projectId);
 
             IEnumerable<ContentType> contentTypes = Task.Run(() => client.GetTypesAsync()).Result.Types;
 
@@ -119,7 +100,7 @@ namespace KenticoCloudDotNetGenerators
                 Console.WriteLine($"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
             }
 
-            return new ClassCodeGenerator(classDefinition, _options.Namespace);
+            return new ClassCodeGenerator(classDefinition, _namespace);
         }
     }
 }

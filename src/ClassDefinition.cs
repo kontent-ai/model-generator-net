@@ -18,7 +18,7 @@ namespace KenticoCloudDotNetGenerators
         {
             if (PropertyIsAlreadyPresent(property))
             {
-                throw new InvalidOperationException($"Property with Identifier '{property.Identifier}' is already included. Can't add two properties with the same Identifier.");    
+                throw new InvalidOperationException($"Property with Identifier '{property.Identifier}' is already included. Can't add two properties with the same Identifier.");
             }
 
             Properties.Add(property);
