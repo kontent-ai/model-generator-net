@@ -17,7 +17,7 @@ CloudModelGenerator.exe --projectid "<projectid>" [--namespace "<custom-namespac
 
 ## Example output
 
-```
+```csharp
 using System;
 using System.Collections.Generic;
 using KenticoCloud.Delivery;
