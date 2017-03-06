@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace KenticoCloudDotNetGenerators
+namespace CloudModelGenerator
 {
     public class Property
     {

@@ -1,9 +1,8 @@
-﻿using Microsoft.CodeAnalysis;
-using NUnit.Framework;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using NUnit.Framework;
 
-namespace KenticoCloudDotNetGenerators.Tests
+namespace CloudModelGenerator.Tests
 {
     [TestFixture]
     public class CodeGeneratorTests

@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Linq;
+using NUnit.Framework;
 
-namespace KenticoCloudDotNetGenerators.Tests
+namespace CloudModelGenerator.Tests
 {
     [TestFixture]
     public class ClassDefinitionTests

@@ -1,7 +1,7 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
+using NUnit.Framework;
 
-namespace KenticoCloudDotNetGenerators.Tests
+namespace CloudModelGenerator.Tests
 {
     [TestFixture]
     public class TextHelpersTests

@@ -1,14 +1,14 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
+using NUnit.Framework;
 
-namespace KenticoCloudDotNetGenerators.Tests
+namespace CloudModelGenerator.Tests
 {
     [TestFixture]
     public class ClassCodeGeneratorTests
@@ -47,8 +47,8 @@ namespace KenticoCloudDotNetGenerators.Tests
 
             string compiledCode = classCodeGenerator.GenerateCode();
 
-            string executingPath = System.IO.Directory.GetCurrentDirectory();
-            string expectedCode = File.ReadAllText(executingPath + "/test/Assets/CompleteContentType_CompiledCode.txt");
+            string executingPath = AppContext.BaseDirectory;
+            string expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
 
             Assert.AreEqual(expectedCode, compiledCode);
         }

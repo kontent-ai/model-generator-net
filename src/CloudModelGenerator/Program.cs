@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace KenticoCloudDotNetGenerators
+namespace CloudModelGenerator
 {
     class Program
     {

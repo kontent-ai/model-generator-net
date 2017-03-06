@@ -1,13 +1,13 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
+using NUnit.Framework;
 
-namespace KenticoCloudDotNetGenerators.Tests
+namespace CloudModelGenerator.Tests
 {
     [TestFixture]
     public class PropertyTests
     {
         [TestCase]
-        public void Constructor_ObjectIsInitializetWithCorrectValues()
+        public void Constructor_ObjectIsInitializedWithCorrectValues()
         {
             var element = new Property("element_codename", "string");
 

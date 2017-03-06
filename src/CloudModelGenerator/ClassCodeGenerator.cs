@@ -1,11 +1,11 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using System;
-using System.Linq;
 
-namespace KenticoCloudDotNetGenerators
+namespace CloudModelGenerator
 {
     public class ClassCodeGenerator
     {

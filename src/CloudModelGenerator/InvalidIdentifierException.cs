@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KenticoCloudDotNetGenerators
+namespace CloudModelGenerator
 {
     public class InvalidIdentifierException : Exception
     {
