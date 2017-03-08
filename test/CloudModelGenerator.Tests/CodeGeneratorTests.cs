@@ -16,7 +16,7 @@ namespace CloudModelGenerator.Tests
 
             new CodeGenerator(PROJECT_ID, outputDir, @namespace).Generate();
 
-            Assert.AreEqual(11, Directory.GetFiles(Path.GetFullPath(outputDir)).Count());
+            Assert.AreEqual(10, Directory.GetFiles(Path.GetFullPath(outputDir)).Count());
         }
     }
 }
