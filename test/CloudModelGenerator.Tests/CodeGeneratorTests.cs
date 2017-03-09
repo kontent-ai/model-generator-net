@@ -7,16 +7,23 @@ namespace CloudModelGenerator.Tests
     [TestFixture]
     public class CodeGeneratorTests
     {
+        private string TEMP_DIR = Path.GetTempPath() + "/CodeGeneratorTests/";
+
         [TestCase]
         public void IntegrationTest()
         {
             const string PROJECT_ID = "e1167a11-75af-4a08-ad84-0582b463b010";
             const string @namespace = "CustomNamespace";
-            string outputDir = Path.GetTempPath() + "/TestOutput/";
 
-            new CodeGenerator(PROJECT_ID, outputDir, @namespace).Generate();
+            new CodeGenerator(PROJECT_ID, TEMP_DIR, @namespace).Generate();
 
-            Assert.AreEqual(10, Directory.GetFiles(Path.GetFullPath(outputDir)).Count());
+            Assert.AreEqual(10, Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Count());
+        }
+
+        [TearDown]
+        public void DeleteTempFolder() 
+        {
+            Directory.Delete(TEMP_DIR, recursive: true);
         }
     }
 }
