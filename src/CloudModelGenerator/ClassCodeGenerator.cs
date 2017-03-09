@@ -47,6 +47,7 @@ namespace CloudModelGenerator
 
             var classDeclaration = SyntaxFactory.ClassDeclaration(ClassDefinition.ClassName)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
                 .AddMembers(properties);
 
             CompilationUnitSyntax cu = SyntaxFactory.CompilationUnit()
