@@ -1,5 +1,5 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/t6dgpiamopwugu8v/branch/master?svg=true)](https://ci.appveyor.com/project/kentico/cloud-generators-net/branch/master)
-
+[![Forums](https://img.shields.io/badge/chat-on%20forums-orange.svg)](https://forums.kenticocloud.com)
 
 # Kentico Cloud dotnet models generator utility
 
@@ -24,7 +24,7 @@ using KenticoCloud.Delivery;
 
 namespace KenticoCloudModels
 {
-    public class CompleteContentType
+    public partial class CompleteContentType
     {
         public string Text { get; set; }
         public string RichText { get; set; }
@@ -39,6 +39,5 @@ namespace KenticoCloudModels
 }
 ```
 
-## Contribution guidelines
-
-TODO
+## Feedback & Contributing
+Check out the [contributing](https://github.com/Kentico/cloud-generators-net/blob/master/CONTRIBUTING.md) page to see the best places to file issues, start discussions and begin contributing.
