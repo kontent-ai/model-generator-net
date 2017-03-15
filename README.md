@@ -11,8 +11,10 @@ Latest successful build: [Download](https://ci.appveyor.com/api/projects/kentico
 
 ## How to use
 
+You must provide ProjectId. Optionaly, you can also provide namespace name and output directory. Last parameter `--withtypeprovider` indicates wheter the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic)#adding-support-for-runtime-type-resolution) for more info).
+
 ```
-CloudModelGenerator.exe --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"]
+CloudModelGenerator.exe --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider]
 ```
 
 ## Example output

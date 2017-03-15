@@ -1,6 +1,11 @@
 ﻿{
   "buildOptions": {
-    "copyToOutput": { "includeFiles": [ "Assets\\CompleteContentType_CompiledCode.txt" ] }
+    "copyToOutput": {
+      "includeFiles": [
+        "Assets\\CompleteContentType_CompiledCode.txt",
+        "Assets\\CustomTypeProvider_CompiledCode.txt"
+      ]
+    }
   },
   "dependencies": {
     "Microsoft.NETCore.App": {

@@ -22,20 +22,43 @@ namespace CloudModelGenerator
             _outputDir = Path.GetFullPath(outputDir).TrimEnd('\\') + "\\";
         }
 
-        public void Generate()
+        public void GenerateContentTypeModels()
         {
             // Make sure the output dir exists
             Directory.CreateDirectory(_outputDir);
 
             var classCodeGenerators = GetClassCodeGenerators();
+            
+            foreach (var codeGenerator in classCodeGenerators)
+            {
+                SaveToFile(codeGenerator.GenerateCode(), codeGenerator.ClassDefinition.ClassName);
+            }
+
+            Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
+        }
+        
+        public void GenerateTypeProvider()
+        {
+            // Make sure the output dir exists
+            Directory.CreateDirectory(_outputDir);
+
+            var classCodeGenerators = GetClassCodeGenerators();
+            var typeProviderCodeGenerator = new TypeProviderCodeGenerator(_namespace);
 
             foreach (var codeGenerator in classCodeGenerators)
             {
-                string outputPath = _outputDir + codeGenerator.ClassDefinition.ClassName + ".cs";
-                File.WriteAllText(outputPath, codeGenerator.GenerateCode());
+                typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
             }
+            
+            SaveToFile(typeProviderCodeGenerator.GenerateCode(), TypeProviderCodeGenerator.CLASS_NAME);
 
-            Console.WriteLine($"{classCodeGenerators.Count()} files was successfully created.");
+            Console.WriteLine($"{TypeProviderCodeGenerator.CLASS_NAME} class was successfully created.");
+        }
+
+        private void SaveToFile(string content, string fileName)
+        {
+            string outputPath = _outputDir + $"{fileName}.cs";
+            File.WriteAllText(outputPath, content);
         }
 
         private IEnumerable<ClassCodeGenerator> GetClassCodeGenerators()

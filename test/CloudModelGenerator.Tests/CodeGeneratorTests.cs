@@ -15,9 +15,11 @@ namespace CloudModelGenerator.Tests
             const string PROJECT_ID = "e1167a11-75af-4a08-ad84-0582b463b010";
             const string @namespace = "CustomNamespace";
 
-            new CodeGenerator(PROJECT_ID, TEMP_DIR, @namespace).Generate();
-
-            Assert.AreEqual(10, Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Count());
+            var codeGenerator = new CodeGenerator(PROJECT_ID, TEMP_DIR, @namespace);
+            codeGenerator.GenerateContentTypeModels();
+            codeGenerator.GenerateTypeProvider();
+            
+            Assert.AreEqual(11, Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Count());
         }
 
         [TearDown]

@@ -8,10 +8,12 @@ namespace CloudModelGenerator
         public List<Property> Properties { get; } = new List<Property>();
 
         public string ClassName { get; }
+        public string Codename { get; }
 
         public ClassDefinition(string codeName)
         {
             ClassName = TextHelpers.GetValidPascalCaseIdentifierName(codeName);
+            Codename = codeName;
         }
 
         public void AddProperty(Property property)
