@@ -89,12 +89,6 @@ namespace CloudModelGenerator
 
             foreach (var element in contentType.Elements.Values)
             {
-                if (element.Type == "url_slug")
-                {
-                    // TODO: not sure what to do with url slug.
-                    continue;
-                }
-
                 try
                 {
                     var property = Property.FromContentType(element.Codename, element.Type);

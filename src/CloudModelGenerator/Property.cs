@@ -22,6 +22,7 @@ namespace CloudModelGenerator
             { "asset", "IEnumerable<Asset>" },
             { "modular_content", "IEnumerable<object>" },
             { "taxonomy", "IEnumerable<TaxonomyTerm>" },
+            { "url_slug", "string" }
         };
 
         public Property(string codename, string typeName)

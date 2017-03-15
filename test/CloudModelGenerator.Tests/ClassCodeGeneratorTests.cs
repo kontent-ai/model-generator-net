@@ -40,6 +40,7 @@ namespace CloudModelGenerator.Tests
             classDefinition.AddProperty(Property.FromContentType("asset", "asset"));
             classDefinition.AddProperty(Property.FromContentType("modular_content", "modular_content"));
             classDefinition.AddProperty(Property.FromContentType("taxonomy", "taxonomy"));
+            classDefinition.AddProperty(Property.FromContentType("url_slug", "url_slug"));
 
             classDefinition.AddSystemProperty();
 
