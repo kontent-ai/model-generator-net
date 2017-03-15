@@ -32,7 +32,7 @@ namespace KenticoCloudModels
         public IEnumerable<MultipleChoiceOption> MultipleChoice { get; set; }
         public DateTime? DateTime { get; set; }
         public IEnumerable<Asset> Asset { get; set; }
-        public IEnumerable<ContentItem> ModularContent { get; set; }
+        public IEnumerable<object> ModularContent { get; set; }
         public IEnumerable<TaxonomyTerm> Taxonomy { get; set; }
         public ContentItemSystemAttributes System { get; set; }
     }
