@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using NUnit.Framework;
+using Xunit;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,10 +10,9 @@ using System.Reflection;
 
 namespace CloudModelGenerator.Tests
 {
-    [TestFixture]
     public class TypeProviderCodeGeneratorTests
     {
-        [TestCase]
+        [Fact]
         public void GenerateCodeTests()
         {
             var codeGenerator = new TypeProviderCodeGenerator();
@@ -25,12 +24,11 @@ namespace CloudModelGenerator.Tests
             string executingPath = AppContext.BaseDirectory;
             string expectedCode = File.ReadAllText(executingPath + "/Assets/CustomTypeProvider_CompiledCode.txt");
 
-            Assert.AreEqual(expectedCode, compiledCode);
+            Assert.Equal(expectedCode, compiledCode);
         }
 
 
-        [TestCase]
-        [Ignore("Throws an error for some unknown reason.")]
+        [Fact(Skip="Throws an error for some unknown reason.")]
         public void IntegrationTest_GeneratedCodeCompilesWithoutErrors()
         {
             var codeGenerator = new TypeProviderCodeGenerator();
@@ -71,7 +69,7 @@ namespace CloudModelGenerator.Tests
                     }
                 }
 
-                Assert.IsTrue(result.Success, compilationErrors);
+                Assert.True(result.Success, compilationErrors);
             }
         }
     }

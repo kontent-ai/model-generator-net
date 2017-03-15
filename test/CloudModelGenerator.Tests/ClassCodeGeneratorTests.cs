@@ -6,29 +6,28 @@ using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
-using NUnit.Framework;
+using Xunit;
 
 namespace CloudModelGenerator.Tests
 {
-    [TestFixture]
     public class ClassCodeGeneratorTests
     {
-        [TestCase]
+        [Fact]
         public void Constructor_ThrowsAnExceptionForNullArgument()
         {
             Assert.Throws<ArgumentNullException>(() => new ClassCodeGenerator(null));
         }
 
-        [TestCase]
+        [Fact]
         public void Constructor_ReplacesNullNamespaceWithDefault()
         {
             var classDefinition = new ClassDefinition("codename");
             var classCodeGenerator = new ClassCodeGenerator(classDefinition, null);
 
-            Assert.AreEqual("KenticoCloudModels", classCodeGenerator.Namespace);
+            Assert.Equal("KenticoCloudModels", classCodeGenerator.Namespace);
         }
 
-        [TestCase]
+        [Fact]
         public void Build_CreatesClassWithCompleteContentType()
         {
             var classDefinition = new ClassDefinition("Complete content type");
@@ -51,10 +50,10 @@ namespace CloudModelGenerator.Tests
             string executingPath = AppContext.BaseDirectory;
             string expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
 
-            Assert.AreEqual(expectedCode, compiledCode);
+            Assert.Equal(expectedCode, compiledCode);
         }
 
-        [TestCase]
+        [Fact]
         public void IntegrationTest_GeneratedCodeCompilesWithoutErrors()
         {
             var definition = new ClassDefinition("Complete content type");
@@ -96,7 +95,7 @@ namespace CloudModelGenerator.Tests
                     }
                 }
 
-                Assert.IsTrue(result.Success, compilationErrors);
+                Assert.True(result.Success, compilationErrors);
             }
         }
     }

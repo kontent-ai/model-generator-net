@@ -1,18 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CloudModelGenerator", "src\CloudModelGenerator\CloudModelGenerator.xproj", "{AE486A26-56D7-4FAF-8D5F-9732EA703EF0}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "CloudModelGenerator.Tests", "test\CloudModelGenerator.Tests\CloudModelGenerator.Tests.xproj", "{9D6A9E5B-EB41-472A-90B2-DF7E5EB43397}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D5C28C60-4E3A-4C91-99DA-AFA7DD3F92C2}"
 	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudModelGenerator", "src\CloudModelGenerator\CloudModelGenerator.csproj", "{AE486A26-56D7-4FAF-8D5F-9732EA703EF0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudModelGenerator.Tests", "test\CloudModelGenerator.Tests\CloudModelGenerator.Tests.csproj", "{9D6A9E5B-EB41-472A-90B2-DF7E5EB43397}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
