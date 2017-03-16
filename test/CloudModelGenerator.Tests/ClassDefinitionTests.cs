@@ -1,30 +1,29 @@
 ﻿using System;
 using System.Linq;
-using NUnit.Framework;
+using Xunit;
 
 namespace CloudModelGenerator.Tests
 {
-    [TestFixture]
     public class ClassDefinitionTests
     {
-        [TestCase]
+        [Fact]
         public void Constructor_SetsClassNameIdentifier()
         {
             var definition = new ClassDefinition("Article type");
 
-            Assert.AreEqual("ArticleType", definition.ClassName);
+            Assert.Equal("ArticleType", definition.ClassName);
         }
 
-        [TestCase]
+        [Fact]
         public void AddElement_AddsValidElement()
         {
             var classDefinition = new ClassDefinition("Class name");
             classDefinition.AddProperty(Property.FromContentType("element_1", "text"));
 
-            Assert.AreEqual(1, classDefinition.Properties.Count());
+            Assert.Equal(1, classDefinition.Properties.Count());
         }
 
-        [TestCase]
+        [Fact]
         public void AddElement_RewritesSystemFieldWithUsersCustomOne()
         {
             var definition = new ClassDefinition("Class name");
@@ -32,17 +31,17 @@ namespace CloudModelGenerator.Tests
             var userDefinedSystemProperty = Property.FromContentType("system", "text");
             definition.AddProperty(userDefinedSystemProperty);
 
-            Assert.AreEqual(userDefinedSystemProperty, definition.Properties.First());
+            Assert.Equal(userDefinedSystemProperty, definition.Properties.First());
         }
 
-        [TestCase]
+        [Fact]
         public void AddElement_ThrowsAnExceptionWhenAddingElementWithSameCodename()
         {
             var definition = new ClassDefinition("Class name");
             definition.AddProperty(Property.FromContentType("element", "text"));
 
             Assert.Throws<InvalidOperationException>(() => definition.AddProperty(Property.FromContentType("element", "text")));
-            Assert.AreEqual(1, definition.Properties.Count);
+            Assert.Equal(1, definition.Properties.Count);
         }
     }
 }

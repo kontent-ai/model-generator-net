@@ -1,22 +1,28 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
-using NUnit.Framework;
+using Xunit;
 
 namespace CloudModelGenerator.Tests
 {
-    [TestFixture]
     public class CodeGeneratorTests
     {
-        [TestCase]
+        private string TEMP_DIR = Path.GetTempPath() + "/CodeGeneratorTests/";
+
+        [Fact]
         public void IntegrationTest()
         {
             const string PROJECT_ID = "e1167a11-75af-4a08-ad84-0582b463b010";
             const string @namespace = "CustomNamespace";
-            string outputDir = Path.GetTempPath() + "/TestOutput/";
 
-            new CodeGenerator(PROJECT_ID, outputDir, @namespace).Generate();
+            var codeGenerator = new CodeGenerator(PROJECT_ID, TEMP_DIR, @namespace);
+            codeGenerator.GenerateContentTypeModels();
+            codeGenerator.GenerateTypeProvider();
+            
+            Assert.Equal(11, Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Count());
 
-            Assert.AreEqual(11, Directory.GetFiles(Path.GetFullPath(outputDir)).Count());
+            // Cleanup
+            Directory.Delete(TEMP_DIR, recursive: true);
         }
     }
 }

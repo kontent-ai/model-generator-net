@@ -16,6 +16,7 @@ namespace CloudModelGenerator
             var projectIdOption = app.Option("-p|--projectid", "Kentico Cloud Project ID.", CommandOptionType.SingleValue);
             var namespaceOption = app.Option("-n|--namespace", "Namespace name of the generated classes.", CommandOptionType.SingleValue);
             var outputDirOption = app.Option("-o|--outputdir", "Output directory where files will be generated.", CommandOptionType.SingleValue);
+            var includeTypeProvider = app.Option("-t|--withtypeprovider", "Indicates wheter CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
 
             app.OnExecute(() =>
             {
@@ -31,7 +32,12 @@ namespace CloudModelGenerator
                 string outputDir = outputDirOption.Value() ?? CURRENT_DIRECTORY;
 
                 var codeGenerator = new CodeGenerator(projectIdOption.Value(), outputDir, namespaceOption.Value());
-                codeGenerator.Generate();
+                codeGenerator.GenerateContentTypeModels();
+
+                if (includeTypeProvider.HasValue())
+                {
+                    codeGenerator.GenerateTypeProvider();
+                }
 
                 return 0;
             });
