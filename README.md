@@ -7,7 +7,7 @@ This utility will generate strongly typed models based on your Content Types in 
 
 ## Get the tool
 
-Latest successful build: [Download](https://ci.appveyor.com/api/projects/kentico/cloud-generators-net/artifacts/artifacts/CloudModelGenerator.zip)
+Latest successful build for Windows: [Download](https://ci.appveyor.com/api/projects/kentico/cloud-generators-net/artifacts/artifacts/CloudModelGenerator-win7-x64.zip)
 
 ## How to use
 
