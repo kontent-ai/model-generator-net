@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace CloudModelGenerator.Tests
 {
@@ -23,6 +24,10 @@ namespace CloudModelGenerator.Tests
 
             string executingPath = AppContext.BaseDirectory;
             string expectedCode = File.ReadAllText(executingPath + "/Assets/CustomTypeProvider_CompiledCode.txt");
+
+            // Ignore white space
+            expectedCode = Regex.Replace(expectedCode, @"\s+", "");
+            compiledCode = Regex.Replace(compiledCode, @"\s+", "");
 
             Assert.Equal(expectedCode, compiledCode);
         }
