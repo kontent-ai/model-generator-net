@@ -1,21 +1,47 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/t6dgpiamopwugu8v/branch/master?svg=true)](https://ci.appveyor.com/project/kentico/cloud-generators-net/branch/master)
 [![Forums](https://img.shields.io/badge/chat-on%20forums-orange.svg)](https://forums.kenticocloud.com)
 
-# Kentico Cloud dotnet models generator utility
+# Kentico Cloud model generator utility for .NET
 
-This utility will generate strongly typed models based on your Content Types in your Kentico Cloud project.
+This utility generates strongly-typed models based on Content Types in a Kentico Cloud project. The models are supposed to be used together with the [Kentico Cloud Delivery SDK for .NET](https://github.com/Kentico/delivery-sdk-net). Please read the [documentation](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) to see all benefits of this approach.
+
 
 ## Get the tool
 
-Latest successful build for Windows: [Download](https://ci.appveyor.com/api/projects/kentico/cloud-generators-net/artifacts/artifacts/CloudModelGenerator-win7-x64.zip)
+### Windows
+
+Latest successful build: [Download](https://ci.appveyor.com/api/projects/kentico/cloud-generators-net/artifacts/artifacts/CloudModelGenerator-win7-x64.zip)
+
+Note: The application is [self-contained](https://www.hanselman.com/blog/SelfcontainedNETCoreApplications.aspx). There's no need to install .NET Core on your machine.
+
+### Linux, Mac OS and other platforms
+
+* Clone the repository
+* Navigate to the `cloud-generators-net\src\CloudModelGenerator` folder
+* Run `dotnet build -r <RID>` to build the app
+* Run `dotnet publish -c release -r <RID>` to publish the app
+
+See the [list of all RIDs](https://docs.microsoft.com/en-us/dotnet/articles/core/rid-catalog).
 
 ## How to use
 
-You must provide ProjectId. Optionally, you can also provide namespace name and output directory. Last parameter `--withtypeprovider` indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) for more info).
+### Windows
 
 ```
 CloudModelGenerator.exe --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider]
 ```
+
+### Linux, Mac OS and other platforms
+```
+dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider]
+```
+
+### Parameters
+- `--projectid` - required - a GUID that can be found in [Kentico Cloud](https://app.kenticocloud.com) -> API keys -> Project ID
+- `--namespace` - optional - a name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)
+- `--outputdir` - optional - an output folder path, current folder will be used if not provided
+- `--withtypeprovider` - optional - indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) for more info).
+
 
 ## Example output
 
