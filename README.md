@@ -70,3 +70,11 @@ namespace KenticoCloudModels
 
 ## Feedback & Contributing
 Check out the [contributing](https://github.com/Kentico/cloud-generators-net/blob/master/CONTRIBUTING.md) page to see the best places to file issues, start discussions and begin contributing.
+
+### Wall of Fame
+We would like to express our thanks to the following people who contributed and made the project possible:
+
+- [Dražen Janjiček](https://github.com/djanjicek) - [EXLRT](http://www.exlrt.com/) 
+
+Would you like to become a hero too? Pick an [issue](https://github.com/Kentico/cloud-generators-net/issues) and send us a pull request!
+
