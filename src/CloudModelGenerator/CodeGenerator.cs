@@ -92,6 +92,7 @@ namespace CloudModelGenerator
                 try
                 {
                     var property = Property.FromContentType(element.Codename, element.Type);
+                    classDefinition.AddPropertyCodenameConstant(element);
                     classDefinition.AddProperty(property);
                 }
                 catch (InvalidOperationException)

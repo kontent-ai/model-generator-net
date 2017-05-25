@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KenticoCloud.Delivery;
+using System;
 using System.Collections.Generic;
 
 namespace CloudModelGenerator
@@ -7,7 +8,10 @@ namespace CloudModelGenerator
     {
         public List<Property> Properties { get; } = new List<Property>();
 
+        public List<ContentElement> PropertyCodenameConstants { get; } = new List<ContentElement>();
+
         public string ClassName { get; }
+
         public string Codename { get; }
 
         public ClassDefinition(string codeName)
@@ -26,6 +30,16 @@ namespace CloudModelGenerator
             Properties.Add(property);
         }
 
+        public void AddPropertyCodenameConstant(ContentElement element)
+        {
+            if (PropertyCodenameConstantIsAlreadyPresent(element))
+            {
+                throw new InvalidOperationException($"Property with code name '{element.Codename}' is already included. Can't add two members with the same code name.");
+            }
+
+            PropertyCodenameConstants.Add(element);
+        }
+
         public void AddSystemProperty()
         {
             AddProperty(new Property("system", "ContentItemSystemAttributes"));
@@ -34,6 +48,11 @@ namespace CloudModelGenerator
         private bool PropertyIsAlreadyPresent(Property property)
         {
             return Properties.Exists(e => e.Identifier == property.Identifier);
+        }
+
+        private bool PropertyCodenameConstantIsAlreadyPresent(ContentElement element)
+        {
+            return PropertyCodenameConstants.Exists(e => e.Codename == element.Codename);
         }
     }
 }
