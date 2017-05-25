@@ -12,6 +12,8 @@ namespace KenticoCloudModels
 {
     public partial class CompleteContentType
     {
+        public const string Codename = "Complete content type";
+
         public string Text { get; set; }
         public string RichText { get; set; }
         public decimal? Number { get; set; }
