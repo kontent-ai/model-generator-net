@@ -15,14 +15,14 @@ namespace CloudModelGenerator
 
             var projectIdOption = app.Option("-p|--projectid", "Kentico Cloud Project ID.", CommandOptionType.SingleValue);
             var namespaceOption = app.Option("-n|--namespace", "Namespace name of the generated classes.", CommandOptionType.SingleValue);
-            var outputDirOption = app.Option("-o|--outputdir", "Output directory where files will be generated.", CommandOptionType.SingleValue);
-            var includeTypeProvider = app.Option("-t|--withtypeprovider", "Indicates wheter CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
+            var outputDirOption = app.Option("-o|--outputdir", "Output directory for the generated files.", CommandOptionType.SingleValue);
+            var includeTypeProvider = app.Option("-t|--withtypeprovider", "Indicates whether the CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
 
             app.OnExecute(() =>
             {
                 if (!projectIdOption.HasValue())
                 {
-                    app.Error.WriteLine("Provide Project ID!");
+                    app.Error.WriteLine("Provide a Project ID!");
                     app.ShowHelp();
 
                     return 1;
