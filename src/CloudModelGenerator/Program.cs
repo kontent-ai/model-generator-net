@@ -17,8 +17,9 @@ namespace CloudModelGenerator
             var namespaceOption = app.Option("-n|--namespace", "Namespace name of the generated classes.", CommandOptionType.SingleValue);
             var outputDirOption = app.Option("-o|--outputdir", "Output directory for the generated files.", CommandOptionType.SingleValue);
             var includeTypeProvider = app.Option("-t|--withtypeprovider", "Indicates whether the CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
+	        var includeGeneratedNaming = app.Option("-g|--withgeneratednaming", "Indicates whether the the classes should use the *.Generated.cs naming convention.", CommandOptionType.NoValue);
 
-            app.OnExecute(() =>
+			app.OnExecute(() =>
             {
                 if (!projectIdOption.HasValue())
                 {
@@ -31,7 +32,7 @@ namespace CloudModelGenerator
                 const string CURRENT_DIRECTORY = ".";
                 string outputDir = outputDirOption.Value() ?? CURRENT_DIRECTORY;
 
-                var codeGenerator = new CodeGenerator(projectIdOption.Value(), outputDir, namespaceOption.Value());
+                var codeGenerator = new CodeGenerator(projectIdOption.Value(), outputDir, namespaceOption.Value(), includeGeneratedNaming.HasValue());
                 codeGenerator.GenerateContentTypeModels();
 
                 if (includeTypeProvider.HasValue())

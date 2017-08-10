@@ -20,9 +20,35 @@ namespace CloudModelGenerator.Tests
             codeGenerator.GenerateTypeProvider();
             
             Assert.Equal(11, Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Count());
+			
+	        foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR)))
+	        {
+		        Assert.DoesNotContain(".Generated.cs", Path.GetFileName(filepath));
+	        }
 
-            // Cleanup
-            Directory.Delete(TEMP_DIR, recursive: true);
+			// Cleanup
+			Directory.Delete(TEMP_DIR, recursive: true);
         }
-    }
+
+	    [Fact]
+	    public void IntegrationTestWithGeneratedSuffix()
+	    {
+		    const string PROJECT_ID = "e1167a11-75af-4a08-ad84-0582b463b010";
+		    const string @namespace = "CustomNamespace";
+
+		    var codeGenerator = new CodeGenerator(PROJECT_ID, TEMP_DIR, @namespace, true);
+		    codeGenerator.GenerateContentTypeModels();
+		    codeGenerator.GenerateTypeProvider();
+
+		    Assert.Equal(11, Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Count());
+
+		    foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR)))
+		    {
+			    Assert.EndsWith(".Generated.cs", Path.GetFileName(filepath));
+		    }
+
+		    // Cleanup
+		    Directory.Delete(TEMP_DIR, recursive: true);
+	    }
+	}
 }
