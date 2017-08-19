@@ -16,7 +16,7 @@ namespace CloudModelGenerator
             var projectIdOption = app.Option("-p|--projectid", "Kentico Cloud Project ID.", CommandOptionType.SingleValue);
             var namespaceOption = app.Option("-n|--namespace", "Namespace name of the generated classes.", CommandOptionType.SingleValue);
             var outputDirOption = app.Option("-o|--outputdir", "Output directory for the generated files.", CommandOptionType.SingleValue);
-            var transformFilenamesOption = app.Option("-f|--transformfilenames", "Output directory for the generated files.", CommandOptionType.SingleValue);
+            var transformFilenamesOption = app.Option("-f|--transformfilenames", "Optionally add a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).", CommandOptionType.SingleValue);
             var includeTypeProvider = app.Option("-t|--withtypeprovider", "Indicates whether the CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
 
             app.OnExecute(() =>
