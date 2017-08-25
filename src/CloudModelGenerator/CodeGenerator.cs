@@ -18,11 +18,11 @@ namespace CloudModelGenerator
             _projectId = projectId;
             _namespace = @namespace;
 
-            // Reslove relative path to full path
+            // Resolve relative path to full path
             _outputDir = Path.GetFullPath(outputDir).TrimEnd('\\') + "\\";
         }
 
-        public void GenerateContentTypeModels(bool structuredModel)
+        public void GenerateContentTypeModels(bool structuredModel = false)
         {
             // Make sure the output dir exists
             Directory.CreateDirectory(_outputDir);
