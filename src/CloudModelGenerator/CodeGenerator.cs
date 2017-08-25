@@ -28,7 +28,7 @@ namespace CloudModelGenerator
             Directory.CreateDirectory(_outputDir);
 
             var classCodeGenerators = GetClassCodeGenerators(structuredModel);
-            
+
             foreach (var codeGenerator in classCodeGenerators)
             {
                 SaveToFile(codeGenerator.GenerateCode(), codeGenerator.ClassDefinition.ClassName);
@@ -36,7 +36,7 @@ namespace CloudModelGenerator
 
             Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
         }
-        
+
         public void GenerateTypeProvider()
         {
             // Make sure the output dir exists
@@ -49,7 +49,7 @@ namespace CloudModelGenerator
             {
                 typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
             }
-            
+
             SaveToFile(typeProviderCodeGenerator.GenerateCode(), TypeProviderCodeGenerator.CLASS_NAME);
 
             Console.WriteLine($"{TypeProviderCodeGenerator.CLASS_NAME} class was successfully created.");
@@ -91,16 +91,12 @@ namespace CloudModelGenerator
             {
                 try
                 {
-                    Property property;
                     var elementType = element.Type;
                     if (structuredModel && Property.IsContentTypeSupported(elementType + Property.STRUCTURED_SUFFIX))
                     {
-                        property = Property.FromContentType(element.Codename, elementType + Property.STRUCTURED_SUFFIX);
+                        elementType += Property.STRUCTURED_SUFFIX;
                     }
-                    else
-                    {
-                        property = Property.FromContentType(element.Codename, elementType);
-                    }
+                    var property = Property.FromContentType(element.Codename, elementType);
                     classDefinition.AddPropertyCodenameConstant(element);
                     classDefinition.AddProperty(property);
                 }

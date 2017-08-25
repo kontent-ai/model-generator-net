@@ -34,6 +34,7 @@ namespace CloudModelGenerator.Tests
             var classDefinition = new ClassDefinition("Complete content type");
             classDefinition.AddProperty(Property.FromContentType("text", "text"));
             classDefinition.AddProperty(Property.FromContentType("rich_text", "rich_text"));
+            classDefinition.AddProperty(Property.FromContentType("rich_text_structured", "rich_text(structured)"));
             classDefinition.AddProperty(Property.FromContentType("number", "number"));
             classDefinition.AddProperty(Property.FromContentType("multiple_choice", "multiple_choice"));
             classDefinition.AddProperty(Property.FromContentType("date_time", "date_time"));
@@ -64,6 +65,7 @@ namespace CloudModelGenerator.Tests
             var definition = new ClassDefinition("Complete content type");
             definition.AddProperty(Property.FromContentType("text", "text"));
             definition.AddProperty(Property.FromContentType("rich_text", "rich_text"));
+            definition.AddProperty(Property.FromContentType("rich_text_structured", "rich_text(structured)"));
             definition.AddProperty(Property.FromContentType("number", "number"));
             definition.AddProperty(Property.FromContentType("multiple_choice", "multiple_choice"));
             definition.AddProperty(Property.FromContentType("date_time", "date_time"));
