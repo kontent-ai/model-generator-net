@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using Xunit;
 
 namespace CloudModelGenerator.Tests
@@ -17,7 +17,7 @@ namespace CloudModelGenerator.Tests
             codeGenerator.GenerateContentTypeModels();
             codeGenerator.GenerateTypeProvider();
             
-            Assert.Equal(11, Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Count());
+            Assert.Equal(11, Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Length);
             
             foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR)))
             {
@@ -40,7 +40,7 @@ namespace CloudModelGenerator.Tests
             codeGenerator.GenerateContentTypeModels();
             codeGenerator.GenerateTypeProvider();
 
-            Assert.Equal(11, Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Count());
+            Assert.Equal(11, Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Length);
 
             foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR)))
             {
