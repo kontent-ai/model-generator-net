@@ -5,6 +5,8 @@ namespace CloudModelGenerator
 {
     public class Property
     {
+        public const string STRUCTURED_SUFFIX = "(structured)";
+
         public string Identifier { get; private set; }
 
         /// <summary>
@@ -16,6 +18,7 @@ namespace CloudModelGenerator
         {
             { "text", "string" },
             { "rich_text", "string" },
+            { "rich_text" + STRUCTURED_SUFFIX, "IRichTextContent" },
             { "number", "decimal?" },
             { "multiple_choice", "IEnumerable<MultipleChoiceOption>" },
             { "date_time", "DateTime?" },
@@ -31,9 +34,14 @@ namespace CloudModelGenerator
             TypeName = typeName;
         }
 
+        public static bool IsContentTypeSupported(string contentType)
+        {
+            return contentTypeToTypeName.ContainsKey(contentType);
+        }
+
         public static Property FromContentType(string codename, string contentType)
         {
-            if (!contentTypeToTypeName.ContainsKey(contentType))
+            if (!IsContentTypeSupported(contentType))
             {
                 throw new ArgumentException($"Unknown Content Type {contentType}", nameof(contentType));
             }

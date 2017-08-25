@@ -18,17 +18,17 @@ namespace CloudModelGenerator
             _projectId = projectId;
             _namespace = @namespace;
 
-            // Reslove relative path to full path
+            // Resolve relative path to full path
             _outputDir = Path.GetFullPath(outputDir).TrimEnd('\\') + "\\";
         }
 
-        public void GenerateContentTypeModels()
+        public void GenerateContentTypeModels(bool structuredModel = false)
         {
             // Make sure the output dir exists
             Directory.CreateDirectory(_outputDir);
 
-            var classCodeGenerators = GetClassCodeGenerators();
-            
+            var classCodeGenerators = GetClassCodeGenerators(structuredModel);
+
             foreach (var codeGenerator in classCodeGenerators)
             {
                 SaveToFile(codeGenerator.GenerateCode(), codeGenerator.ClassDefinition.ClassName);
@@ -36,7 +36,7 @@ namespace CloudModelGenerator
 
             Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
         }
-        
+
         public void GenerateTypeProvider()
         {
             // Make sure the output dir exists
@@ -49,7 +49,7 @@ namespace CloudModelGenerator
             {
                 typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
             }
-            
+
             SaveToFile(typeProviderCodeGenerator.GenerateCode(), TypeProviderCodeGenerator.CLASS_NAME);
 
             Console.WriteLine($"{TypeProviderCodeGenerator.CLASS_NAME} class was successfully created.");
@@ -61,7 +61,7 @@ namespace CloudModelGenerator
             File.WriteAllText(outputPath, content);
         }
 
-        private IEnumerable<ClassCodeGenerator> GetClassCodeGenerators()
+        private IEnumerable<ClassCodeGenerator> GetClassCodeGenerators(bool structuredModel = false)
         {
             var client = new DeliveryClient(_projectId);
 
@@ -72,7 +72,7 @@ namespace CloudModelGenerator
             {
                 try
                 {
-                    codeGenerators.Add(GetClassCodeGenerator(contentType));
+                    codeGenerators.Add(GetClassCodeGenerator(contentType, structuredModel));
                 }
                 catch (InvalidIdentifierException)
                 {
@@ -83,7 +83,7 @@ namespace CloudModelGenerator
             return codeGenerators;
         }
 
-        private ClassCodeGenerator GetClassCodeGenerator(ContentType contentType)
+        private ClassCodeGenerator GetClassCodeGenerator(ContentType contentType, bool structuredModel)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
 
@@ -91,7 +91,12 @@ namespace CloudModelGenerator
             {
                 try
                 {
-                    var property = Property.FromContentType(element.Codename, element.Type);
+                    var elementType = element.Type;
+                    if (structuredModel && Property.IsContentTypeSupported(elementType + Property.STRUCTURED_SUFFIX))
+                    {
+                        elementType += Property.STRUCTURED_SUFFIX;
+                    }
+                    var property = Property.FromContentType(element.Codename, elementType);
                     classDefinition.AddPropertyCodenameConstant(element);
                     classDefinition.AddProperty(property);
                 }
