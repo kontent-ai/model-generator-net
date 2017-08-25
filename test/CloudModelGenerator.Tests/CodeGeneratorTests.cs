@@ -1,13 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using Xunit;
 
 namespace CloudModelGenerator.Tests
 {
     public class CodeGeneratorTests
     {
-        private string TEMP_DIR = Path.GetTempPath() + "/CodeGeneratorTests/";
+        private readonly string TEMP_DIR = Path.GetTempPath() + "/CodeGeneratorTests/";
 
         [Fact]
         public void IntegrationTest()
