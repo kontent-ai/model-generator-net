@@ -12,7 +12,7 @@ This utility generates strongly-typed models based on Content Types in a Kentico
 
 Latest successful build: [Download](https://ci.appveyor.com/api/projects/kentico/cloud-generators-net/artifacts/artifacts/CloudModelGenerator-win7-x64.zip)
 
-Note: The application is [self-contained](https://www.hanselman.com/blog/SelfcontainedNETCoreApplications.aspx). There's no need to install .NET Core on your machine.
+Note: The application is [self-contained](https://www.hanselman.com/blog/SelfcontainedNETCoreApplications.aspx). There's no need to install any version of .NET on your machine.
 
 ### Linux, Mac OS and other platforms
 
@@ -41,6 +41,7 @@ dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outpu
 - `--namespace` - optional - a name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)
 - `--outputdir` - optional - an output folder path, current folder will be used if not provided
 - `--withtypeprovider` - optional - indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) for more info).
+- `--structuredmodel` - optional - generates `IRichTextContent` instead of `string` for rich-text elements. This enables utilizing [structured rich-text rendering](https://github.com/Kentico/delivery-sdk-net/wiki/Structured-Rich-text-rendering).
 
 
 ## Example output
