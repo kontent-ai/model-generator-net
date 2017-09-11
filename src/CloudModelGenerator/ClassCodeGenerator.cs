@@ -12,16 +12,12 @@ namespace CloudModelGenerator
         public const string DEFAULT_NAMESPACE = "KenticoCloudModels";
 
         public ClassDefinition ClassDefinition { get; }
+
         public string Namespace { get; }
 
         public ClassCodeGenerator(ClassDefinition classDefinition, string @namespace = DEFAULT_NAMESPACE)
         {
-            if (classDefinition == null)
-            {
-                throw new ArgumentNullException(nameof(classDefinition));
-            }
-
-            ClassDefinition = classDefinition;
+            ClassDefinition = classDefinition ?? throw new ArgumentNullException(nameof(classDefinition));
             Namespace = @namespace ?? DEFAULT_NAMESPACE;
         }
 
