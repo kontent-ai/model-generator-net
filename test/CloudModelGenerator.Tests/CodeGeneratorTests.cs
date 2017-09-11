@@ -17,7 +17,7 @@ namespace CloudModelGenerator.Tests
             codeGenerator.GenerateContentTypeModels();
             codeGenerator.GenerateTypeProvider();
             
-            Assert.Equal(11, Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Length);
+            Assert.Equal(8, Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Length);
 
             // Cleanup
             Directory.Delete(TEMP_DIR, recursive: true);
