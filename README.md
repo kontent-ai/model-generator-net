@@ -28,12 +28,12 @@ See the [list of all RIDs](https://docs.microsoft.com/en-us/dotnet/articles/core
 ### Windows
 
 ```
-CloudModelGenerator.exe --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider]
+CloudModelGenerator.exe --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider] [--structuredmodel]
 ```
 
 ### Linux, Mac OS and other platforms
 ```
-dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider]
+dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider] [--structuredmodel]
 ```
 
 ### Parameters
