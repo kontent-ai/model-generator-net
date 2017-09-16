@@ -12,11 +12,13 @@ namespace CloudModelGenerator
         private readonly string _projectId;
         private readonly string _namespace;
         private readonly string _outputDir;
+        private readonly string _fileNameSuffix;
 
-        public CodeGenerator(string projectId, string outputDir, string @namespace = null)
+        public CodeGenerator(string projectId, string outputDir, string @namespace = null, string fileNameSuffix = null)
         {
             _projectId = projectId;
             _namespace = @namespace;
+            _fileNameSuffix = fileNameSuffix;
 
             // Resolve relative path to full path
             _outputDir = Path.GetFullPath(outputDir).TrimEnd('\\') + "\\";
@@ -57,7 +59,8 @@ namespace CloudModelGenerator
 
         private void SaveToFile(string content, string fileName)
         {
-            string outputPath = _outputDir + $"{fileName}.cs";
+            string suffix = string.IsNullOrWhiteSpace(_fileNameSuffix) ? ".cs" : $".{_fileNameSuffix}.cs";
+            string outputPath = _outputDir + $"{fileName}{suffix}";
             File.WriteAllText(outputPath, content);
         }
 

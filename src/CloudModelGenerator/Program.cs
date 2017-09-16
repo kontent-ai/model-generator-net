@@ -16,6 +16,7 @@ namespace CloudModelGenerator
             var projectIdOption = app.Option("-p|--projectid", "Kentico Cloud Project ID.", CommandOptionType.SingleValue);
             var namespaceOption = app.Option("-n|--namespace", "Namespace name of the generated classes.", CommandOptionType.SingleValue);
             var outputDirOption = app.Option("-o|--outputdir", "Output directory for the generated files.", CommandOptionType.SingleValue);
+            var fileNameSuffixOption = app.Option("-sf|--filenamesuffix", "Optionally add a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).", CommandOptionType.SingleValue);
             var includeTypeProvider = app.Option("-t|--withtypeprovider", "Indicates whether the CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
             var structuredModel = app.Option("-s|--structuredmodel", "Indicates whether the classes should be generated with types that represent structured data model.", CommandOptionType.NoValue);
 
@@ -32,7 +33,7 @@ namespace CloudModelGenerator
                 const string CURRENT_DIRECTORY = ".";
                 string outputDir = outputDirOption.Value() ?? CURRENT_DIRECTORY;
 
-                var codeGenerator = new CodeGenerator(projectIdOption.Value(), outputDir, namespaceOption.Value());
+                var codeGenerator = new CodeGenerator(projectIdOption.Value(), outputDir, namespaceOption.Value(), fileNameSuffixOption.Value());
                 codeGenerator.GenerateContentTypeModels(structuredModel.HasValue());
 
                 if (includeTypeProvider.HasValue())
