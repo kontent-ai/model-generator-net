@@ -28,12 +28,12 @@ See the [list of all RIDs](https://docs.microsoft.com/en-us/dotnet/articles/core
 ### Windows
 
 ```
-CloudModelGenerator.exe --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider] [--structuredmodel]
+CloudModelGenerator.exe --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider] [--structuredmodel] [--filenamesuffix "<suffix>"]
 ```
 
 ### Linux, Mac OS and other platforms
 ```
-dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider] [--structuredmodel]
+dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider] [--structuredmodel] [--filenamesuffix "<suffix>"]
 ```
 
 ### Parameters
@@ -42,6 +42,7 @@ dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outpu
 - `--outputdir` - optional - an output folder path, current folder will be used if not provided
 - `--withtypeprovider` - optional - indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) for more info).
 - `--structuredmodel` - optional - generates `IRichTextContent` instead of `string` for rich-text elements. This enables utilizing [structured rich-text rendering](https://github.com/Kentico/delivery-sdk-net/wiki/Structured-Rich-text-rendering).
+- `--filenamesuffix` - optional - adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).
 
 
 ## Example output
