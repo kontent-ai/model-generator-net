@@ -44,6 +44,8 @@ dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outpu
 - `--structuredmodel` - optional - generates `IRichTextContent` instead of `string` for rich-text elements. This enables utilizing [structured rich-text rendering](https://github.com/Kentico/delivery-sdk-net/wiki/Structured-Rich-text-rendering).
 - `--filenamesuffix` - optional - adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).
 
+These values can also be set to a default value in the appSettings.json file located in the `cloud-generators-net\src\CloudModelGenerator` directory. This will allow you to set a default values that will be used in place of command line arguments.
+
 
 ## Example output
 
