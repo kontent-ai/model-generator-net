@@ -1,12 +1,20 @@
 ﻿using System;
 using Microsoft.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Configuration;
 
 namespace CloudModelGenerator
 {
     class Program
     {
+        static IConfigurationRoot configuration { get; set; }
         static int Main(string[] args)
         {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile("appSettings.json");
+
+            configuration = builder.Build();
+
             var app = new CommandLineApplication()
             {
                 Name = "content-types-generator",
@@ -20,9 +28,19 @@ namespace CloudModelGenerator
             var includeTypeProvider = app.Option("-t|--withtypeprovider", "Indicates whether the CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
             var structuredModel = app.Option("-s|--structuredmodel", "Indicates whether the classes should be generated with types that represent structured data model.", CommandOptionType.NoValue);
 
+
             app.OnExecute(() =>
             {
-                if (!projectIdOption.HasValue())
+                // Check if default values are set
+                var passedSetProjectId = configuration["defaultFlags:0:projectId"] ?? projectIdOption.Value();
+                var passedSetNamespace = configuration["defaultFlags:0:namespace"] ?? namespaceOption.Value();
+                var passedSetOutputDir = configuration["defaultFlags:0:outputdir"] ?? outputDirOption.Value();
+                var passedSetFileNameSuffix = configuration["defaultFlags:0:filenameSuffix"] ?? fileNameSuffixOption.Value();
+                var passedSetIncludeTypeProvider = configuration["defaultFlags:0:withTypeProvider"] ?? includeTypeProvider.Value();
+                var passedSetStructuredModel = configuration["defaultFlags:0:structuredModel"] ?? structuredModel.Value();
+
+                // No projectId was passed as an arg or set in the appSettings.config
+                if (!projectIdOption.HasValue() && passedSetProjectId.Equals(""))
                 {
                     app.Error.WriteLine("Provide a Project ID!");
                     app.ShowHelp();
@@ -31,12 +49,14 @@ namespace CloudModelGenerator
                 }
 
                 const string CURRENT_DIRECTORY = ".";
-                string outputDir = outputDirOption.Value() ?? CURRENT_DIRECTORY;
+                string outputDir = passedSetOutputDir.Equals("") ? CURRENT_DIRECTORY : passedSetOutputDir;
 
-                var codeGenerator = new CodeGenerator(projectIdOption.Value(), outputDir, namespaceOption.Value(), fileNameSuffixOption.Value());
-                codeGenerator.GenerateContentTypeModels(structuredModel.HasValue());
+                var codeGenerator = new CodeGenerator(passedSetProjectId, outputDir, passedSetNamespace, 
+                    passedSetFileNameSuffix);
 
-                if (includeTypeProvider.HasValue())
+                codeGenerator.GenerateContentTypeModels(bool.Parse(passedSetStructuredModel));
+
+                if (bool.Parse(passedSetIncludeTypeProvider))
                 {
                     codeGenerator.GenerateTypeProvider();
                 }
