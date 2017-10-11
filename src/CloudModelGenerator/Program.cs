@@ -1,9 +1,6 @@
 ﻿using System;
-using System.IO;
-using System.Reflection;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 
 namespace CloudModelGenerator
 {
@@ -12,7 +9,6 @@ namespace CloudModelGenerator
         static IConfigurationRoot configuration { get; set; }
         static int Main(string[] args)
         {
-            var appSettingsPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile("appSettings.json");
