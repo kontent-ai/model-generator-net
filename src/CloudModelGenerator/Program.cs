@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Reflection;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
@@ -10,8 +11,10 @@ namespace CloudModelGenerator
     {
         static IConfigurationRoot configuration { get; set; }
         static int Main(string[] args)
-        {   
+        {
+            var appSettingsPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var builder = new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile("appSettings.json");
 
             configuration = builder.Build();
@@ -33,15 +36,15 @@ namespace CloudModelGenerator
             app.OnExecute(() =>
             {
                 // Check if default values are set
-                var passedSetProjectId = configuration["defaultFlags:projectId"] ?? projectIdOption.Value();
-                var passedSetNamespace = configuration["defaultFlags:namespace"] ?? namespaceOption.Value();
-                var passedSetOutputDir = configuration["defaultFlags:outputdir"] ?? outputDirOption.Value();
-                var passedSetFileNameSuffix = configuration["defaultFlags:filenameSuffix"] ?? fileNameSuffixOption.Value();
-                var passedSetIncludeTypeProvider = configuration["defaultFlags:withTypeProvider"] ?? includeTypeProvider.Value();
-                var passedSetStructuredModel = configuration["defaultFlags:structuredModel"] ?? structuredModel.Value();
+                var passedSetProjectId = configuration["defaultFlags:0:projectId"] ?? projectIdOption.Value();
+                var passedSetNamespace = configuration["defaultFlags:0:namespace"] ?? namespaceOption.Value();
+                var passedSetOutputDir = configuration["defaultFlags:0:outputdir"] ?? outputDirOption.Value();
+                var passedSetFileNameSuffix = configuration["defaultFlags:0:filenameSuffix"] ?? fileNameSuffixOption.Value();
+                var passedSetIncludeTypeProvider = configuration["defaultFlags:0:withTypeProvider"] ?? includeTypeProvider.Value();
+                var passedSetStructuredModel = configuration["defaultFlags:0:structuredModel"] ?? structuredModel.Value();
 
                 // No projectId was passed as an arg or set in the appSettings.config
-                if (!projectIdOption.HasValue() | passedSetProjectId.Equals(""))
+                if (!projectIdOption.HasValue() && passedSetProjectId.Equals(""))
                 {
                     app.Error.WriteLine("Provide a Project ID!");
                     app.ShowHelp();
@@ -50,14 +53,14 @@ namespace CloudModelGenerator
                 }
 
                 const string CURRENT_DIRECTORY = ".";
-                string outputDir = passedSetOutputDir ?? CURRENT_DIRECTORY;
+                string outputDir = passedSetOutputDir.Equals("") ? CURRENT_DIRECTORY : passedSetOutputDir;
 
                 var codeGenerator = new CodeGenerator(passedSetProjectId, outputDir, passedSetNamespace, 
                     passedSetFileNameSuffix);
 
                 codeGenerator.GenerateContentTypeModels(bool.Parse(passedSetStructuredModel));
 
-                if (bool.Parse(passedSetIncludeTypeProvider) | bool.Parse(includeTypeProvider.Value()))
+                if (bool.Parse(passedSetIncludeTypeProvider))
                 {
                     codeGenerator.GenerateTypeProvider();
                 }
