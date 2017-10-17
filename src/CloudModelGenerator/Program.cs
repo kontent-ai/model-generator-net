@@ -37,11 +37,11 @@ namespace CloudModelGenerator
                 var passedSetNamespace = namespaceOption.Value() ?? configuration["namespace"];
                 var passedSetOutputDir =  outputDirOption.Value() ??  configuration["outputdir"];
                 var passedSetFileNameSuffix = fileNameSuffixOption.Value() ?? configuration["filenameSuffix"];
-                var passedSetIncludeTypeProvider = includeTypeProvider.Value() ?? bool.Parse(configuration["withTypeProvider"]);
-                var passedSetStructuredModel = structuredModel.Value() ?? bool.Parse(configuration["structuredModel"]);
+                var passedSetIncludeTypeProvider = bool.Parse(includeTypeProvider.Value() ?? configuration["withTypeProvider"]);
+                var passedSetStructuredModel = bool.Parse(structuredModel.Value() ?? configuration["structuredModel"]);
 
                 // No projectId was passed as an arg or set in the appSettings.config
-                if (passedSetProjectId)
+                if (passedSetProjectId != null)
                 {
                     app.Error.WriteLine("Provide a Project ID!");
                     app.ShowHelp();
@@ -52,8 +52,7 @@ namespace CloudModelGenerator
                 const string CURRENT_DIRECTORY = ".";
                 string outputDir = passedSetOutputDir ?? CURRENT_DIRECTORY;
 
-                var codeGenerator = new CodeGenerator(passedSetProjectId, outputDir, passedSetNamespace, 
-                    passedSetFileNameSuffix);
+                var codeGenerator = new CodeGenerator(passedSetProjectId, outputDir, passedSetNamespace, passedSetFileNameSuffix);
 
                 codeGenerator.GenerateContentTypeModels(passedSetStructuredModel);
 
