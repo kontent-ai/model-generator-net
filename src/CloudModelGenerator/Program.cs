@@ -1,13 +1,22 @@
 ﻿using System;
 using Microsoft.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Configuration;
 
 namespace CloudModelGenerator
 {
     class Program
     {
+        static IConfigurationRoot Configuration { get; set; }
+
         static int Main(string[] args)
         {
-            var app = new CommandLineApplication()
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile("appSettings.json", true);
+
+            Configuration = builder.Build();
+
+            var app = new CommandLineApplication
             {
                 Name = "content-types-generator",
                 Description = "Generates Kentico Cloud Content Types as CSharp classes.",
@@ -19,10 +28,19 @@ namespace CloudModelGenerator
             var fileNameSuffixOption = app.Option("-sf|--filenamesuffix", "Optionally add a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).", CommandOptionType.SingleValue);
             var includeTypeProvider = app.Option("-t|--withtypeprovider", "Indicates whether the CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
             var structuredModel = app.Option("-s|--structuredmodel", "Indicates whether the classes should be generated with types that represent structured data model.", CommandOptionType.NoValue);
-
+            
             app.OnExecute(() =>
             {
-                if (!projectIdOption.HasValue())
+                // Check if default values are set
+                var passedSetProjectId = projectIdOption.Value() ?? Configuration["projectId"];
+                var passedSetNamespace = namespaceOption.Value() ?? Configuration["namespace"];
+                var passedSetOutputDir = outputDirOption.Value() ?? Configuration["outputdir"];
+                var passedSetFileNameSuffix = fileNameSuffixOption.Value() ?? Configuration["filenameSuffix"];
+                var passedSetIncludeTypeProvider = includeTypeProvider.HasValue() ? bool.Parse(includeTypeProvider.Value()) : Configuration.GetValue("withTypeProvider", true);
+                var passedSetStructuredModel = structuredModel.HasValue() ? bool.Parse(structuredModel.Value()) : Configuration.GetValue("structuredModel", false);
+
+                // No projectId was passed as an arg or set in the appSettings.config
+                if (passedSetProjectId == null)
                 {
                     app.Error.WriteLine("Provide a Project ID!");
                     app.ShowHelp();
@@ -31,12 +49,13 @@ namespace CloudModelGenerator
                 }
 
                 const string CURRENT_DIRECTORY = ".";
-                string outputDir = outputDirOption.Value() ?? CURRENT_DIRECTORY;
+                string outputDir = passedSetOutputDir ?? CURRENT_DIRECTORY;
 
-                var codeGenerator = new CodeGenerator(projectIdOption.Value(), outputDir, namespaceOption.Value(), fileNameSuffixOption.Value());
-                codeGenerator.GenerateContentTypeModels(structuredModel.HasValue());
+                var codeGenerator = new CodeGenerator(passedSetProjectId, outputDir, passedSetNamespace, passedSetFileNameSuffix);
 
-                if (includeTypeProvider.HasValue())
+                codeGenerator.GenerateContentTypeModels(passedSetStructuredModel);
+
+                if (passedSetIncludeTypeProvider)
                 {
                     codeGenerator.GenerateTypeProvider();
                 }
