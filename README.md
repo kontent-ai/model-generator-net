@@ -38,8 +38,8 @@ dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outpu
 
 ### Parameters
 
-| Parameter     | Required  | Default value  | Description |
-| ------------- |:---------:|:--------------:|:-----------:|
+| Parameter             | Required  | Default value  | Description |
+| --------------------- |:---------:|:--------------:|:-----------:|
 | `--projectid` | True  | `null` | A GUID that can be found in [Kentico Cloud](https://app.kenticocloud.com) -> API keys -> Project ID |
 | `--namespace` | False | `KenticoCloudModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
 | `--outputdir` | False | `\.` | An output folder path |
