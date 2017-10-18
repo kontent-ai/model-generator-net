@@ -10,7 +10,7 @@ This utility generates strongly-typed models based on Content Types in a Kentico
 
 ### Windows
 
-Latest successful build: [Download](https://ci.appveyor.com/api/projects/kentico/cloud-generators-net/artifacts/artifacts/CloudModelGenerator-win7-x64.zip)
+Latest release: [Download](https://github.com/Kentico/cloud-generators-net/releases/latest)
 
 Note: The application is [self-contained](https://www.hanselman.com/blog/SelfcontainedNETCoreApplications.aspx). There's no need to install any version of .NET on your machine.
 
