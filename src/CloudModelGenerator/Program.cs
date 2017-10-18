@@ -6,17 +6,17 @@ namespace CloudModelGenerator
 {
     class Program
     {
-        static IConfigurationRoot configuration { get; set; }
+        static IConfigurationRoot Configuration { get; set; }
 
         static int Main(string[] args)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)
-                .AddJsonFile("appSettings.json");
+                .AddJsonFile("appSettings.json", true);
 
-            configuration = builder.Build();
+            Configuration = builder.Build();
 
-            var app = new CommandLineApplication()
+            var app = new CommandLineApplication
             {
                 Name = "content-types-generator",
                 Description = "Generates Kentico Cloud Content Types as CSharp classes.",
@@ -28,20 +28,19 @@ namespace CloudModelGenerator
             var fileNameSuffixOption = app.Option("-sf|--filenamesuffix", "Optionally add a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).", CommandOptionType.SingleValue);
             var includeTypeProvider = app.Option("-t|--withtypeprovider", "Indicates whether the CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
             var structuredModel = app.Option("-s|--structuredmodel", "Indicates whether the classes should be generated with types that represent structured data model.", CommandOptionType.NoValue);
-
-
+            
             app.OnExecute(() =>
             {
                 // Check if default values are set
-                var passedSetProjectId = projectIdOption.Value() ?? configuration["projectId"];
-                var passedSetNamespace = namespaceOption.Value() ?? configuration["namespace"];
-                var passedSetOutputDir =  outputDirOption.Value() ??  configuration["outputdir"];
-                var passedSetFileNameSuffix = fileNameSuffixOption.Value() ?? configuration["filenameSuffix"];
-                var passedSetIncludeTypeProvider = bool.Parse(includeTypeProvider.Value() ?? configuration["withTypeProvider"]);
-                var passedSetStructuredModel = bool.Parse(structuredModel.Value() ?? configuration["structuredModel"]);
+                var passedSetProjectId = projectIdOption.Value() ?? Configuration["projectId"];
+                var passedSetNamespace = namespaceOption.Value() ?? Configuration["namespace"];
+                var passedSetOutputDir = outputDirOption.Value() ?? Configuration["outputdir"];
+                var passedSetFileNameSuffix = fileNameSuffixOption.Value() ?? Configuration["filenameSuffix"];
+                var passedSetIncludeTypeProvider = includeTypeProvider.HasValue() ? bool.Parse(includeTypeProvider.Value()) : Configuration.GetValue("withTypeProvider", true);
+                var passedSetStructuredModel = structuredModel.HasValue() ? bool.Parse(structuredModel.Value()) : Configuration.GetValue("structuredModel", false);
 
                 // No projectId was passed as an arg or set in the appSettings.config
-                if (passedSetProjectId != null)
+                if (passedSetProjectId == null)
                 {
                     app.Error.WriteLine("Provide a Project ID!");
                     app.ShowHelp();
