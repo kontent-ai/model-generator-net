@@ -14,6 +14,8 @@ namespace CloudModelGenerator
         private readonly string _outputDir;
         private readonly string _fileNameSuffix;
 
+        public DeliveryClient Client { get; }
+
         public CodeGenerator(string projectId, string outputDir, string @namespace = null, string fileNameSuffix = null)
         {
             _projectId = projectId;
@@ -22,6 +24,9 @@ namespace CloudModelGenerator
 
             // Resolve relative path to full path
             _outputDir = Path.GetFullPath(outputDir).TrimEnd('\\') + "\\";
+
+            // initialise DeliveryClient
+            Client = new DeliveryClient(_projectId);
         }
 
         public void GenerateContentTypeModels(bool structuredModel = false)
@@ -66,9 +71,7 @@ namespace CloudModelGenerator
 
         private IEnumerable<ClassCodeGenerator> GetClassCodeGenerators(bool structuredModel = false)
         {
-            var client = new DeliveryClient(_projectId);
-
-            IEnumerable<ContentType> contentTypes = Task.Run(() => client.GetTypesAsync()).Result.Types;
+            IEnumerable<ContentType> contentTypes = Task.Run(() => Client.GetTypesAsync()).Result.Types;
 
             var codeGenerators = new List<ClassCodeGenerator>();
             foreach (var contentType in contentTypes)
