@@ -1,4 +1,6 @@
+using System;
 using System.IO;
+using RichardSzalay.MockHttp;
 using Xunit;
 
 namespace CloudModelGenerator.Tests
@@ -20,10 +22,17 @@ namespace CloudModelGenerator.Tests
         [Fact]
         public void IntegrationTest()
         {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When("https://deliver.kenticocloud.com/*")
+                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures\\types.json")));
+            var httpClient = mockHttp.ToHttpClient();
+
             const string PROJECT_ID = "975bf280-fd91-488c-994c-2f04416e5ee3";
             const string @namespace = "CustomNamespace";
 
             var codeGenerator = new CodeGenerator(PROJECT_ID, TEMP_DIR, @namespace);
+            codeGenerator.Client.HttpClient = httpClient;
+
             codeGenerator.GenerateContentTypeModels();
             codeGenerator.GenerateTypeProvider();
 
@@ -41,12 +50,18 @@ namespace CloudModelGenerator.Tests
         [Fact]
         public void IntegrationTestWithGeneratedSuffix()
         {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When("https://deliver.kenticocloud.com/*")
+                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures\\types.json")));
+            var httpClient = mockHttp.ToHttpClient();
+
             const string PROJECT_ID = "975bf280-fd91-488c-994c-2f04416e5ee3";
             const string @namespace = "CustomNamespace";
             const string transformFilename = "Generated";
 
-
             var codeGenerator = new CodeGenerator(PROJECT_ID, TEMP_DIR, @namespace, transformFilename);
+            codeGenerator.Client.HttpClient = httpClient;
+
             codeGenerator.GenerateContentTypeModels();
             codeGenerator.GenerateTypeProvider();
 
