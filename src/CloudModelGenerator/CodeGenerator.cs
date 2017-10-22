@@ -45,7 +45,7 @@ namespace CloudModelGenerator
 
             foreach (var codeGenerator in classCodeGenerators)
             {
-                SaveToFile(codeGenerator.GenerateCode(), codeGenerator.ClassFilename);
+                SaveToFile(codeGenerator.GenerateCode(), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
             }
 
             Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
@@ -152,7 +152,7 @@ namespace CloudModelGenerator
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
             string classFilename = $"{classDefinition.ClassName}";
-            return new ClassCodeGenerator(classDefinition, classFilename, _namespace, false);
+            return new ClassCodeGenerator(classDefinition, classFilename, _namespace, true);
         }
     }
 }

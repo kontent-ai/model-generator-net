@@ -15,16 +15,19 @@ namespace CloudModelGenerator
 
         public string ClassFilename { get; }
 
-        public bool OverwriteExisting { get; }
+        public bool CustomPartial { get; }
 
         public string Namespace { get; }
 
-        public ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DEFAULT_NAMESPACE, bool overwriteExisting = true)
+        public bool OverwriteExisting { get; }
+
+        public ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DEFAULT_NAMESPACE, bool customPartial = false)
         {
             ClassDefinition = classDefinition ?? throw new ArgumentNullException(nameof(classDefinition));
             ClassFilename = classFilename ?? ClassDefinition.ClassName;
-            OverwriteExisting = overwriteExisting;
+            CustomPartial = customPartial;
             Namespace = @namespace ?? DEFAULT_NAMESPACE;
+            OverwriteExisting = !CustomPartial;
         }
 
         public string GenerateCode()
@@ -47,21 +50,6 @@ namespace CloudModelGenerator
                     )
             ).ToArray();
 
-            var classCodenameConstant = SyntaxFactory.FieldDeclaration(
-                            SyntaxFactory.VariableDeclaration(
-                                    SyntaxFactory.ParseTypeName("string"),
-                                    SyntaxFactory.SeparatedList(new[] {
-                                        SyntaxFactory.VariableDeclarator(
-                                            SyntaxFactory.Identifier("Codename"),
-                                            null,
-                                            SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression( SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(ClassDefinition.Codename)))
-                                        )
-                                    })
-                                )
-                            )
-                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.ConstKeyword));
-
             var propertyCodenameConstants = ClassDefinition.PropertyCodenameConstants.Select(element =>
                     SyntaxFactory.FieldDeclaration(
                             SyntaxFactory.VariableDeclaration(
@@ -81,9 +69,29 @@ namespace CloudModelGenerator
 
             var classDeclaration = SyntaxFactory.ClassDeclaration(ClassDefinition.ClassName)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword))
-                .AddMembers(classCodenameConstant)
-                .AddMembers(propertyCodenameConstants)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
+
+            if (!CustomPartial)
+            {
+                var classCodenameConstant = SyntaxFactory.FieldDeclaration(
+                                SyntaxFactory.VariableDeclaration(
+                                        SyntaxFactory.ParseTypeName("string"),
+                                        SyntaxFactory.SeparatedList(new[] {
+                                            SyntaxFactory.VariableDeclarator(
+                                                SyntaxFactory.Identifier("Codename"),
+                                                null,
+                                                SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression( SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(ClassDefinition.Codename)))
+                                            )
+                                        })
+                                    )
+                                )
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.ConstKeyword));
+
+                classDeclaration = classDeclaration.AddMembers(classCodenameConstant);
+            }
+
+            classDeclaration = classDeclaration.AddMembers(propertyCodenameConstants)
                 .AddMembers(properties);
 
             var description = SyntaxFactory.Comment(

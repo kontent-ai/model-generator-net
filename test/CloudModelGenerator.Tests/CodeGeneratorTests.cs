@@ -63,7 +63,6 @@ namespace CloudModelGenerator.Tests
             codeGenerator.Client.HttpClient = httpClient;
 
             codeGenerator.GenerateContentTypeModels();
-            codeGenerator.GenerateTypeProvider();
 
             Assert.True(Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Length > 10);
 
