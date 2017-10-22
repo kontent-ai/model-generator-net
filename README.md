@@ -37,14 +37,17 @@ dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outpu
 ```
 
 ### Parameters
-- `--projectid` - required - a GUID that can be found in [Kentico Cloud](https://app.kenticocloud.com) -> API keys -> Project ID
-- `--namespace` - optional - a name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)
-- `--outputdir` - optional - an output folder path, current folder will be used if not provided
-- `--withtypeprovider` - optional - indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) for more info).
-- `--structuredmodel` - optional - generates `IRichTextContent` instead of `string` for rich-text elements. This enables utilizing [structured rich-text rendering](https://github.com/Kentico/delivery-sdk-net/wiki/Structured-Rich-text-rendering).
-- `--filenamesuffix` - optional - adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).
 
-These values can also be set to a default value in the appSettings.json file located in the `cloud-generators-net\src\CloudModelGenerator` directory. This will allow you to set a default values that will be used in place of command line arguments.
+| Parameter             | Required  | Default value  | Description |
+| --------------------- |:---------:|:--------------:|:-----------:|
+| `--projectid` | True  | `null` | A GUID that can be found in [Kentico Cloud](https://app.kenticocloud.com) -> API keys -> Project ID |
+| `--namespace` | False | `KenticoCloudModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
+| `--outputdir` | False | `\.` | An output folder path |
+| `--withtypeprovider` | False | `true` | Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) for more info) |
+| `--structuredmodel` | False | `false` | Generates `IRichTextContent` instead of `string` for rich-text elements. This enables utilizing [structured rich-text rendering](https://github.com/Kentico/delivery-sdk-net/wiki/Structured-Rich-text-rendering) |
+| `--filenamesuffix` | False | `null` | Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs) |
+
+These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
 
 
 ## Example output
