@@ -26,6 +26,7 @@ namespace CloudModelGenerator
             var namespaceOption = app.Option("-n|--namespace", "Namespace name of the generated classes.", CommandOptionType.SingleValue);
             var outputDirOption = app.Option("-o|--outputdir", "Output directory for the generated files.", CommandOptionType.SingleValue);
             var fileNameSuffixOption = app.Option("-sf|--filenamesuffix", "Optionally add a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).", CommandOptionType.SingleValue);
+            var generatePartials = app.Option("-gp|--generatepartials", "Generate partial classes for customisation (if this option is set filename suffix will default to Generated).", CommandOptionType.NoValue);
             var includeTypeProvider = app.Option("-t|--withtypeprovider", "Indicates whether the CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
             var structuredModel = app.Option("-s|--structuredmodel", "Indicates whether the classes should be generated with types that represent structured data model.", CommandOptionType.NoValue);
             
@@ -35,6 +36,7 @@ namespace CloudModelGenerator
                 var passedSetProjectId = projectIdOption.Value() ?? Configuration["projectId"];
                 var passedSetNamespace = namespaceOption.Value() ?? Configuration["namespace"];
                 var passedSetOutputDir = outputDirOption.Value() ?? Configuration["outputdir"];
+                var passedGeneratePartials = generatePartials.HasValue() ? bool.Parse(generatePartials.Value()) : Configuration.GetValue("generatePartials", false);
                 var passedSetFileNameSuffix = fileNameSuffixOption.Value() ?? Configuration["filenameSuffix"];
                 var passedSetIncludeTypeProvider = includeTypeProvider.HasValue() ? bool.Parse(includeTypeProvider.Value()) : Configuration.GetValue("withTypeProvider", true);
                 var passedSetStructuredModel = structuredModel.HasValue() ? bool.Parse(structuredModel.Value()) : Configuration.GetValue("structuredModel", false);
@@ -51,7 +53,7 @@ namespace CloudModelGenerator
                 const string CURRENT_DIRECTORY = ".";
                 string outputDir = passedSetOutputDir ?? CURRENT_DIRECTORY;
 
-                var codeGenerator = new CodeGenerator(passedSetProjectId, outputDir, passedSetNamespace, passedSetFileNameSuffix);
+                var codeGenerator = new CodeGenerator(passedSetProjectId, outputDir, passedSetNamespace, passedSetFileNameSuffix, passedGeneratePartials);
 
                 codeGenerator.GenerateContentTypeModels(passedSetStructuredModel);
 

@@ -13,11 +13,17 @@ namespace CloudModelGenerator
 
         public ClassDefinition ClassDefinition { get; }
 
+        public string ClassFilename { get; }
+
+        public bool OverwriteExisting { get; }
+
         public string Namespace { get; }
 
-        public ClassCodeGenerator(ClassDefinition classDefinition, string @namespace = DEFAULT_NAMESPACE)
+        public ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DEFAULT_NAMESPACE, bool overwriteExisting = true)
         {
             ClassDefinition = classDefinition ?? throw new ArgumentNullException(nameof(classDefinition));
+            ClassFilename = classFilename ?? ClassDefinition.ClassName;
+            OverwriteExisting = overwriteExisting;
             Namespace = @namespace ?? DEFAULT_NAMESPACE;
         }
 
