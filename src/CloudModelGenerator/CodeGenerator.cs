@@ -88,6 +88,10 @@ namespace CloudModelGenerator
             {
                 try
                 {
+                    if (_generatePartials)
+                    {
+                        codeGenerators.Add(GetCustomClassCodeGenerator(contentType));
+                    }
                     codeGenerators.Add(GetClassCodeGenerator(contentType, structuredModel));
                 }
                 catch (InvalidIdentifierException)
@@ -139,7 +143,8 @@ namespace CloudModelGenerator
                 Console.WriteLine($"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
             }
 
-            string classFilename = $"{classDefinition.ClassName}{_fileNameSuffix}";
+            string suffix = string.IsNullOrEmpty(_fileNameSuffix) ? "" : $".{_fileNameSuffix}";
+            string classFilename = $"{classDefinition.ClassName}{suffix}";
             return new ClassCodeGenerator(classDefinition, classFilename, _namespace);
         }
 

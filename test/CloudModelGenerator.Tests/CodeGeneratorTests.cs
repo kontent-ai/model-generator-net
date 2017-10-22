@@ -93,11 +93,11 @@ namespace CloudModelGenerator.Tests
 
             codeGenerator.GenerateContentTypeModels();
 
-            var allFilesCount = Directory.GetFiles(Path.GetFullPath(TEMP_DIR), ".cs").Length;
-            var generatedCount = Directory.GetFiles(Path.GetFullPath(TEMP_DIR), $".{transformFilename}.cs").Length;
+            var allFilesCount = Directory.GetFiles(Path.GetFullPath(TEMP_DIR), "*.cs").Length;
+            var generatedCount = Directory.GetFiles(Path.GetFullPath(TEMP_DIR), $"*.{transformFilename}.cs").Length;
             Assert.Equal(allFilesCount, generatedCount * 2);
 
-            foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR), $".{transformFilename}.cs"))
+            foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR), $"*.{transformFilename}.cs"))
             {
                 var customFileExists = File.Exists(filepath.Replace($".{transformFilename}", ""));
                 Assert.True(customFileExists);
