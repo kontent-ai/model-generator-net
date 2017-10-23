@@ -38,7 +38,7 @@ namespace CloudModelGenerator
                 throw new ArgumentException("Class name must be a non empty string", nameof(className));
             }
 
-            _contentTypes.Add(codename, className);
+            _contentTypes[codename] = className;
         }
 
         public string GenerateCode()

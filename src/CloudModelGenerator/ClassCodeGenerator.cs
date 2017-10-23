@@ -107,8 +107,12 @@ namespace CloudModelGenerator
                 .AddMembers(
                     SyntaxFactory.NamespaceDeclaration(SyntaxFactory.IdentifierName(Namespace))
                         .AddMembers(classDeclaration)
-                )
-                .WithLeadingTrivia(description);
+                );
+
+            if (!CustomPartial)
+            {
+                cu = cu.WithLeadingTrivia(description);
+            }
 
             AdhocWorkspace cw = new AdhocWorkspace();
             return Formatter.Format(cu, cw).ToFullString();

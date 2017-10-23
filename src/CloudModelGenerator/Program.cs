@@ -29,17 +29,17 @@ namespace CloudModelGenerator
             var generatePartials = app.Option("-gp|--generatepartials", "Generate partial classes for customisation (if this option is set filename suffix will default to Generated).", CommandOptionType.NoValue);
             var includeTypeProvider = app.Option("-t|--withtypeprovider", "Indicates whether the CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
             var structuredModel = app.Option("-s|--structuredmodel", "Indicates whether the classes should be generated with types that represent structured data model.", CommandOptionType.NoValue);
-            
+
             app.OnExecute(() =>
             {
                 // Check if default values are set
-                var passedSetProjectId = projectIdOption.Value() ?? Configuration["projectId"];
-                var passedSetNamespace = namespaceOption.Value() ?? Configuration["namespace"];
-                var passedSetOutputDir = outputDirOption.Value() ?? Configuration["outputdir"];
-                var passedGeneratePartials = generatePartials.HasValue() ? bool.Parse(generatePartials.Value()) : Configuration.GetValue("generatePartials", false);
-                var passedSetFileNameSuffix = fileNameSuffixOption.Value() ?? Configuration["filenameSuffix"];
-                var passedSetIncludeTypeProvider = includeTypeProvider.HasValue() ? bool.Parse(includeTypeProvider.Value()) : Configuration.GetValue("withTypeProvider", true);
-                var passedSetStructuredModel = structuredModel.HasValue() ? bool.Parse(structuredModel.Value()) : Configuration.GetValue("structuredModel", false);
+                var passedSetProjectId = projectIdOption.Value() ?? (string.IsNullOrEmpty(Configuration["projectId"]) ? null : Configuration["projectId"]);
+                var passedSetNamespace = namespaceOption.Value() ?? (string.IsNullOrEmpty(Configuration["namespace"]) ? null : Configuration["namespace"]);
+                var passedSetOutputDir = outputDirOption.Value() ?? (string.IsNullOrEmpty(Configuration["outputdir"]) ? null : Configuration["outputdir"]);
+                var passedGeneratePartials = generatePartials.HasValue() || Configuration.GetValue("generatePartials", false);
+                var passedSetFileNameSuffix = fileNameSuffixOption.Value() ?? (string.IsNullOrEmpty(Configuration["filenameSuffix"]) ? null : Configuration["filenameSuffix"]);
+                var passedSetIncludeTypeProvider = includeTypeProvider.HasValue() || Configuration.GetValue("withTypeProvider", true);
+                var passedSetStructuredModel = structuredModel.HasValue() || Configuration.GetValue("structuredModel", false);
 
                 // No projectId was passed as an arg or set in the appSettings.config
                 if (passedSetProjectId == null)
