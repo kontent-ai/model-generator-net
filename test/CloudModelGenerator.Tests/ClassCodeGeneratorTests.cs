@@ -16,7 +16,7 @@ namespace CloudModelGenerator.Tests
         [Fact]
         public void Constructor_ThrowsAnExceptionForNullArgument()
         {
-            Assert.Throws<ArgumentNullException>(() => new ClassCodeGenerator(null));
+            Assert.Throws<ArgumentNullException>(() => new ClassCodeGenerator(null, null));
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace CloudModelGenerator.Tests
 
             classDefinition.AddSystemProperty();
 
-            var classCodeGenerator = new ClassCodeGenerator(classDefinition);
+            var classCodeGenerator = new ClassCodeGenerator(classDefinition, classDefinition.ClassName);
 
             string compiledCode = classCodeGenerator.GenerateCode();
 
@@ -73,7 +73,7 @@ namespace CloudModelGenerator.Tests
             definition.AddProperty(Property.FromContentType("modular_content", "modular_content"));
             definition.AddProperty(Property.FromContentType("taxonomy", "taxonomy"));
 
-            var classCodeGenerator = new ClassCodeGenerator(definition);
+            var classCodeGenerator = new ClassCodeGenerator(definition, definition.ClassName);
             string compiledCode = classCodeGenerator.GenerateCode();
 
             CSharpCompilation compilation = CSharpCompilation.Create(

@@ -13,14 +13,21 @@ namespace CloudModelGenerator
         private readonly string _namespace;
         private readonly string _outputDir;
         private readonly string _fileNameSuffix;
+        private readonly bool _generatePartials;
 
         public DeliveryClient Client { get; }
 
-        public CodeGenerator(string projectId, string outputDir, string @namespace = null, string fileNameSuffix = null)
+        public CodeGenerator(string projectId, string outputDir, string @namespace = null, string fileNameSuffix = null, bool generatePartials = false)
         {
             _projectId = projectId;
             _namespace = @namespace;
             _fileNameSuffix = fileNameSuffix;
+            _generatePartials = generatePartials;
+
+            if (_generatePartials && string.IsNullOrEmpty(_fileNameSuffix))
+            {
+                _fileNameSuffix = "Generated";
+            }
 
             // Resolve relative path to full path
             _outputDir = Path.GetFullPath(outputDir).TrimEnd('\\') + "\\";
@@ -38,7 +45,7 @@ namespace CloudModelGenerator
 
             foreach (var codeGenerator in classCodeGenerators)
             {
-                SaveToFile(codeGenerator.GenerateCode(), codeGenerator.ClassDefinition.ClassName);
+                SaveToFile(codeGenerator.GenerateCode(), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
             }
 
             Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
@@ -62,11 +69,14 @@ namespace CloudModelGenerator
             Console.WriteLine($"{TypeProviderCodeGenerator.CLASS_NAME} class was successfully created.");
         }
 
-        private void SaveToFile(string content, string fileName)
+        private void SaveToFile(string content, string fileName, bool overwriteExisting = true)
         {
-            string suffix = string.IsNullOrWhiteSpace(_fileNameSuffix) ? ".cs" : $".{_fileNameSuffix}.cs";
-            string outputPath = _outputDir + $"{fileName}{suffix}";
-            File.WriteAllText(outputPath, content);
+            string outputPath = _outputDir + $"{fileName}.cs";
+            bool fileExists = File.Exists(outputPath);
+            if (!fileExists || overwriteExisting)
+            {
+                File.WriteAllText(outputPath, content);
+            }
         }
 
         private IEnumerable<ClassCodeGenerator> GetClassCodeGenerators(bool structuredModel = false)
@@ -78,6 +88,10 @@ namespace CloudModelGenerator
             {
                 try
                 {
+                    if (_generatePartials)
+                    {
+                        codeGenerators.Add(GetCustomClassCodeGenerator(contentType));
+                    }
                     codeGenerators.Add(GetClassCodeGenerator(contentType, structuredModel));
                 }
                 catch (InvalidIdentifierException)
@@ -129,7 +143,16 @@ namespace CloudModelGenerator
                 Console.WriteLine($"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
             }
 
-            return new ClassCodeGenerator(classDefinition, _namespace);
+            string suffix = string.IsNullOrEmpty(_fileNameSuffix) ? "" : $".{_fileNameSuffix}";
+            string classFilename = $"{classDefinition.ClassName}{suffix}";
+            return new ClassCodeGenerator(classDefinition, classFilename, _namespace);
+        }
+
+        private ClassCodeGenerator GetCustomClassCodeGenerator(ContentType contentType)
+        {
+            var classDefinition = new ClassDefinition(contentType.System.Codename);
+            string classFilename = $"{classDefinition.ClassName}";
+            return new ClassCodeGenerator(classDefinition, classFilename, _namespace, true);
         }
     }
 }
