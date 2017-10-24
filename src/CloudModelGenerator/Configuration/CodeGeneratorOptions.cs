@@ -1,6 +1,6 @@
 ﻿namespace CloudModelGenerator
 {
-    public class CloudModelGeneratorOptions
+    public class CodeGeneratorOptions
     {
         /// <summary>
         /// Kentico Cloud Project ID
