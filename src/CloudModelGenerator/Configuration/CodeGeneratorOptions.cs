@@ -15,7 +15,7 @@
         /// <summary>
         /// Output directory for the generated files
         /// </summary>
-        public string OutputDir { get; set; }
+        public string OutputDir { get; set; } = ".";
 
         /// <summary>
         /// Optionally add suffix to the generated files
@@ -23,7 +23,7 @@
         public string FileNameSuffix { get; set; }
 
         /// <summary>
-        /// Optionally generate partial classes for user customisation
+        /// Optionally generate partial classes for user customization
         /// </summary>
         public bool GeneratePartials { get; set; } = false;
 
