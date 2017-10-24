@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using RichardSzalay.MockHttp;
 using Xunit;
+using Moq;
+using Microsoft.Extensions.Options;
 
 namespace CloudModelGenerator.Tests
 {
@@ -27,10 +29,15 @@ namespace CloudModelGenerator.Tests
                     .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures\\types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
-            const string PROJECT_ID = "975bf280-fd91-488c-994c-2f04416e5ee3";
-            const string @namespace = "CustomNamespace";
+            var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+            mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+            {
+                ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3",
+                Namespace = "CustomNamespace",
+                OutputDir = TEMP_DIR
+            });
 
-            var codeGenerator = new CodeGenerator(PROJECT_ID, TEMP_DIR, @namespace);
+            var codeGenerator = new CodeGenerator(mockOptions.Object);
             codeGenerator.Client.HttpClient = httpClient;
 
             codeGenerator.GenerateContentTypeModels();
@@ -55,11 +62,18 @@ namespace CloudModelGenerator.Tests
                     .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures\\types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
-            const string PROJECT_ID = "975bf280-fd91-488c-994c-2f04416e5ee3";
-            const string @namespace = "CustomNamespace";
             const string transformFilename = "Generated";
 
-            var codeGenerator = new CodeGenerator(PROJECT_ID, TEMP_DIR, @namespace, transformFilename);
+            var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+            mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+            {
+                ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3",
+                Namespace = "CustomNamespace",
+                OutputDir = TEMP_DIR,
+                FileNameSuffix = transformFilename
+            });
+
+            var codeGenerator = new CodeGenerator(mockOptions.Object);
             codeGenerator.Client.HttpClient = httpClient;
 
             codeGenerator.GenerateContentTypeModels();
@@ -83,11 +97,18 @@ namespace CloudModelGenerator.Tests
                     .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures\\types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
-            const string PROJECT_ID = "975bf280-fd91-488c-994c-2f04416e5ee3";
-            const string @namespace = "CustomNamespace";
             const string transformFilename = "Generated";
 
-            var codeGenerator = new CodeGenerator(PROJECT_ID, TEMP_DIR, @namespace, transformFilename, true);
+            var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+            mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+            {
+                ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3",
+                Namespace = "CustomNamespace",
+                OutputDir = TEMP_DIR,
+                FileNameSuffix = transformFilename
+            });
+
+            var codeGenerator = new CodeGenerator(mockOptions.Object);
             codeGenerator.Client.HttpClient = httpClient;
 
             codeGenerator.GenerateContentTypeModels();

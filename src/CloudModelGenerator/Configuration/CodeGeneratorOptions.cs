@@ -20,7 +20,7 @@
         /// <summary>
         /// Optionally add suffix to the generated files
         /// </summary>
-        public string FilenameSuffix { get; set; }
+        public string FileNameSuffix { get; set; }
 
         /// <summary>
         /// Optionally generate partial classes for user customisation
