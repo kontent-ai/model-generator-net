@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace CloudModelGenerator
 {
@@ -32,28 +33,28 @@ namespace CloudModelGenerator
 
             app.OnExecute(() =>
             {
-                // Check if default values are set
-                var passedSetProjectId = projectIdOption.Value() ?? (string.IsNullOrEmpty(Configuration["projectId"]) ? null : Configuration["projectId"]);
-                var passedSetNamespace = namespaceOption.Value() ?? (string.IsNullOrEmpty(Configuration["namespace"]) ? null : Configuration["namespace"]);
-                var passedSetOutputDir = outputDirOption.Value() ?? (string.IsNullOrEmpty(Configuration["outputdir"]) ? null : Configuration["outputdir"]);
-                var passedGeneratePartials = generatePartials.HasValue() || Configuration.GetValue("generatePartials", false);
-                var passedSetFileNameSuffix = fileNameSuffixOption.Value() ?? (string.IsNullOrEmpty(Configuration["filenameSuffix"]) ? null : Configuration["filenameSuffix"]);
+                var options = new CodeGeneratorOptions
+                {
+                    ProjectId = projectIdOption.Value() ?? (string.IsNullOrEmpty(Configuration["projectId"]) ? null : Configuration["projectId"]),
+                    OutputDir = outputDirOption.Value() ?? (string.IsNullOrEmpty(Configuration["outputdir"]) ? "." : Configuration["outputdir"]),
+                    Namespace = namespaceOption.Value() ?? (string.IsNullOrEmpty(Configuration["namespace"]) ? null : Configuration["namespace"]),
+                    FileNameSuffix = fileNameSuffixOption.Value() ?? (string.IsNullOrEmpty(Configuration["filenameSuffix"]) ? null : Configuration["filenameSuffix"]),
+                    GeneratePartials = generatePartials.HasValue() || Configuration.GetValue("generatePartials", false)
+                };
+
                 var passedSetIncludeTypeProvider = includeTypeProvider.HasValue() || Configuration.GetValue("withTypeProvider", true);
                 var passedSetStructuredModel = structuredModel.HasValue() || Configuration.GetValue("structuredModel", false);
 
                 // No projectId was passed as an arg or set in the appSettings.config
-                if (passedSetProjectId == null)
+                if (options.ProjectId == null)
                 {
                     app.Error.WriteLine("Provide a Project ID!");
                     app.ShowHelp();
 
                     return 1;
                 }
-
-                const string CURRENT_DIRECTORY = ".";
-                string outputDir = passedSetOutputDir ?? CURRENT_DIRECTORY;
-
-                var codeGenerator = new CodeGenerator(passedSetProjectId, outputDir, passedSetNamespace, passedSetFileNameSuffix, passedGeneratePartials);
+                
+                var codeGenerator = new CodeGenerator(Options.Create(options));
 
                 codeGenerator.GenerateContentTypeModels(passedSetStructuredModel);
 
