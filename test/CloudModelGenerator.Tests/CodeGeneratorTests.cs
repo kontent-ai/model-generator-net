@@ -105,7 +105,8 @@ namespace CloudModelGenerator.Tests
                 ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3",
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
-                FileNameSuffix = transformFilename
+                FileNameSuffix = transformFilename,
+                GeneratePartials = true
             });
 
             var codeGenerator = new CodeGenerator(mockOptions.Object);
