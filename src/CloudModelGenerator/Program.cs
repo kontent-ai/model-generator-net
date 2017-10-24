@@ -11,12 +11,6 @@ namespace CloudModelGenerator
 
         static int Main(string[] args)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Environment.CurrentDirectory)
-                .AddJsonFile("appSettings.json", true);
-
-            Configuration = builder.Build();
-
             var app = new CommandLineApplication
             {
                 Name = "content-types-generator",
@@ -33,6 +27,14 @@ namespace CloudModelGenerator
 
             app.OnExecute(() =>
             {
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(Environment.CurrentDirectory)
+                    .AddJsonFile("appSettings.json", true)
+                    .Add(new CommandLineOptionsProvider(app.Options));
+
+                Configuration = builder.Build();
+
+                //TODO: this will be retrieved from Configuration (using DI or something)
                 var options = new CodeGeneratorOptions
                 {
                     ProjectId = projectIdOption.Value() ?? (string.IsNullOrEmpty(Configuration["projectId"]) ? null : Configuration["projectId"]),
@@ -42,6 +44,7 @@ namespace CloudModelGenerator
                     GeneratePartials = generatePartials.HasValue() || Configuration.GetValue("generatePartials", false)
                 };
 
+                //TODO: this should be part of CodeGeneratorOptions as well
                 var passedSetIncludeTypeProvider = includeTypeProvider.HasValue() || Configuration.GetValue("withTypeProvider", true);
                 var passedSetStructuredModel = structuredModel.HasValue() || Configuration.GetValue("structuredModel", false);
 
