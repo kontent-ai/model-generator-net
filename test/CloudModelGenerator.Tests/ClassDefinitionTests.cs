@@ -20,7 +20,7 @@ namespace CloudModelGenerator.Tests
             var classDefinition = new ClassDefinition("Class name");
             classDefinition.AddProperty(Property.FromContentType("element_1", "text"));
 
-            Assert.Equal(1, classDefinition.Properties.Count());
+            Assert.Single(classDefinition.Properties);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace CloudModelGenerator.Tests
             definition.AddProperty(Property.FromContentType("element", "text"));
 
             Assert.Throws<InvalidOperationException>(() => definition.AddProperty(Property.FromContentType("element", "text")));
-            Assert.Equal(1, definition.Properties.Count);
+            Assert.Single(definition.Properties);
         }
     }
 }

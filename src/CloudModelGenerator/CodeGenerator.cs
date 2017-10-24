@@ -38,7 +38,7 @@ namespace CloudModelGenerator
             // Resolve relative path to full path
             _options.OutputDir = Path.GetFullPath(_options.OutputDir).TrimEnd('\\') + "\\";
 
-            // initialise DeliveryClient
+            // Initialize DeliveryClient
             Client = new DeliveryClient(_options.ProjectId);
         }
 

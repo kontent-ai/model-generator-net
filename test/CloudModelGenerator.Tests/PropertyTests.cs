@@ -20,8 +20,8 @@ namespace CloudModelGenerator.Tests
         {
             var element = Property.FromContentType(codename, contentType);
 
-            Assert.Equal("ElementCodename", element.Identifier);
-            Assert.Equal("string", element.TypeName);
+            Assert.Equal(expectedCodename, element.Identifier);
+            Assert.Equal(expectedTypeName, element.TypeName);
         }
 
         [Fact]
