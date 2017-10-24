@@ -21,7 +21,7 @@ namespace CloudModelGenerator
             app.Option("-n|--namespace|--Namespace", "Namespace name of the generated classes.", CommandOptionType.SingleValue);
             app.Option("-o|--outputdir|--OutputDir", "Output directory for the generated files.", CommandOptionType.SingleValue);
             app.Option("-sf|--filenamesuffix|--FileNameSuffix", "Optionally add a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).", CommandOptionType.SingleValue);
-            app.Option("-gp|--generatepartials|--GeneratePartials", "Generate partial classes for customisation (if this option is set filename suffix will default to Generated).", CommandOptionType.NoValue);
+            app.Option("-gp|--generatepartials|--GeneratePartials", "Generate partial classes for customization (if this option is set filename suffix will default to Generated).", CommandOptionType.NoValue);
             app.Option("-t|--withtypeprovider|--WithTypeProvider", "Indicates whether the CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
             app.Option("-s|--structuredmodel|--StructuredModel", "Indicates whether the classes should be generated with types that represent structured data model.", CommandOptionType.NoValue);
 

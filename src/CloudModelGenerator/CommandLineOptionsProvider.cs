@@ -5,29 +5,37 @@ using Microsoft.Extensions.Configuration;
 
 namespace CloudModelGenerator
 {
+    /// <summary>
+    /// Configuration source for Microsoft.Extensions.CommandLineUtils.Option
+    /// </summary>
     public class CommandLineOptionsProvider : ConfigurationProvider, IConfigurationSource
     {
         public CommandLineOptionsProvider(List<CommandOption> appOptions)
         {
             foreach (var commandOption in appOptions)
             {
-                string value = null;
                 switch (commandOption.OptionType)
                 {
                     case CommandOptionType.MultipleValue:
                     case CommandOptionType.SingleValue:
-                        value = commandOption.Value();
+                        string value = commandOption.Value();
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            Data.Add(commandOption.LongName, value);
+                        }
                         break;
 
                     case CommandOptionType.NoValue:
-                        value = commandOption.HasValue().ToString();
+                        if (commandOption.HasValue())
+                        {
+                            Data.Add(commandOption.LongName, true.ToString());
+                        }
                         break;
 
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
 
-                Data.Add(commandOption.LongName, value);
             }
         }
 
