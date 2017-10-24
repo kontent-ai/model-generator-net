@@ -14,18 +14,6 @@ namespace CloudModelGenerator
 
         public DeliveryClient Client { get; }
 
-        [Obsolete]
-        public CodeGenerator(string projectId, string outputDir, string @namespace = null, string fileNameSuffix = null, bool generatePartials = false)
-            : this(Options.Create<CodeGeneratorOptions>(new CodeGeneratorOptions
-            {
-                ProjectId = projectId,
-                OutputDir = outputDir,
-                Namespace = @namespace,
-                FileNameSuffix = fileNameSuffix,
-                GeneratePartials = generatePartials
-            }))
-        { }
-
         public CodeGenerator(IOptions<CodeGeneratorOptions> options)
         {
             _options = options.Value;
