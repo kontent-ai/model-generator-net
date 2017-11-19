@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 
 namespace CloudModelGenerator

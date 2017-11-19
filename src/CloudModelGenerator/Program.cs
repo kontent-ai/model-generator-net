@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Extensions.CommandLineUtils;
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 

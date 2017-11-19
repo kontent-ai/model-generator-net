@@ -8,9 +8,9 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ILLink.Tasks" Version="0.1.4-preview-981901" />
-    <PackageReference Include="KenticoCloud.Delivery" Version="4.10.0" />
+    <PackageReference Include="KenticoCloud.Delivery" Version="4.12.0" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="2.4.0" />
-    <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
