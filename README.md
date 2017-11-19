@@ -82,6 +82,8 @@ Check out the [contributing](https://github.com/Kentico/cloud-generators-net/blo
 We would like to express our thanks to the following people who contributed and made the project possible:
 
 - [Dražen Janjiček](https://github.com/djanjicek) - [EXLRT](http://www.exlrt.com/) 
+- [Kashif Jamal Soofi](https://github.com/kashifsoofi)
+- [Casey Brown](https://github.com/MajorGrits)
 
 Would you like to become a hero too? Pick an [issue](https://github.com/Kentico/cloud-generators-net/issues) and send us a pull request!
 
