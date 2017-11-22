@@ -43,6 +43,11 @@ namespace CloudModelGenerator
 
         public string GenerateCode()
         {
+            if (!_contentTypes.Any())
+            {
+                return null;
+            }
+
             string switchCases = _contentTypes
                 .Select((c) => $"case \"{c.Key}\": return typeof({c.Value});")
                 .Aggregate((p, n) => p + Environment.NewLine + n);
