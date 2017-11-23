@@ -58,9 +58,16 @@ namespace CloudModelGenerator
                 typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
             }
 
-            SaveToFile(typeProviderCodeGenerator.GenerateCode(), TypeProviderCodeGenerator.CLASS_NAME);
-
-            Console.WriteLine($"{TypeProviderCodeGenerator.CLASS_NAME} class was successfully created.");
+            var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
+            if (!string.IsNullOrEmpty(typeProviderCode))
+            {
+                SaveToFile(typeProviderCode, TypeProviderCodeGenerator.CLASS_NAME);
+                Console.WriteLine($"{TypeProviderCodeGenerator.CLASS_NAME} class was successfully created.");
+            }
+            else
+            {
+                Console.WriteLine($"{TypeProviderCodeGenerator.CLASS_NAME} class was not created.");
+            }
         }
 
         private void SaveToFile(string content, string fileName, bool overwriteExisting = true)

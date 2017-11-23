@@ -12,15 +12,18 @@ namespace CloudModelGenerator
     {
         public const string CLASS_NAME = "CustomTypeProvider";
 
-        // Codename -> ClassName dictionary
+        /// <summary>
+        /// Codename -> ClassName dictionary
+        /// </summary>
         private readonly Dictionary<string, string> _contentTypes = new Dictionary<string, string>();
+
         private readonly string _namespace;
 
         public TypeProviderCodeGenerator(string @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE)
         {
-            if (@namespace == String.Empty)
+            if (string.IsNullOrEmpty(@namespace))
             {
-                throw new ArgumentException("Namespace can't be empty string", nameof(@namespace));
+                @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE;
             }
 
             _namespace = @namespace ?? ClassCodeGenerator.DEFAULT_NAMESPACE;
@@ -43,6 +46,11 @@ namespace CloudModelGenerator
 
         public string GenerateCode()
         {
+            if (!_contentTypes.Any())
+            {
+                return null;
+            }
+
             string switchCases = _contentTypes
                 .Select((c) => $"case \"{c.Key}\": return typeof({c.Value});")
                 .Aggregate((p, n) => p + Environment.NewLine + n);
