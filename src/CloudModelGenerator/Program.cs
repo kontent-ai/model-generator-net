@@ -40,7 +40,7 @@ namespace CloudModelGenerator
                 new ConfigureFromConfigurationOptions<CodeGeneratorOptions>(Configuration).Configure(options);
 
                 // No projectId was passed as an arg or set in the appSettings.config
-                if (options.ProjectId == null)
+                if (string.IsNullOrEmpty(options.ProjectId))
                 {
                     app.Error.WriteLine("Provide a Project ID!");
                     app.ShowHelp();
