@@ -1,7 +1,9 @@
-﻿using System;
-using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using System.Linq;
+using System.CommandLine;
+using System;
+using System.Collections.Generic;
 
 namespace CloudModelGenerator
 {
@@ -9,70 +11,80 @@ namespace CloudModelGenerator
     {
         static IConfigurationRoot Configuration { get; set; }
 
+        const string HelpOption = "help";
+
         static int Main(string[] args)
         {
-            var app = new CommandLineApplication
-            {
-                Name = "content-types-generator",
-                Description = "Generates Kentico Cloud Content Types as CSharp classes.",
-            };
-
-            app.Option("-p|--projectid", "Kentico Cloud Project ID.", CommandOptionType.SingleValue);
-            app.Option("-n|--namespace", "Namespace name of the generated classes.", CommandOptionType.SingleValue);
-            app.Option("-o|--outputdir", "Output directory for the generated files.", CommandOptionType.SingleValue);
-            app.Option("-sf|--filenamesuffix", "Optionally add a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).", CommandOptionType.SingleValue);
-            app.Option("-gp|--generatepartials", "Generate partial classes for customization (if this option is set filename suffix will default to Generated).", CommandOptionType.NoValue);
-            app.Option("-t|--withtypeprovider", "Indicates whether the CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
-            app.Option("-s|--structuredmodel", "Indicates whether the classes should be generated with types that represent structured data model.", CommandOptionType.NoValue);
-
-            app.OnExecute(() =>
-            {
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(Environment.CurrentDirectory)
-                    .AddJsonFile("appSettings.json", true)
-                    .Add(new CommandLineOptionsProvider(app.Options));
-
-                Configuration = builder.Build();
-
-                CodeGeneratorOptions options = new CodeGeneratorOptions();
-
-                // Load the options from the configuration sources
-                new ConfigureFromConfigurationOptions<CodeGeneratorOptions>(Configuration).Configure(options);
-
-                // No projectId was passed as an arg or set in the appSettings.config
-                if (string.IsNullOrEmpty(options.ProjectId))
-                {
-                    app.Error.WriteLine("Provide a Project ID!");
-                    app.ShowHelp();
-
-                    return 1;
-                }
-
-                var codeGenerator = new CodeGenerator(Options.Create(options));
-
-                codeGenerator.GenerateContentTypeModels(options.StructuredModel);
-
-                if (options.WithTypeProvider)
-                {
-                    codeGenerator.GenerateTypeProvider();
-                }
-
-                return 0;
-            });
-
-            app.HelpOption("-? | -h | --help");
-
-            try
-            {
-                return app.Execute(args);
-            }
-            catch (CommandParsingException e)
+            var syntax = Parse(args);
+            
+            var unexpectedArgs = new List<string>(syntax.RemainingArguments);
+            if (unexpectedArgs.Count>0)
             {
                 Console.WriteLine("Invalid arguments!");
-                Console.WriteLine(e.Message);
-                app.ShowHelp();
+                foreach (var unexpectedArgument in unexpectedArgs)
+                {
+                    Console.WriteLine($"Unrecognized option '{unexpectedArgument}'");
+                }
+                Console.WriteLine(syntax.GetHelpText());
+
                 return 1;
             }
+
+            return Execute(syntax);
+        }
+
+        static ArgumentSyntax Parse(string[] args)
+        {
+            var result = ArgumentSyntax.Parse(args, syntax =>{
+
+                syntax.ErrorOnUnexpectedArguments = false;
+
+                string nullStr = null;
+                syntax.DefineOption("p|projectid", ref nullStr, "Kentico Cloud Project ID.");
+                syntax.DefineOption("n|namespace", ref nullStr, "-n|--namespace");
+                syntax.DefineOption("o|outputdir", ref CodeGeneratorOptions.DefaultOutputDir, "Output directory for the generated files.");
+                syntax.DefineOption("f|filenamesuffix", ref nullStr, "Optionally add a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).");
+                syntax.DefineOption("g|generatepartials", ref CodeGeneratorOptions.DefaultGeneratePartials, "Generate partial classes for customization (if this option is set filename suffix will default to Generated).");
+                syntax.DefineOption("t|withtypeprovider", ref CodeGeneratorOptions.DefaultWithTypeProvider, "Indicates whether the CustomTypeProvider class should be generated.");
+                syntax.DefineOption("s|structuredmodel", ref CodeGeneratorOptions.DefaultStructuredModel, "Indicates whether the classes should be generated with types that represent structured data model.");
+
+                syntax.ApplicationName = "content-types-generator";
+            });
+            return result;
+        }
+
+        static int Execute(ArgumentSyntax argSyntax)
+        {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile("appSettings.json", true)
+                .Add(new CommandLineOptionsProvider(argSyntax.GetOptions()));
+
+            Configuration = builder.Build();
+
+            CodeGeneratorOptions options = new CodeGeneratorOptions();
+
+            // Load the options from the configuration sources
+            new ConfigureFromConfigurationOptions<CodeGeneratorOptions>(Configuration).Configure(options);
+
+            // No projectId was passed as an arg or set in the appSettings.config
+            if (string.IsNullOrEmpty(options.ProjectId))
+            {
+                Console.Error.WriteLine("Provide a Project ID!");
+                Console.WriteLine(argSyntax.GetHelpText());
+                return 1;
+            }
+
+            var codeGenerator = new CodeGenerator(Options.Create(options));
+
+            codeGenerator.GenerateContentTypeModels(options.StructuredModel);
+
+            if (options.WithTypeProvider)
+            {
+                codeGenerator.GenerateTypeProvider();
+            }
+
+            return 0;
         }
     }
 }
