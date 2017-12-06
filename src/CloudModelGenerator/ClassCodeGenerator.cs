@@ -30,24 +30,53 @@ namespace CloudModelGenerator
             OverwriteExisting = !CustomPartial;
         }
 
-        public string GenerateCode()
+        public string GenerateCode(bool cmApi = false)
         {
+            var cmApiUsings = new[]
+            {
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("Newtonsoft.Json")),
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("KenticoCloud.ContentManagement"))
+            };
+
+            var deliveryUsings = new[]
+            {
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("KenticoCloud.Delivery"))
+            };
+
             var usings = new[]
             {
                 SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("System")),
                 SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("System.Collections.Generic")),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("KenticoCloud.Delivery"))
-            };
+            }.Concat(cmApi ? cmApiUsings : deliveryUsings).ToArray();
 
-            var properties = ClassDefinition.Properties.Select(element =>
-                SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                    .AddAccessorListAccessors(
-                        SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                            .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
-                        SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                            .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
-                    )
+            var properties = ClassDefinition.Properties.Select((element, i) =>
+                {
+                    var property = SyntaxFactory
+                        .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
+                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                        .AddAccessorListAccessors(
+                            SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
+                            SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
+                        );
+                    if (cmApi && ClassDefinition.PropertyCodenameConstants.Count > i)
+                    {
+                        property = property.AddAttributeLists(
+                                SyntaxFactory.AttributeList(
+                                    SyntaxFactory.SingletonSeparatedList(
+                                        SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("JsonProperty"))
+                                            .WithArgumentList(
+                                                SyntaxFactory.AttributeArgumentList(
+                                                    SyntaxFactory.SingletonSeparatedList(
+                                                        SyntaxFactory.AttributeArgument(
+                                                            SyntaxFactory.LiteralExpression(
+                                                                SyntaxKind.StringLiteralExpression,
+                                                                SyntaxFactory.Literal(ClassDefinition
+                                                                    .PropertyCodenameConstants[i].Codename)))))))));
+                    }
+                    return property;
+                }
             ).ToArray();
 
             var propertyCodenameConstants = ClassDefinition.PropertyCodenameConstants.Select(element =>
@@ -71,7 +100,7 @@ namespace CloudModelGenerator
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
 
-            if (!CustomPartial)
+            if (!CustomPartial && !cmApi)
             {
                 var classCodenameConstant = SyntaxFactory.FieldDeclaration(
                                 SyntaxFactory.VariableDeclaration(
@@ -91,8 +120,12 @@ namespace CloudModelGenerator
                 classDeclaration = classDeclaration.AddMembers(classCodenameConstant);
             }
 
-            classDeclaration = classDeclaration.AddMembers(propertyCodenameConstants)
-                .AddMembers(properties);
+            if (!cmApi)
+            {
+                classDeclaration = classDeclaration.AddMembers(propertyCodenameConstants);
+            }
+
+            classDeclaration = classDeclaration.AddMembers(properties);
 
             var description = SyntaxFactory.Comment(
 @"// This code was generated by a cloud-generators-net tool 

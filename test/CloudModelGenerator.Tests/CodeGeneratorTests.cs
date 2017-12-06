@@ -21,8 +21,10 @@ namespace CloudModelGenerator.Tests
             Directory.CreateDirectory(TEMP_DIR);
         }
 
-        [Fact]
-        public void IntegrationTest()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void IntegrationTest(bool cmApi)
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kenticocloud.com/*")
@@ -34,7 +36,8 @@ namespace CloudModelGenerator.Tests
             {
                 ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3",
                 Namespace = "CustomNamespace",
-                OutputDir = TEMP_DIR
+                OutputDir = TEMP_DIR,
+                ContentManagementApi = cmApi
             });
 
             var codeGenerator = new CodeGenerator(mockOptions.Object);
@@ -54,8 +57,10 @@ namespace CloudModelGenerator.Tests
             Directory.Delete(TEMP_DIR, true);
         }
 
-        [Fact]
-        public void IntegrationTestWithGeneratedSuffix()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void IntegrationTestWithGeneratedSuffix(bool cmApi)
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kenticocloud.com/*")
@@ -70,7 +75,8 @@ namespace CloudModelGenerator.Tests
                 ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3",
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
-                FileNameSuffix = transformFilename
+                FileNameSuffix = transformFilename,
+                ContentManagementApi = cmApi
             });
 
             var codeGenerator = new CodeGenerator(mockOptions.Object);
@@ -89,8 +95,10 @@ namespace CloudModelGenerator.Tests
             Directory.Delete(TEMP_DIR, true);
         }
 
-        [Fact]
-        public void IntegrationTestWithGeneratePartials()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void IntegrationTestWithGeneratePartials(bool cmApi)
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kenticocloud.com/*")
@@ -106,7 +114,8 @@ namespace CloudModelGenerator.Tests
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
                 FileNameSuffix = transformFilename,
-                GeneratePartials = true
+                GeneratePartials = true,
+                ContentManagementApi = cmApi
             });
 
             var codeGenerator = new CodeGenerator(mockOptions.Object);

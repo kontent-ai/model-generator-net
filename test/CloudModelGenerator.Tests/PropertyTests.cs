@@ -15,10 +15,12 @@ namespace CloudModelGenerator.Tests
         }
 
         [Theory]
-        [InlineData("element_codename", "text", "ElementCodename", "string")]
-        public void FromContentType(string codename, string contentType, string expectedCodename, string expectedTypeName)
+        [InlineData("element_codename", "text", false, "ElementCodename", "string")]
+        [InlineData("element_codename", "text", true, "ElementCodename", "string")]
+        [InlineData("element_codename", "asset", true, "ElementCodename", "IEnumerable<AssetIdentifier>")]
+        public void FromContentType(string codename, string contentType, bool cmApi, string expectedCodename, string expectedTypeName)
         {
-            var element = Property.FromContentType(codename, contentType);
+            var element = Property.FromContentType(codename, contentType, cmApi);
 
             Assert.Equal(expectedCodename, element.Identifier);
             Assert.Equal(expectedTypeName, element.TypeName);
