@@ -36,5 +36,11 @@
         /// Indicates whether the classes should be generated with types that represent structured data model
         /// </summary>
         public bool StructuredModel { get; set; } = false;
+
+
+        /// <summary>
+        /// Indicates whether the classes should be generated for CM API SDK
+        /// </summary>
+        public bool ContentManagementApi { get; set; } = false;
     }
 }

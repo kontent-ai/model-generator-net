@@ -24,6 +24,7 @@ namespace CloudModelGenerator
             app.Option("-gp|--generatepartials", "Generate partial classes for customization (if this option is set filename suffix will default to Generated).", CommandOptionType.NoValue);
             app.Option("-t|--withtypeprovider", "Indicates whether the CustomTypeProvider class should be generated.", CommandOptionType.NoValue);
             app.Option("-s|--structuredmodel", "Indicates whether the classes should be generated with types that represent structured data model.", CommandOptionType.NoValue);
+            app.Option("-cma|--contentmanagementapi", "Indicates whether the classes should be generated for CM API SDK instead.", CommandOptionType.NoValue);
 
             app.OnExecute(() =>
             {
@@ -52,7 +53,7 @@ namespace CloudModelGenerator
 
                 codeGenerator.GenerateContentTypeModels(options.StructuredModel);
 
-                if (options.WithTypeProvider)
+                if (!options.ContentManagementApi && options.WithTypeProvider)
                 {
                     codeGenerator.GenerateTypeProvider();
                 }
