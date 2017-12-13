@@ -3,7 +3,7 @@
 
 # Kentico Cloud model generator utility for .NET
 
-This utility generates strongly-typed models based on Content Types in a Kentico Cloud project. The models are supposed to be used together with the [Kentico Cloud Delivery SDK for .NET](https://github.com/Kentico/delivery-sdk-net). Please read the [documentation](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) to see all benefits of this approach.
+This utility generates strongly-typed models based on Content Types in a Kentico Cloud project. The models are supposed to be used together with the [Kentico Cloud Delivery SDK for .NET](https://github.com/Kentico/delivery-sdk-net) or [Kentico Cloud Content Management SDK for .NET](https://github.com/Kentico/content-management-sdk-net). Please read the [documentation](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) to see all benefits of this approach.
 
 
 ## Get the tool
@@ -23,7 +23,7 @@ Note: The application is [self-contained](https://www.hanselman.com/blog/Selfcon
 
 See the [list of all RIDs](https://docs.microsoft.com/en-us/dotnet/articles/core/rid-catalog).
 
-## How to use
+## How to use for Delivery SDK
 
 ### Windows
 
@@ -50,7 +50,7 @@ dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outpu
 These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
 
 
-## Example output
+### Example output
 
 ```csharp
 using System;
@@ -74,6 +74,59 @@ namespace KenticoCloudModels
     }
 }
 ```
+
+## How to use for Content Management SDK
+
+### Windows
+
+```
+CloudModelGenerator.exe --projectid "<projectid>" --contentmanagementapi [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
+```
+
+### Linux, Mac OS and other platforms
+```
+dotnet run --projectid "<projectid>" --contentmanagementapi [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
+```
+
+### Parameters
+
+| Parameter             | Required  | Default value  | Description |
+| --------------------- |:---------:|:--------------:|:-----------:|
+| `--projectid` | True  | `null` | A GUID that can be found in [Kentico Cloud](https://app.kenticocloud.com) -> API keys -> Project ID |
+| `--contentmanagementapi` | True  | `false` | Indicates that models should be generated for  [Content Management SDK](https://github.com/Kentico/content-management-sdk-net) |
+| `--namespace` | False | `KenticoCloudModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
+| `--outputdir` | False | `\.` | An output folder path |
+| `--filenamesuffix` | False | `null` | Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs) |
+
+These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
+
+
+### Example output
+
+```csharp
+using System;
+using System.Collections.Generic;
+using KenticoCloud.ContentManagement.Models.Assets;
+using KenticoCloud.ContentManagement.Models.Items;
+using Newtonsoft.Json;
+
+namespace KenticoCloudModels
+{
+    public partial class CompleteContentType
+    {
+        public string Text { get; set; }
+        public string RichText { get; set; }
+        public decimal? Number { get; set; }
+        public IEnumerable<MultipleChoiceOptionIdentifier> MultipleChoice { get; set; }
+        public DateTime? DateTime { get; set; }
+        public IEnumerable<AssetIdentifier> Asset { get; set; }
+        public IEnumerable<ContentItemIdentifier> ModularContent { get; set; }
+        public IEnumerable<TaxonomyTermIdentifier> Taxonomy { get; set; }
+        public string UrlSlug { get; set; }
+    }
+}
+```
+
 
 ## Feedback & Contributing
 Check out the [contributing](https://github.com/Kentico/cloud-generators-net/blob/master/CONTRIBUTING.md) page to see the best places to file issues, start discussions and begin contributing.
