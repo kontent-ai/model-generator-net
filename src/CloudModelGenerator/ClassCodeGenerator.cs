@@ -35,7 +35,8 @@ namespace CloudModelGenerator
             var cmApiUsings = new[]
             {
                 SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("Newtonsoft.Json")),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("KenticoCloud.ContentManagement.Models.Items"))
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("KenticoCloud.ContentManagement.Models.Items")),
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("KenticoCloud.ContentManagement.Models.Assets"))
             };
 
             var deliveryUsings = new[]
