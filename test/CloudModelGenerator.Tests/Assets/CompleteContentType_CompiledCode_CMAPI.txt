@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using KenticoCloud.ContentManagement.Models.Items;
+using KenticoCloud.ContentManagement.Models.Assets;
 
 namespace KenticoCloudModels
 {
