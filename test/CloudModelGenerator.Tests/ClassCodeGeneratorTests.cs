@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using KenticoCloud.Delivery;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -51,6 +52,34 @@ namespace CloudModelGenerator.Tests
 
             string executingPath = AppContext.BaseDirectory;
             string expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
+
+            // Ignore white space
+            expectedCode = Regex.Replace(expectedCode, @"\s+", "");
+            compiledCode = Regex.Replace(compiledCode, @"\s+", "");
+
+            Assert.Equal(expectedCode, compiledCode);
+        }
+
+        [Fact]
+        public void Build_CreatesClassWithCompleteContentType_CMAPI()
+        {
+            var classDefinition = new ClassDefinition("Complete content type");
+            classDefinition.AddProperty(Property.FromContentType("text", "text", true));
+            classDefinition.AddProperty(Property.FromContentType("rich_text", "rich_text", true));
+            classDefinition.AddProperty(Property.FromContentType("number", "number", true));
+            classDefinition.AddProperty(Property.FromContentType("multiple_choice", "multiple_choice", true));
+            classDefinition.AddProperty(Property.FromContentType("date_time", "date_time", true));
+            classDefinition.AddProperty(Property.FromContentType("asset", "asset", true));
+            classDefinition.AddProperty(Property.FromContentType("modular_content", "modular_content", true));
+            classDefinition.AddProperty(Property.FromContentType("taxonomy", "taxonomy", true));
+            classDefinition.AddProperty(Property.FromContentType("url_slug", "url_slug", true));
+
+            var classCodeGenerator = new ClassCodeGenerator(classDefinition, classDefinition.ClassName);
+
+            var compiledCode = classCodeGenerator.GenerateCode(true);
+
+            var executingPath = AppContext.BaseDirectory;
+            var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_CMAPI.txt");
 
             // Ignore white space
             expectedCode = Regex.Replace(expectedCode, @"\s+", "");

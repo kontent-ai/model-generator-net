@@ -122,11 +122,11 @@ namespace CloudModelGenerator
                 try
                 {
                     var elementType = element.Type;
-                    if (structuredModel && Property.IsContentTypeSupported(elementType + Property.STRUCTURED_SUFFIX))
+                    if (structuredModel && Property.IsContentTypeSupported(elementType + Property.STRUCTURED_SUFFIX, _options.ContentManagementApi))
                     {
                         elementType += Property.STRUCTURED_SUFFIX;
                     }
-                    var property = Property.FromContentType(element.Codename, elementType);
+                    var property = Property.FromContentType(element.Codename, elementType, _options.ContentManagementApi);
                     classDefinition.AddPropertyCodenameConstant(element);
                     classDefinition.AddProperty(property);
                 }
@@ -144,13 +144,16 @@ namespace CloudModelGenerator
                 }
             }
 
-            try
+            if (!_options.ContentManagementApi)
             {
-                classDefinition.AddSystemProperty();
-            }
-            catch (InvalidOperationException)
-            {
-                Console.WriteLine($"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
+                try
+                {
+                    classDefinition.AddSystemProperty();
+                }
+                catch (InvalidOperationException)
+                {
+                    Console.WriteLine($"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
+                }
             }
 
             string suffix = string.IsNullOrEmpty(_options.FileNameSuffix) ? "" : $".{_options.FileNameSuffix}";

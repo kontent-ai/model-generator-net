@@ -14,7 +14,7 @@ namespace CloudModelGenerator
         /// </summary>
         public string TypeName { get; private set; }
 
-        private static Dictionary<string, string> contentTypeToTypeName = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> DeliverTypes = new Dictionary<string, string>
         {
             { "text", "string" },
             { "rich_text", "string" },
@@ -28,29 +28,41 @@ namespace CloudModelGenerator
             { "url_slug", "string" }
         };
 
+        private static readonly Dictionary<string, string> ContentManagementTypes = new Dictionary<string, string>
+        {
+            { "text", "string" },
+            { "rich_text", "string" },
+            { "number", "decimal?" },
+            { "multiple_choice", "IEnumerable<MultipleChoiceOptionIdentifier>" },
+            { "date_time", "DateTime?" },
+            { "asset", "IEnumerable<AssetIdentifier>" },
+            { "modular_content", "IEnumerable<ContentItemIdentifier>" },
+            { "taxonomy", "IEnumerable<TaxonomyTermIdentifier>" },
+            { "url_slug", "string" }
+        };
+
+        private static Dictionary<string, string> contentTypeToTypeName(bool cmApi) 
+            => cmApi ? ContentManagementTypes : DeliverTypes;
+
         public Property(string codename, string typeName)
         {
             Identifier = TextHelpers.GetValidPascalCaseIdentifierName(codename);
             TypeName = typeName;
         }
 
-        public static bool IsContentTypeSupported(string contentType)
+        public static bool IsContentTypeSupported(string contentType, bool cmApi = false)
         {
-            return contentTypeToTypeName.ContainsKey(contentType);
+            return contentTypeToTypeName(cmApi).ContainsKey(contentType);
         }
 
-        public static Property FromContentType(string codename, string contentType)
+        public static Property FromContentType(string codename, string contentType, bool cmApi = false)
         {
-            if (!IsContentTypeSupported(contentType))
+            if (!IsContentTypeSupported(contentType, cmApi))
             {
                 throw new ArgumentException($"Unknown Content Type {contentType}", nameof(contentType));
             }
 
-            return new Property(codename, null)
-            {
-                Identifier = TextHelpers.GetValidPascalCaseIdentifierName(codename),
-                TypeName = contentTypeToTypeName[contentType],
-            };
+            return new Property(codename, contentTypeToTypeName(cmApi)[contentType]);
         }
     }
 }
