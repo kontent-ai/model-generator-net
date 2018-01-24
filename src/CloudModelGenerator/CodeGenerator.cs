@@ -36,13 +36,19 @@ namespace CloudModelGenerator
             Directory.CreateDirectory(_options.OutputDir);
 
             var classCodeGenerators = GetClassCodeGenerators(structuredModel);
-
-            foreach (var codeGenerator in classCodeGenerators)
+            if (classCodeGenerators.Count() > 0)
             {
-                SaveToFile(codeGenerator.GenerateCode(_options.ContentManagementApi), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
-            }
+                foreach (var codeGenerator in classCodeGenerators)
+                {
+                    SaveToFile(codeGenerator.GenerateCode(), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
+                }
 
-            Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
+                Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
+            }
+            else
+            {
+                Console.WriteLine($"No content type available for the project ({_options.ProjectId}). Please make sure you've enabled the delivery API.");
+            }
         }
 
         public void GenerateTypeProvider()
@@ -51,22 +57,25 @@ namespace CloudModelGenerator
             Directory.CreateDirectory(_options.OutputDir);
 
             var classCodeGenerators = GetClassCodeGenerators();
-            var typeProviderCodeGenerator = new TypeProviderCodeGenerator(_options.Namespace);
-
-            foreach (var codeGenerator in classCodeGenerators)
+            if (classCodeGenerators.Count() > 0)
             {
-                typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
-            }
+                var typeProviderCodeGenerator = new TypeProviderCodeGenerator(_options.Namespace);
 
-            var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
-            if (!string.IsNullOrEmpty(typeProviderCode))
-            {
-                SaveToFile(typeProviderCode, TypeProviderCodeGenerator.CLASS_NAME);
-                Console.WriteLine($"{TypeProviderCodeGenerator.CLASS_NAME} class was successfully created.");
+                foreach (var codeGenerator in classCodeGenerators)
+                {
+                    typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
+                }
+
+                var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
+                if (!string.IsNullOrEmpty(typeProviderCode))
+                {
+                    SaveToFile(typeProviderCode, TypeProviderCodeGenerator.CLASS_NAME);
+                    Console.WriteLine($"{TypeProviderCodeGenerator.CLASS_NAME} class was successfully created.");
+                }
             }
             else
             {
-                Console.WriteLine($"{TypeProviderCodeGenerator.CLASS_NAME} class was not created.");
+                Console.WriteLine($"No content type available for the project ({_options.ProjectId}). Please make sure you've enabled the delivery API.");
             }
         }
 
