@@ -14,8 +14,13 @@ namespace CloudModelGenerator
         {
             foreach (var commandOption in appOptions)
             {
-                if (commandOption.Value == null) continue;
+                if (commandOption.Value == null)
+                {
+                    continue;
+                }
+
                 string value = commandOption.Value.ToString();
+
                 if (!string.IsNullOrEmpty(value))
                 {
                     Data.Add(commandOption.Names.Last(), value);

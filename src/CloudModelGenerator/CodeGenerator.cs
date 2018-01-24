@@ -36,18 +36,19 @@ namespace CloudModelGenerator
             Directory.CreateDirectory(_options.OutputDir);
 
             var classCodeGenerators = GetClassCodeGenerators(structuredModel);
+
             if (classCodeGenerators.Count() > 0)
             {
                 foreach (var codeGenerator in classCodeGenerators)
                 {
-                    SaveToFile(codeGenerator.GenerateCode(), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
+                    SaveToFile(codeGenerator.GenerateCode(_options.ContentManagementApi), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
                 }
 
                 Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
             }
             else
             {
-                Console.WriteLine($"No content type available for the project ({_options.ProjectId}). Please make sure you've enabled the delivery API.");
+                Console.WriteLine($@"No content type available for the project ({_options.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kenticocloud.com/.");
             }
         }
 
@@ -57,6 +58,7 @@ namespace CloudModelGenerator
             Directory.CreateDirectory(_options.OutputDir);
 
             var classCodeGenerators = GetClassCodeGenerators();
+
             if (classCodeGenerators.Count() > 0)
             {
                 var typeProviderCodeGenerator = new TypeProviderCodeGenerator(_options.Namespace);
@@ -75,7 +77,7 @@ namespace CloudModelGenerator
             }
             else
             {
-                Console.WriteLine($"No content type available for the project ({_options.ProjectId}). Please make sure you've enabled the delivery API.");
+                Console.WriteLine($@"No content type available for the project ({_options.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kenticocloud.com/.");
             }
         }
 
@@ -158,6 +160,7 @@ namespace CloudModelGenerator
 
             string suffix = string.IsNullOrEmpty(_options.FileNameSuffix) ? "" : $".{_options.FileNameSuffix}";
             string classFilename = $"{classDefinition.ClassName}{suffix}";
+
             return new ClassCodeGenerator(classDefinition, classFilename, _options.Namespace);
         }
 
@@ -165,6 +168,7 @@ namespace CloudModelGenerator
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
             string classFilename = $"{classDefinition.ClassName}";
+
             return new ClassCodeGenerator(classDefinition, classFilename, _options.Namespace, true);
         }
     }

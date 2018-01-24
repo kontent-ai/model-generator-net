@@ -61,6 +61,7 @@ namespace CloudModelGenerator
                             SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
                                 .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
                         );
+
                     if (cmApi && ClassDefinition.PropertyCodenameConstants.Count > i)
                     {
                         property = property.AddAttributeLists(
@@ -76,6 +77,7 @@ namespace CloudModelGenerator
                                                                 SyntaxFactory.Literal(ClassDefinition
                                                                     .PropertyCodenameConstants[i].Codename)))))))));
                     }
+
                     return property;
                 }
             ).ToArray();
@@ -149,6 +151,7 @@ namespace CloudModelGenerator
             }
 
             AdhocWorkspace cw = new AdhocWorkspace();
+
             return Formatter.Format(cu, cw).ToFullString();
         }
     }
