@@ -88,7 +88,7 @@ namespace CloudModelGenerator
                                     SyntaxFactory.ParseTypeName("string"),
                                     SyntaxFactory.SeparatedList(new[] {
                                         SyntaxFactory.VariableDeclarator(
-                                            SyntaxFactory.Identifier($"{TextHelpers.GetValidPascalCaseIdentifierName(element.Name)}Codename"),
+                                            SyntaxFactory.Identifier($"{TextHelpers.GetValidPascalCaseIdentifierName(element.Codename)}Codename"),
                                             null,
                                             SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression( SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(element.Codename)))
                                         )
