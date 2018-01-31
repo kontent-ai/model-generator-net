@@ -14,6 +14,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
-    <PackageReference Include="System.CommandLine" Version="0.1.0-*" />
+    <PackageReference Include="System.CommandLine" Version="0.1.0-preview2-180131-1" />
   </ItemGroup>
 </Project>

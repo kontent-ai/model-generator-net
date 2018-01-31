@@ -24,9 +24,9 @@ namespace CloudModelGenerator
         public ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DEFAULT_NAMESPACE, bool customPartial = false)
         {
             ClassDefinition = classDefinition ?? throw new ArgumentNullException(nameof(classDefinition));
-            ClassFilename = classFilename ?? ClassDefinition.ClassName;
+            ClassFilename = string.IsNullOrEmpty(classFilename) ? ClassDefinition.ClassName : classFilename;
             CustomPartial = customPartial;
-            Namespace = @namespace ?? DEFAULT_NAMESPACE;
+            Namespace = string.IsNullOrEmpty(@namespace) ? DEFAULT_NAMESPACE : @namespace;
             OverwriteExisting = !CustomPartial;
         }
 

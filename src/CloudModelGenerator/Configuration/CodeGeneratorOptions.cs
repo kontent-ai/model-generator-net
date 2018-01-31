@@ -2,7 +2,6 @@
 {
     public class CodeGeneratorOptions
     {
-        public static string DefaultOutputDir = ".";
         public static bool DefaultGeneratePartials = false;
         public static bool DefaultWithTypeProvider = true;
         public static bool DefaultStructuredModel = false;
@@ -21,7 +20,7 @@
         /// <summary>
         /// Output directory for the generated files
         /// </summary>
-        public string OutputDir { get; set; } = DefaultOutputDir;
+        public string OutputDir { get; set; }
 
         /// <summary>
         /// Optionally add suffix to the generated files
