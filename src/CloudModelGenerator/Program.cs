@@ -35,15 +35,18 @@ namespace CloudModelGenerator
 
         static ArgumentSyntax Parse(string[] args)
         {
+            string projectIdDefaultValue = null;
+            string namespaceDefaultValue = null;
+            string outputDirDefaultValue = null;
+            string fileNameSuffixDefaultValue = null;
+
             var result = ArgumentSyntax.Parse(args, syntax =>
             {
-
                 syntax.ErrorOnUnexpectedArguments = false;
-                string nullStr = null;
-                syntax.DefineOption("p|projectid", ref nullStr, "Kentico Cloud Project ID.");
-                syntax.DefineOption("n|namespace", ref nullStr, "-n|--namespace");
-                syntax.DefineOption("o|outputdir", ref CodeGeneratorOptions.DefaultOutputDir, "Output directory for the generated files.");
-                syntax.DefineOption("f|filenamesuffix", ref nullStr, "Optionally add a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).");
+                syntax.DefineOption("p|projectid", ref projectIdDefaultValue, "Kentico Cloud Project ID.");
+                syntax.DefineOption("n|namespace", ref namespaceDefaultValue, "-n|--namespace");
+                syntax.DefineOption("o|outputdir", ref outputDirDefaultValue, "Output directory for the generated files.");
+                syntax.DefineOption("f|filenamesuffix", ref fileNameSuffixDefaultValue, "Optionally add a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs).");
                 syntax.DefineOption("g|generatepartials", ref CodeGeneratorOptions.DefaultGeneratePartials, "Generate partial classes for customization (if this option is set filename suffix will default to Generated).");
                 syntax.DefineOption("t|withtypeprovider", ref CodeGeneratorOptions.DefaultWithTypeProvider, "Indicates whether the CustomTypeProvider class should be generated.");
                 syntax.DefineOption("s|structuredmodel", ref CodeGeneratorOptions.DefaultStructuredModel, "Indicates whether the classes should be generated with types that represent structured data model.");
