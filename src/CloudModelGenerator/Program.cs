@@ -80,6 +80,12 @@ namespace CloudModelGenerator
                 return 1;
             }
 
+            // Setting OutputDir default value here instead of in the ArgumentSyntax.Parse method as it would overwrite the JSON value.
+            if (string.IsNullOrEmpty(options.OutputDir))
+            {
+                options.OutputDir = "./";
+            }
+
             var codeGenerator = new CodeGenerator(Options.Create(options));
             codeGenerator.GenerateContentTypeModels(options.StructuredModel);
 
