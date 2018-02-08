@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System.Linq;
 using System.CommandLine;
 using System;
 using System.Collections.Generic;
@@ -33,7 +32,7 @@ namespace CloudModelGenerator
             return Execute(syntax);
         }
 
-        static ArgumentSyntax Parse(string[] args)
+        internal static ArgumentSyntax Parse(string[] args)
         {
             string projectIdDefaultValue = null;
             string namespaceDefaultValue = null;
@@ -59,10 +58,38 @@ namespace CloudModelGenerator
 
         static int Execute(ArgumentSyntax argSyntax)
         {
+            CodeGeneratorOptions options;
+
+            try
+            {
+                options = CreateCodeGeneratorOptions(argSyntax);
+            }
+            catch (InvalidOperationException exception)
+            {
+                Console.Error.WriteLine(exception.Message);
+                Console.WriteLine(argSyntax.GetHelpText());
+                return 1;
+            }
+
+            var codeGeneratorOptions = Options.Create(options);
+
+            var codeGenerator = new CodeGenerator(codeGeneratorOptions);
+            codeGenerator.GenerateContentTypeModels(options.StructuredModel);
+
+            if (!options.ContentManagementApi && options.WithTypeProvider)
+            {
+                codeGenerator.GenerateTypeProvider();
+            }
+
+            return 0;
+        }
+
+        internal static CodeGeneratorOptions CreateCodeGeneratorOptions(ArgumentSyntax argSyntax)
+        {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Environment.CurrentDirectory)
-                .AddJsonFile("appSettings.json", true)
-                .Add(new CommandLineOptionsProvider(argSyntax.GetOptions()));
+                            .SetBasePath(Environment.CurrentDirectory)
+                            .AddJsonFile("appSettings.json", true)
+                            .Add(new CommandLineOptionsProvider(argSyntax.GetOptions()));
 
             Configuration = builder.Build();
 
@@ -74,21 +101,16 @@ namespace CloudModelGenerator
             // No projectId was passed as an arg or set in the appSettings.config
             if (string.IsNullOrEmpty(options.ProjectId))
             {
-                Console.Error.WriteLine("Provide a Project ID!");
-                Console.WriteLine(argSyntax.GetHelpText());
-
-                return 1;
+                throw new InvalidOperationException("Provide a Project ID!");
             }
 
-            var codeGenerator = new CodeGenerator(Options.Create(options));
-            codeGenerator.GenerateContentTypeModels(options.StructuredModel);
-
-            if (!options.ContentManagementApi && options.WithTypeProvider)
+            /// Setting OutputDir default value here instead of in the <see cref="Parse"/> method as it would overwrite the JSON value.
+            if (string.IsNullOrEmpty(options.OutputDir))
             {
-                codeGenerator.GenerateTypeProvider();
+                options.OutputDir = "./";
             }
 
-            return 0;
+            return options;
         }
     }
 }
