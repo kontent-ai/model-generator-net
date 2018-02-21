@@ -3,6 +3,8 @@ using Microsoft.Extensions.Options;
 using System.CommandLine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace CloudModelGenerator
 {
@@ -14,7 +16,35 @@ namespace CloudModelGenerator
 
         static int Main(string[] args)
         {
-            var syntax = Parse(args);
+            var correctedArgs = new List<string>();
+
+            foreach (var arg in args)
+            {
+                // Argument value incorrectly parsed by the runtime (due to the use of a "backslash and double quotes" sequence).
+                var valueWithQuotes = Regex.Match(arg, @"(.+)("")");
+
+                // Argument names and values trailing after the valueWithQuotes sequence.
+                var pairs = Regex.Matches(arg, @"(-\w+)\s([^\s]+)");
+
+                if (valueWithQuotes.Success || pairs.Any(p => p.Success))
+                {
+                    if (valueWithQuotes.Success)
+                    {
+                        correctedArgs.Add(valueWithQuotes.Groups[1].Value);
+                    }
+
+                    foreach (var success in pairs.Where(m => m.Success))
+                    {
+                        correctedArgs.AddRange(new[] { success.Groups[1].Value, success.Groups[2].Value });
+                    } 
+                }
+                else
+                {
+                    correctedArgs.Add(arg);
+                }
+            }
+
+            var syntax = Parse(correctedArgs.ToArray());
             var unexpectedArgs = new List<string>(syntax.RemainingArguments);
 
             if (unexpectedArgs.Count > 0)
