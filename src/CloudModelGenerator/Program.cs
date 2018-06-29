@@ -38,6 +38,7 @@ namespace CloudModelGenerator
             string namespaceDefaultValue = null;
             string outputDirDefaultValue = null;
             string fileNameSuffixDefaultValue = null;
+            string baseClassDefaultValue = null;
 
             var result = ArgumentSyntax.Parse(args, syntax =>
             {
@@ -50,6 +51,7 @@ namespace CloudModelGenerator
                 syntax.DefineOption("t|withtypeprovider", ref CodeGeneratorOptions.DefaultWithTypeProvider, "Indicates whether the CustomTypeProvider class should be generated.");
                 syntax.DefineOption("s|structuredmodel", ref CodeGeneratorOptions.DefaultStructuredModel, "Indicates whether the classes should be generated with types that represent structured data model.");
                 syntax.DefineOption("c|contentmanagementapi", ref CodeGeneratorOptions.DefaultContentManagementApi, "Indicates whether the classes should be generated for CM API SDK instead.");
+                syntax.DefineOption("b|baseclass", ref baseClassDefaultValue, "Optionally set the name of a base type that all generated classes derive from. If not net, they will not inherit any base class.");
                 syntax.ApplicationName = "content-types-generator";
             });
 
