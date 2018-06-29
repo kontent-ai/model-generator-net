@@ -42,6 +42,10 @@ namespace CloudModelGenerator
             _namespace = @namespace ?? ClassCodeGenerator.DEFAULT_NAMESPACE;
         }
 
+        /// <summary>
+        /// Add string values for classes that should be added as partials so they inherit from the base class
+        /// </summary>
+        /// <param name="className"></param>
         public void AddClassNameToExtend(string className)
         {
             if (String.IsNullOrEmpty(className))
@@ -52,6 +56,10 @@ namespace CloudModelGenerator
             _classesToExtend.Add(className);
         }
 
+        /// <summary>
+        /// Creats the base class output
+        /// </summary>
+        /// <returns></returns>
         public string GenerateBaseClassCode()
         {
             var tree = CSharpSyntaxTree.ParseText(
@@ -72,6 +80,10 @@ namespace {_namespace}
             return Formatter.Format(cu, cw).ToFullString();
         }
 
+        /// <summary>
+        /// Creates the extender code that uses partials to make all output classes derive from the base class
+        /// </summary>
+        /// <returns></returns>
         public string GenereateExtenderCode()
         {
 

@@ -83,6 +83,7 @@ namespace CloudModelGenerator
                 codeGenerator.GenerateTypeProvider();
             }
 
+            // Only generate the base class is the BaseClass property is specified
             if (!string.IsNullOrEmpty(options.BaseClass))
             {
                 codeGenerator.GenerateBaseClass();
