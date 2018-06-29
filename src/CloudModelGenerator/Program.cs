@@ -83,6 +83,11 @@ namespace CloudModelGenerator
                 codeGenerator.GenerateTypeProvider();
             }
 
+            if (!string.IsNullOrEmpty(options.BaseClass))
+            {
+                codeGenerator.GenerateBaseClass();
+            }
+
             return 0;
         }
 

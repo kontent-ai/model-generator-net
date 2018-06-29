@@ -171,5 +171,41 @@ namespace CloudModelGenerator
 
             return new ClassCodeGenerator(classDefinition, classFilename, _options.Namespace, true);
         }
+
+        public void GenerateBaseClass()
+        {
+            // Make sure the output dir exists
+            Directory.CreateDirectory(_options.OutputDir);
+
+            var classCodeGenerators = GetClassCodeGenerators();
+
+            if (classCodeGenerators.Count() > 0)
+            {
+                var baseClassCodeGenerator = new BaseClassCodeGenerator(_options.BaseClass, _options.Namespace);
+
+                foreach (var codeGenerator in classCodeGenerators)
+                {
+                    baseClassCodeGenerator.AddClassNameToExtend(codeGenerator.ClassDefinition.ClassName);
+                }
+
+                var baseClassCode = baseClassCodeGenerator.GenerateBaseClassCode();
+                if (!string.IsNullOrEmpty(baseClassCode))
+                {
+                    SaveToFile(baseClassCode, _options.BaseClass);
+                    Console.WriteLine($"{_options.BaseClass} class was successfully created.");
+                }
+
+                var baseClassExtenderCode = baseClassCodeGenerator.GenereateExtenderCode();
+                if (!string.IsNullOrEmpty(baseClassExtenderCode))
+                {
+                    SaveToFile(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName);
+                    Console.WriteLine($"{baseClassCodeGenerator.ExtenderClassName} class was successfully created.");
+                }
+            }
+            else
+            {
+                Console.WriteLine($@"No content type available for the project ({_options.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kenticocloud.com/.");
+            }
+        }
     }
 }
