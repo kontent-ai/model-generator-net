@@ -10,17 +10,16 @@ namespace CloudModelGenerator
 {
     public class BaseClassCodeGenerator
     {
-
         /// <summary>
         /// List of classes to extend
         /// </summary>
-        private readonly List<string> _classesToExtend = new List<string>();
+        private readonly ICollection<string> _classesToExtend = new List<string>();
 
         private readonly string _namespace;
         private readonly string _className;
 
         /// <summary>
-        ///  The calculated Extender Classname
+        /// The calculated Extender Classname
         /// </summary>
         public string ExtenderClassName
         {
@@ -57,7 +56,7 @@ namespace CloudModelGenerator
         }
 
         /// <summary>
-        /// Creats the base class output
+        /// Creates the base class output
         /// </summary>
         /// <returns></returns>
         public string GenerateBaseClassCode()
@@ -83,7 +82,6 @@ namespace {_namespace}
         /// <summary>
         /// Creates the extender code that uses partials to make all output classes derive from the base class
         /// </summary>
-        /// <returns></returns>
         public string GenereateExtenderCode()
         {
 
