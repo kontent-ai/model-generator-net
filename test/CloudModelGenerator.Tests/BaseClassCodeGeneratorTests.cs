@@ -40,7 +40,7 @@ namespace CloudModelGenerator.Tests
             expected_BaseClassCode = expected_BaseClassCode.Replace(ClassCodeGenerator.DEFAULT_NAMESPACE, customNamespace);
 
             // Test base class
-            Assert.Equal(actualCompiled_BaseClass, expected_BaseClassCode, ignoreWhiteSpaceDifferences: true);
+            Assert.Equal(actualCompiled_BaseClass, expected_BaseClassCode, ignoreLineEndingDifferences:true, ignoreWhiteSpaceDifferences: true);
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace CloudModelGenerator.Tests
             string expected_ExtenderCode = File.ReadAllText(executingPath + "/Assets/BaseClassExtender_CompiledCode.txt");
             
             // Test extender class
-            Assert.Equal(actualCompiled_ExtenderClass, expected_ExtenderCode, ignoreWhiteSpaceDifferences: true);
+            Assert.Equal(actualCompiled_ExtenderClass, expected_ExtenderCode, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
         }
     }
 }
