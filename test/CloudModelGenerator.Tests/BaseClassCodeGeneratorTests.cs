@@ -1,7 +1,6 @@
 ﻿using Xunit;
 using System;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace CloudModelGenerator.Tests
 {
