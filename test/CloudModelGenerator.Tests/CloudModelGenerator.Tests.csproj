@@ -13,6 +13,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\BaseClassExtender_CompiledCode.txt" />
+    <None Remove="Assets\BaseClass_CompiledCode.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\BaseClassExtender_CompiledCode.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\BaseClass_CompiledCode.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Assets\CompleteContentType_CompiledCode_CMAPI.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

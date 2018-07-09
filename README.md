@@ -48,6 +48,7 @@ dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outpu
 | `-t` | `--withtypeprovider` | False | `true` | Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) for more info) |
 | `-s` | `--structuredmodel` | False | `false` | Generates `IRichTextContent` instead of `string` for rich-text elements. This enables utilizing [structured rich-text rendering](https://github.com/Kentico/delivery-sdk-net/wiki/Structured-Rich-text-rendering) |
 | `-f` | `--filenamesuffix` | False | `null` | Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs) |
+| `-b` | `--baseclass` | False | `null` | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes |
 
 These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
 
@@ -99,6 +100,7 @@ dotnet run --projectid "<projectid>" --contentmanagementapi [--namespace "<custo
 | `-n` | `--namespace` | False | `KenticoCloudModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
 | `-o` | `--outputdir` | False | `\.` | An output folder path |
 | `-f` | `--filenamesuffix` | False | `null` | Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs) |
+| `-b` | `--baseclass` | False | `null` | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes |
 
 These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
 
