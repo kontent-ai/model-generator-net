@@ -19,11 +19,11 @@ namespace CloudModelGenerator.Tests
             codeGenerator.AddContentType("article", "Article");
             codeGenerator.AddContentType("office", "Office");
 
-            var compiledCode = codeGenerator.GenerateCode();
-
             var executingPath = AppContext.BaseDirectory;
             var expectedCode = File.ReadAllText(executingPath + "/Assets/CustomTypeProvider_CompiledCode.txt");
 
+            var compiledCode = codeGenerator.GenerateCode();
+          
             Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
         }
 

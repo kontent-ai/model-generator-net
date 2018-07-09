@@ -15,9 +15,10 @@ namespace CloudModelGenerator.Tests
             codeGenerator.AddClassNameToExtend("Article");
             codeGenerator.AddClassNameToExtend("Office");
 
-            var actualCompiled_BaseClass = codeGenerator.GenerateBaseClassCode();
             var executingPath = AppContext.BaseDirectory;
             var expected_BaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
+
+            var actualCompiled_BaseClass = codeGenerator.GenerateBaseClassCode();
 
             Assert.Equal(expected_BaseClassCode, actualCompiled_BaseClass, ignoreLineEndingDifferences:true, ignoreWhiteSpaceDifferences: true);
         }
@@ -30,11 +31,11 @@ namespace CloudModelGenerator.Tests
             codeGenerator.AddClassNameToExtend("Article");
             codeGenerator.AddClassNameToExtend("Office");
 
-            var actualCompiled_BaseClass = codeGenerator.GenerateBaseClassCode();
             var executingPath = AppContext.BaseDirectory;
             var expected_BaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
-            
             expected_BaseClassCode = expected_BaseClassCode.Replace(ClassCodeGenerator.DEFAULT_NAMESPACE, customNamespace);
+
+            var actualCompiled_BaseClass = codeGenerator.GenerateBaseClassCode();            
 
             Assert.Equal(expected_BaseClassCode, actualCompiled_BaseClass, ignoreLineEndingDifferences:true, ignoreWhiteSpaceDifferences: true);
         }
@@ -46,9 +47,10 @@ namespace CloudModelGenerator.Tests
             codeGenerator.AddClassNameToExtend("Article");
             codeGenerator.AddClassNameToExtend("Office");
 
-            var actualCompiled_ExtenderClass = codeGenerator.GenereateExtenderCode();
             var executingPath = AppContext.BaseDirectory;
             var expected_ExtenderCode = File.ReadAllText(executingPath + "/Assets/BaseClassExtender_CompiledCode.txt");
+
+            var actualCompiled_ExtenderClass = codeGenerator.GenereateExtenderCode();
 
             Assert.Equal(expected_ExtenderCode, actualCompiled_ExtenderClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
         }
