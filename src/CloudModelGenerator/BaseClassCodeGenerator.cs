@@ -38,7 +38,7 @@ namespace CloudModelGenerator
                 @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE;
             }
 
-            _namespace = @namespace ?? ClassCodeGenerator.DEFAULT_NAMESPACE;
+            _namespace = @namespace;
         }
 
         /// <summary>
