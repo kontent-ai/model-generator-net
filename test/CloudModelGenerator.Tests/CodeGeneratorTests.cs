@@ -28,7 +28,7 @@ namespace CloudModelGenerator.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kenticocloud.com/*")
-                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures\\types.json")));
+                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -64,7 +64,7 @@ namespace CloudModelGenerator.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kenticocloud.com/*")
-                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures\\types.json")));
+                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             const string transformFilename = "Generated";
@@ -102,7 +102,7 @@ namespace CloudModelGenerator.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kenticocloud.com/*")
-                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures\\types.json")));
+                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             const string transformFilename = "Generated";

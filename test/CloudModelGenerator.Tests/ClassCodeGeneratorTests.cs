@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
-using KenticoCloud.Delivery;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -53,11 +51,7 @@ namespace CloudModelGenerator.Tests
             string executingPath = AppContext.BaseDirectory;
             string expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
 
-            // Ignore white space
-            expectedCode = Regex.Replace(expectedCode, @"\s+", "");
-            compiledCode = Regex.Replace(compiledCode, @"\s+", "");
-
-            Assert.Equal(expectedCode, compiledCode);
+            Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
         }
 
         [Fact]
@@ -81,11 +75,7 @@ namespace CloudModelGenerator.Tests
             var executingPath = AppContext.BaseDirectory;
             var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_CMAPI.txt");
 
-            // Ignore white space
-            expectedCode = Regex.Replace(expectedCode, @"\s+", "");
-            compiledCode = Regex.Replace(compiledCode, @"\s+", "");
-
-            Assert.Equal(expectedCode, compiledCode);
+            Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
         }
 
         [Fact]
