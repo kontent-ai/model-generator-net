@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace CloudModelGenerator.Tests
 {
@@ -20,18 +19,14 @@ namespace CloudModelGenerator.Tests
             codeGenerator.AddContentType("article", "Article");
             codeGenerator.AddContentType("office", "Office");
 
-            string compiledCode = codeGenerator.GenerateCode();
+            var executingPath = AppContext.BaseDirectory;
+            var expectedCode = File.ReadAllText(executingPath + "/Assets/CustomTypeProvider_CompiledCode.txt");
 
-            string executingPath = AppContext.BaseDirectory;
-            string expectedCode = File.ReadAllText(executingPath + "/Assets/CustomTypeProvider_CompiledCode.txt");
-
-            // Ignore white space
-            expectedCode = Regex.Replace(expectedCode, @"\s+", "");
-            compiledCode = Regex.Replace(compiledCode, @"\s+", "");
-
-            Assert.Equal(expectedCode, compiledCode);
+            var compiledCode = codeGenerator.GenerateCode();
+          
+            Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
         }
-        
+
         [Fact]
         public void IntegrationTest_GeneratedCodeCompilesWithoutErrors()
         {
@@ -39,10 +34,10 @@ namespace CloudModelGenerator.Tests
             codeGenerator.AddContentType("article", "Article");
             codeGenerator.AddContentType("office", "Office");
 
-            string compiledCode = codeGenerator.GenerateCode();
+            var compiledCode = codeGenerator.GenerateCode();
 
             // Dummy implementation of Article and Office class to make compilation work
-            string dummyClasses = "public class Article {} public class Office {}";
+            var dummyClasses = "public class Article {} public class Office {}";
 
             CSharpCompilation compilation = CSharpCompilation.Create(
                 assemblyName: Path.GetRandomFileName(),
@@ -61,7 +56,7 @@ namespace CloudModelGenerator.Tests
             using (var ms = new MemoryStream())
             {
                 EmitResult result = compilation.Emit(ms);
-                string compilationErrors = "Compilation errors:\n";
+                var compilationErrors = $"Compilation errors:{Environment.NewLine}";
 
                 if (!result.Success)
                 {
@@ -71,7 +66,7 @@ namespace CloudModelGenerator.Tests
 
                     foreach (Diagnostic diagnostic in failures)
                     {
-                        compilationErrors += String.Format("{0}: {1}\n", diagnostic.Id, diagnostic.GetMessage());
+                        compilationErrors += String.Format($"{diagnostic.Id}: {diagnostic.GetMessage()}{Environment.NewLine}");
                     }
                 }
 
