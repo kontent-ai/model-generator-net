@@ -1,6 +1,5 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/t6dgpiamopwugu8v/branch/master?svg=true)](https://ci.appveyor.com/project/kentico/cloud-generators-net/branch/master)
 [![Forums](https://img.shields.io/badge/chat-on%20forums-orange.svg)](https://forums.kenticocloud.com)
-[![Analytics](https://ga-beacon.appspot.com/UA-69014260-4/Kentico/cloud-generators-net?pixel)](https://github.com/igrigorik/ga-beacon)
 
 # Kentico Cloud model generator utility for .NET
 
@@ -144,3 +143,4 @@ We would like to express our thanks to the following people who contributed and 
 
 Would you like to become a hero too? Pick an [issue](https://github.com/Kentico/cloud-generators-net/issues) and send us a pull request!
 
+![Analytics](https://kentico-ga-beacon.azurewebsites.net/api/UA-69014260-4/Kentico/cloud-generators-net?pixel)
