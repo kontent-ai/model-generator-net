@@ -1,0 +1,14 @@
+﻿using System;
+using KenticoCloud.Delivery;
+
+namespace KenticoCloudModels
+{
+    // These classes extend the generated models to all inherit from the common basetype ContentBase.
+    public partial class Article : ContentBase
+    {
+    }
+
+    public partial class Office : ContentBase
+    {
+    }
+}
