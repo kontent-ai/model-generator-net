@@ -51,31 +51,38 @@ namespace CloudModelGenerator
                 return null;
             }
 
-            string switchCases = _contentTypes
-                .Select((c) => $"case \"{c.Key}\": return typeof({c.Value});")
-                .Aggregate((p, n) => p + Environment.NewLine + n);
-            
+            var codenameDictionaryValues = _contentTypes
+                .Select(entry => $"\t\t\t{{typeof({entry.Value}), \"{entry.Key}\"}}")
+                .Aggregate((previous, next) => previous + "," + Environment.NewLine + next);
+
             var tree = CSharpSyntaxTree.ParseText(
 $@"using System;
+using System.Collections.Generic;
+using System.Linq;
 using KenticoCloud.Delivery;
 
 namespace {_namespace}
 {{
     public class {CLASS_NAME} : ICodeFirstTypeProvider
     {{
+        private static readonly Dictionary<Type, string> _codenames = new Dictionary<Type, string>
+        {{
+{codenameDictionaryValues}
+        }};
+
         public Type GetType(string contentType)
         {{
-            switch (contentType)
-            {{
-                {switchCases}
-                default:
-                    return null;
-            }}
+            return _codenames.Keys.FirstOrDefault(type => GetCodename(type).Equals(contentType));
+        }}
+
+        public string GetCodename(Type contentType)
+        {{
+            return _codenames.TryGetValue(contentType, out var codename) ? codename : null;
         }}
     }}
 }}");
 
-            var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
+            var cu = (CompilationUnitSyntax)tree.GetRoot();
 
             AdhocWorkspace cw = new AdhocWorkspace();
             return Formatter.Format(cu, cw).ToFullString();

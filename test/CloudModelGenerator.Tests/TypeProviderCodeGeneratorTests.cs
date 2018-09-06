@@ -48,6 +48,7 @@ namespace CloudModelGenerator.Tests
                 references: new[] {
                     MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("mscorlib")).Location),
                     MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Runtime")).Location),
+                    MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Linq")).Location),
                     MetadataReference.CreateFromFile(typeof(Object).GetTypeInfo().Assembly.Location),
                     MetadataReference.CreateFromFile(typeof(KenticoCloud.Delivery.DeliveryClient).GetTypeInfo().Assembly.Location)
                 },
