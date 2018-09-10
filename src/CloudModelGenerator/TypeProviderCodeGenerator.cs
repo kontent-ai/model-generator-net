@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Formatting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace CloudModelGenerator
 {
@@ -51,12 +52,8 @@ namespace CloudModelGenerator
                 return null;
             }
 
-            var codenameDictionaryValues = _contentTypes
-                .Select(entry => $"\t\t\t{{typeof({entry.Value}), \"{entry.Key}\"}}")
-                .Aggregate((previous, next) => previous + "," + Environment.NewLine + next);
-
             var tree = CSharpSyntaxTree.ParseText(
-$@"using System;
+                $@"using System;
 using System.Collections.Generic;
 using System.Linq;
 using KenticoCloud.Delivery;
@@ -67,7 +64,7 @@ namespace {_namespace}
     {{
         private static readonly Dictionary<Type, string> _codenames = new Dictionary<Type, string>
         {{
-{codenameDictionaryValues}
+{CreateCodenameDictionaryValues()}
         }};
 
         public Type GetType(string contentType)
@@ -86,6 +83,24 @@ namespace {_namespace}
 
             AdhocWorkspace cw = new AdhocWorkspace();
             return Formatter.Format(cu, cw).ToFullString();
+        }
+
+        private string CreateCodenameDictionaryValues()
+        {
+            if (_contentTypes.Count == 0) return null;
+
+            var dictionaryValuesBuilder = new StringBuilder();
+
+            foreach (var entry in _contentTypes.Take(_contentTypes.Count - 1))
+            {
+                dictionaryValuesBuilder.AppendLine($"\t\t\t{{typeof({entry.Value}), \"{entry.Key}\"}},");
+            }
+
+            var lastEntry = _contentTypes.Last();
+            dictionaryValuesBuilder
+                .Append($"\t\t\t{{typeof({lastEntry.Value}), \"{lastEntry.Key}\"}}");
+
+            return dictionaryValuesBuilder.ToString();
         }
     }
 }
