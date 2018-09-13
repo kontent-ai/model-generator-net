@@ -46,6 +46,7 @@ namespace CloudModelGenerator.Tests
                     CSharpSyntaxTree.ParseText(dummyClasses)
                 },
                 references: new[] {
+                    MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("netstandard")).Location),
                     MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("mscorlib")).Location),
                     MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Runtime")).Location),
                     MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Linq")).Location),
