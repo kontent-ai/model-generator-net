@@ -9,7 +9,7 @@ namespace CloudModelGenerator.Tests
 {
     public class CodeGeneratorTests
     {
-        private readonly string TEMP_DIR = Path.GetTempPath() + "/CodeGeneratorTests/";
+        private readonly string TEMP_DIR = Path.Combine(Path.GetTempPath(), "CodeGeneratorTests");
 
         public CodeGeneratorTests()
         {
