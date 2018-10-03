@@ -31,8 +31,8 @@ namespace CloudModelGenerator.Tests
         [Fact]
         public void CreateCodeGeneratorOptions_OutputSetInParameters_OuputDirHasCustomValue()
         {
-            string expectedOutputDir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            ArgumentSyntax preparedSyntax = Program.Parse(new string[]
+            var expectedOutputDir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            ArgumentSyntax preparedSyntax = Program.Parse(new []
             {
                 "--projectid", "00000000-0000-0000-0000-000000000001",
                 "--outputdir", expectedOutputDir
