@@ -39,7 +39,6 @@ namespace CloudModelGenerator
         internal static string[] CorrectArguments(string[] args)
         {
             var parsedArgs = new List<string>();
-            var joinedArgs = " " + string.Join(" ", args);
 
             foreach (var arg in args)
             {
