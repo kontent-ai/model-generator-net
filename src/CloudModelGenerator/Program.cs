@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System.CommandLine;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -37,33 +38,82 @@ namespace CloudModelGenerator
 
         internal static string[] CorrectArguments(string[] args)
         {
-            var correctedArgs = new List<string>();
+            var parsedArgs = new List<string>();
+            var joinedArgs = " " + string.Join(" ", args);
+
             foreach (var arg in args)
             {
-                // Argument value incorrectly parsed by the runtime (due to the use of a "backslash and double quotes" sequence).
-                var valueWithQuotes = Regex.Match(arg, @"(.+)("")");
+                // An argument name at the start of the current 'arg'.
+                var isArgumentName = Regex.Match(arg, @"^(-{1,2}\w+)");
 
-                // Argument names and values trailing after the valueWithQuotes sequence.
-                var pairs = Regex.Matches(arg, @"(-{1,2}\w+)\s([^\s]+)");
+                // Arguments and their values that the current 'arg' contains.
+                var argumentStarts = Regex.Matches(arg, @"\s+(-{1,2}\w+)").ToList();
 
-                if (valueWithQuotes.Success || pairs.Any(p => p.Success))
+                if (isArgumentName.Success)
                 {
-                    if (valueWithQuotes.Success)
+                    parsedArgs.Add(arg.Trim());
+                }
+                else if (argumentStarts.Count > 0)
+                {
+                    // Trailing value of the preceding argument.
+                    string trailingValue = arg.Substring(0, argumentStarts.First().Index).Trim();
+
+                    if (!string.IsNullOrEmpty(trailingValue))
                     {
-                        correctedArgs.Add(valueWithQuotes.Groups[1].Value);
+                        parsedArgs.AddRange(ParseValues(trailingValue));
                     }
 
-                    foreach (var success in pairs.Where(m => m.Success))
+                    for (int i = 0; i <= argumentStarts.Count - 1; i++)
                     {
-                        correctedArgs.AddRange(new[] { success.Groups[1].Value, success.Groups[2].Value });
+                        // Add the argument name itself.
+                        parsedArgs.Add(arg.Substring(argumentStarts[i].Index, argumentStarts[i].Length).Trim());
+
+                        // Calculate the span of the raw value.
+                        var valueStart = argumentStarts[i].Index + argumentStarts[i].Length;
+                        var valueEnd = i == argumentStarts.Count - 1 ? arg.Length : argumentStarts[i + 1].Index;
+
+                        var rawValue = arg.Substring(valueStart, valueEnd - valueStart).Trim();
+
+                        if (!string.IsNullOrEmpty(rawValue))
+                        {
+                            parsedArgs.AddRange(ParseValues(rawValue));
+                        }
                     }
                 }
-                else
+                else if (!string.IsNullOrEmpty(arg))
                 {
-                    correctedArgs.Add(arg);
+                    // The current 'arg' contains neither an argument name nor a mix of arguments and their values.
+                    parsedArgs.AddRange(ParseValues(arg));
                 }
             }
-            return correctedArgs.ToArray();
+
+            return parsedArgs.ToArray();
+        }
+
+        internal static List<string> ParseValues(string rawValue)
+        {
+            // Argument value incorrectly parsed by the runtime (due to the use of a "backslash and double quotes" sequence).
+            var valuesWithTrailingQuotes = Regex.Matches(rawValue, @"([^""]+)("")");
+
+            var quotedValuesList = valuesWithTrailingQuotes
+                .Select(value => value.Value.Trim(new char[] { ' ', '"', '\\' }))
+                .ToList();
+
+            var lastQuotedValue = valuesWithTrailingQuotes.LastOrDefault();
+            var lastDoubleQuotesIndex = lastQuotedValue != null ? lastQuotedValue.Index + lastQuotedValue.Length : 0;
+            var trailingValues = new List<string>();
+
+            if (lastDoubleQuotesIndex < rawValue.Length)
+            {
+                // Trailing values, not terminated with double quotes.
+                trailingValues.AddRange(rawValue.Substring(lastDoubleQuotesIndex, rawValue.Length).Split(' '));
+            }
+
+            var merge = quotedValuesList.Concat(trailingValues).ToList();
+
+            return merge.Count > 0
+                ? merge
+                : new List<string>(new[] { rawValue.Trim() });
         }
 
         internal static ArgumentSyntax Parse(string[] args)

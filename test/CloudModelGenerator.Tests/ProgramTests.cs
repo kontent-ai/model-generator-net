@@ -32,32 +32,32 @@ namespace CloudModelGenerator.Tests
             yield return new string[][]
             {
                 new string[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace" },
-                new string[] { "--outputdir", @"C:\KC\demo\", "--namespace", "Some.NameSpace" },
+                new string[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace" },
             };
             yield return new string[][]
             {
                 new string[] { "--outputdir", @"C:\KC\demo\"" -n Some.NameSpace" },
-                new string[] { "--outputdir", @"C:\KC\demo\", "-n", "Some.NameSpace" },
+                new string[] { "--outputdir", @"C:\KC\demo", "-n", "Some.NameSpace" },
             };
             yield return new string[][]
             {
                 new string[] { "--outputdir", @"C:\KC\demo\"" --generatepartials"  },
-                new string[] { "--outputdir", @"C:\KC\demo\", "--generatepartials" }
+                new string[] { "--outputdir", @"C:\KC\demo", "--generatepartials" }
             };
             yield return new string[][]
             {
                 new string[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace -g" },
-                new string[] { "--outputdir", @"C:\KC\demo\", "--namespace", "Some.NameSpace", "-g" },
+                new string[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace", "-g" },
             };
             yield return new string[][]
             {
                 new string[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace --generatepartials" },
-                new string[] { "--outputdir", @"C:\KC\demo\", "--namespace", "Some.NameSpace", "--generatepartials" },
+                new string[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace", "--generatepartials" },
             };
             yield return new string[][]
             {
                 new string[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace --generatepartials -s --projectId 975bf280-fd91-488c-994c-2f04416e5ee3" },
-                new string[] { "--outputdir", @"C:\KC\demo\", "--namespace", "Some.NameSpace", "--generatepartials", "-s", "--projectId", "975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new string[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace", "--generatepartials", "-s", "--projectId", "975bf280-fd91-488c-994c-2f04416e5ee3" },
             };
         }
 
