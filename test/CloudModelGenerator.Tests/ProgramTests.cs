@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.IO;
+using System.Reflection;
 using Xunit;
 
 namespace CloudModelGenerator.Tests
@@ -26,6 +28,7 @@ namespace CloudModelGenerator.Tests
             var options = Program.CreateCodeGeneratorOptions(preparedSyntax);
             Assert.Equal("./", options.OutputDir);
         }
+
 
         public static IEnumerable<object[]> GetInputForCorrectArguments()
         {
@@ -67,6 +70,20 @@ namespace CloudModelGenerator.Tests
         {
             var correctedArgs = Program.CorrectArguments(inputArgs);
             Assert.Equal(expectedArgs, correctedArgs);
+        }
+
+        [Fact]
+        public void CreateCodeGeneratorOptions_OutputSetInParameters_OuputDirHasCustomValue()
+        {
+            var expectedOutputDir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            ArgumentSyntax preparedSyntax = Program.Parse(new []
+            {
+                "--projectid", "00000000-0000-0000-0000-000000000001",
+                "--outputdir", expectedOutputDir
+            });
+
+            var options = Program.CreateCodeGeneratorOptions(preparedSyntax);
+            Assert.Equal(expectedOutputDir, options.OutputDir);
         }
     }
 }

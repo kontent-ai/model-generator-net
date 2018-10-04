@@ -24,7 +24,7 @@ namespace CloudModelGenerator
             }
 
             // Resolve relative path to full path
-            _options.OutputDir = Path.GetFullPath(_options.OutputDir).TrimEnd('\\') + "\\";
+            _options.OutputDir = Path.GetFullPath(_options.OutputDir);
 
             // Initialize DeliveryClient
             Client = new DeliveryClient(_options.ProjectId);
@@ -83,7 +83,7 @@ namespace CloudModelGenerator
 
         private void SaveToFile(string content, string fileName, bool overwriteExisting = true)
         {
-            string outputPath = _options.OutputDir + $"{fileName}.cs";
+            string outputPath = Path.Combine(_options.OutputDir, $"{fileName}.cs");
             bool fileExists = File.Exists(outputPath);
             if (!fileExists || overwriteExisting)
             {
