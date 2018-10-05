@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace CloudModelGenerator
 {
@@ -17,7 +14,7 @@ namespace CloudModelGenerator
 
         static int Main(string[] args)
         {
-            var correctedArgs = CorrectArguments(args);
+            var correctedArgs = ArgumentParser.CorrectArguments(args);
             var syntax = Parse(correctedArgs);
             var unexpectedArgs = new List<string>(syntax.RemainingArguments);
 
@@ -34,85 +31,6 @@ namespace CloudModelGenerator
             }
 
             return Execute(syntax);
-        }
-
-        internal static string[] CorrectArguments(string[] args)
-        {
-            var parsedArgs = new List<string>();
-
-            foreach (var arg in args)
-            {
-                // An argument name at the start of the current 'arg'.
-                var isArgumentName = Regex.Match(arg, @"^(-{1,2}\w+)");
-
-                // Arguments and their values that the current 'arg' contains.
-                var argumentStarts = Regex.Matches(arg, @"\s+(-{1,2}\w+)").ToList();
-
-                if (isArgumentName.Success)
-                {
-                    parsedArgs.Add(arg.Trim());
-                }
-                else if (argumentStarts.Count > 0)
-                {
-                    // Trailing value of the preceding argument.
-                    string trailingValue = arg.Substring(0, argumentStarts.First().Index).Trim();
-
-                    if (!string.IsNullOrEmpty(trailingValue))
-                    {
-                        parsedArgs.AddRange(ParseValues(trailingValue));
-                    }
-
-                    for (int i = 0; i <= argumentStarts.Count - 1; i++)
-                    {
-                        // Add the argument name itself.
-                        parsedArgs.Add(arg.Substring(argumentStarts[i].Index, argumentStarts[i].Length).Trim());
-
-                        // Calculate the span of the raw value.
-                        var valueStart = argumentStarts[i].Index + argumentStarts[i].Length;
-                        var valueEnd = i == argumentStarts.Count - 1 ? arg.Length : argumentStarts[i + 1].Index;
-
-                        var rawValue = arg.Substring(valueStart, valueEnd - valueStart).Trim();
-
-                        if (!string.IsNullOrEmpty(rawValue))
-                        {
-                            parsedArgs.AddRange(ParseValues(rawValue));
-                        }
-                    }
-                }
-                else if (!string.IsNullOrEmpty(arg))
-                {
-                    // The current 'arg' contains neither an argument name nor a mix of arguments and their values.
-                    parsedArgs.AddRange(ParseValues(arg));
-                }
-            }
-
-            return parsedArgs.ToArray();
-        }
-
-        internal static List<string> ParseValues(string rawValue)
-        {
-            // Argument value incorrectly parsed by the runtime (due to the use of a "backslash and double quotes" sequence).
-            var valuesWithTrailingQuotes = Regex.Matches(rawValue, @"([^""]+)("")");
-
-            var quotedValuesList = valuesWithTrailingQuotes
-                .Select(value => value.Value.Trim(new char[] { ' ', '"', '\\' }))
-                .ToList();
-
-            var lastQuotedValue = valuesWithTrailingQuotes.LastOrDefault();
-            var lastDoubleQuotesIndex = lastQuotedValue != null ? lastQuotedValue.Index + lastQuotedValue.Length : 0;
-            var trailingValues = new List<string>();
-
-            if (lastDoubleQuotesIndex < rawValue.Length)
-            {
-                // Trailing values, not terminated with double quotes.
-                trailingValues.AddRange(rawValue.Substring(lastDoubleQuotesIndex, rawValue.Length).Split(' '));
-            }
-
-            var merge = quotedValuesList.Concat(trailingValues).ToList();
-
-            return merge.Count > 0
-                ? merge
-                : new List<string>(new[] { rawValue.Trim() });
         }
 
         internal static ArgumentSyntax Parse(string[] args)
