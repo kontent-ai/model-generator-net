@@ -30,7 +30,7 @@ namespace CloudModelGenerator
             _namespace = @namespace;
         }
 
-        public void AddContentType(string codename, string className)
+        public void AddContentType(byref string codename, string className)
         {
             if (String.IsNullOrEmpty(codename))
             {
