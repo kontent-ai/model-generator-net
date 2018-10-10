@@ -1,34 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace CloudModelGenerator
 {
+    /// <summary>
+    /// Donet argument parsing is currently not working correctly when using backslash at the end of the path argument value. 
+    /// This class is fixing the bug.
+    /// See <see href="https://github.com/dotnet/corefxlab/issues/1311"/>.
+    /// </summary>
     internal static class ArgumentParser
     {
         internal static string[] CorrectArguments(string[] args)
         {
             var parsedArgs = new List<string>();
-
             foreach (var arg in args)
             {
                 // An argument name at the start of the current 'arg'.
                 var isArgumentName = Regex.Match(arg, @"^(-{1,2}\w+)", RegexOptions.Compiled);
-
-                // Arguments and their values that the current 'arg' contains.
-                var argumentStarts = Regex.Matches(arg, @"\s+(-{1,2}\w+)", RegexOptions.Compiled).ToList();
-
                 if (isArgumentName.Success)
                 {
                     parsedArgs.Add(arg.Trim());
+                    continue;
                 }
-                else if (argumentStarts.Count > 0)
+
+                // Arguments and their values that the current 'arg' contains.
+                var argumentStarts = Regex.Matches(arg, @"\s+(-{1,2}\w+)", RegexOptions.Compiled).ToList();
+                if (argumentStarts.Count > 0)
                 {
-                    ParseCorruptedArguments(parsedArgs, arg, argumentStarts);
+                    parsedArgs.AddRange(ParseCorruptedArguments(arg, argumentStarts));
+                    continue;
                 }
-                else if (!string.IsNullOrEmpty(arg))
+
+                if (!string.IsNullOrEmpty(arg))
                 {
                     // The current 'arg' contains neither an argument name nor a mix of arguments and their values.
                     parsedArgs.AddRange(ParseArgumentValues(arg));
@@ -38,30 +42,32 @@ namespace CloudModelGenerator
             return parsedArgs.ToArray();
         }
 
-        internal static void ParseCorruptedArguments(List<string> parsedArgs, string arg, List<Match> argumentStarts)
+        internal static List<string> ParseCorruptedArguments(string arg, List<Match> argumentStarts)
         {
             // Trailing value of the preceding argument.
             string trailingValue = arg.Substring(0, argumentStarts.First().Index).Trim();
-
+            var parsedArgs = new List<string>();
             if (!string.IsNullOrEmpty(trailingValue))
             {
                 parsedArgs.AddRange(ParseArgumentValues(trailingValue));
             }
 
-            for (int i = 0; i <= argumentStarts.Count - 1; i++)
+            for (int argumentIndex = 0; argumentIndex <= argumentStarts.Count - 1; argumentIndex++)
             {
-                ParseArgumentPair(parsedArgs, arg, argumentStarts, i);
+                parsedArgs.AddRange(ParseArgumentPair(arg, argumentStarts, argumentIndex));
             }
+            return parsedArgs;
         }
 
-        internal static void ParseArgumentPair(List<string> parsedArgs, string arg, List<Match> argumentStarts, int i)
+        internal static List<string> ParseArgumentPair(string arg, List<Match> argumentStarts, int argumentIndex)
         {
+            var parsedArgs = new List<string>();
             // Add the argument name itself.
-            parsedArgs.Add(arg.Substring(argumentStarts[i].Index, argumentStarts[i].Length).Trim());
+            parsedArgs.Add(arg.Substring(argumentStarts[argumentIndex].Index, argumentStarts[argumentIndex].Length).Trim());
 
             // Calculate the span of the raw value.
-            var valueStart = argumentStarts[i].Index + argumentStarts[i].Length;
-            var valueEnd = i == argumentStarts.Count - 1 ? arg.Length : argumentStarts[i + 1].Index;
+            var valueStart = argumentStarts[argumentIndex].Index + argumentStarts[argumentIndex].Length;
+            var valueEnd = argumentIndex == argumentStarts.Count - 1 ? arg.Length : argumentStarts[argumentIndex + 1].Index;
 
             var rawValue = arg.Substring(valueStart, valueEnd - valueStart).Trim();
 
@@ -69,6 +75,7 @@ namespace CloudModelGenerator
             {
                 parsedArgs.AddRange(ParseArgumentValues(rawValue));
             }
+            return parsedArgs;
         }
 
         internal static List<string> ParseArgumentValues(string rawValue)
@@ -95,7 +102,7 @@ namespace CloudModelGenerator
             var valuesWithTrailingQuotes = Regex.Matches(rawValue, @"([^""]+)("")", RegexOptions.Compiled);
 
             var quotedValueList = valuesWithTrailingQuotes
-                .Select(value => value.Value.Trim(new char[] { ' ', '"', '\\' }))
+                .Select(value => value.Value.Trim(new [] { ' ', '"', '\\' }))
                 .ToList();
 
             var lastQuotedValue = valuesWithTrailingQuotes.LastOrDefault();

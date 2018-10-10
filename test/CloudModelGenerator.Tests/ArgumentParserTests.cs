@@ -96,8 +96,7 @@ namespace CloudModelGenerator.Tests
         [MemberData(nameof(ParseCorruptedArguments_GetFixture))]
         public void ParseCorruptedArguments_ParsesArguments(string arg, List<Match> argumentStarts, List<string> expectedResult)
         {
-            var parsedArgs = new List<string>();
-            ArgumentParser.ParseCorruptedArguments(parsedArgs, arg, argumentStarts);
+            var parsedArgs = ArgumentParser.ParseCorruptedArguments(arg, argumentStarts);
 
             Assert.Equal(expectedResult, parsedArgs);
         }
@@ -161,8 +160,7 @@ namespace CloudModelGenerator.Tests
         [MemberData(nameof(ParseArgumentPairs_GetFixture))]
         public void ParseArgumentPair_ParsesPair(string arg, List<Match> argumentStarts, int i, List<string> expectedResult)
         {
-            var parsedArgs = new List<string>();
-            ArgumentParser.ParseArgumentPair(parsedArgs, arg, argumentStarts, i);
+            var parsedArgs = ArgumentParser.ParseArgumentPair(arg, argumentStarts, i);
 
             Assert.Equal(expectedResult, parsedArgs);
         }
