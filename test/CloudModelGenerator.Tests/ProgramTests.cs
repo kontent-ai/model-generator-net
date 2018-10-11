@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.IO;
 using System.Reflection;
@@ -27,6 +28,9 @@ namespace CloudModelGenerator.Tests
             var options = Program.CreateCodeGeneratorOptions(preparedSyntax);
             Assert.Equal("./", options.OutputDir);
         }
+
+
+
 
         [Fact]
         public void CreateCodeGeneratorOptions_OutputSetInParameters_OuputDirHasCustomValue()

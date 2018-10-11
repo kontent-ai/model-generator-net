@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using System.CommandLine;
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 
 namespace CloudModelGenerator
 {
@@ -14,7 +14,8 @@ namespace CloudModelGenerator
 
         static int Main(string[] args)
         {
-            var syntax = Parse(args);
+            var correctedArgs = ArgumentParser.CorrectArguments(args);
+            var syntax = Parse(correctedArgs);
             var unexpectedArgs = new List<string>(syntax.RemainingArguments);
 
             if (unexpectedArgs.Count > 0)
