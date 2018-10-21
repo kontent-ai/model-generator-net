@@ -1,9 +1,9 @@
+using Microsoft.Extensions.Options;
+using Moq;
+using RichardSzalay.MockHttp;
 using System;
 using System.IO;
-using RichardSzalay.MockHttp;
 using Xunit;
-using Moq;
-using Microsoft.Extensions.Options;
 
 namespace CloudModelGenerator.Tests
 {
@@ -34,7 +34,7 @@ namespace CloudModelGenerator.Tests
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
-                ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3",
+                DeliveryOptions = { ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3" },
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
                 ContentManagementApi = cmApi
@@ -47,7 +47,7 @@ namespace CloudModelGenerator.Tests
             codeGenerator.GenerateTypeProvider();
 
             Assert.True(Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Length > 10);
-            
+
             foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR)))
             {
                 Assert.DoesNotContain(".Generated.cs", Path.GetFileName(filepath));
@@ -72,7 +72,7 @@ namespace CloudModelGenerator.Tests
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
-                ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3",
+                DeliveryOptions = { ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3" },
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
                 FileNameSuffix = transformFilename,
@@ -110,7 +110,7 @@ namespace CloudModelGenerator.Tests
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
-                ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3",
+                DeliveryOptions = { ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3" },
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
                 FileNameSuffix = transformFilename,

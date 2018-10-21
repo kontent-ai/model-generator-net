@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using KenticoCloud.Delivery;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -103,11 +104,14 @@ namespace CloudModelGenerator
 
             CodeGeneratorOptions options = new CodeGeneratorOptions();
 
-            // Load the options from the configuration sources
+            // Load Code Generator Options from the configuration sources
             new ConfigureFromConfigurationOptions<CodeGeneratorOptions>(Configuration).Configure(options);
 
+            // Load Delivery Options from the configuration sources
+            new ConfigureFromConfigurationOptions<DeliveryOptions>(Configuration.GetSection(nameof(DeliveryOptions))).Configure(options.DeliveryOptions);
+
             // No projectId was passed as an arg or set in the appSettings.config
-            if (string.IsNullOrEmpty(options.ProjectId))
+            if (string.IsNullOrEmpty(options.DeliveryOptions.ProjectId))
             {
                 throw new InvalidOperationException("Provide a Project ID!");
             }

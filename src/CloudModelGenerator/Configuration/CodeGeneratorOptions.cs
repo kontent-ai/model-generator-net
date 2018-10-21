@@ -1,4 +1,6 @@
-﻿namespace CloudModelGenerator
+﻿using KenticoCloud.Delivery;
+
+namespace CloudModelGenerator
 {
     public class CodeGeneratorOptions
     {
@@ -8,9 +10,9 @@
         public static bool DefaultContentManagementApi = false;
 
         /// <summary>
-        /// Kentico Cloud Project ID
+        /// Delivery Client configuration.
         /// </summary>
-        public string ProjectId { get; set; }
+        public DeliveryOptions DeliveryOptions = new DeliveryOptions();
 
         /// <summary>
         /// Namespace name of the generated classes

@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using KenticoCloud.Delivery;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
 
@@ -14,16 +15,22 @@ namespace CloudModelGenerator
         {
             foreach (var commandOption in appOptions)
             {
-                if (commandOption.Value == null)
+                if (commandOption.Value != null)
                 {
-                    continue;
-                }
+                    string value = commandOption.Value.ToString();
 
-                string value = commandOption.Value.ToString();
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        var paramName = commandOption.Names.Last();
 
-                if (!string.IsNullOrEmpty(value))
-                {
-                    Data.Add(commandOption.Names.Last(), value);
+                        // Backward compatibility
+                        if (paramName == "projectid")
+                        {
+                            paramName = $"{nameof(DeliveryOptions)}:ProjectId";
+                        }
+
+                        Data.Add(paramName, value);
+                    }
                 }
             }
         }

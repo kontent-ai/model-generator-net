@@ -1,10 +1,10 @@
-﻿using System;
+﻿using KenticoCloud.Delivery;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using KenticoCloud.Delivery;
-using Microsoft.Extensions.Options;
 
 namespace CloudModelGenerator
 {
@@ -27,7 +27,7 @@ namespace CloudModelGenerator
             _options.OutputDir = Path.GetFullPath(_options.OutputDir);
 
             // Initialize DeliveryClient
-            Client = new DeliveryClient(_options.ProjectId);
+            Client = new DeliveryClient(_options.DeliveryOptions);
         }
 
         public void GenerateContentTypeModels(bool structuredModel = false)
@@ -48,7 +48,7 @@ namespace CloudModelGenerator
             }
             else
             {
-                Console.WriteLine($@"No content type available for the project ({_options.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kenticocloud.com/.");
+                Console.WriteLine($@"No content type available for the project ({_options.DeliveryOptions.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kenticocloud.com/.");
             }
         }
 
@@ -77,7 +77,7 @@ namespace CloudModelGenerator
             }
             else
             {
-                Console.WriteLine($@"No content type available for the project ({_options.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kenticocloud.com/.");
+                Console.WriteLine($@"No content type available for the project ({_options.DeliveryOptions.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kenticocloud.com/.");
             }
         }
 
@@ -93,25 +93,39 @@ namespace CloudModelGenerator
 
         private IEnumerable<ClassCodeGenerator> GetClassCodeGenerators(bool structuredModel = false)
         {
-            IEnumerable<ContentType> contentTypes = Task.Run(() => Client.GetTypesAsync()).Result.Types;
-
-            var codeGenerators = new List<ClassCodeGenerator>();
-            foreach (var contentType in contentTypes)
+            IEnumerable<ContentType> contentTypes = null;
+            try
             {
-                try
+                contentTypes = Task.Run(() => Client.GetTypesAsync()).Result.Types;
+
+            }
+            catch (AggregateException aex)
+            {
+                if ((aex.InnerExceptions.Count == 1) && aex.InnerException is DeliveryException)
                 {
-                    if (_options.GeneratePartials)
-                    {
-                        codeGenerators.Add(GetCustomClassCodeGenerator(contentType));
-                    }
-                    codeGenerators.Add(GetClassCodeGenerator(contentType, structuredModel));
-                }
-                catch (InvalidIdentifierException)
-                {
-                    Console.WriteLine($"Warning: Skipping Content Type '{contentType.System.Codename}'. Can't create valid C# Identifier from its name.");
+                    // Return friendlier message
+                    Console.WriteLine(aex.InnerException.Message);
                 }
             }
-
+            var codeGenerators = new List<ClassCodeGenerator>();
+            if (contentTypes != null)
+            {
+                foreach (var contentType in contentTypes)
+                {
+                    try
+                    {
+                        if (_options.GeneratePartials)
+                        {
+                            codeGenerators.Add(GetCustomClassCodeGenerator(contentType));
+                        }
+                        codeGenerators.Add(GetClassCodeGenerator(contentType, structuredModel));
+                    }
+                    catch (InvalidIdentifierException)
+                    {
+                        Console.WriteLine($"Warning: Skipping Content Type '{contentType.System.Codename}'. Can't create valid C# Identifier from its name.");
+                    }
+                }
+            }
             return codeGenerators;
         }
 
@@ -204,7 +218,7 @@ namespace CloudModelGenerator
             }
             else
             {
-                Console.WriteLine($@"No content type available for the project ({_options.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kenticocloud.com/.");
+                Console.WriteLine($@"No content type available for the project ({_options.DeliveryOptions.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kenticocloud.com/.");
             }
         }
     }
