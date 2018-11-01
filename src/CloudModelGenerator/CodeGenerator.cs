@@ -97,7 +97,6 @@ namespace CloudModelGenerator
             try
             {
                 contentTypes = Task.Run(() => Client.GetTypesAsync()).Result.Types;
-
             }
             catch (AggregateException aex)
             {
@@ -122,7 +121,7 @@ namespace CloudModelGenerator
                     }
                     catch (InvalidIdentifierException)
                     {
-                        Console.WriteLine($"Warning: Skipping Content Type '{contentType.System.Codename}'. Can't create valid C# Identifier from its name.");
+                        Console.WriteLine($"Warning: Skipping Content Type '{contentType.System.Codename}'. Can't create valid C# identifier from its name.");
                     }
                 }
             }

@@ -50,7 +50,7 @@ namespace CloudModelGenerator
         public bool ContentManagementApi { get; set; } = DefaultContentManagementApi;
 
         /// <summary>
-        /// Indicates whether a base class should be created and all ouput classes should derive from it using a partial class
+        /// Indicates whether a base class should be created and all output classes should derive from it using a partial class
         /// </summary>
         public string BaseClass { get; set; }
 
