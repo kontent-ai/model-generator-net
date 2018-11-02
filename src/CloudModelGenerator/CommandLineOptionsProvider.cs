@@ -23,7 +23,7 @@ namespace CloudModelGenerator
                     {
                         var paramName = commandOption.Names.Last();
 
-                        // Backward compatibility
+                        /// Backward compatibility <see href="https://github.com/Kentico/cloud-generators-net/issues/69"/>
                         if (paramName == "projectid")
                         {
                             paramName = $"{nameof(DeliveryOptions)}:ProjectId";
