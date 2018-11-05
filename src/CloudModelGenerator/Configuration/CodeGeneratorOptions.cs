@@ -1,4 +1,6 @@
-﻿namespace CloudModelGenerator
+﻿using KenticoCloud.Delivery;
+
+namespace CloudModelGenerator
 {
     public class CodeGeneratorOptions
     {
@@ -8,9 +10,9 @@
         public static bool DefaultContentManagementApi = false;
 
         /// <summary>
-        /// Kentico Cloud Project ID
+        /// Delivery Client configuration.
         /// </summary>
-        public string ProjectId { get; set; }
+        public DeliveryOptions DeliveryOptions = new DeliveryOptions();
 
         /// <summary>
         /// Namespace name of the generated classes
@@ -48,7 +50,7 @@
         public bool ContentManagementApi { get; set; } = DefaultContentManagementApi;
 
         /// <summary>
-        /// Indicates whether a base class should be created and all ouput classes should derive from it using a partial class
+        /// Indicates whether a base class should be created and all output classes should derive from it using a partial class
         /// </summary>
         public string BaseClass { get; set; }
 

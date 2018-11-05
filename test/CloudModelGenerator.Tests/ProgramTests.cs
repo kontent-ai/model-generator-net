@@ -29,9 +29,6 @@ namespace CloudModelGenerator.Tests
             Assert.Equal("./", options.OutputDir);
         }
 
-
-
-
         [Fact]
         public void CreateCodeGeneratorOptions_OutputSetInParameters_OuputDirHasCustomValue()
         {
