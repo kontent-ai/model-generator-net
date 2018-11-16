@@ -19,6 +19,12 @@ namespace CloudModelGenerator
             _options = options.Value;
             _client = deliveryClient;
 
+            /// Setting OutputDir default value here instead of in the <see cref="Parse"/> method as it would overwrite the JSON value.
+            if (string.IsNullOrEmpty(_options.OutputDir))
+            {
+                _options.OutputDir = "./";
+            }
+
             if (_options.GeneratePartials && string.IsNullOrEmpty(_options.FileNameSuffix))
             {
                 _options.FileNameSuffix = "Generated";
@@ -26,6 +32,22 @@ namespace CloudModelGenerator
 
             // Resolve relative path to full path
             _options.OutputDir = Path.GetFullPath(_options.OutputDir);
+        }
+
+        public int Run()
+        {
+            GenerateContentTypeModels(_options.StructuredModel);
+
+            if (!_options.ContentManagementApi && _options.WithTypeProvider)
+            {
+                GenerateTypeProvider();
+            }
+
+            if (!string.IsNullOrEmpty(_options.BaseClass))
+            {
+                GenerateBaseClass();
+            }
+            return 0;
         }
 
         public void GenerateContentTypeModels(bool structuredModel = false)

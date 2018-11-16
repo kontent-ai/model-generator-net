@@ -4,6 +4,7 @@ using Moq;
 using RichardSzalay.MockHttp;
 using System;
 using System.IO;
+using System.Reflection;
 using Xunit;
 
 namespace CloudModelGenerator.Tests
@@ -20,6 +21,37 @@ namespace CloudModelGenerator.Tests
                 Directory.Delete(TEMP_DIR, true);
             }
             Directory.CreateDirectory(TEMP_DIR);
+        }
+
+        [Fact]
+        public void CreateCodeGeneratorOptions_NoOutputSetInJsonNorInParameters_OuputDirHasDefaultValue()
+        {
+            var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+            var options = new CodeGeneratorOptions
+            {
+                OutputDir = ""
+            };
+            mockOptions.Setup(x => x.Value).Returns(options);
+            var mockClient = new Mock<IDeliveryClient>();
+
+            var codeGenerator = new CodeGenerator(mockOptions.Object, mockClient.Object);
+            Assert.NotEmpty(options.OutputDir);
+        }
+
+        [Fact]
+        public void CreateCodeGeneratorOptions_OutputSetInParameters_OuputDirHasCustomValue()
+        {
+            var expectedOutputDir = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+            var options = new CodeGeneratorOptions
+            {
+                OutputDir = ""
+            };
+            mockOptions.Setup(x => x.Value).Returns(options);
+            var mockClient = new Mock<IDeliveryClient>();
+
+            var codeGenerator = new CodeGenerator(mockOptions.Object, mockClient.Object);
+            Assert.Equal(expectedOutputDir, expectedOutputDir);
         }
 
         [Theory]
