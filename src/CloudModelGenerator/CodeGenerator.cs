@@ -12,11 +12,12 @@ namespace CloudModelGenerator
     {
         private readonly CodeGeneratorOptions _options;
 
-        private IDeliveryClient Client { get; }
+        private IDeliveryClient _client;
 
         public CodeGenerator(IOptions<CodeGeneratorOptions> options, IDeliveryClient deliveryClient)
         {
             _options = options.Value;
+            _client = deliveryClient;
 
             if (_options.GeneratePartials && string.IsNullOrEmpty(_options.FileNameSuffix))
             {
@@ -93,7 +94,7 @@ namespace CloudModelGenerator
             IEnumerable<ContentType> contentTypes = null;
             try
             {
-                contentTypes = Task.Run(() => Client.GetTypesAsync()).Result.Types;
+                contentTypes = Task.Run(() => _client.GetTypesAsync()).Result.Types;
             }
             catch (AggregateException aex)
             {

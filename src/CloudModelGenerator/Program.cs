@@ -79,9 +79,12 @@ namespace CloudModelGenerator
             var codeGeneratorOptions = Options.Create(options);
 
             // Setup DI
-            var serviceProvider = new ServiceCollection()
+            IServiceProvider serviceProvider = new ServiceCollection()
                 .AddDeliveryClient(options.DeliveryOptions)
+
                 .BuildServiceProvider();
+
+
 
             var codeGenerator = new CodeGenerator(codeGeneratorOptions, serviceProvider.GetService<IDeliveryClient>());
             codeGenerator.GenerateContentTypeModels(options.StructuredModel);
