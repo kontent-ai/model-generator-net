@@ -1,3 +1,4 @@
+using KenticoCloud.Delivery;
 using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
@@ -34,14 +35,15 @@ namespace CloudModelGenerator.Tests
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
-                DeliveryOptions = { ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3" },
+                //DeliveryOptions = { ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3" },
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
                 ContentManagementApi = cmApi
             });
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object);
-            codeGenerator.Client.HttpClient = httpClient;
+            var client = DeliveryClientBuilder.WithProjectId("975bf280-fd91-488c-994c-2f04416e5ee3").WithHttpClient(httpClient).Build();
+
+            var codeGenerator = new CodeGenerator(mockOptions.Object, client);
 
             codeGenerator.GenerateContentTypeModels();
             codeGenerator.GenerateTypeProvider();
@@ -79,8 +81,9 @@ namespace CloudModelGenerator.Tests
                 ContentManagementApi = cmApi
             });
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object);
-            codeGenerator.Client.HttpClient = httpClient;
+            var client = DeliveryClientBuilder.WithProjectId("975bf280-fd91-488c-994c-2f04416e5ee3").WithHttpClient(httpClient).Build();
+
+            var codeGenerator = new CodeGenerator(mockOptions.Object, client);
 
             codeGenerator.GenerateContentTypeModels();
 
@@ -118,8 +121,9 @@ namespace CloudModelGenerator.Tests
                 ContentManagementApi = cmApi
             });
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object);
-            codeGenerator.Client.HttpClient = httpClient;
+            var client = DeliveryClientBuilder.WithProjectId("975bf280-fd91-488c-994c-2f04416e5ee3").WithHttpClient(httpClient).Build();
+
+            var codeGenerator = new CodeGenerator(mockOptions.Object, client);
 
             codeGenerator.GenerateContentTypeModels();
 

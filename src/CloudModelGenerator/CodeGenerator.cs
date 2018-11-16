@@ -12,9 +12,9 @@ namespace CloudModelGenerator
     {
         private readonly CodeGeneratorOptions _options;
 
-        public DeliveryClient Client { get; }
+        private IDeliveryClient Client { get; }
 
-        public CodeGenerator(IOptions<CodeGeneratorOptions> options)
+        public CodeGenerator(IOptions<CodeGeneratorOptions> options, IDeliveryClient deliveryClient)
         {
             _options = options.Value;
 
@@ -25,9 +25,6 @@ namespace CloudModelGenerator
 
             // Resolve relative path to full path
             _options.OutputDir = Path.GetFullPath(_options.OutputDir);
-
-            // Initialize DeliveryClient
-            Client = new DeliveryClient(_options.DeliveryOptions);
         }
 
         public void GenerateContentTypeModels(bool structuredModel = false)

@@ -1,5 +1,6 @@
 ﻿using KenticoCloud.Delivery;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -7,13 +8,13 @@ using System.CommandLine;
 
 namespace CloudModelGenerator
 {
-    class Program
+    internal class Program
     {
-        static IConfigurationRoot Configuration { get; set; }
+        private static IConfigurationRoot Configuration { get; set; }
 
-        const string HelpOption = "help";
+        private const string HelpOption = "help";
 
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
             var correctedArgs = ArgumentParser.CorrectArguments(args);
             var syntax = Parse(correctedArgs);
@@ -60,7 +61,7 @@ namespace CloudModelGenerator
             return result;
         }
 
-        static int Execute(ArgumentSyntax argSyntax)
+        private static int Execute(ArgumentSyntax argSyntax)
         {
             CodeGeneratorOptions options;
 
@@ -77,7 +78,12 @@ namespace CloudModelGenerator
 
             var codeGeneratorOptions = Options.Create(options);
 
-            var codeGenerator = new CodeGenerator(codeGeneratorOptions);
+            // Setup DI
+            var serviceProvider = new ServiceCollection()
+                .AddDeliveryClient(options.DeliveryOptions)
+                .BuildServiceProvider();
+
+            var codeGenerator = new CodeGenerator(codeGeneratorOptions, serviceProvider.GetService<IDeliveryClient>());
             codeGenerator.GenerateContentTypeModels(options.StructuredModel);
 
             if (!options.ContentManagementApi && options.WithTypeProvider)
