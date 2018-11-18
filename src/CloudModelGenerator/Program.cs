@@ -13,32 +13,40 @@ namespace CloudModelGenerator
     {
         public static int Main(string[] args)
         {
-            // Parse command line input
-            var syntax = ParseCommandLine(ArgumentParser.CorrectArguments(args));
+            try
+            {
+                // Parse command line input
+                var syntax = ParseCommandLine(ArgumentParser.CorrectArguments(args));
 
-            // Create an instance of a DI container
-            var services = new ServiceCollection();
+                // Create an instance of a DI container
+                var services = new ServiceCollection();
 
-            // Build a configuration object from given sources
-            var configuration = new ConfigurationBuilder()
-                        .SetBasePath(Environment.CurrentDirectory)
-                        .AddJsonFile("appSettings.json", true)
-                        .Add(new CommandLineOptionsProvider(syntax))
-                        .Build();
+                // Build a configuration object from given sources
+                var configuration = new ConfigurationBuilder()
+                            .SetBasePath(Environment.CurrentDirectory)
+                            .AddJsonFile("appSettings.json", true)
+                            .Add(new CommandLineOptionsProvider(syntax))
+                            .Build();
 
-            // Fill the DI container
-            services.Configure<CodeGeneratorOptions>(configuration);
-            services.AddDeliveryClient(configuration);
-            services.AddTransient<CodeGenerator>();
+                // Fill the DI container
+                services.Configure<CodeGeneratorOptions>(configuration);
+                services.AddDeliveryClient(configuration);
+                services.AddTransient<CodeGenerator>();
 
-            // Build the DI container
-            var serviceProvider = services.BuildServiceProvider();
+                // Build the DI container
+                var serviceProvider = services.BuildServiceProvider();
 
-            // Validate configuration of the Delivery Client
-            serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value.DeliveryOptions.Validate();
+                // Validate configuration of the Delivery Client
+                serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value.DeliveryOptions.Validate();                
 
-            // Code generator entry point
-            return serviceProvider.GetService<CodeGenerator>().Run();
+                // Code generator entry point
+                return serviceProvider.GetService<CodeGenerator>().Run();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return 1;
+            }
         }
 
         internal static ArgumentSyntax ParseCommandLine(string[] args)

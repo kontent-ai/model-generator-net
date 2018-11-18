@@ -105,7 +105,7 @@ namespace CloudModelGenerator.Tests
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
-                DeliveryOptions = { ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3" },
+                DeliveryOptions = new DeliveryOptions { ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3" },
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
                 FileNameSuffix = transformFilename,
@@ -144,7 +144,7 @@ namespace CloudModelGenerator.Tests
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
-                DeliveryOptions = { ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3" },
+                DeliveryOptions = new DeliveryOptions { ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3" },
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
                 FileNameSuffix = transformFilename,

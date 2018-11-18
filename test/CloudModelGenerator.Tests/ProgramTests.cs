@@ -6,9 +6,9 @@ namespace CloudModelGenerator.Tests
     public class ProgramTests
     {
         [Fact]
-        public void CreateCodeGeneratorOptions_NoProjectId_Throws()
+        public void CreateCodeGeneratorOptions_NoProjectId_ReturnsError()
         {
-            Assert.Throws<ArgumentNullException>(() => Program.Main(new string[] { }));
+            Assert.Equal(1, Program.Main(new string[] { }));
         }
     }
 }
