@@ -10,7 +10,7 @@ namespace CloudModelGenerator
 {
     public class CodeGenerator
     {
-        private readonly CodeGeneratorOptions _options;
+        internal readonly CodeGeneratorOptions _options;
 
         private IDeliveryClient _client;
 
@@ -50,7 +50,7 @@ namespace CloudModelGenerator
             return 0;
         }
 
-        public void GenerateContentTypeModels(bool structuredModel = false)
+        internal void GenerateContentTypeModels(bool structuredModel = false)
         {
             // Make sure the output dir exists
             Directory.CreateDirectory(_options.OutputDir);
@@ -72,7 +72,7 @@ namespace CloudModelGenerator
             }
         }
 
-        public void GenerateTypeProvider()
+        internal void GenerateTypeProvider()
         {
             // Make sure the output dir exists
             Directory.CreateDirectory(_options.OutputDir);
