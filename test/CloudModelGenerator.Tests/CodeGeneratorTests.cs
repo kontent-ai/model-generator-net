@@ -1,8 +1,10 @@
+using KenticoCloud.Delivery;
 using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
 using System;
 using System.IO;
+using System.Reflection;
 using Xunit;
 
 namespace CloudModelGenerator.Tests
@@ -10,6 +12,7 @@ namespace CloudModelGenerator.Tests
     public class CodeGeneratorTests
     {
         private readonly string TEMP_DIR = Path.Combine(Path.GetTempPath(), "CodeGeneratorTests");
+        private readonly string PROJECT_ID = "975bf280-fd91-488c-994c-2f04416e5ee3";
 
         public CodeGeneratorTests()
         {
@@ -19,6 +22,37 @@ namespace CloudModelGenerator.Tests
                 Directory.Delete(TEMP_DIR, true);
             }
             Directory.CreateDirectory(TEMP_DIR);
+        }
+
+        [Fact]
+        public void CreateCodeGeneratorOptions_NoOutputSetInJsonNorInParameters_OuputDirHasDefaultValue()
+        {
+            var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+            var options = new CodeGeneratorOptions
+            {
+                OutputDir = ""
+            };
+            mockOptions.Setup(x => x.Value).Returns(options);
+            var mockClient = new Mock<IDeliveryClient>();
+
+            var codeGenerator = new CodeGenerator(mockOptions.Object, mockClient.Object);
+            Assert.NotEmpty(options.OutputDir);
+        }
+
+        [Fact]
+        public void CreateCodeGeneratorOptions_OutputSetInParameters_OuputDirHasCustomValue()
+        {
+            var expectedOutputDir = Environment.CurrentDirectory;
+            var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+            var options = new CodeGeneratorOptions
+            {
+                OutputDir = ""
+            };
+            mockOptions.Setup(x => x.Value).Returns(options);
+            var mockClient = new Mock<IDeliveryClient>();
+
+            var codeGenerator = new CodeGenerator(mockOptions.Object, mockClient.Object);
+            Assert.Equal(expectedOutputDir.TrimEnd('\\'), codeGenerator._options.OutputDir.TrimEnd('\\'));
         }
 
         [Theory]
@@ -34,14 +68,14 @@ namespace CloudModelGenerator.Tests
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
-                DeliveryOptions = { ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3" },
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
                 ContentManagementApi = cmApi
             });
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object);
-            codeGenerator.Client.HttpClient = httpClient;
+            var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithHttpClient(httpClient).Build();
+
+            var codeGenerator = new CodeGenerator(mockOptions.Object, client);
 
             codeGenerator.GenerateContentTypeModels();
             codeGenerator.GenerateTypeProvider();
@@ -72,15 +106,16 @@ namespace CloudModelGenerator.Tests
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
-                DeliveryOptions = { ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3" },
+                DeliveryOptions = new DeliveryOptions { ProjectId = PROJECT_ID },
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
                 FileNameSuffix = transformFilename,
                 ContentManagementApi = cmApi
             });
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object);
-            codeGenerator.Client.HttpClient = httpClient;
+            var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithHttpClient(httpClient).Build();
+
+            var codeGenerator = new CodeGenerator(mockOptions.Object, client);
 
             codeGenerator.GenerateContentTypeModels();
 
@@ -110,7 +145,7 @@ namespace CloudModelGenerator.Tests
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
-                DeliveryOptions = { ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3" },
+                DeliveryOptions = new DeliveryOptions { ProjectId = PROJECT_ID },
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
                 FileNameSuffix = transformFilename,
@@ -118,8 +153,9 @@ namespace CloudModelGenerator.Tests
                 ContentManagementApi = cmApi
             });
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object);
-            codeGenerator.Client.HttpClient = httpClient;
+            var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithHttpClient(httpClient).Build();
+
+            var codeGenerator = new CodeGenerator(mockOptions.Object, client);
 
             codeGenerator.GenerateContentTypeModels();
 

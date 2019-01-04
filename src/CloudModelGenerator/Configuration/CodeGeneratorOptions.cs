@@ -12,7 +12,7 @@ namespace CloudModelGenerator
         /// <summary>
         /// Delivery Client configuration.
         /// </summary>
-        public DeliveryOptions DeliveryOptions = new DeliveryOptions();
+        public DeliveryOptions DeliveryOptions { get; set; }
 
         /// <summary>
         /// Namespace name of the generated classes

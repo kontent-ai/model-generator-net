@@ -1,5 +1,6 @@
 ﻿using KenticoCloud.Delivery;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
@@ -11,27 +12,35 @@ namespace CloudModelGenerator
     /// </summary>
     public class CommandLineOptionsProvider : ConfigurationProvider, IConfigurationSource
     {
-        public CommandLineOptionsProvider(IEnumerable<Argument> appOptions)
+        public CommandLineOptionsProvider(ArgumentSyntax syntax)
         {
-            foreach (var commandOption in appOptions)
+            try
             {
-                if (commandOption.Value != null)
+                IEnumerable<Argument> appOptions = syntax.GetOptions();
+                foreach (var commandOption in appOptions)
                 {
-                    string value = commandOption.Value.ToString();
-
-                    if (!string.IsNullOrEmpty(value))
+                    if (commandOption.Value != null)
                     {
-                        var paramName = commandOption.Names.Last();
+                        string value = commandOption.Value.ToString();
 
-                        /// Backward compatibility <see href="https://github.com/Kentico/cloud-generators-net/issues/69"/>
-                        if (paramName == "projectid")
+                        if (!string.IsNullOrEmpty(value))
                         {
-                            paramName = $"{nameof(DeliveryOptions)}:ProjectId";
-                        }
+                            var paramName = commandOption.Names.Last();
 
-                        Data.Add(paramName, value);
+                            /// Backward compatibility <see href="https://github.com/Kentico/cloud-generators-net/issues/69"/>
+                            if (paramName == "projectid")
+                            {
+                                paramName = $"{nameof(DeliveryOptions)}:ProjectId";
+                            }
+
+                            Data.Add(paramName, value);
+                        }
                     }
                 }
+            }
+            catch (InvalidOperationException exception)
+            {
+                throw new Exception(exception.Message + "\n\n" + syntax.GetHelpText());
             }
         }
 

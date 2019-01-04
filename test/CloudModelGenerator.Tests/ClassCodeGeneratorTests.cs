@@ -100,7 +100,7 @@ namespace CloudModelGenerator.Tests
                 syntaxTrees: new[] { CSharpSyntaxTree.ParseText(compiledCode) },
                 references: new[] {
                     MetadataReference.CreateFromFile(typeof(Object).GetTypeInfo().Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(KenticoCloud.Delivery.DeliveryClient).GetTypeInfo().Assembly.Location)
+                    MetadataReference.CreateFromFile(typeof(KenticoCloud.Delivery.DeliveryClientBuilder).GetTypeInfo().Assembly.Location)
                 },
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 

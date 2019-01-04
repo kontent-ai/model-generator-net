@@ -51,7 +51,7 @@ namespace CloudModelGenerator.Tests
                     MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Runtime")).Location),
                     MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Linq")).Location),
                     MetadataReference.CreateFromFile(typeof(Object).GetTypeInfo().Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(KenticoCloud.Delivery.DeliveryClient).GetTypeInfo().Assembly.Location)
+                    MetadataReference.CreateFromFile(typeof(KenticoCloud.Delivery.DeliveryClientBuilder).GetTypeInfo().Assembly.Location)
                 },
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 

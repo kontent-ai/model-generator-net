@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>CloudModelGenerator</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>CloudModelGenerator</PackageId>
@@ -8,12 +8,13 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ILLink.Tasks" Version="0.1.4-preview-981901" />
-    <PackageReference Include="KenticoCloud.Delivery" Version="6.0.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="2.4.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
+    <PackageReference Include="KenticoCloud.Delivery" Version="8.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="2.10.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
     <PackageReference Include="System.CommandLine" Version="0.1.0-preview2-180131-1" />
   </ItemGroup>
 </Project>

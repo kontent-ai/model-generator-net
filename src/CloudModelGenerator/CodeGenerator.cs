@@ -10,13 +10,20 @@ namespace CloudModelGenerator
 {
     public class CodeGenerator
     {
-        private readonly CodeGeneratorOptions _options;
+        internal readonly CodeGeneratorOptions _options;
 
-        public DeliveryClient Client { get; }
+        private IDeliveryClient _client;
 
-        public CodeGenerator(IOptions<CodeGeneratorOptions> options)
+        public CodeGenerator(IOptions<CodeGeneratorOptions> options, IDeliveryClient deliveryClient)
         {
             _options = options.Value;
+            _client = deliveryClient;
+
+            /// Setting OutputDir default value here instead of in the <see cref="Parse"/> method as it would overwrite the JSON value.
+            if (string.IsNullOrEmpty(_options.OutputDir))
+            {
+                _options.OutputDir = "./";
+            }
 
             if (_options.GeneratePartials && string.IsNullOrEmpty(_options.FileNameSuffix))
             {
@@ -25,12 +32,25 @@ namespace CloudModelGenerator
 
             // Resolve relative path to full path
             _options.OutputDir = Path.GetFullPath(_options.OutputDir);
-
-            // Initialize DeliveryClient
-            Client = new DeliveryClient(_options.DeliveryOptions);
         }
 
-        public void GenerateContentTypeModels(bool structuredModel = false)
+        public int Run()
+        {
+            GenerateContentTypeModels(_options.StructuredModel);
+
+            if (!_options.ContentManagementApi && _options.WithTypeProvider)
+            {
+                GenerateTypeProvider();
+            }
+
+            if (!string.IsNullOrEmpty(_options.BaseClass))
+            {
+                GenerateBaseClass();
+            }
+            return 0;
+        }
+
+        internal void GenerateContentTypeModels(bool structuredModel = false)
         {
             // Make sure the output dir exists
             Directory.CreateDirectory(_options.OutputDir);
@@ -52,7 +72,7 @@ namespace CloudModelGenerator
             }
         }
 
-        public void GenerateTypeProvider()
+        internal void GenerateTypeProvider()
         {
             // Make sure the output dir exists
             Directory.CreateDirectory(_options.OutputDir);
@@ -96,7 +116,7 @@ namespace CloudModelGenerator
             IEnumerable<ContentType> contentTypes = null;
             try
             {
-                contentTypes = Task.Run(() => Client.GetTypesAsync()).Result.Types;
+                contentTypes = Task.Run(() => _client.GetTypesAsync()).Result.Types;
             }
             catch (AggregateException aex)
             {
