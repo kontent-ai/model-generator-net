@@ -13,7 +13,7 @@ This utility generates strongly-typed models based on Content Types in a Kentico
 
 The recommended way of obtaining this tool is installing it as a [.NET Core Global Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools#install-a-global-tool).
 
-`dotnet tool install -g KenticoCloud.ModelGenerator`
+- Run `dotnet tool install -g KenticoCloud.ModelGenerator` 
 
 Then you can start using the `CloudModelGenerator` command in the command-line right away.
 
