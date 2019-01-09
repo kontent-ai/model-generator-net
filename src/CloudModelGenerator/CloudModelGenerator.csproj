@@ -3,8 +3,17 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <AssemblyName>CloudModelGenerator</AssemblyName>
     <OutputType>Exe</OutputType>
-    <PackageId>CloudModelGenerator</PackageId>
+    <PackageId>KenticoCloud.ModelGenerator</PackageId>
     <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81</AssetTargetFallback>
+    <Authors>Kentico Software</Authors>
+    <Product>Kentico Cloud</Product>
+    <PackageIconUrl>https://cdn-assets-cloud.frontify.com/local/frontify/h_lNxVXLqrDqb2kyrixW3lMmUl7n-aBRzJUzyvzD7___LW9jdtOSUPH3rDY5hir6LLR1wkU6JUHU5cw4aslDT5LxoMDRqapeRdyOaKqcAqZtfSVO80fbcsW5T4PBVyno</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Kentico/cloud-generators-net</RepositoryUrl>  
+    <Copyright>© 2018 Kentico Software. All rights reserved.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>kentico;tool;kentico cloud;generator</PackageTags>
+    <Description>This utility generates strongly-typed models based on Content Types in a Kentico Cloud project. The models are supposed to be used together with the Kentico Cloud Delivery SDK for .NET or Kentico Cloud Content Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="KenticoCloud.Delivery" Version="8.0.0" />
