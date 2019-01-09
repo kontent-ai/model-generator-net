@@ -7,7 +7,7 @@
     <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81</AssetTargetFallback>
     <Authors>Kentico Software</Authors>
     <Product>Kentico Cloud</Product>
-    <PackageIconUrl>https://cdn-assets-cloud.frontify.com/local/frontify/h_lNxVXLqrDqb2kyrixW3lMmUl7n-aBRzJUzyvzD7___LW9jdtOSUPH3rDY5hir6LLR1wkU6JUHU5cw4aslDT5LxoMDRqapeRdyOaKqcAqZtfSVO80fbcsW5T4PBVyno</PackageIconUrl>
+    <PackageIconUrl>https://github.com/Kentico/Home/blob/master/images/logo_nuget.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://github.com/Kentico/cloud-generators-net</RepositoryUrl>  
     <Copyright>© 2018 Kentico Software. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
