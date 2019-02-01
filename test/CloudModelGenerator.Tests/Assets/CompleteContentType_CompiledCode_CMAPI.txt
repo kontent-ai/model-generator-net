@@ -23,5 +23,6 @@ namespace KenticoCloudModels
         public IEnumerable<ContentItemIdentifier> ModularContent { get; set; }
         public IEnumerable<TaxonomyTermIdentifier> Taxonomy { get; set; }
         public string UrlSlug { get; set; }
+		public string Custom { get; set; }
     }
 }
