@@ -25,7 +25,8 @@ namespace CloudModelGenerator
             { "asset", "IEnumerable<Asset>" },
             { "modular_content", "IEnumerable<object>" },
             { "taxonomy", "IEnumerable<TaxonomyTerm>" },
-            { "url_slug", "string" }
+            { "url_slug", "string" },
+            { "custom", "string" }
         };
 
         private static readonly Dictionary<string, string> ContentManagementTypes = new Dictionary<string, string>
@@ -38,7 +39,8 @@ namespace CloudModelGenerator
             { "asset", "IEnumerable<AssetIdentifier>" },
             { "modular_content", "IEnumerable<ContentItemIdentifier>" },
             { "taxonomy", "IEnumerable<TaxonomyTermIdentifier>" },
-            { "url_slug", "string" }
+            { "url_slug", "string" },
+            { "custom", "string" }
         };
 
         private static Dictionary<string, string> contentTypeToTypeName(bool cmApi) 

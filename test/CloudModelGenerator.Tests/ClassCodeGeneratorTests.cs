@@ -41,6 +41,7 @@ namespace CloudModelGenerator.Tests
             classDefinition.AddProperty(Property.FromContentType("modular_content", "modular_content"));
             classDefinition.AddProperty(Property.FromContentType("taxonomy", "taxonomy"));
             classDefinition.AddProperty(Property.FromContentType("url_slug", "url_slug"));
+            classDefinition.AddProperty(Property.FromContentType("custom", "custom"));
 
             classDefinition.AddSystemProperty();
 
@@ -67,6 +68,7 @@ namespace CloudModelGenerator.Tests
             classDefinition.AddProperty(Property.FromContentType("modular_content", "modular_content", true));
             classDefinition.AddProperty(Property.FromContentType("taxonomy", "taxonomy", true));
             classDefinition.AddProperty(Property.FromContentType("url_slug", "url_slug", true));
+            classDefinition.AddProperty(Property.FromContentType("custom", "custom", true));
 
             var classCodeGenerator = new ClassCodeGenerator(classDefinition, classDefinition.ClassName);
 
@@ -91,6 +93,7 @@ namespace CloudModelGenerator.Tests
             definition.AddProperty(Property.FromContentType("asset", "asset"));
             definition.AddProperty(Property.FromContentType("modular_content", "modular_content"));
             definition.AddProperty(Property.FromContentType("taxonomy", "taxonomy"));
+            definition.AddProperty(Property.FromContentType("custom", "custom"));
 
             var classCodeGenerator = new ClassCodeGenerator(definition, definition.ClassName);
             string compiledCode = classCodeGenerator.GenerateCode();
