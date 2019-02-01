@@ -81,7 +81,7 @@ namespace KenticoCloudModels
         public IEnumerable<object> ModularContent { get; set; }
         public IEnumerable<TaxonomyTerm> Taxonomy { get; set; }
         public string UrlSlug { get; set; }
-		public string CustomElement { get; set; }
+	public string CustomElement { get; set; }
         public ContentItemSystemAttributes System { get; set; }
     }
 }
@@ -136,7 +136,7 @@ namespace KenticoCloudModels
         public IEnumerable<ContentItemIdentifier> ModularContent { get; set; }
         public IEnumerable<TaxonomyTermIdentifier> Taxonomy { get; set; }
         public string UrlSlug { get; set; }
-		public string CustomElement { get; set; }
+	public string CustomElement { get; set; }
     }
 }
 ```
