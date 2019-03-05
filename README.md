@@ -1,6 +1,6 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/t6dgpiamopwugu8v/branch/master?svg=true)](https://ci.appveyor.com/project/kentico/cloud-generators-net/branch/master)
 [![NuGet](https://img.shields.io/nuget/v/KenticoCloud.ModelGenerator.svg)](https://www.nuget.org/packages/KenticoCloud.ModelGenerator)
-[![Stack Overflow](https://img.shields.io/stackexchange/stackoverflow/t/kentico%2dcloud.svg?label=Stack%20Overflow)](https://stackoverflow.com/tags/kentico-cloud)
+[![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?logo=stackoverflow&logoColor=white)](https://stackoverflow.com/tags/kentico-cloud)
 
 # Kentico Cloud model generator utility for .NET
 
