@@ -16,7 +16,7 @@
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="KenticoCloud.Delivery" Version="8.0.0" />
+    <PackageReference Include="KenticoCloud.Delivery" Version="10.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="2.10.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />

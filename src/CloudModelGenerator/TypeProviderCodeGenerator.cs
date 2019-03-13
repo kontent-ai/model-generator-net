@@ -60,7 +60,7 @@ using KenticoCloud.Delivery;
 
 namespace {_namespace}
 {{
-    public class {CLASS_NAME} : ICodeFirstTypeProvider
+    public class {CLASS_NAME} : ITypeProvider
     {{
         private static readonly Dictionary<Type, string> _codenames = new Dictionary<Type, string>
         {{
