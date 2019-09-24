@@ -7,7 +7,7 @@
     <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81</AssetTargetFallback>
     <Authors>Kentico Software</Authors>
     <Product>Kentico Kontent</Product>
-    <PackageIconUrl>https://github.com/Kentico/Home/blob/master/images/logo_nuget.png?raw=true</PackageIconUrl>
+    <PackageIconUrl>https://github.com/Kentico/Home/blob/master/images/kk-logo-nuget.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://github.com/Kentico/kontent-generators-net</RepositoryUrl>  
     <Copyright>© 2018 Kentico Software. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
