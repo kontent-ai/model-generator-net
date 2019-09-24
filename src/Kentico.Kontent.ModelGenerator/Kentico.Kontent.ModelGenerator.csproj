@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <AssemblyName>KontentModelGenerator</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>Kentico.Kontent.ModelGenerator</PackageId>
+    <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81</AssetTargetFallback>
+    <Authors>Kentico Software</Authors>
+    <Product>Kentico Kontent</Product>
+    <PackageIconUrl>https://github.com/Kentico/Home/blob/master/images/logo_nuget.png?raw=true</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Kentico/kontent-generators-net</RepositoryUrl>  
+    <Copyright>© 2018 Kentico Software. All rights reserved.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>kentico;tool;kentico kontent;generator</PackageTags>
+    <Description>This utility generates strongly-typed models based on Content Types in a Kentico Kontent project. The models are supposed to be used together with the Kentico Kontent Delivery SDK for .NET or Kentico Kontent Content Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Kentico.Kontent.Delivery" Version="11.0.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.3.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.0.0" />
+    <PackageReference Include="System.CommandLine" Version="0.1.0-preview2-180131-1" />
+  </ItemGroup>
+</Project>

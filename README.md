@@ -1,10 +1,10 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/t6dgpiamopwugu8v/branch/master?svg=true)](https://ci.appveyor.com/project/kentico/cloud-generators-net/branch/master)
-[![NuGet](https://img.shields.io/nuget/v/KenticoCloud.ModelGenerator.svg)](https://www.nuget.org/packages/KenticoCloud.ModelGenerator)
-[![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?logo=stackoverflow&logoColor=white)](https://stackoverflow.com/tags/kentico-cloud)
+[![Build status](https://ci.appveyor.com/api/projects/status/t6dgpiamopwugu8v/branch/master?svg=true)](https://ci.appveyor.com/project/kentico/kontent-generators-net/branch/master)
+[![NuGet](https://img.shields.io/nuget/v/Kentico.Kontent.ModelGenerator.svg)](https://www.nuget.org/packages/Kentico.Kontent.ModelGenerator)
+[![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?logo=stackoverflow&logoColor=white)](https://stackoverflow.com/tags/kentico-kontent)
 
-# Kentico Cloud model generator utility for .NET
+# Kentico Kontent model generator utility for .NET
 
-This utility generates strongly-typed models based on Content Types in a Kentico Cloud project. The models are supposed to be used together with the [Kentico Cloud Delivery SDK for .NET](https://github.com/Kentico/delivery-sdk-net) or [Kentico Cloud Content Management SDK for .NET](https://github.com/Kentico/content-management-sdk-net). Please read the [documentation](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) to see all benefits of this approach.
+This utility generates strongly-typed models based on Content Types in a Kentico Kontent project. The models are supposed to be used together with the [Kentico Kontent Delivery SDK for .NET](https://github.com/Kentico/delivery-sdk-net) or [Kentico Kontent Content Management SDK for .NET](https://github.com/Kentico/content-management-sdk-net). Please read the [documentation](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) to see all benefits of this approach.
 
 
 ## Get the tool
@@ -13,20 +13,20 @@ This utility generates strongly-typed models based on Content Types in a Kentico
 
 The recommended way of obtaining this tool is installing it as a [.NET Core Global Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools#install-a-global-tool).
 
-- Run `dotnet tool install -g KenticoCloud.ModelGenerator` 
+- Run `dotnet tool install -g Kentico.Kontent.ModelGenerator` 
 
-Then you can start using the `CloudModelGenerator` command in the command-line right away.
+Then you can start using the `KontentModelGenerator` command in the command-line right away.
 
 ### Windows
 
-Latest release: [Download](https://github.com/Kentico/cloud-generators-net/releases/latest)
+Latest release: [Download](https://github.com/Kentico/kontent-generators-net/releases/latest)
 
 Note: The application is [self-contained](https://www.hanselman.com/blog/SelfcontainedNETCoreApplications.aspx). There's no need to install any version of .NET on your machine.
 
 ### Linux, Mac OS and other platforms
 
 * Clone the repository
-* Navigate to the `cloud-generators-net\src\CloudModelGenerator` folder
+* Navigate to the `kontent-generators-net\src\KontentModelGenerator` folder
 * Run `dotnet build -r <RID>` to build the app
 * Run `dotnet publish -c release -r <RID>` to publish the app
 
@@ -37,7 +37,7 @@ See the [list of all RIDs](https://docs.microsoft.com/en-us/dotnet/articles/core
 ### Windows
 
 ```
-CloudModelGenerator.exe --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider] [--structuredmodel] [--filenamesuffix "<suffix>"]
+KontentModelGenerator.exe --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider] [--structuredmodel] [--filenamesuffix "<suffix>"]
 ```
 
 ### Linux, Mac OS and other platforms
@@ -49,8 +49,8 @@ dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outpu
 
 | Parameter (single character variant)            | Keyword variant | Required  | Default value  | Description |
 | --------------------- |:---------:|:---------:|:--------------:|:-----------:|
-| `-p` | `--projectid` | True  | `null` | A GUID that can be found in [Kentico Cloud](https://app.kenticocloud.com) -> API keys -> Project ID |
-| `-n` | `--namespace` | False | `KenticoCloudModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
+| `-p` | `--projectid` | True  | `null` | A GUID that can be found in [Kentico Kontent](https://app.kontent.ai) -> API keys -> Project ID |
+| `-n` | `--namespace` | False | `KenticoKontentModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
 | `-o` | `--outputdir` | False | `\.` | An output folder path |
 | `-g` | `--generatepartials` | False | `null` | Generates partial classes for customizationfilenames |
 | `-t` | `--withtypeprovider` | False | `true` | Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) for more info) |
@@ -66,9 +66,9 @@ These parameters can also be set via the appSettings.json file located in the sa
 ```csharp
 using System;
 using System.Collections.Generic;
-using KenticoCloud.Delivery;
+using Kentico.Kontent.Delivery;
 
-namespace KenticoCloudModels
+namespace KenticoKontentModels
 {
     public partial class CompleteContentType
     {
@@ -92,7 +92,7 @@ namespace KenticoCloudModels
 ### Windows
 
 ```
-CloudModelGenerator.exe --projectid "<projectid>" --contentmanagementapi [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
+KontentModelGenerator.exe --projectid "<projectid>" --contentmanagementapi [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
 ```
 
 ### Linux, Mac OS and other platforms
@@ -104,9 +104,9 @@ dotnet run --projectid "<projectid>" --contentmanagementapi [--namespace "<custo
 
 | Parameter (single character variant)            | Keyword variant | Required  | Default value  | Description |
 | --------------------- |:---------:|:---------:|:--------------:|:-----------:|
-| `-p` | `--projectid` | True  | `null` | A GUID that can be found in [Kentico Cloud](https://app.kenticocloud.com) -> API keys -> Project ID |
+| `-p` | `--projectid` | True  | `null` | A GUID that can be found in [Kentico Kontent](https://app.kontent.ai) -> API keys -> Project ID |
 | `-c` | `--contentmanagementapi` | True  | `false` | Indicates that models should be generated for  [Content Management SDK](https://github.com/Kentico/content-management-sdk-net) |
-| `-n` | `--namespace` | False | `KenticoCloudModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
+| `-n` | `--namespace` | False | `KenticoKontentModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
 | `-o` | `--outputdir` | False | `\.` | An output folder path |
 | `-f` | `--filenamesuffix` | False | `null` | Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs) |
 | `-b` | `--baseclass` | False | `null` | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes |
@@ -123,7 +123,7 @@ using KenticoCloud.ContentManagement.Models.Assets;
 using KenticoCloud.ContentManagement.Models.Items;
 using Newtonsoft.Json;
 
-namespace KenticoCloudModels
+namespace KenticoKontentModels
 {
     public partial class CompleteContentType
     {
@@ -143,7 +143,7 @@ namespace KenticoCloudModels
 
 
 ## Feedback & Contributing
-Check out the [contributing](https://github.com/Kentico/cloud-generators-net/blob/master/CONTRIBUTING.md) page to see the best places to file issues, start discussions and begin contributing.
+Check out the [contributing](https://github.com/Kentico/kontent-generators-net/blob/master/CONTRIBUTING.md) page to see the best places to file issues, start discussions and begin contributing.
 
 ### Wall of Fame
 We would like to express our thanks to the following people who contributed and made the project possible:
@@ -152,6 +152,6 @@ We would like to express our thanks to the following people who contributed and 
 - [Kashif Jamal Soofi](https://github.com/kashifsoofi)
 - [Casey Brown](https://github.com/MajorGrits)
 
-Would you like to become a hero too? Pick an [issue](https://github.com/Kentico/cloud-generators-net/issues) and send us a pull request!
+Would you like to become a hero too? Pick an [issue](https://github.com/Kentico/kontent-generators-net/issues) and send us a pull request!
 
-![Analytics](https://kentico-ga-beacon.azurewebsites.net/api/UA-69014260-4/Kentico/cloud-generators-net?pixel)
+![Analytics](https://kentico-ga-beacon.azurewebsites.net/api/UA-69014260-4/Kentico/kontent-generators-net?pixel)
