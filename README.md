@@ -60,7 +60,6 @@ dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outpu
 
 These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
 
-
 ### Example output
 
 ```csharp
