@@ -4,7 +4,7 @@
 
 # Kentico Kontent model generator utility for .NET
 
-This utility generates strongly-typed models based on Content Types in a Kentico Kontent project. The models are supposed to be used together with the [Kentico Kontent Delivery SDK for .NET](https://github.com/Kentico/delivery-sdk-net) or [Kentico Kontent Content Management SDK for .NET](https://github.com/Kentico/content-management-sdk-net). Please read the [documentation](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) to see all benefits of this approach.
+This utility generates strongly-typed models based on Content Types in a Kentico Kontent project. The models are supposed to be used together with the [Kentico Kontent Delivery SDK for .NET](https://github.com/Kentico/delivery-sdk-net) or [Kentico Kontent Content Management SDK for .NET](https://github.com/Kentico/content-management-sdk-net). Please read the [documentation](https://github.com/Kentico/kontent-delivery-sdk-net/wiki/Working-with-strongly-typed-models#customizing-the-strong-type-binding-logic#customizing-the-strong-type-binding-logic) to see all benefits of this approach.
 
 
 ## Get the tool
