@@ -86,6 +86,31 @@ namespace KenticoKontentModels
 }
 ```
 
+### Handling content element constraints
+Currently, the generator is built on top of the Delivery API which doesn't provide information about content element constraints such as "Allowed Content Types" or "Limit number of items". In case you want your models to be more specific, this is the best practice on how to extend them:
+
+Model.Generated.cs
+
+```csharp
+public partial class Home
+{
+    public IEnumerable<object> LinkedContentItems { get; set; }
+}
+```
+
+Model.cs
+
+```csharp
+public partial class Home
+{
+    // Allowed Content Types == "Article"
+    public IEnumerable<Article> Articles => = LinkedContentItems.OfType<Article>();
+	
+    // Allowed Content Types == "Article" && Limit number of items == 1	
+    public Article Article => = LinkedContentItems.OfType<Article>().FirstOrDefault();
+}
+```
+
 ## How to use for Content Management SDK
 
 ### Windows
