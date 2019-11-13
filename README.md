@@ -104,10 +104,10 @@ Model.cs
 public partial class Home
 {
     // Allowed Content Types == "Article"
-    public IEnumerable<Article> Articles => = LinkedContentItems.OfType<Article>();
+    public IEnumerable<Article> Articles => LinkedContentItems.OfType<Article>();
 	
     // Allowed Content Types == "Article" && Limit number of items == 1	
-    public Article Article => = LinkedContentItems.OfType<Article>().FirstOrDefault();
+    public Article Article => LinkedContentItems.OfType<Article>().FirstOrDefault();
 }
 ```
 
