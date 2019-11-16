@@ -11,9 +11,9 @@ namespace Kentico.Kontent.ModelGenerator
     public class BaseClassCodeGenerator
     {
         /// <summary>
-        /// List of classes to extend
+        /// Collection of classes to extend (HashSet ensures that classes get extended only once)
         /// </summary>
-        private readonly ICollection<string> _classesToExtend = new List<string>();
+        private readonly ICollection<string> _classesToExtend = new HashSet<string>();
 
         private readonly string _namespace;
         private readonly string _className;
