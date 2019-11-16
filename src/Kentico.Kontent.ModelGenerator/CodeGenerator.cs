@@ -216,7 +216,7 @@ namespace Kentico.Kontent.ModelGenerator
             {
                 var baseClassCodeGenerator = new BaseClassCodeGenerator(_options.BaseClass, _options.Namespace);
 
-                foreach (var codeGenerator in classCodeGenerators)
+                foreach (var codeGenerator in classCodeGenerators.Where(g => !g.CustomPartial))
                 {
                     baseClassCodeGenerator.AddClassNameToExtend(codeGenerator.ClassDefinition.ClassName);
                 }
