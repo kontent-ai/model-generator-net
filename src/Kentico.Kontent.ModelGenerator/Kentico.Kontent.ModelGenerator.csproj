@@ -14,7 +14,6 @@
     <Description>This utility generates strongly-typed models based on Content Types in a Kentico Kontent project. The models are supposed to be used together with the Kentico Kontent Delivery SDK for .NET or Kentico Kontent Content Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
     <RepositoryType>git</RepositoryType>
     <PublishTrimmed>true</PublishTrimmed>
-    <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Kentico.Kontent.Delivery" Version="12.3.0" />
