@@ -1,5 +1,4 @@
 ﻿using Kentico.Kontent.Delivery;
-using Kentico.Kontent.ModelGenerator;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;

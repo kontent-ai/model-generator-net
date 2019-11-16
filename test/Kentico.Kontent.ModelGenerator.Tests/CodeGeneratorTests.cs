@@ -4,7 +4,6 @@ using Moq;
 using RichardSzalay.MockHttp;
 using System;
 using System.IO;
-using System.Reflection;
 using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
