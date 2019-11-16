@@ -107,25 +107,23 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 },
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-            using (var ms = new MemoryStream())
+            using var ms = new MemoryStream();
+            EmitResult result = compilation.Emit(ms);
+            string compilationErrors = "Compilation errors:\n";
+
+            if (!result.Success)
             {
-                EmitResult result = compilation.Emit(ms);
-                string compilationErrors = "Compilation errors:\n";
+                IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
+                    diagnostic.IsWarningAsError ||
+                    diagnostic.Severity == DiagnosticSeverity.Error);
 
-                if (!result.Success)
+                foreach (Diagnostic diagnostic in failures)
                 {
-                    IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
-                        diagnostic.IsWarningAsError ||
-                        diagnostic.Severity == DiagnosticSeverity.Error);
-
-                    foreach (Diagnostic diagnostic in failures)
-                    {
-                        compilationErrors += String.Format("{0}: {1}\n", diagnostic.Id, diagnostic.GetMessage());
-                    }
+                    compilationErrors += String.Format("{0}: {1}\n", diagnostic.Id, diagnostic.GetMessage());
                 }
-
-                Assert.True(result.Success, compilationErrors);
             }
+
+            Assert.True(result.Success, compilationErrors);
         }
     }
 }

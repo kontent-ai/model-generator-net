@@ -5,12 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Kentico.Kontent.ModelGenerator
 {
     internal class Program
     {
-        public static int Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
             try
             {
@@ -39,7 +40,7 @@ namespace Kentico.Kontent.ModelGenerator
                 serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value.DeliveryOptions.Validate();                
 
                 // Code generator entry point
-                return serviceProvider.GetService<CodeGenerator>().Run();
+                return await serviceProvider.GetService<CodeGenerator>().RunAsync();
             }
             catch (Exception ex)
             {

@@ -4,6 +4,7 @@ using Moq;
 using RichardSzalay.MockHttp;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
@@ -57,7 +58,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void IntegrationTest(bool cmApi)
+        public async Task IntegrationTest(bool cmApi)
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
@@ -76,8 +77,8 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, client);
 
-            codeGenerator.GenerateContentTypeModels();
-            codeGenerator.GenerateTypeProvider();
+            await codeGenerator.GenerateContentTypeModels();
+            await codeGenerator.GenerateTypeProvider();
 
             Assert.True(Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Length > 10);
 
@@ -93,7 +94,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void IntegrationTestWithGeneratedSuffix(bool cmApi)
+        public async Task IntegrationTestWithGeneratedSuffix(bool cmApi)
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
@@ -116,7 +117,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, client);
 
-            codeGenerator.GenerateContentTypeModels();
+            await codeGenerator.GenerateContentTypeModels();
 
             Assert.True(Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Length > 10);
 
@@ -132,7 +133,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public void IntegrationTestWithGeneratePartials(bool cmApi)
+        public async Task IntegrationTestWithGeneratePartials(bool cmApi)
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
@@ -156,7 +157,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, client);
 
-            codeGenerator.GenerateContentTypeModels();
+            await codeGenerator.GenerateContentTypeModels();
 
             var allFilesCount = Directory.GetFiles(Path.GetFullPath(TEMP_DIR), "*.cs").Length;
             var generatedCount = Directory.GetFiles(Path.GetFullPath(TEMP_DIR), $"*.{transformFilename}.cs").Length;

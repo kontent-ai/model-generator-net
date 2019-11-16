@@ -1,13 +1,15 @@
-﻿using Xunit;
+﻿using System.Threading.Tasks;
+using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
 {
     public class ProgramTests
     {
         [Fact]
-        public void CreateCodeGeneratorOptions_NoProjectId_ReturnsError()
+        public async Task CreateCodeGeneratorOptions_NoProjectId_ReturnsError()
         {
-            Assert.Equal(1, Program.Main(new string[] { }));
+            var result = await Program.Main(new string[] { });
+            Assert.Equal(1, result);
         }
     }
 }

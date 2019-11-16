@@ -19,7 +19,7 @@ namespace Kentico.Kontent.ModelGenerator
             _options = options.Value;
             _client = deliveryClient;
 
-            /// Setting OutputDir default value here instead of in the <see cref="Parse"/> method as it would overwrite the JSON value.
+            // Setting OutputDir default value here instead of in the <see cref="Parse"/> method as it would overwrite the JSON value.
             if (string.IsNullOrEmpty(_options.OutputDir))
             {
                 _options.OutputDir = "./";
@@ -34,28 +34,28 @@ namespace Kentico.Kontent.ModelGenerator
             _options.OutputDir = Path.GetFullPath(_options.OutputDir);
         }
 
-        public int Run()
+        public async Task<int> RunAsync()
         {
-            GenerateContentTypeModels(_options.StructuredModel);
+            await GenerateContentTypeModels(_options.StructuredModel);
 
             if (!_options.ContentManagementApi && _options.WithTypeProvider)
             {
-                GenerateTypeProvider();
+                await GenerateTypeProvider();
             }
 
             if (!string.IsNullOrEmpty(_options.BaseClass))
             {
-                GenerateBaseClass();
+                await GenerateBaseClass();
             }
             return 0;
         }
 
-        internal void GenerateContentTypeModels(bool structuredModel = false)
+        internal async Task GenerateContentTypeModels(bool structuredModel = false)
         {
             // Make sure the output dir exists
             Directory.CreateDirectory(_options.OutputDir);
 
-            var classCodeGenerators = GetClassCodeGenerators(structuredModel);
+            var classCodeGenerators = await GetClassCodeGenerators(structuredModel);
 
             if (classCodeGenerators.Count() > 0)
             {
@@ -72,12 +72,12 @@ namespace Kentico.Kontent.ModelGenerator
             }
         }
 
-        internal void GenerateTypeProvider()
+        internal async Task GenerateTypeProvider()
         {
             // Make sure the output dir exists
             Directory.CreateDirectory(_options.OutputDir);
 
-            var classCodeGenerators = GetClassCodeGenerators();
+            var classCodeGenerators = await GetClassCodeGenerators();
 
             if (classCodeGenerators.Count() > 0)
             {
@@ -111,12 +111,12 @@ namespace Kentico.Kontent.ModelGenerator
             }
         }
 
-        private IEnumerable<ClassCodeGenerator> GetClassCodeGenerators(bool structuredModel = false)
+        private async Task<IEnumerable<ClassCodeGenerator>> GetClassCodeGenerators(bool structuredModel = false)
         {
             IEnumerable<ContentType> contentTypes = null;
             try
             {
-                contentTypes = Task.Run(() => _client.GetTypesAsync()).Result.Types;
+                contentTypes = (await _client.GetTypesAsync()).Types;
             }
             catch (AggregateException aex)
             {
@@ -205,12 +205,12 @@ namespace Kentico.Kontent.ModelGenerator
             return new ClassCodeGenerator(classDefinition, classFilename, _options.Namespace, true);
         }
 
-        public void GenerateBaseClass()
+        public async Task GenerateBaseClass()
         {
             // Make sure the output dir exists
             Directory.CreateDirectory(_options.OutputDir);
 
-            var classCodeGenerators = GetClassCodeGenerators();
+            IEnumerable<ClassCodeGenerator> classCodeGenerators = await GetClassCodeGenerators();
 
             if (classCodeGenerators.Count() > 0)
             {
