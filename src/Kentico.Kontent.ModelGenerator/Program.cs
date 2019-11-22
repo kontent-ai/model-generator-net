@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Kentico.Kontent.Delivery;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
@@ -48,8 +49,8 @@ namespace Kentico.Kontent.ModelGenerator
         {
             var mappings = new Dictionary<string, string>
             {
-                {"-p", "DeliveryOptions:ProjectId" },
-                {"--projectid", "DeliveryOptions:ProjectId" }, // Backwards compatibility
+                {"-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
+                {"--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" }, // Backwards compatibility
                 {"-n", nameof(CodeGeneratorOptions.Namespace) },
                 {"-o", nameof(CodeGeneratorOptions.OutputDir) },
                 {"-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
