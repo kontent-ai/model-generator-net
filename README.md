@@ -87,7 +87,7 @@ namespace KenticoKontentModels
         public IEnumerable<object> ModularContent { get; set; }
         public IEnumerable<TaxonomyTerm> Taxonomy { get; set; }
         public string UrlSlug { get; set; }
-	    public string CustomElement { get; set; }
+        public string CustomElement { get; set; }
         public ContentItemSystemAttributes System { get; set; }
     }
 }
