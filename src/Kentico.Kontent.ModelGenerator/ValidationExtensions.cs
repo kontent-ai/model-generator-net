@@ -16,7 +16,7 @@ namespace Kentico.Kontent.ModelGenerator
         {
             if (deliveryOptions == null)
             {
-                throw new Exception("You have to define 'DeliveryOptions' section in your config file or at least provide a Project ID.");
+                throw new Exception($"You have to provide at least the '{nameof(DeliveryOptions.ProjectId)}' argument. See http://bit.ly/k-params for more details on configuration.");
             }
             else
             {

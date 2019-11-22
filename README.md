@@ -47,18 +47,25 @@ dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outpu
 
 ### Parameters
 
-| Parameter (single character variant)            | Keyword variant | Required  | Default value  | Description |
+| Short key            | Long key | Required  | Default value  | Description |
 | --------------------- |:---------:|:---------:|:--------------:|:-----------:|
 | `-p` | `--projectid` | True  | `null` | A GUID that can be found in [Kentico Kontent](https://app.kontent.ai) -> API keys -> Project ID |
 | `-n` | `--namespace` | False | `KenticoKontentModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
 | `-o` | `--outputdir` | False | `\.` | An output folder path |
-| `-g` | `--generatepartials` | False | `null` | Generates partial classes for customizationfilenames |
+| `-g` | `--generatepartials` | False | `null` | Generates partial classes for customization |
 | `-t` | `--withtypeprovider` | False | `true` | Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) for more info) |
 | `-s` | `--structuredmodel` | False | `false` | Generates `IRichTextContent` instead of `string` for rich-text elements. This enables utilizing [structured rich-text rendering](https://github.com/Kentico/delivery-sdk-net/wiki/Structured-Rich-text-rendering) |
 | `-f` | `--filenamesuffix` | False | `null` | Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs) |
 | `-b` | `--baseclass` | False | `null` | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes |
 
 These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
+
+### Advanced configuration (Preview API, Secure API)
+There are two ways of configuring advanced Delivery SDK options (such as secure API access, preview API access, and [others](https://github.com/Kentico/kontent-delivery-sdk-net/blob/master/Kentico.Kontent.Delivery/Configuration/DeliveryOptions.cs)):
+
+1. Command-line arguments `--DeliveryOptions:UseSecureAccess true` ([syntax](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.commandlineconfigurationextensions.addcommandline?view=dotnet-plat-ext-3.0))
+
+2. [`appSettings.json`](https://github.com/Kentico/kontent-generators-net/blob/master/src/Kentico.Kontent.ModelGenerator/appSettings.json) - suitable for the standalone app release
 
 ### Example output
 
@@ -80,7 +87,7 @@ namespace KenticoKontentModels
         public IEnumerable<object> ModularContent { get; set; }
         public IEnumerable<TaxonomyTerm> Taxonomy { get; set; }
         public string UrlSlug { get; set; }
-	public string CustomElement { get; set; }
+	    public string CustomElement { get; set; }
         public ContentItemSystemAttributes System { get; set; }
     }
 }
@@ -126,7 +133,7 @@ dotnet run --projectid "<projectid>" --contentmanagementapi [--namespace "<custo
 
 ### Parameters
 
-| Parameter (single character variant)            | Keyword variant | Required  | Default value  | Description |
+| Short key          | Long key | Required  | Default value  | Description |
 | --------------------- |:---------:|:---------:|:--------------:|:-----------:|
 | `-p` | `--projectid` | True  | `null` | A GUID that can be found in [Kentico Kontent](https://app.kontent.ai) -> API keys -> Project ID |
 | `-c` | `--contentmanagementapi` | True  | `false` | Indicates that models should be generated for  [Content Management SDK](https://github.com/Kentico/content-management-sdk-net) |
