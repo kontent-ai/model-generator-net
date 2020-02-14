@@ -63,7 +63,7 @@ namespace Kentico.Kontent.ModelGenerator
         {
             var tree = CSharpSyntaxTree.ParseText(
 $@"using System;
-using Kentico.Kontent.Delivery;
+using Kentico.Kontent.Delivery.Abstractions;
 
 namespace {_namespace}
 {{
@@ -91,7 +91,7 @@ namespace {_namespace}
 
             var tree = CSharpSyntaxTree.ParseText(
 $@"using System;
-using Kentico.Kontent.Delivery;
+using Kentico.Kontent.Delivery.Abstractions;
 
 namespace {_namespace}
 {{

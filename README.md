@@ -150,8 +150,8 @@ These parameters can also be set via the appSettings.json file located in the sa
 ```csharp
 using System;
 using System.Collections.Generic;
-using KenticoCloud.ContentManagement.Models.Assets;
-using KenticoCloud.ContentManagement.Models.Items;
+using Kentico.Kontent.Management.Models.Assets;
+using Kentico.Kontent.Management.Models.Items;
 using Newtonsoft.Json;
 
 namespace KenticoKontentModels

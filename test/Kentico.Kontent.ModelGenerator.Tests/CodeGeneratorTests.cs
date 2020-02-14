@@ -1,4 +1,5 @@
 using Kentico.Kontent.Delivery;
+using Kentico.Kontent.Delivery.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
@@ -73,7 +74,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 ContentManagementApi = cmApi
             });
 
-            var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithHttpClient(httpClient).Build();
+            var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, client);
 
@@ -113,7 +114,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 ContentManagementApi = cmApi
             });
 
-            var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithHttpClient(httpClient).Build();
+            var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, client);
 
@@ -153,7 +154,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 ContentManagementApi = cmApi
             });
 
-            var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithHttpClient(httpClient).Build();
+            var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, client);
 

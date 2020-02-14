@@ -56,7 +56,7 @@ namespace Kentico.Kontent.ModelGenerator
                 $@"using System;
 using System.Collections.Generic;
 using System.Linq;
-using Kentico.Kontent.Delivery;
+using Kentico.Kontent.Delivery.Abstractions;
 
 namespace {_namespace}
 {{

@@ -51,7 +51,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                     MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Runtime")).Location),
                     MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Linq")).Location),
                     MetadataReference.CreateFromFile(typeof(Object).GetTypeInfo().Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(Kentico.Kontent.Delivery.DeliveryClientBuilder).GetTypeInfo().Assembly.Location)
+                    MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.ApiResponse).GetTypeInfo().Assembly.Location)
                 },
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 

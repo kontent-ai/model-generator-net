@@ -103,7 +103,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 syntaxTrees: new[] { CSharpSyntaxTree.ParseText(compiledCode) },
                 references: new[] {
                     MetadataReference.CreateFromFile(typeof(Object).GetTypeInfo().Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(Delivery.DeliveryClientBuilder).GetTypeInfo().Assembly.Location)
+                    MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.ApiResponse).GetTypeInfo().Assembly.Location)
                 },
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 

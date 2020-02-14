@@ -1,4 +1,4 @@
-﻿using Kentico.Kontent.Delivery;
+﻿using Kentico.Kontent.Delivery.Abstractions;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
