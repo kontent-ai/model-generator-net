@@ -41,7 +41,7 @@ namespace Kentico.Kontent.ModelGenerator
 
             var deliveryUsings = new[]
             {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("Kentico.Kontent.Delivery"))
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("Kentico.Kontent.Delivery.Abstractions"))
             };
 
             var usings = new[]
