@@ -11,11 +11,17 @@ This utility generates strongly-typed models based on Content Types in a Kentico
 
 ### .NET Core Global Tool
 
-The recommended way of obtaining this tool is installing it as a [.NET Core Global Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools#install-a-global-tool).
+The recommended way of obtaining this tool is installing it as a [.NET Core Global Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools#install-a-global-tool) by running:
 
-- Run `dotnet tool install -g Kentico.Kontent.ModelGenerator` 
+- `dotnet tool install -g Kentico.Kontent.ModelGenerator` 
 
 Then you can start using the `KontentModelGenerator` command in the command-line right away.
+
+### .NET Core Local Tool
+If you want to install the tool per project, run the following commands:
+
+- `dotnet new tool-manifest` to initialize the tools manifest (if you haven't done that already)
+- `dotnet tool install Kentico.Kontent.ModelGenerator` (to install the latest version
 
 ### Windows
 
