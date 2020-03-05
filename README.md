@@ -65,11 +65,11 @@ See the [list of all RIDs](https://docs.microsoft.com/en-us/dotnet/articles/core
 | `-f` | `--filenamesuffix` | False | `null` | Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs) |
 | `-b` | `--baseclass` | False | `null` | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes |
 
-Short keys such as `-s true` are interchangable with the long keys `--structuredmodel true`. Other possible syntax is  Parameter values are case-insensitive
-To see all aspects of the syntax, see the [MS docs](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.commandlineconfigurationextensions.addcommandline).
+### CLI Syntax
+Short keys such as `-s true` are interchangable with the long keys `--structuredmodel true`. Other possible syntax is `-s=true` or `--structuredmodel=true`. Parameter values are case-insensitive, so you can use both `-s=true` and `-s=True`. To see all aspects of the syntax, see the [MS docs](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.commandlineconfigurationextensions.addcommandline).
 
+### Config file
 These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
-
 
 ### Advanced configuration (Preview API, Secure API)
 There are two ways of configuring advanced Delivery SDK options (such as secure API access, preview API access, and [others](https://github.com/Kentico/kontent-delivery-sdk-net/blob/master/Kentico.Kontent.Delivery/Configuration/DeliveryOptions.cs)):
