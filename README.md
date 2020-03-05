@@ -6,7 +6,7 @@
 
 This utility generates strongly-typed (POCO) models based on [Content Types](https://docs.kontent.ai/tutorials/set-up-projects/define-content-models/creating-and-deleting-content-types) in a Kentico Kontent project. You can choose one of the following:
 - [Generate models compatible with the Kontent Delivery SDK for .NET](#how-to-use-for-delivery-sdk)
-- [Generate models compatible with the Kontent Management SDK for .NET](#how-to-use-for-content-management-sdk). 
+- [Generate models compatible with the Kontent Management SDK for .NET](#how-to-use-for-management-sdk). 
 
 ## How to use for Delivery SDK
 To fully understand all benefits of this approach, please read the [documentation](https://github.com/Kentico/kontent-delivery-sdk-net/wiki/Working-with-strongly-typed-models#customizing-the-strong-type-binding-logic).
