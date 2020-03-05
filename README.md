@@ -28,10 +28,11 @@ Then you can start using the `KontentModelGenerator` command in the command-line
 dotnet tool run KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]
 ```
 
-### Self-contained app for Windows
-Since the app is [self-contained](https://www.hanselman.com/blog/SelfcontainedNETCoreApplications.aspx), it's an ideal option for machines without .NET Core or .NET Core SDK installed
+### Standalone app for Windows
 
 Latest release: [Download](https://github.com/Kentico/kontent-generators-net/releases/latest)
+
+Since the app is [self-contained](https://www.hanselman.com/blog/SelfcontainedNETCoreApplications.aspx), it's an ideal option for machines without .NET Core or .NET Core SDK installed.
 
 **Usage:**
 ```
