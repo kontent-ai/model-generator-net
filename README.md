@@ -129,8 +129,7 @@ public partial class Home
 }
 ```
 
-## How to use for Management SDK
-[Kentico Kontent Management SDK for .NET](https://github.com/Kentico/kontent-management-sdk-net)
+## How to use for [Management SDK](https://github.com/Kentico/kontent-management-sdk-net)
 
 **Usage:**
 
