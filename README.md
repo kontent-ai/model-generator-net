@@ -8,7 +8,7 @@ This utility generates strongly-typed (POCO) models based on [Content Types](htt
 - [Generate models compatible with the Kontent Delivery SDK for .NET](#how-to-use-for-delivery-sdk)
 - [Generate models compatible with the Kontent Management SDK for .NET](#how-to-use-for-management-sdk). 
 
-## How to use for Delivery SDK
+## How to use for [Delivery SDK](https://github.com/Kentico/kontent-delivery-sdk-net)
 To fully understand all benefits of this approach, please read the [documentation](https://github.com/Kentico/kontent-delivery-sdk-net/wiki/Working-with-strongly-typed-models#customizing-the-strong-type-binding-logic).
 
 ### .NET Core Tool
