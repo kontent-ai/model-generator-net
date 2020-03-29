@@ -50,7 +50,7 @@ namespace Kentico.Kontent.ModelGenerator
                 SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("System.Collections.Generic")),
             }.Concat(cmApi ? cmApiUsings : deliveryUsings).ToArray();
 
-            var properties = ClassDefinition.Properties.Select((element, i) =>
+            var properties = ClassDefinition.Properties.OrderBy(p => p.Identifier).Select((element, i) =>
                 {
                     var property = SyntaxFactory
                         .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
@@ -82,21 +82,21 @@ namespace Kentico.Kontent.ModelGenerator
                 }
             ).ToArray();
 
-            var propertyCodenameConstants = ClassDefinition.PropertyCodenameConstants.Select(element =>
-                    SyntaxFactory.FieldDeclaration(
-                            SyntaxFactory.VariableDeclaration(
-                                    SyntaxFactory.ParseTypeName("string"),
-                                    SyntaxFactory.SeparatedList(new[] {
+            var propertyCodenameConstants = ClassDefinition.PropertyCodenameConstants.OrderBy(p => p.Codename).Select(element =>
+                      SyntaxFactory.FieldDeclaration(
+                              SyntaxFactory.VariableDeclaration(
+                                      SyntaxFactory.ParseTypeName("string"),
+                                      SyntaxFactory.SeparatedList(new[] {
                                         SyntaxFactory.VariableDeclarator(
                                             SyntaxFactory.Identifier($"{TextHelpers.GetValidPascalCaseIdentifierName(element.Codename)}Codename"),
                                             null,
                                             SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression( SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(element.Codename)))
                                         )
-                                    })
-                                )
-                            )
-                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.ConstKeyword))
+                                      })
+                                  )
+                              )
+                          .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                          .AddModifiers(SyntaxFactory.Token(SyntaxKind.ConstKeyword))
             ).ToArray();
 
             var classDeclaration = SyntaxFactory.ClassDeclaration(ClassDefinition.ClassName)
