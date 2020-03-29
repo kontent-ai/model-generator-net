@@ -83,9 +83,9 @@ namespace {_namespace}
 
             AdhocWorkspace cw = new AdhocWorkspace();
             // Normalize line endings
-            var o = cw.Options.WithChangedOption(FormattingOptions.NewLine, LanguageNames.CSharp, Environment.NewLine);
+            cw.Options = cw.Options.WithChangedOption(FormattingOptions.NewLine, LanguageNames.CSharp, Environment.NewLine);
 
-            return Formatter.Format(cu, cw, o).ToFullString();
+            return Formatter.Format(cu, cw, cw.Options).ToFullString();
         }
 
         private string CreateCodenameDictionaryValues()
