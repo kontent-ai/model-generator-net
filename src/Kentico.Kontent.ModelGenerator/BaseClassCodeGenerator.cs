@@ -76,6 +76,9 @@ namespace {_namespace}
             var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
 
             AdhocWorkspace cw = new AdhocWorkspace();
+            // Normalize line endings
+            var o = cw.Options.WithChangedOption(FormattingOptions.NewLine, LanguageNames.CSharp, Environment.NewLine);
+
             return Formatter.Format(cu, cw).ToFullString();
         }
 
@@ -103,6 +106,9 @@ namespace {_namespace}
             var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
 
             AdhocWorkspace cw = new AdhocWorkspace();
+            // Normalize line endings
+            var o = cw.Options.WithChangedOption(FormattingOptions.NewLine, LanguageNames.CSharp, Environment.NewLine);
+
             return Formatter.Format(cu, cw).ToFullString();
         }
     }

@@ -151,6 +151,8 @@ namespace Kentico.Kontent.ModelGenerator
             }
 
             AdhocWorkspace cw = new AdhocWorkspace();
+            // Normalize line endings
+            var o = cw.Options.WithChangedOption(FormattingOptions.NewLine, LanguageNames.CSharp, Environment.NewLine);
 
             return Formatter.Format(cu, cw).ToFullString();
         }
