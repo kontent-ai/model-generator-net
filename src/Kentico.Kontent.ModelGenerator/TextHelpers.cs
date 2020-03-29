@@ -6,6 +6,8 @@ namespace Kentico.Kontent.ModelGenerator
 {
     public static class TextHelpers
     {
+        private static readonly Regex lineEndings = new Regex(@"\r\n|\n\r|\n|\r");
+
         /// <summary>
         /// Returns a valid CSharp Identifier in a Pascal Case format for given string.
         /// </summary>
@@ -27,6 +29,11 @@ namespace Kentico.Kontent.ModelGenerator
                 .Split(new[] { WORD_SEPARATOR }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(word => Char.ToUpper(word[0]) + word.Substring(1))
                 .Aggregate((previous, current) => previous + current); ;
+        }
+
+        public static string NormalizeLineEndings(this string text)
+        {
+            return lineEndings.Replace(text, "\r\n");
         }
     }
 }

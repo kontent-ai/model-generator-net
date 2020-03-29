@@ -85,7 +85,7 @@ namespace {_namespace}
             // Normalize line endings
             cw.Options = cw.Options.WithChangedOption(FormattingOptions.NewLine, LanguageNames.CSharp, Environment.NewLine);
 
-            return Formatter.Format(cu, cw, cw.Options).ToFullString();
+            return Formatter.Format(cu, cw, cw.Options).ToFullString().NormalizeLineEndings();
         }
 
         private string CreateCodenameDictionaryValues()
