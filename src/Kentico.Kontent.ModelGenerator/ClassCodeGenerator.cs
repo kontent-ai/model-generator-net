@@ -154,7 +154,7 @@ namespace Kentico.Kontent.ModelGenerator
             // Normalize line endings
             var o = cw.Options.WithChangedOption(FormattingOptions.NewLine, LanguageNames.CSharp, Environment.NewLine);
 
-            return Formatter.Format(cu, cw).ToFullString();
+            return Formatter.Format(cu, cw, o).ToFullString();
         }
     }
 }
