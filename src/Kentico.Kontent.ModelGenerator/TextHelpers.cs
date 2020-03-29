@@ -33,7 +33,7 @@ namespace Kentico.Kontent.ModelGenerator
 
         public static string NormalizeLineEndings(this string text)
         {
-            return lineEndings.Replace(text, "\r\n");
+            return lineEndings.Replace(text, Environment.NewLine);
         }
     }
 }
