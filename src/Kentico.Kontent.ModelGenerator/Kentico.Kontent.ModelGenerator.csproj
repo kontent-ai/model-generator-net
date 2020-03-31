@@ -26,7 +26,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Kentico.Kontent.Delivery" Version="13.0.1-beta6" />
+    <PackageReference Include="Kentico.Kontent.Delivery" Version="13.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.5.0-beta2-final" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.1" />
