@@ -7,7 +7,9 @@ namespace Kentico.Kontent.ModelGenerator
     {
         public const string STRUCTURED_SUFFIX = "(structured)";
 
-        public string Identifier { get; private set; }
+        public string Identifier => TextHelpers.GetValidPascalCaseIdentifierName(Codename);
+
+        public string Codename { get; }
 
         /// <summary>
         /// Returns return type of the property in a string format (e.g.: "string").
@@ -48,7 +50,7 @@ namespace Kentico.Kontent.ModelGenerator
 
         public Property(string codename, string typeName)
         {
-            Identifier = TextHelpers.GetValidPascalCaseIdentifierName(codename);
+            Codename = codename;
             TypeName = typeName;
         }
 

@@ -50,7 +50,7 @@ namespace Kentico.Kontent.ModelGenerator
                 SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("System.Collections.Generic")),
             }.Concat(cmApi ? cmApiUsings : deliveryUsings).ToArray();
 
-            var properties = ClassDefinition.Properties.OrderBy(p => p.Identifier).Select((element, i) =>
+            var properties = ClassDefinition.Properties.OrderBy(p => p.Identifier).Select((element) =>
                 {
                     var property = SyntaxFactory
                         .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
@@ -61,8 +61,8 @@ namespace Kentico.Kontent.ModelGenerator
                             SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
                                 .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
                         );
-
-                    if (cmApi && ClassDefinition.PropertyCodenameConstants.Count > i)
+                    
+                    if (cmApi)
                     {
                         property = property.AddAttributeLists(
                                 SyntaxFactory.AttributeList(
@@ -74,8 +74,7 @@ namespace Kentico.Kontent.ModelGenerator
                                                         SyntaxFactory.AttributeArgument(
                                                             SyntaxFactory.LiteralExpression(
                                                                 SyntaxKind.StringLiteralExpression,
-                                                                SyntaxFactory.Literal(ClassDefinition
-                                                                    .PropertyCodenameConstants[i].Codename)))))))));
+                                                                SyntaxFactory.Literal(element.Codename)))))))));
                     }
 
                     return property;

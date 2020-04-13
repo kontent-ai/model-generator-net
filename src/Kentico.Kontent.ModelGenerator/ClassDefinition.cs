@@ -10,13 +10,12 @@ namespace Kentico.Kontent.ModelGenerator
 
         public List<ContentElement> PropertyCodenameConstants { get; } = new List<ContentElement>();
 
-        public string ClassName { get; }
+        public string ClassName => TextHelpers.GetValidPascalCaseIdentifierName(Codename);
 
         public string Codename { get; }
 
         public ClassDefinition(string codeName)
         {
-            ClassName = TextHelpers.GetValidPascalCaseIdentifierName(codeName);
             Codename = codeName;
         }
 

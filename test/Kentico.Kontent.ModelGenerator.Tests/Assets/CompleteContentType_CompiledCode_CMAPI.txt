@@ -14,15 +14,25 @@ namespace KenticoKontentModels
 {
     public partial class CompleteContentType
     {
+        [JsonProperty("asset")]
         public IEnumerable<AssetIdentifier> Asset { get; set; }
-		public string Custom { get; set; }
+        [JsonProperty("custom")]
+        public string Custom { get; set; }
+        [JsonProperty("date_time")]
         public DateTime? DateTime { get; set; }
+        [JsonProperty("modular_content")]
         public IEnumerable<ContentItemIdentifier> ModularContent { get; set; }
+        [JsonProperty("multiple_choice")]
         public IEnumerable<MultipleChoiceOptionIdentifier> MultipleChoice { get; set; }
+        [JsonProperty("number")]
         public decimal? Number { get; set; }
+        [JsonProperty("rich_text")]
         public string RichText { get; set; }
+        [JsonProperty("taxonomy")]
         public IEnumerable<TaxonomyTermIdentifier> Taxonomy { get; set; }
+        [JsonProperty("text")]
         public string Text { get; set; }
+        [JsonProperty("url_slug")]
         public string UrlSlug { get; set; }
     }
 }
