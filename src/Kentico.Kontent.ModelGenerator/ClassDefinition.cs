@@ -1,6 +1,6 @@
-﻿using Kentico.Kontent.Delivery.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Kentico.Kontent.Delivery.Abstractions;
 
 namespace Kentico.Kontent.ModelGenerator
 {
@@ -8,7 +8,7 @@ namespace Kentico.Kontent.ModelGenerator
     {
         public List<Property> Properties { get; } = new List<Property>();
 
-        public List<ContentElement> PropertyCodenameConstants { get; } = new List<ContentElement>();
+        public List<IContentElement> PropertyCodenameConstants { get; } = new List<IContentElement>();
 
         public string ClassName => TextHelpers.GetValidPascalCaseIdentifierName(Codename);
 
@@ -29,7 +29,7 @@ namespace Kentico.Kontent.ModelGenerator
             Properties.Add(property);
         }
 
-        public void AddPropertyCodenameConstant(ContentElement element)
+        public void AddPropertyCodenameConstant(IContentElement element)
         {
             if (PropertyCodenameConstantIsAlreadyPresent(element))
             {
@@ -49,7 +49,7 @@ namespace Kentico.Kontent.ModelGenerator
             return Properties.Exists(e => e.Identifier == property.Identifier);
         }
 
-        private bool PropertyCodenameConstantIsAlreadyPresent(ContentElement element)
+        private bool PropertyCodenameConstantIsAlreadyPresent(IContentElement element)
         {
             return PropertyCodenameConstants.Exists(e => e.Codename == element.Codename);
         }

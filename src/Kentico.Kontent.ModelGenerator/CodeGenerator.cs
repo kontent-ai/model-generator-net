@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Kentico.Kontent.Delivery;
+using Kentico.Kontent.ModelGenerator.Configuration;
 
 namespace Kentico.Kontent.ModelGenerator
 {
@@ -57,7 +59,7 @@ namespace Kentico.Kontent.ModelGenerator
 
             var classCodeGenerators = await GetClassCodeGenerators(structuredModel);
 
-            if (classCodeGenerators.Count() > 0)
+            if (classCodeGenerators.Any())
             {
                 foreach (var codeGenerator in classCodeGenerators)
                 {
@@ -79,7 +81,7 @@ namespace Kentico.Kontent.ModelGenerator
 
             var classCodeGenerators = await GetClassCodeGenerators();
 
-            if (classCodeGenerators.Count() > 0)
+            if (classCodeGenerators.Any())
             {
                 var typeProviderCodeGenerator = new TypeProviderCodeGenerator(_options.Namespace);
 
@@ -113,7 +115,7 @@ namespace Kentico.Kontent.ModelGenerator
 
         private async Task<IEnumerable<ClassCodeGenerator>> GetClassCodeGenerators(bool structuredModel = false)
         {
-            IEnumerable<ContentType> contentTypes = null;
+            IEnumerable<IContentType> contentTypes = null;
             try
             {
                 contentTypes = (await _client.GetTypesAsync()).Types;
@@ -148,7 +150,7 @@ namespace Kentico.Kontent.ModelGenerator
             return codeGenerators;
         }
 
-        private ClassCodeGenerator GetClassCodeGenerator(ContentType contentType, bool structuredModel)
+        private ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, bool structuredModel)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
 
@@ -197,7 +199,7 @@ namespace Kentico.Kontent.ModelGenerator
             return new ClassCodeGenerator(classDefinition, classFilename, _options.Namespace);
         }
 
-        private ClassCodeGenerator GetCustomClassCodeGenerator(ContentType contentType)
+        private ClassCodeGenerator GetCustomClassCodeGenerator(IContentType contentType)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
             string classFilename = $"{classDefinition.ClassName}";
@@ -212,7 +214,7 @@ namespace Kentico.Kontent.ModelGenerator
 
             IEnumerable<ClassCodeGenerator> classCodeGenerators = await GetClassCodeGenerators();
 
-            if (classCodeGenerators.Count() > 0)
+            if (classCodeGenerators.Any())
             {
                 var baseClassCodeGenerator = new BaseClassCodeGenerator(_options.BaseClass, _options.Namespace);
 

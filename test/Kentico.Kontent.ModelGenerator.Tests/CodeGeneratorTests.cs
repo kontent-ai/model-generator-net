@@ -6,6 +6,9 @@ using RichardSzalay.MockHttp;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Kentico.Kontent.Delivery.Builders.DeliveryClient;
+using Kentico.Kontent.Delivery.Configuration.DeliveryOptions;
+using Kentico.Kontent.ModelGenerator.Configuration;
 using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
@@ -38,6 +41,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, mockClient.Object);
             Assert.NotEmpty(options.OutputDir);
+            Assert.NotEmpty(codeGenerator._options.OutputDir);
         }
 
         [Fact]
@@ -63,7 +67,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
-                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
+                    .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -99,7 +103,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
-                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
+                    .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             const string transformFilename = "Generated";
@@ -138,7 +142,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
-                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
+                    .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             const string transformFilename = "Generated";

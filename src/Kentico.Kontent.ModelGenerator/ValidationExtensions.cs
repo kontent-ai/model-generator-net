@@ -1,5 +1,5 @@
-﻿using Kentico.Kontent.Delivery;
-using System;
+﻿using System;
+using Kentico.Kontent.Delivery.Configuration.DeliveryOptions;
 
 namespace Kentico.Kontent.ModelGenerator
 {

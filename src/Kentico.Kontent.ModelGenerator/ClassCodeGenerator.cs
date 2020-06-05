@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Newtonsoft.Json.Serialization;
 
 namespace Kentico.Kontent.ModelGenerator
 {
@@ -34,23 +35,23 @@ namespace Kentico.Kontent.ModelGenerator
         {
             var cmApiUsings = new[]
             {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("Newtonsoft.Json")),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("Kentico.Kontent.Management.Models.Items")),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("Kentico.Kontent.Management.Models.Assets"))
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}")),
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Items.ContentItemModel).Namespace!)),
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Assets.AssetModel).Namespace!))
             };
 
             var deliveryUsings = new[]
             {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("Kentico.Kontent.Delivery.Abstractions"))
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
             };
 
             var usings = new[]
             {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("System")),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName("System.Collections.Generic")),
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
             }.Concat(cmApi ? cmApiUsings : deliveryUsings).ToArray();
 
-            var properties = ClassDefinition.Properties.OrderBy(p => p.Identifier).Select((element) =>
+            MemberDeclarationSyntax[] properties = ClassDefinition.Properties.OrderBy(p => p.Identifier).Select((element) =>
                 {
                     var property = SyntaxFactory
                         .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
@@ -61,13 +62,13 @@ namespace Kentico.Kontent.ModelGenerator
                             SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
                                 .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
                         );
-                    
+
                     if (cmApi)
                     {
                         property = property.AddAttributeLists(
                                 SyntaxFactory.AttributeList(
                                     SyntaxFactory.SingletonSeparatedList(
-                                        SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("JsonProperty"))
+                                        SyntaxFactory.Attribute(SyntaxFactory.IdentifierName(nameof(JsonProperty)))
                                             .WithArgumentList(
                                                 SyntaxFactory.AttributeArgumentList(
                                                     SyntaxFactory.SingletonSeparatedList(
@@ -81,7 +82,7 @@ namespace Kentico.Kontent.ModelGenerator
                 }
             ).ToArray();
 
-            var propertyCodenameConstants = ClassDefinition.PropertyCodenameConstants.OrderBy(p => p.Codename).Select(element =>
+            MemberDeclarationSyntax[] propertyCodenameConstants = ClassDefinition.PropertyCodenameConstants.OrderBy(p => p.Codename).Select(element =>
                       SyntaxFactory.FieldDeclaration(
                               SyntaxFactory.VariableDeclaration(
                                       SyntaxFactory.ParseTypeName("string"),

@@ -102,8 +102,8 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 assemblyName: Path.GetRandomFileName(),
                 syntaxTrees: new[] { CSharpSyntaxTree.ParseText(compiledCode) },
                 references: new[] {
-                    MetadataReference.CreateFromFile(typeof(Object).GetTypeInfo().Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.ApiResponse).GetTypeInfo().Assembly.Location)
+                    MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.IApiResponse).GetTypeInfo().Assembly.Location)
                 },
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
@@ -119,7 +119,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
                 foreach (Diagnostic diagnostic in failures)
                 {
-                    compilationErrors += String.Format("{0}: {1}\n", diagnostic.Id, diagnostic.GetMessage());
+                    compilationErrors += $"{diagnostic.Id}: {diagnostic.GetMessage()}\n";
                 }
             }
 

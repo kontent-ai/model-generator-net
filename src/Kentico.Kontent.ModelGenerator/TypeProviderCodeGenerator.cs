@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Kentico.Kontent.Delivery.Abstractions;
 
 namespace Kentico.Kontent.ModelGenerator
 {
@@ -32,12 +33,12 @@ namespace Kentico.Kontent.ModelGenerator
 
         public void AddContentType(string codename, string className)
         {
-            if (String.IsNullOrEmpty(codename))
+            if (string.IsNullOrEmpty(codename))
             {
                 throw new ArgumentException("Codename must be a non empty string", nameof(codename));
             }
 
-            if (String.IsNullOrEmpty(className))
+            if (string.IsNullOrEmpty(className))
             {
                 throw new ArgumentException("Class name must be a non empty string", nameof(className));
             }
@@ -56,7 +57,7 @@ namespace Kentico.Kontent.ModelGenerator
                 $@"using System;
 using System.Collections.Generic;
 using System.Linq;
-using Kentico.Kontent.Delivery.Abstractions;
+using {typeof(ITypeProvider).Namespace};
 
 namespace {_namespace}
 {{

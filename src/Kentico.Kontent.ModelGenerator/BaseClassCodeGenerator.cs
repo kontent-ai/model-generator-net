@@ -21,13 +21,7 @@ namespace Kentico.Kontent.ModelGenerator
         /// <summary>
         /// The calculated Extender Classname
         /// </summary>
-        public string ExtenderClassName
-        {
-            get
-            {
-                return $"{_className}Extender";
-            }
-        }
+        public string ExtenderClassName => $"{_className}Extender";
 
         public BaseClassCodeGenerator(string className, string @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE)
         {

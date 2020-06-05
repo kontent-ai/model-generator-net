@@ -9,35 +9,35 @@ namespace Kentico.Kontent.ModelGenerator.Tests
     {
         public static IEnumerable<object[]> CorrectArguments_GetFixture()
         {
-            yield return new string[][]
+            yield return new object[]
             {
-                new string[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace" },
-                new string[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace" },
+                new[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace" },
+                new[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace" },
             };
-            yield return new string[][]
+            yield return new object[]
             {
-                new string[] { "--outputdir", @"C:\KC\demo\"" -n Some.NameSpace" },
-                new string[] { "--outputdir", @"C:\KC\demo", "-n", "Some.NameSpace" },
+                new[] { "--outputdir", @"C:\KC\demo\"" -n Some.NameSpace" },
+                new[] { "--outputdir", @"C:\KC\demo", "-n", "Some.NameSpace" },
             };
-            yield return new string[][]
+            yield return new object[]
             {
-                new string[] { "--outputdir", @"C:\KC\demo\"" --generatepartials"  },
-                new string[] { "--outputdir", @"C:\KC\demo", "--generatepartials" }
+                new[] { "--outputdir", @"C:\KC\demo\"" --generatepartials"  },
+                new[] { "--outputdir", @"C:\KC\demo", "--generatepartials" }
             };
-            yield return new string[][]
+            yield return new object[]
             {
-                new string[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace -g" },
-                new string[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace", "-g" },
+                new[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace -g" },
+                new[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace", "-g" },
             };
-            yield return new string[][]
+            yield return new object[]
             {
-                new string[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace --generatepartials" },
-                new string[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace", "--generatepartials" },
+                new[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace --generatepartials" },
+                new[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace", "--generatepartials" },
             };
-            yield return new string[][]
+            yield return new object[]
             {
-                new string[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace --generatepartials -s --projectId 975bf280-fd91-488c-994c-2f04416e5ee3" },
-                new string[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace", "--generatepartials", "-s", "--projectId", "975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace --generatepartials -s --projectId 975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace", "--generatepartials", "-s", "--projectId", "975bf280-fd91-488c-994c-2f04416e5ee3" },
             };
         }
 
@@ -265,7 +265,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [MemberData(nameof(ParsePartiallyQuotedValues_GetFixture))]
         public void ParsePartiallyQuotedValues_ParsesValues(string rawValue, List<string> expectedResult, int expectedLastIndex)
         {
-            (var quotedValueList, var lastDoubleQuotesIndex) = ArgumentParser.ParsePartiallyQuotedValues(rawValue);
+            var (quotedValueList, lastDoubleQuotesIndex) = ArgumentParser.ParsePartiallyQuotedValues(rawValue);
 
             Assert.Equal(expectedResult, quotedValueList);
             Assert.Equal(expectedLastIndex, lastDoubleQuotesIndex);

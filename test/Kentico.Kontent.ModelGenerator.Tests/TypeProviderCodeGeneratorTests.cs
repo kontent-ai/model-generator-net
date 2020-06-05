@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using static System.String;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
 {
@@ -50,30 +51,28 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                     MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("mscorlib")).Location),
                     MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Runtime")).Location),
                     MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Linq")).Location),
-                    MetadataReference.CreateFromFile(typeof(Object).GetTypeInfo().Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.ApiResponse).GetTypeInfo().Assembly.Location)
+                    MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
+                    MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.IApiResponse).GetTypeInfo().Assembly.Location)
                 },
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-            using (var ms = new MemoryStream())
+            using var ms = new MemoryStream();
+            EmitResult result = compilation.Emit(ms);
+            var compilationErrors = $"Compilation errors:{Environment.NewLine}";
+
+            if (!result.Success)
             {
-                EmitResult result = compilation.Emit(ms);
-                var compilationErrors = $"Compilation errors:{Environment.NewLine}";
+                IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
+                    diagnostic.IsWarningAsError ||
+                    diagnostic.Severity == DiagnosticSeverity.Error);
 
-                if (!result.Success)
+                foreach (Diagnostic diagnostic in failures)
                 {
-                    IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
-                        diagnostic.IsWarningAsError ||
-                        diagnostic.Severity == DiagnosticSeverity.Error);
-
-                    foreach (Diagnostic diagnostic in failures)
-                    {
-                        compilationErrors += String.Format($"{diagnostic.Id}: {diagnostic.GetMessage()}{Environment.NewLine}");
-                    }
+                    compilationErrors += Format($"{diagnostic.Id}: {diagnostic.GetMessage()}{Environment.NewLine}");
                 }
-
-                Assert.True(result.Success, compilationErrors);
             }
+
+            Assert.True(result.Success, compilationErrors);
         }
     }
 }
