@@ -1,6 +1,6 @@
-﻿using Kentico.Kontent.Delivery.Configuration.DeliveryOptions;
+﻿using Kentico.Kontent.Delivery.Abstractions;
 
-namespace Kentico.Kontent.ModelGenerator.Configuration
+namespace Kentico.Kontent.ModelGenerator.Core.Configuration
 {
     public class CodeGeneratorOptions
     {

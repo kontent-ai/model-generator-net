@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Kentico.Kontent.ModelGenerator
+namespace Kentico.Kontent.ModelGenerator.Core
 {
     public static class TextHelpers
     {

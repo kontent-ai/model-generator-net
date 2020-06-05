@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Kentico.Kontent.ModelGenerator.Core;
 using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests

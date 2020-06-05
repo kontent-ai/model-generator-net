@@ -7,8 +7,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Kentico.Kontent.Delivery.Builders.DeliveryClient;
-using Kentico.Kontent.Delivery.Configuration.DeliveryOptions;
-using Kentico.Kontent.ModelGenerator.Configuration;
+using Kentico.Kontent.ModelGenerator.Core;
+using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests

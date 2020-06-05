@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Newtonsoft.Json.Serialization;
 
-namespace Kentico.Kontent.ModelGenerator
+namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class ClassCodeGenerator
     {

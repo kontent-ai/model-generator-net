@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Kentico.Kontent.ModelGenerator.Core;
 using static System.String;
 
 namespace Kentico.Kontent.ModelGenerator.Tests

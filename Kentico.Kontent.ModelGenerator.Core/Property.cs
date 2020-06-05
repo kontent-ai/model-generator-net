@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Kentico.Kontent.Delivery.Abstractions;
 
-namespace Kentico.Kontent.ModelGenerator
+namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class Property
     {

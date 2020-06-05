@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Kentico.Kontent.Delivery.Abstractions;
 
-namespace Kentico.Kontent.ModelGenerator
+namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class ClassDefinition
     {
@@ -41,7 +41,7 @@ namespace Kentico.Kontent.ModelGenerator
 
         public void AddSystemProperty()
         {
-            AddProperty(new Property("system", "ContentItemSystemAttributes"));
+            AddProperty(new Property("system", nameof(IContentItemSystemAttributes)));
         }
 
         private bool PropertyIsAlreadyPresent(Property property)

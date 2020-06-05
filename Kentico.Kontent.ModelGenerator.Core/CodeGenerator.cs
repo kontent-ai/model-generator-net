@@ -1,14 +1,13 @@
-﻿using Kentico.Kontent.Delivery.Abstractions;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Kentico.Kontent.Delivery;
-using Kentico.Kontent.ModelGenerator.Configuration;
+using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.ModelGenerator.Core.Configuration;
+using Microsoft.Extensions.Options;
 
-namespace Kentico.Kontent.ModelGenerator
+namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class CodeGenerator
     {
@@ -115,19 +114,7 @@ namespace Kentico.Kontent.ModelGenerator
 
         private async Task<IEnumerable<ClassCodeGenerator>> GetClassCodeGenerators(bool structuredModel = false)
         {
-            IEnumerable<IContentType> contentTypes = null;
-            try
-            {
-                contentTypes = (await _client.GetTypesAsync()).Types;
-            }
-            catch (AggregateException aex)
-            {
-                if ((aex.InnerExceptions.Count == 1) && aex.InnerException is DeliveryException)
-                {
-                    // Return friendlier message
-                    Console.WriteLine(aex.InnerException.Message);
-                }
-            }
+            IEnumerable<IContentType> contentTypes = (await _client.GetTypesAsync()).Types;
             var codeGenerators = new List<ClassCodeGenerator>();
             if (contentTypes != null)
             {

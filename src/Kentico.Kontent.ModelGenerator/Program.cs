@@ -4,9 +4,11 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Kentico.Kontent.Delivery.Configuration.DeliveryOptions;
+using Kentico.Kontent.Delivery;
+using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Delivery.Extensions;
-using Kentico.Kontent.ModelGenerator.Configuration;
+using Kentico.Kontent.ModelGenerator.Core;
+using Kentico.Kontent.ModelGenerator.Core.Configuration;
 
 namespace Kentico.Kontent.ModelGenerator
 {
@@ -39,6 +41,15 @@ namespace Kentico.Kontent.ModelGenerator
 
                 // Code generator entry point
                 return await serviceProvider.GetService<CodeGenerator>().RunAsync();
+            }
+            catch (AggregateException aex)
+            {
+                if ((aex.InnerExceptions.Count == 1) && aex.InnerException is DeliveryException)
+                {
+                    // Return a friendlier message
+                    Console.WriteLine(aex.InnerException.Message);
+                }
+                return 1;
             }
             catch (Exception ex)
             {
