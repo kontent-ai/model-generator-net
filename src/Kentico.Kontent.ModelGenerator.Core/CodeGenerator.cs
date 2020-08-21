@@ -1,37 +1,29 @@
-﻿using Kentico.Kontent.Delivery.Abstractions;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.ModelGenerator.Core.Configuration;
+using Microsoft.Extensions.Options;
 
-namespace Kentico.Kontent.ModelGenerator
+namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class CodeGenerator
     {
-        internal readonly CodeGeneratorOptions _options;
-
+        private readonly CodeGeneratorOptions _options;
         private readonly IDeliveryClient _client;
+        private readonly IOutputProvider _outputProvider;
 
-        public CodeGenerator(IOptions<CodeGeneratorOptions> options, IDeliveryClient deliveryClient)
+        public CodeGenerator(IOptions<CodeGeneratorOptions> options, IDeliveryClient deliveryClient, IOutputProvider outputProvider)
         {
             _options = options.Value;
             _client = deliveryClient;
-
-            // Setting OutputDir default value here instead of in the <see cref="Parse"/> method as it would overwrite the JSON value.
-            if (string.IsNullOrEmpty(_options.OutputDir))
-            {
-                _options.OutputDir = "./";
-            }
+            _outputProvider = outputProvider;
 
             if (_options.GeneratePartials && string.IsNullOrEmpty(_options.FileNameSuffix))
             {
                 _options.FileNameSuffix = "Generated";
             }
-
-            // Resolve relative path to full path
-            _options.OutputDir = Path.GetFullPath(_options.OutputDir);
         }
 
         public async Task<int> RunAsync()
@@ -52,16 +44,13 @@ namespace Kentico.Kontent.ModelGenerator
 
         internal async Task GenerateContentTypeModels(bool structuredModel = false)
         {
-            // Make sure the output dir exists
-            Directory.CreateDirectory(_options.OutputDir);
-
             var classCodeGenerators = await GetClassCodeGenerators(structuredModel);
 
-            if (classCodeGenerators.Count() > 0)
+            if (classCodeGenerators.Any())
             {
                 foreach (var codeGenerator in classCodeGenerators)
                 {
-                    SaveToFile(codeGenerator.GenerateCode(_options.ContentManagementApi), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
+                    _outputProvider.Output(codeGenerator.GenerateCode(_options.ContentManagementApi), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
                 }
 
                 Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
@@ -74,12 +63,10 @@ namespace Kentico.Kontent.ModelGenerator
 
         internal async Task GenerateTypeProvider()
         {
-            // Make sure the output dir exists
-            Directory.CreateDirectory(_options.OutputDir);
 
             var classCodeGenerators = await GetClassCodeGenerators();
 
-            if (classCodeGenerators.Count() > 0)
+            if (classCodeGenerators.Any())
             {
                 var typeProviderCodeGenerator = new TypeProviderCodeGenerator(_options.Namespace);
 
@@ -91,7 +78,7 @@ namespace Kentico.Kontent.ModelGenerator
                 var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
                 if (!string.IsNullOrEmpty(typeProviderCode))
                 {
-                    SaveToFile(typeProviderCode, TypeProviderCodeGenerator.CLASS_NAME);
+                    _outputProvider.Output(typeProviderCode, TypeProviderCodeGenerator.CLASS_NAME, true);
                     Console.WriteLine($"{TypeProviderCodeGenerator.CLASS_NAME} class was successfully created.");
                 }
             }
@@ -101,31 +88,9 @@ namespace Kentico.Kontent.ModelGenerator
             }
         }
 
-        private void SaveToFile(string content, string fileName, bool overwriteExisting = true)
+        internal async Task<IEnumerable<ClassCodeGenerator>> GetClassCodeGenerators(bool structuredModel = false)
         {
-            string outputPath = Path.Combine(_options.OutputDir, $"{fileName}.cs");
-            bool fileExists = File.Exists(outputPath);
-            if (!fileExists || overwriteExisting)
-            {
-                File.WriteAllText(outputPath, content);
-            }
-        }
-
-        private async Task<IEnumerable<ClassCodeGenerator>> GetClassCodeGenerators(bool structuredModel = false)
-        {
-            IEnumerable<ContentType> contentTypes = null;
-            try
-            {
-                contentTypes = (await _client.GetTypesAsync()).Types;
-            }
-            catch (AggregateException aex)
-            {
-                if ((aex.InnerExceptions.Count == 1) && aex.InnerException is DeliveryException)
-                {
-                    // Return friendlier message
-                    Console.WriteLine(aex.InnerException.Message);
-                }
-            }
+            IEnumerable<IContentType> contentTypes = (await _client.GetTypesAsync()).Types;
             var codeGenerators = new List<ClassCodeGenerator>();
             if (contentTypes != null)
             {
@@ -148,7 +113,7 @@ namespace Kentico.Kontent.ModelGenerator
             return codeGenerators;
         }
 
-        private ClassCodeGenerator GetClassCodeGenerator(ContentType contentType, bool structuredModel)
+        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, bool structuredModel)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
 
@@ -197,7 +162,7 @@ namespace Kentico.Kontent.ModelGenerator
             return new ClassCodeGenerator(classDefinition, classFilename, _options.Namespace);
         }
 
-        private ClassCodeGenerator GetCustomClassCodeGenerator(ContentType contentType)
+        internal ClassCodeGenerator GetCustomClassCodeGenerator(IContentType contentType)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
             string classFilename = $"{classDefinition.ClassName}";
@@ -205,14 +170,11 @@ namespace Kentico.Kontent.ModelGenerator
             return new ClassCodeGenerator(classDefinition, classFilename, _options.Namespace, true);
         }
 
-        public async Task GenerateBaseClass()
+        internal async Task GenerateBaseClass()
         {
-            // Make sure the output dir exists
-            Directory.CreateDirectory(_options.OutputDir);
-
             IEnumerable<ClassCodeGenerator> classCodeGenerators = await GetClassCodeGenerators();
 
-            if (classCodeGenerators.Count() > 0)
+            if (classCodeGenerators.Any())
             {
                 var baseClassCodeGenerator = new BaseClassCodeGenerator(_options.BaseClass, _options.Namespace);
 
@@ -224,14 +186,14 @@ namespace Kentico.Kontent.ModelGenerator
                 var baseClassCode = baseClassCodeGenerator.GenerateBaseClassCode();
                 if (!string.IsNullOrEmpty(baseClassCode))
                 {
-                    SaveToFile(baseClassCode, _options.BaseClass);
+                    _outputProvider.Output(baseClassCode, _options.BaseClass, false);
                     Console.WriteLine($"{_options.BaseClass} class was successfully created.");
                 }
 
                 var baseClassExtenderCode = baseClassCodeGenerator.GenereateExtenderCode();
                 if (!string.IsNullOrEmpty(baseClassExtenderCode))
                 {
-                    SaveToFile(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName);
+                    _outputProvider.Output(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
                     Console.WriteLine($"{baseClassCodeGenerator.ExtenderClassName} class was successfully created.");
                 }
             }

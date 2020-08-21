@@ -14,16 +14,16 @@ namespace KenticoKontentModels
     {
         public const string Codename = "Complete content type";
 
-        public IEnumerable<Asset> Asset { get; set; }
-		public string Custom { get; set; }
+        public IEnumerable<IAsset> Asset { get; set; }
+        public string Custom { get; set; }
         public DateTime? DateTime { get; set; }
         public IEnumerable<object> ModularContent { get; set; }
-        public IEnumerable<MultipleChoiceOption> MultipleChoice { get; set; }
+        public IEnumerable<IMultipleChoiceOption> MultipleChoice { get; set; }
         public decimal? Number { get; set; }
         public string RichText { get; set; }
         public IRichTextContent RichTextStructured { get; set; }
-        public ContentItemSystemAttributes System { get; set; }
-        public IEnumerable<TaxonomyTerm> Taxonomy { get; set; }
+        public IContentItemSystemAttributes System { get; set; }
+        public IEnumerable<ITaxonomyTerm> Taxonomy { get; set; }
         public string Text { get; set; }
         public string UrlSlug { get; set; }
     }

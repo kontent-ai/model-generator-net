@@ -1,5 +1,6 @@
-﻿using Kentico.Kontent.Delivery;
-using System;
+﻿using System;
+using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.Delivery.Configuration;
 
 namespace Kentico.Kontent.ModelGenerator
 {

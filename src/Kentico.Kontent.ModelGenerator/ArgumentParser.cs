@@ -61,15 +61,17 @@ namespace Kentico.Kontent.ModelGenerator
 
         internal static List<string> ParseArgumentPair(string arg, List<Match> argumentStarts, int argumentIndex)
         {
-            var parsedArgs = new List<string>();
-            // Add the argument name itself.
-            parsedArgs.Add(arg.Substring(argumentStarts[argumentIndex].Index, argumentStarts[argumentIndex].Length).Trim());
+            var parsedArgs = new List<string>
+            {
+                // Add the argument name itself.
+                arg.Substring(argumentStarts[argumentIndex].Index, argumentStarts[argumentIndex].Length).Trim()
+            };
 
             // Calculate the span of the raw value.
             var valueStart = argumentStarts[argumentIndex].Index + argumentStarts[argumentIndex].Length;
             var valueEnd = argumentIndex == argumentStarts.Count - 1 ? arg.Length : argumentStarts[argumentIndex + 1].Index;
 
-            var rawValue = arg.Substring(valueStart, valueEnd - valueStart).Trim();
+            var rawValue = arg[valueStart..valueEnd].Trim();
 
             if (!string.IsNullOrEmpty(rawValue))
             {
@@ -80,13 +82,13 @@ namespace Kentico.Kontent.ModelGenerator
 
         internal static List<string> ParseArgumentValues(string rawValue)
         {
-            (var quotedValueList, var lastDoubleQuotesIndex) = ParsePartiallyQuotedValues(rawValue);
+            var (quotedValueList, lastDoubleQuotesIndex) = ParsePartiallyQuotedValues(rawValue);
             var trailingValues = new List<string>();
 
             if (lastDoubleQuotesIndex < rawValue.Length)
             {
                 // Trailing values, not terminated with double quotes.
-                trailingValues.AddRange(rawValue.Substring(lastDoubleQuotesIndex, rawValue.Length - lastDoubleQuotesIndex).Trim().Split(' '));
+                trailingValues.AddRange(rawValue[lastDoubleQuotesIndex..].Trim().Split(' '));
             }
 
             var merge = quotedValueList.Concat(trailingValues).ToList();
@@ -102,7 +104,7 @@ namespace Kentico.Kontent.ModelGenerator
             var valuesWithTrailingQuotes = Regex.Matches(rawValue, @"([^""]+)("")", RegexOptions.Compiled);
 
             var quotedValueList = valuesWithTrailingQuotes
-                .Select(value => value.Value.Trim(new[] { ' ', '"', '\\' }))
+                .Select(value => value.Value.Trim(' ', '"', '\\'))
                 .ToList();
 
             var lastQuotedValue = valuesWithTrailingQuotes.LastOrDefault();

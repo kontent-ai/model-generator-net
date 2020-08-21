@@ -6,6 +6,9 @@ using RichardSzalay.MockHttp;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Kentico.Kontent.Delivery.Builders.DeliveryClient;
+using Kentico.Kontent.ModelGenerator.Core;
+using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
@@ -34,10 +37,10 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 OutputDir = ""
             };
             mockOptions.Setup(x => x.Value).Returns(options);
-            var mockClient = new Mock<IDeliveryClient>();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, mockClient.Object);
-            Assert.NotEmpty(options.OutputDir);
+            var outputProvider = new FileSystemOutputProvider(mockOptions.Object);
+            Assert.Empty(options.OutputDir);
+            Assert.NotEmpty(outputProvider.OutputDir);
         }
 
         [Fact]
@@ -50,10 +53,9 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 OutputDir = ""
             };
             mockOptions.Setup(x => x.Value).Returns(options);
-            var mockClient = new Mock<IDeliveryClient>();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, mockClient.Object);
-            Assert.Equal(expectedOutputDir.TrimEnd('\\'), codeGenerator._options.OutputDir.TrimEnd('\\'));
+            var outputProvider = new FileSystemOutputProvider(mockOptions.Object);
+            Assert.Equal(expectedOutputDir.TrimEnd('\\'), outputProvider.OutputDir.TrimEnd('\\'));
         }
 
         [Theory]
@@ -63,7 +65,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
-                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
+                    .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -76,7 +78,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, client);
+            var codeGenerator = new CodeGenerator(mockOptions.Object, client, new FileSystemOutputProvider(mockOptions.Object));
 
             await codeGenerator.GenerateContentTypeModels();
             await codeGenerator.GenerateTypeProvider();
@@ -99,7 +101,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
-                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
+                    .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             const string transformFilename = "Generated";
@@ -116,7 +118,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, client);
+            var codeGenerator = new CodeGenerator(mockOptions.Object, client, new FileSystemOutputProvider(mockOptions.Object));
 
             await codeGenerator.GenerateContentTypeModels();
 
@@ -138,7 +140,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
-                    .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
+                    .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             const string transformFilename = "Generated";
@@ -156,7 +158,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, client);
+            var codeGenerator = new CodeGenerator(mockOptions.Object, client, new FileSystemOutputProvider(mockOptions.Object));
 
             await codeGenerator.GenerateContentTypeModels();
 

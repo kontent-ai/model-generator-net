@@ -1,12 +1,12 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Kentico.Kontent.ModelGenerator
+namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class BaseClassCodeGenerator
     {
@@ -21,13 +21,7 @@ namespace Kentico.Kontent.ModelGenerator
         /// <summary>
         /// The calculated Extender Classname
         /// </summary>
-        public string ExtenderClassName
-        {
-            get
-            {
-                return $"{_className}Extender";
-            }
-        }
+        public string ExtenderClassName => $"{_className}Extender";
 
         public BaseClassCodeGenerator(string className, string @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE)
         {

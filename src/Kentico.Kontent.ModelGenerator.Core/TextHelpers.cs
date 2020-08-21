@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Kentico.Kontent.ModelGenerator
+namespace Kentico.Kontent.ModelGenerator.Core
 {
     public static class TextHelpers
     {
@@ -19,7 +19,7 @@ namespace Kentico.Kontent.ModelGenerator
             // Remove leading numbers and leading whitespace (e.g.: '  123Name123' -> 'Name123'
             sanitizedName = Regex.Replace(sanitizedName, "^(\\s|[0-9])+", "");
 
-            if (sanitizedName == String.Empty)
+            if (sanitizedName == string.Empty)
             {
                 throw new InvalidIdentifierException($"Unable to create a valid Identifier from '{name}'");
             }
@@ -27,8 +27,8 @@ namespace Kentico.Kontent.ModelGenerator
             return sanitizedName
                 .ToLower()
                 .Split(new[] { WORD_SEPARATOR }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(word => Char.ToUpper(word[0]) + word.Substring(1))
-                .Aggregate((previous, current) => previous + current); ;
+                .Select(word => char.ToUpper(word[0]) + word.Substring(1))
+                .Aggregate((previous, current) => previous + current); 
         }
 
         public static string NormalizeLineEndings(this string text)

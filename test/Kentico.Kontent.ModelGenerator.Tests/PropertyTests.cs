@@ -1,4 +1,5 @@
 ﻿using System;
+using Kentico.Kontent.ModelGenerator.Core;
 using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
