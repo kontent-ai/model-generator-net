@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kentico.Kontent.ModelGenera
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kentico.Kontent.ModelGenerator.Tests", "test\Kentico.Kontent.ModelGenerator.Tests\Kentico.Kontent.ModelGenerator.Tests.csproj", "{9D6A9E5B-EB41-472A-90B2-DF7E5EB43397}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentico.Kontent.ModelGenerator.Core", "Kentico.Kontent.ModelGenerator.Core\Kentico.Kontent.ModelGenerator.Core.csproj", "{66C29DDB-8ED8-4D45-B8E8-003488E145E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kentico.Kontent.ModelGenerator.Core", "src\Kentico.Kontent.ModelGenerator.Core\Kentico.Kontent.ModelGenerator.Core.csproj", "{66C29DDB-8ED8-4D45-B8E8-003488E145E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

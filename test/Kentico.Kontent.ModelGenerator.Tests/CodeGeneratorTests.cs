@@ -37,11 +37,10 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 OutputDir = ""
             };
             mockOptions.Setup(x => x.Value).Returns(options);
-            var mockClient = new Mock<IDeliveryClient>();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, mockClient.Object);
-            Assert.NotEmpty(options.OutputDir);
-            Assert.NotEmpty(codeGenerator._options.OutputDir);
+            var outputProvider = new FileSystemOutputProvider(mockOptions.Object);
+            Assert.Empty(options.OutputDir);
+            Assert.NotEmpty(outputProvider.OutputDir);
         }
 
         [Fact]
@@ -54,10 +53,9 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 OutputDir = ""
             };
             mockOptions.Setup(x => x.Value).Returns(options);
-            var mockClient = new Mock<IDeliveryClient>();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, mockClient.Object);
-            Assert.Equal(expectedOutputDir.TrimEnd('\\'), codeGenerator._options.OutputDir.TrimEnd('\\'));
+            var outputProvider = new FileSystemOutputProvider(mockOptions.Object);
+            Assert.Equal(expectedOutputDir.TrimEnd('\\'), outputProvider.OutputDir.TrimEnd('\\'));
         }
 
         [Theory]
@@ -80,7 +78,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, client);
+            var codeGenerator = new CodeGenerator(mockOptions.Object, client, new FileSystemOutputProvider(mockOptions.Object));
 
             await codeGenerator.GenerateContentTypeModels();
             await codeGenerator.GenerateTypeProvider();
@@ -120,7 +118,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, client);
+            var codeGenerator = new CodeGenerator(mockOptions.Object, client, new FileSystemOutputProvider(mockOptions.Object));
 
             await codeGenerator.GenerateContentTypeModels();
 
@@ -160,7 +158,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, client);
+            var codeGenerator = new CodeGenerator(mockOptions.Object, client, new FileSystemOutputProvider(mockOptions.Object));
 
             await codeGenerator.GenerateContentTypeModels();
 

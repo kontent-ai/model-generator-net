@@ -31,6 +31,7 @@ namespace Kentico.Kontent.ModelGenerator
                 // Fill the DI container
                 services.Configure<CodeGeneratorOptions>(configuration);
                 services.AddDeliveryClient(configuration);
+                services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
                 services.AddTransient<CodeGenerator>();
 
                 // Build the DI container
