@@ -134,7 +134,7 @@ public partial class Home
 **Usage:**
 
 ```
-KontentModelGenerator.exe --projectid "<projectid>" --contentmanagementapi [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
+KontentModelGenerator.exe --projectid "<projectid>" --contentmanagementapi true [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
 ```
 
 ### Parameters
