@@ -10,6 +10,7 @@ using Kentico.Kontent.Delivery.Builders.DeliveryClient;
 using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Xunit;
+using System.Linq;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
 {
@@ -85,10 +86,9 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             Assert.True(Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Length > 10);
 
-            foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR)))
-            {
-                Assert.DoesNotContain(".Generated.cs", Path.GetFileName(filepath));
-            }
+            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR), "*.Generated.cs"));
+            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR)).Where(p=> !p.Contains("*.Generated.cs")));
+            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR), "*TypeProvider.cs"));
 
             // Cleanup
             Directory.Delete(TEMP_DIR, true);
@@ -104,7 +104,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                     .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
-            const string transformFilename = "Generated";
+            const string transformFilename = "CustomSuffix";
 
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
@@ -112,6 +112,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 DeliveryOptions = new DeliveryOptions { ProjectId = PROJECT_ID },
                 Namespace = "CustomNamespace",
                 OutputDir = TEMP_DIR,
+                GeneratePartials = false,
                 FileNameSuffix = transformFilename,
                 ContentManagementApi = cmApi
             });
