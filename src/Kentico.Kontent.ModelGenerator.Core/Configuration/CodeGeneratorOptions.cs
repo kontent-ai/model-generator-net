@@ -4,10 +4,11 @@ namespace Kentico.Kontent.ModelGenerator.Core.Configuration
 {
     public class CodeGeneratorOptions
     {
-        public static bool DefaultGeneratePartials = false;
+        public static bool DefaultGeneratePartials = true;
         public static bool DefaultWithTypeProvider = true;
         public static bool DefaultStructuredModel = false;
         public static bool DefaultContentManagementApi = false;
+        public static string DefaultFileNameSuffix = "Generated";
 
         /// <summary>
         /// Delivery Client configuration.
@@ -27,7 +28,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Configuration
         /// <summary>
         /// Optionally add suffix to the generated files
         /// </summary>
-        public string FileNameSuffix { get; set; }
+        public string FileNameSuffix { get; set; } = DefaultFileNameSuffix;
 
         /// <summary>
         /// Optionally generate partial classes for user customization

@@ -19,11 +19,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
             _options = options.Value;
             _client = deliveryClient;
             _outputProvider = outputProvider;
-
-            if (_options.GeneratePartials && string.IsNullOrEmpty(_options.FileNameSuffix))
-            {
-                _options.FileNameSuffix = "Generated";
-            }
         }
 
         public async Task<int> RunAsync()
