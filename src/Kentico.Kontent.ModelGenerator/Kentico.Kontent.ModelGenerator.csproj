@@ -26,11 +26,11 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Kentico.Kontent.Delivery" Version="14.0.0-rc2" />
+    <PackageReference Include="Kentico.Kontent.Delivery" Version="14.0.0-rc4" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.8" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.8" />
   </ItemGroup>
   
   <ItemGroup>
