@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="Kentico.Kontent.Management" Version="2.1.0" />
-    <PackageReference Include="Kentico.Kontent.Delivery.Abstractions" Version="14.0.0" />
+    <PackageReference Include="Kentico.Kontent.Delivery.Abstractions" Version="14.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" />
   </ItemGroup>
 
