@@ -24,13 +24,14 @@ The recommended way of obtaining this tool is installing it as a [.NET Tool](htt
 - `dotnet tool install Kentico.Kontent.ModelGenerator` (to install the latest version
 - `dotnet tool run KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]`
 
-### Standalone app for Windows 🗔, Linux 🐧, macOS 🍎
+### Standalone apps for Windows 🗔, Linux 🐧, macOS 🍎
+[Self-contained apps](https://docs.microsoft.com/en-us/dotnet/core/deploying/#publish-self-contained) are an ideal choice for machines without any version of .NET installed.
 
 Latest release: [Download](https://github.com/Kentico/kontent-generators-net/releases/latest)
 
 - `KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]`
 
-Since the app is [self-contained](https://www.hanselman.com/blog/SelfcontainedNETCoreApplications.aspx), it's an ideal option for machines without any version of .NET installed.
+To learn how to generate executables for your favorite target platform, follow the steps in the [wiki](https://github.com/Kentico/kontent-generators-net/wiki/Building-and-running-the-generator-for-your-target-platform).
 
 ### Parameters
 
