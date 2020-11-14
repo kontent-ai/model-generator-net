@@ -11,46 +11,26 @@ This utility generates strongly-typed (POCO) models based on [Content Types](htt
 ## How to use for [Delivery SDK](https://github.com/Kentico/kontent-delivery-sdk-net)
 To fully understand all benefits of this approach, please read the [documentation](https://github.com/Kentico/kontent-delivery-sdk-net/wiki/Working-with-strongly-typed-models#customizing-the-strong-type-binding-logic).
 
-### .NET Core Tool
-The recommended way of obtaining this tool is installing it as a [.NET Core Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools). You can install it as a global tool or per project as a local tool.
+### .NET Tool
+The recommended way of obtaining this tool is installing it as a [.NET Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools). You can install it as a global tool or per project as a local tool.
 
 **Global Tool**
 - `dotnet tool install -g Kentico.Kontent.ModelGenerator` 
+- `KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]`
 
 **Local Tool**
 
 - `dotnet new tool-manifest` to initialize the tools manifest (if you haven't done that already)
 - `dotnet tool install Kentico.Kontent.ModelGenerator` (to install the latest version
+- `dotnet tool run KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]`
 
-Then you can start using the `KontentModelGenerator` command in the command-line right away.
-
-```
-dotnet tool run KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]
-```
-
-### Standalone app for Windows
+### Standalone app for Windows 🗔, Linux 🐧, macOS 🍎
 
 Latest release: [Download](https://github.com/Kentico/kontent-generators-net/releases/latest)
 
-Since the app is [self-contained](https://www.hanselman.com/blog/SelfcontainedNETCoreApplications.aspx), it's an ideal option for machines without .NET Core or .NET Core SDK installed.
+- `KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]`
 
-**Usage:**
-```
-KontentModelGenerator.exe --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]
-```
-
-### Linux, Mac OS and other platforms
-
-* Clone the repository
-* Navigate to the `kontent-generators-net\src\KontentModelGenerator` folder
-* Run `dotnet build -r <RID>` to build the app
-* Run `dotnet publish -c release -r <RID>` to publish the app
-
-```
-dotnet run --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]
-```
-
-See the [list of all RIDs](https://docs.microsoft.com/en-us/dotnet/articles/core/rid-catalog).
+Since the app is [self-contained](https://www.hanselman.com/blog/SelfcontainedNETCoreApplications.aspx), it's an ideal option for machines without any version of .NET installed.
 
 ### Parameters
 
