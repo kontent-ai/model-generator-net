@@ -16,6 +16,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -28,7 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="Kentico.Kontent.Management" Version="2.1.0" />
-    <PackageReference Include="Kentico.Kontent.Delivery.Abstractions" Version="14.0.1" />
+    <PackageReference Include="Kentico.Kontent.Delivery.Abstractions" Version="14.2.1" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" />
   </ItemGroup>
 
