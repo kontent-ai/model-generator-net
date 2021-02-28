@@ -1,4 +1,4 @@
-# Publish self-contained for Windows, Linux, and macOS
+# Publish self-contained apps for Windows, Linux, and macOS
 
 $runtimes = "win-x64", "linux-x64", "osx-x64"
 
