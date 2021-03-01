@@ -1,4 +1,5 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/1pagb8wjfyeyicj1/branch/master?svg=true)](https://ci.appveyor.com/project/kentico/kontent-generators-net/branch/master)
+[![Build & Test](https://github.com/Kentico/kontent-generators-net/actions/workflows/integrate.yml/badge.svg)](https://github.com/Kentico/kontent-generators-net/actions/workflows/integrate.yml)
+[![codecov](https://codecov.io/gh/Kentico/kontent-generators-net/branch/master/graph/badge.svg?token=9LvfJ7m8gT)](https://codecov.io/gh/Kentico/kontent-generators-net)
 [![NuGet](https://img.shields.io/nuget/v/Kentico.Kontent.ModelGenerator.svg)](https://www.nuget.org/packages/Kentico.Kontent.ModelGenerator)
 [![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?logo=stackoverflow&logoColor=white)](https://stackoverflow.com/tags/kentico-kontent)
 
