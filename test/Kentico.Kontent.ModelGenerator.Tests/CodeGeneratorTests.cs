@@ -56,7 +56,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             mockOptions.Setup(x => x.Value).Returns(options);
 
             var outputProvider = new FileSystemOutputProvider(mockOptions.Object);
-            Assert.Equal(expectedOutputDir.TrimEnd('\\'), outputProvider.OutputDir.TrimEnd('\\'));
+            Assert.Equal(expectedOutputDir.TrimEnd(Path.DirectorySeparatorChar), outputProvider.OutputDir.TrimEnd(Path.DirectorySeparatorChar));
         }
 
         [Theory]
