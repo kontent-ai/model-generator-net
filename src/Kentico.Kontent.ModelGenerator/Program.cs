@@ -38,7 +38,7 @@ namespace Kentico.Kontent.ModelGenerator
                 var serviceProvider = services.BuildServiceProvider();
 
                 // Validate configuration of the Delivery Client
-                serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value.DeliveryOptions.Validate();
+                serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value.Validate();
 
                 // Code generator entry point
                 return await serviceProvider.GetService<CodeGenerator>().RunAsync();
@@ -72,6 +72,7 @@ namespace Kentico.Kontent.ModelGenerator
                 {"-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
                 {"-s", nameof(CodeGeneratorOptions.StructuredModel) },
                 {"-c", nameof(CodeGeneratorOptions.ContentManagementApi) },
+                {"-k", $"{nameof(CodeGeneratorOptions.ManagementOptions)}:{nameof(CodeGeneratorOptions.ManagementOptions.ApiKey)}" },
                 {"-b", nameof(CodeGeneratorOptions.BaseClass) }
             };
             return mappings;

@@ -1,4 +1,5 @@
 ﻿using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.Management;
 
 namespace Kentico.Kontent.ModelGenerator.Core.Configuration
 {
@@ -14,6 +15,11 @@ namespace Kentico.Kontent.ModelGenerator.Core.Configuration
         /// Delivery Client configuration.
         /// </summary>
         public DeliveryOptions DeliveryOptions { get; set; }
+
+        /// <summary>
+        /// Management Client configuration.
+        /// </summary>
+        public ManagementOptions ManagementOptions { get; set; }
 
         /// <summary>
         /// Namespace name of the generated classes
