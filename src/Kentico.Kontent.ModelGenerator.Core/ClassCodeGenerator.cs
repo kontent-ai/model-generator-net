@@ -75,7 +75,17 @@ namespace Kentico.Kontent.ModelGenerator.Core
                                                         SyntaxFactory.AttributeArgument(
                                                             SyntaxFactory.LiteralExpression(
                                                                 SyntaxKind.StringLiteralExpression,
-                                                                SyntaxFactory.Literal(element.Codename)))))))));
+                                                                SyntaxFactory.Literal(element.Codename)))))))),
+                                SyntaxFactory.AttributeList(
+                                    SyntaxFactory.SingletonSeparatedList(
+                                        SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("KontentElementId"))
+                                            .WithArgumentList(
+                                                SyntaxFactory.AttributeArgumentList(
+                                                    SyntaxFactory.SingletonSeparatedList(
+                                                        SyntaxFactory.AttributeArgument(
+                                                            SyntaxFactory.LiteralExpression(
+                                                                SyntaxKind.StringLiteralExpression,
+                                                                SyntaxFactory.Literal(element.Id)))))))));
                     }
 
                     return property;

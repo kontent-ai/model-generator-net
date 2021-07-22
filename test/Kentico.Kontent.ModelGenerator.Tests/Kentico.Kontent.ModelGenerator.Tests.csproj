@@ -33,7 +33,10 @@
     <None Update="Assets\CompleteContentType_CompiledCode.txt;Assets\CustomTypeProvider_CompiledCode.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Fixtures\types.json">
+    <None Update="Fixtures\management_types.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Fixtures\delivery_types.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

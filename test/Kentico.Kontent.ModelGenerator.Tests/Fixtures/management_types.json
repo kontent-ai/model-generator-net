@@ -1,0 +1,1097 @@
+﻿{
+  "types": [
+    {
+      "id": "edb8cc01-f1bf-47e0-b164-08ded6831f6c",
+      "codename": "home",
+      "last_modified": "2017-08-02T20:21:48.2943193Z",
+      "name": "Home",
+      "content_groups": [],
+      "elements": [
+        {
+          "item_count_limit": null,
+          "allowed_content_types": [],
+          "name": "Hero unit",
+          "guidelines": null,
+          "is_required": false,
+          "type": "modular_content",
+          "id": "738273ab-6159-4b93-a735-89d599d19f49",
+          "codename": "hero_unit"
+        },
+        {
+          "item_count_limit": null,
+          "allowed_content_types": [],
+          "name": "Articles",
+          "guidelines": null,
+          "is_required": false,
+          "type": "modular_content",
+          "id": "d6160dd3-41b6-450a-b4ef-201e224ddde8",
+          "codename": "articles"
+        },
+        {
+          "item_count_limit": null,
+          "allowed_content_types": [],
+          "name": "Our story",
+          "guidelines": null,
+          "is_required": false,
+          "type": "modular_content",
+          "id": "c0f58add-94be-4366-95c4-a080993b7a4c",
+          "codename": "our_story"
+        },
+        {
+          "item_count_limit": null,
+          "allowed_content_types": [],
+          "name": "Cafes",
+          "guidelines": null,
+          "is_required": false,
+          "type": "modular_content",
+          "id": "cd2d33cb-0e7e-4099-a735-cf34b8ae4a8c",
+          "codename": "cafes"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "Contact",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "c02fda77-09ea-49b1-8f4d-e8a2469926c4",
+          "codename": "contact"
+        },
+        {
+          "depends_on": {
+            "element": {
+              "id": "bb35716f-90e0-4c70-83f2-a3d86fd1c20d"
+            }
+          },
+          "name": "URL pattern",
+          "guidelines": null,
+          "is_required": false,
+          "type": "url_slug",
+          "id": "27915b97-90ae-423f-a634-4df875cbf24d",
+          "codename": "url_pattern"
+        }
+      ]
+    },
+    {
+      "id": "0ec190d7-f5a5-46f2-838f-f1c097df2fe3",
+      "codename": "hosted_video",
+      "last_modified": "2017-08-02T20:22:47.5896826Z",
+      "name": "Hosted video",
+      "content_groups": [],
+      "elements": [
+        {
+          "maximum_text_length": null,
+          "name": "Video ID",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "e325af27-1b33-4627-8c16-5dc60ba3ab55",
+          "codename": "video_id"
+        },
+        {
+          "mode": "single",
+          "options": [
+            {
+              "id": "6a8ea1c4-ee2a-40f0-9333-6295b183e6de",
+              "codename": "youtube",
+              "name": "Youtube"
+            },
+            {
+              "id": "68737eb6-30c3-48e7-92c4-2abb5e8b3e6a",
+              "codename": "vimeo",
+              "name": "Vimeo"
+            }
+          ],
+          "name": "Video host",
+          "guidelines": null,
+          "is_required": false,
+          "type": "multiple_choice",
+          "id": "5846f3ea-73cf-452d-bfc9-6979b5c53c23",
+          "codename": "video_host"
+        }
+      ]
+    },
+    {
+      "id": "9406db34-bbb1-4b03-951d-c5f058e2b978",
+      "codename": "brewer",
+      "last_modified": "2017-08-02T20:15:56.8920291Z",
+      "name": "Brewer",
+      "content_groups": [],
+      "elements": [
+        {
+          "maximum_text_length": null,
+          "name": "Product name",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "2cab96ed-960a-4c88-acfc-ae861f11da09",
+          "codename": "product_name"
+        },
+        {
+          "name": "Price",
+          "guidelines": null,
+          "is_required": false,
+          "type": "number",
+          "id": "00380404-783c-4b62-a738-da10afa52445",
+          "codename": "price"
+        },
+        {
+          "asset_count_limit": null,
+          "maximum_file_size": null,
+          "allowed_file_types": "any",
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "name": "Image",
+          "guidelines": null,
+          "is_required": false,
+          "type": "asset",
+          "id": "ae677dac-3cb6-4ae6-9ed4-f3cac1ae2772",
+          "codename": "image"
+        },
+        {
+          "guidelines": null,
+          "taxonomy_group": {
+            "id": "cfe4678d-9b94-4449-809f-f747d942f5d2"
+          },
+          "is_required": false,
+          "term_count_limit": null,
+          "type": "taxonomy",
+          "id": "7def5312-eec3-475a-b4ae-5953288f915d",
+          "codename": "product_status"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "Short description",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "b18090aa-63ef-4372-bc01-b6aec11f08f9",
+          "codename": "short_description"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "Long description",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "f3df3ece-d57b-4a35-9df4-ee469f8e0bde",
+          "codename": "long_description"
+        },
+        {
+          "depends_on": {
+            "element": {
+              "id": "2cab96ed-960a-4c88-acfc-ae861f11da09"
+            }
+          },
+          "name": "URL pattern",
+          "guidelines": null,
+          "is_required": false,
+          "type": "url_slug",
+          "id": "5f3fa755-e81f-4b4e-978f-ccec731b9222",
+          "codename": "url_pattern"
+        },
+        {
+          "guidelines": null,
+          "taxonomy_group": {
+            "id": "ec5fb3c4-a8ef-4ec3-af42-82d70c8f9e7c"
+          },
+          "is_required": false,
+          "term_count_limit": null,
+          "type": "taxonomy",
+          "id": "9bc8f46d-db88-4e7d-88a8-60cbd8ae0932",
+          "codename": "manufacturer"
+        }
+      ]
+    },
+    {
+      "id": "477f095a-f647-45fb-aa88-545e08c47557",
+      "codename": "cafe",
+      "last_modified": "2017-08-02T20:16:56.1561225Z",
+      "name": "Cafe",
+      "content_groups": [],
+      "elements": [
+        {
+          "maximum_text_length": null,
+          "name": "Street",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "0b2a9fda-6117-4251-9b3d-30f188427bd2",
+          "codename": "street"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "City",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "08c5fa01-ca10-474f-8cff-7ea02c96f469",
+          "codename": "city"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Country",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "563ff840-7928-4693-b4ef-776888b05753",
+          "codename": "country"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "State",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "e661329b-a9a7-4e77-aeac-4d52d70226b8",
+          "codename": "state"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "ZIP Code",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "63ebf6aa-af59-4293-8a62-8f06d6910a9b",
+          "codename": "zip_code"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Phone",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "a1fe028e-f434-4781-b6f2-ffd128ebe8fe",
+          "codename": "phone"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Email",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "b973d8c4-688c-4ed5-ad1e-fa33ef14a199",
+          "codename": "email"
+        },
+        {
+          "asset_count_limit": null,
+          "maximum_file_size": null,
+          "allowed_file_types": "any",
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "name": "Photo",
+          "guidelines": null,
+          "is_required": false,
+          "type": "asset",
+          "id": "7d06d400-ddd2-4b84-92b4-030a3d01abed",
+          "codename": "photo"
+        }
+      ]
+    },
+    {
+      "id": "e5581328-32f8-403f-bd60-a7ea9cbcc020",
+      "codename": "grinder",
+      "last_modified": "2017-08-02T20:20:08.128592Z",
+      "name": "Grinder",
+      "content_groups": [],
+      "elements": [
+        {
+          "maximum_text_length": null,
+          "name": "Product name",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "99056ccf-25cf-405d-966f-bf08f7995e7f",
+          "codename": "product_name"
+        },
+        {
+          "name": "Price",
+          "guidelines": null,
+          "is_required": false,
+          "type": "number",
+          "id": "4c760f8c-e4e0-4b1b-8464-a1661badc767",
+          "codename": "price"
+        },
+        {
+          "asset_count_limit": null,
+          "maximum_file_size": null,
+          "allowed_file_types": "any",
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "name": "Image",
+          "guidelines": null,
+          "is_required": false,
+          "type": "asset",
+          "id": "590cb4d9-5ef8-47ac-a2c7-0374bed79d36",
+          "codename": "image"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Manufacturer",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "62e1e3f4-d4fd-4031-a824-dda0016c0601",
+          "codename": "manufacturer"
+        },
+        {
+          "guidelines": null,
+          "taxonomy_group": {
+            "id": "cfe4678d-9b94-4449-809f-f747d942f5d2"
+          },
+          "is_required": false,
+          "term_count_limit": null,
+          "type": "taxonomy",
+          "id": "56b1a641-fe73-415d-871f-8e279ca417f7",
+          "codename": "product_status"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "Short description",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "3df70ecc-23af-4448-9417-145c34b15c85",
+          "codename": "short_description"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "Long description",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "ec4c23ee-e63a-40e9-916f-b8d4713af140",
+          "codename": "long_description"
+        },
+        {
+          "depends_on": {
+            "element": {
+              "id": "62e1e3f4-d4fd-4031-a824-dda0016c0601"
+            }
+          },
+          "name": "URL pattern",
+          "guidelines": null,
+          "is_required": false,
+          "type": "url_slug",
+          "id": "7796420f-0ac4-416f-91bb-45a38039bb74",
+          "codename": "url_pattern"
+        }
+      ]
+    },
+    {
+      "id": "6189d6f0-4b1a-4c4e-b5e9-595a0c966b88",
+      "codename": "article",
+      "last_modified": "2017-08-02T20:14:48.0780904Z",
+      "name": "Article",
+      "content_groups": [],
+      "elements": [
+        {
+          "guidelines": null,
+          "taxonomy_group": {
+            "id": "06b01649-311d-4fea-b5a6-18fefa5ad863"
+          },
+          "is_required": false,
+          "term_count_limit": null,
+          "type": "taxonomy",
+          "id": "3ac53fb3-362b-4a6c-8d37-f801febe50a7",
+          "codename": "personas"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Title",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "a6a9c19a-dbc2-434f-93f6-9ab352ab103c",
+          "codename": "title"
+        },
+        {
+          "asset_count_limit": null,
+          "maximum_file_size": null,
+          "allowed_file_types": "any",
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "name": "Teaser image",
+          "guidelines": null,
+          "is_required": false,
+          "type": "asset",
+          "id": "aba685d6-2d6d-4e70-8d84-20e656ab824e",
+          "codename": "teaser_image"
+        },
+        {
+          "name": "Post date",
+          "guidelines": null,
+          "is_required": false,
+          "type": "date_time",
+          "id": "390ad225-a00b-4548-b12c-308a3fb4a0fc",
+          "codename": "post_date"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Summary",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "7e984c8f-1e02-4bc3-a73e-8ae060845233",
+          "codename": "summary"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "Bad Copy",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "e2df8af0-8cd2-435d-9972-9d60be560080",
+          "codename": "body_copy"
+        },
+        {
+          "item_count_limit": null,
+          "allowed_content_types": [],
+          "name": "Related articles",
+          "guidelines": null,
+          "is_required": false,
+          "type": "modular_content",
+          "id": "e2e23c75-c59d-4402-ae1e-c79a65013f77",
+          "codename": "related_articles"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Meta keywords",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "1731318d-4ee8-4322-a170-810cb030a2de",
+          "codename": "meta_keywords"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Meta description",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "11886b21-5bdf-4e6f-affa-15c6860db2bf",
+          "codename": "meta_description"
+        },
+        {
+          "depends_on": {
+            "element": {
+              "id": "a6a9c19a-dbc2-434f-93f6-9ab352ab103c"
+            }
+          },
+          "name": "URL pattern",
+          "guidelines": null,
+          "is_required": false,
+          "type": "url_slug",
+          "id": "487d135c-852c-43da-a05d-4d8014c9a65b",
+          "codename": "url_pattern"
+        }
+      ]
+    },
+    {
+      "id": "29e339d1-5626-4619-9406-141e8fec8ef3",
+      "codename": "office",
+      "last_modified": "2017-08-02T20:23:39.9410267Z",
+      "name": "Office",
+      "content_groups": [],
+      "elements": [
+        {
+          "maximum_text_length": null,
+          "name": "Name",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "345aa9d3-13c9-485f-9613-cc6013a02c58",
+          "codename": "name"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Street",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "474813c5-d67d-461d-b47b-9ceec660dff6",
+          "codename": "street"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "City",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "e4cb4d35-1f8d-405f-b5a1-333d526328d6",
+          "codename": "city"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Country",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "55bc9fc0-9a10-49a4-948d-d334bf918812",
+          "codename": "country"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "State",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "6d45f175-0ddd-4604-b51e-363e93262d78",
+          "codename": "state"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Zip code",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "e64085bf-5f5d-4c6c-9511-a180e9198ad2",
+          "codename": "zip_code"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Phone",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "bdfc89da-a564-4048-9dc9-e6d347a65c7a",
+          "codename": "phone"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Email",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "a1dcdd60-d464-4695-bad6-af98d7522181",
+          "codename": "email"
+        }
+      ]
+    },
+    {
+      "id": "86cac3b1-5e79-45b4-bd87-2dc2bf442ac4",
+      "codename": "hero_unit",
+      "last_modified": "2017-08-02T20:20:37.9292451Z",
+      "name": "Hero Unit",
+      "content_groups": [],
+      "elements": [
+        {
+          "maximum_text_length": null,
+          "name": "Title",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "6ff2724d-8c53-43af-b616-c996d6f3d901",
+          "codename": "title"
+        },
+        {
+          "asset_count_limit": null,
+          "maximum_file_size": null,
+          "allowed_file_types": "any",
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "name": "Image",
+          "guidelines": null,
+          "is_required": false,
+          "type": "asset",
+          "id": "eae43fc6-c5b3-4f93-8526-1a6b29815362",
+          "codename": "image"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "Marketing message",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "de2c097d-347e-4319-a74f-2d8337221fd4",
+          "codename": "marketing_message"
+        }
+      ]
+    },
+    {
+      "id": "e91b1486-d9cc-4c25-b111-dea7833f31ca",
+      "codename": "fact_about_us",
+      "last_modified": "2017-08-02T20:18:58.9724753Z",
+      "name": "Fact about us",
+      "content_groups": [],
+      "elements": [
+        {
+          "maximum_text_length": null,
+          "name": "Title",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "190ca8cb-6117-4c54-957f-76693cefc691",
+          "codename": "title"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "Description",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "d09a7879-f926-4c60-a4e5-c5de81225f4c",
+          "codename": "description"
+        },
+        {
+          "asset_count_limit": null,
+          "maximum_file_size": null,
+          "allowed_file_types": "any",
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "name": "Image",
+          "guidelines": null,
+          "is_required": false,
+          "type": "asset",
+          "id": "72216ea5-6be5-4824-8791-a694bee801b3",
+          "codename": "image"
+        }
+      ]
+    },
+    {
+      "id": "a1e662da-cb4e-469e-888a-a4a568c0fe82",
+      "codename": "accessory",
+      "last_modified": "2017-08-02T20:13:06.5799005Z",
+      "name": "Accessory",
+      "content_groups": [],
+      "elements": [
+        {
+          "maximum_text_length": null,
+          "name": "Product name",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "990ccf4d-9ab4-4a0a-b788-087434abd318",
+          "codename": "product_name"
+        },
+        {
+          "name": "Price",
+          "guidelines": null,
+          "is_required": false,
+          "type": "number",
+          "id": "ad25deb2-97ff-42c1-a4b0-6a1b0a3fbb51",
+          "codename": "price"
+        },
+        {
+          "asset_count_limit": null,
+          "maximum_file_size": null,
+          "allowed_file_types": "any",
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "name": "Image",
+          "guidelines": null,
+          "is_required": false,
+          "type": "asset",
+          "id": "b6316eb1-5f86-4124-bb40-614383ba5980",
+          "codename": "image"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Manufacturer",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "591bd05c-4b74-414a-bc09-01b8723c55dd",
+          "codename": "manufacturer"
+        },
+        {
+          "guidelines": null,
+          "taxonomy_group": {
+            "id": "cfe4678d-9b94-4449-809f-f747d942f5d2"
+          },
+          "is_required": false,
+          "term_count_limit": null,
+          "type": "taxonomy",
+          "id": "4040aa1b-c2d0-4277-86c5-8013ebfda842",
+          "codename": "product_status"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "Short description",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "5057dde8-90bb-455b-ae7a-024822dc9465",
+          "codename": "short_description"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "Long description",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "b4eff1b3-6227-4f08-bc67-162f909b13f2",
+          "codename": "long_description"
+        },
+        {
+          "depends_on": {
+            "element": {
+              "id": "591bd05c-4b74-414a-bc09-01b8723c55dd"
+            }
+          },
+          "name": "URL pattern",
+          "guidelines": null,
+          "is_required": false,
+          "type": "url_slug",
+          "id": "2a1b6915-31e2-423c-bbd8-8c1c4cd81d23",
+          "codename": "url_pattern"
+        }
+      ]
+    },
+    {
+      "id": "ad468875-6bb5-4fb5-8a47-a13718b239b0",
+      "codename": "coffee",
+      "last_modified": "2017-08-02T20:18:27.0335579Z",
+      "name": "Coffee",
+      "content_groups": [],
+      "elements": [
+        {
+          "maximum_text_length": null,
+          "name": "Product name",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "a75d7ce3-3a15-4127-b09f-84d8b916490d",
+          "codename": "product_name"
+        },
+        {
+          "name": "Price",
+          "guidelines": null,
+          "is_required": false,
+          "type": "number",
+          "id": "00610cfb-d4b7-4ef6-99f6-d8520de47661",
+          "codename": "price"
+        },
+        {
+          "asset_count_limit": null,
+          "maximum_file_size": null,
+          "allowed_file_types": "any",
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "name": "Image",
+          "guidelines": null,
+          "is_required": false,
+          "type": "asset",
+          "id": "2205d17c-0489-45c1-911a-aeab68ff650b",
+          "codename": "image"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "Short description",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "8ce8a0c2-acc4-4e8a-a9d6-dfa696292f41",
+          "codename": "short_description"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "Long description",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "8f6ca38f-a76d-4fc1-9c92-89814899c3dc",
+          "codename": "long_description"
+        },
+        {
+          "guidelines": null,
+          "taxonomy_group": {
+            "id": "cfe4678d-9b94-4449-809f-f747d942f5d2"
+          },
+          "is_required": false,
+          "term_count_limit": null,
+          "type": "taxonomy",
+          "id": "1b4d1290-1f26-4874-be78-d6e751e474ba",
+          "codename": "product_status"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Farm",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "ec0792ba-5c45-42f9-89ec-653717fe8fad",
+          "codename": "farm"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Country",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "0dc007ab-6a07-4251-94fd-6f7d874d040c",
+          "codename": "country"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Variety",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "58ccc1a8-208e-4e4b-97af-a18a851fa1df",
+          "codename": "variety"
+        },
+        {
+          "maximum_text_length": null,
+          "name": "Altitude",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "514df0eb-95ba-433d-8f0e-064b3c96f17d",
+          "codename": "altitude"
+        },
+        {
+          "depends_on": {
+            "element": {
+              "id": "58ccc1a8-208e-4e4b-97af-a18a851fa1df"
+            }
+          },
+          "name": "URL pattern",
+          "guidelines": null,
+          "is_required": false,
+          "type": "url_slug",
+          "id": "16953820-5676-4223-9e44-6ae0a4772ff1",
+          "codename": "url_pattern"
+        },
+        {
+          "guidelines": null,
+          "taxonomy_group": {
+            "id": "a71538cd-9f51-4ae0-a139-62dea6d48431"
+          },
+          "is_required": false,
+          "term_count_limit": null,
+          "type": "taxonomy",
+          "id": "80f21953-4504-439a-a439-4f76b03cc7a2",
+          "codename": "processing"
+        }
+      ]
+    },
+    {
+      "id": "bedb01fb-7bff-47ba-a13e-f065df1e97c0",
+      "codename": "tweet",
+      "last_modified": "2017-08-02T20:24:40.0288709Z",
+      "name": "Tweet",
+      "content_groups": [],
+      "elements": [
+        {
+          "maximum_text_length": null,
+          "name": "Tweet link",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "d5b29378-15ca-4bef-a3c7-ff82276faf46",
+          "codename": "tweet_link"
+        },
+        {
+          "mode": "single",
+          "options": [
+            {
+              "id": "f64cbc68-0ec4-4a31-9848-456d5444923d",
+              "codename": "dark",
+              "name": "Dark"
+            },
+            {
+              "id": "a7c0fcfb-594a-4ad0-8a41-e11705a7238e",
+              "codename": "light",
+              "name": "Light"
+            }
+          ],
+          "name": "Theme",
+          "guidelines": null,
+          "is_required": false,
+          "type": "multiple_choice",
+          "id": "5e52923e-9537-4f65-a090-ebb8409dd6b3",
+          "codename": "theme"
+        },
+        {
+          "mode": "single",
+          "options": [
+            {
+              "id": "4c77812b-66a8-4835-b49d-24b4cc68ed69",
+              "codename": "hide_media",
+              "name": "Hide media"
+            },
+            {
+              "id": "42a4cacc-0cc9-4aa5-9975-468b4a4c2325",
+              "codename": "hide_thread",
+              "name": "Hide thread"
+            }
+          ],
+          "name": "Display options",
+          "guidelines": null,
+          "is_required": false,
+          "type": "multiple_choice",
+          "id": "7cd27ee9-6dd5-4f63-8708-7c767df3203a",
+          "codename": "display_options"
+        }
+      ]
+    },
+    {
+      "id": "592870f9-4fc1-4b34-92e8-42f8c316b848",
+      "codename": "about_us",
+      "last_modified": "2017-08-02T20:11:37.2303901Z",
+      "name": "About us",
+      "content_groups": [],
+      "elements": [
+        {
+          "item_count_limit": null,
+          "allowed_content_types": [],
+          "name": "Facts",
+          "guidelines": null,
+          "is_required": false,
+          "type": "modular_content",
+          "id": "93492857-2f06-43f6-877a-1d9b2d01b7a5",
+          "codename": "facts"
+        },
+        {
+          "depends_on": {
+            "element": {
+              "id": "986d18fb-2de3-47e6-8a03-e7eb9781e707"
+            }
+          },
+          "name": "URL pattern",
+          "guidelines": null,
+          "is_required": false,
+          "type": "url_slug",
+          "id": "5e88c693-245f-439e-be45-8b1b27733c8c",
+          "codename": "url_pattern"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "continuation_token": null,
+    "next_page": null
+  }
+}

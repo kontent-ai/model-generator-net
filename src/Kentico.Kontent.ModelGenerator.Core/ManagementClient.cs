@@ -22,6 +22,11 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public async Task<IList<JObject>> GetAllContentTypesAsync(CodeGeneratorOptions options)
         {
+            if (!options.ContentManagementApi)
+            {
+                return null;
+            }
+
             var contentTypes = new List<JObject>();
             string continuationToken = null;
             do

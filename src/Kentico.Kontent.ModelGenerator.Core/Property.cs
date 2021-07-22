@@ -14,6 +14,8 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public string Codename { get; }
 
+        public string Id { get; }
+
         /// <summary>
         /// Returns return type of the property in a string format (e.g.: "string").
         /// </summary>
@@ -51,10 +53,11 @@ namespace Kentico.Kontent.ModelGenerator.Core
         private static Dictionary<string, string> ContentTypeToTypeName(bool cmApi)
             => cmApi ? ContentManagementTypes : DeliverTypes;
 
-        public Property(string codename, string typeName)
+        public Property(string codename, string typeName, string id = null)
         {
             Codename = codename;
             TypeName = typeName;
+            Id = id;
         }
 
         public static bool IsContentTypeSupported(string contentType, bool cmApi = false)
@@ -62,14 +65,14 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return ContentTypeToTypeName(cmApi).ContainsKey(contentType);
         }
 
-        public static Property FromContentType(string codename, string contentType, bool cmApi = false)
+        public static Property FromContentType(string codename, string contentType, bool cmApi = false, string id = null)
         {
             if (!IsContentTypeSupported(contentType, cmApi))
             {
                 throw new ArgumentException($"Unknown Content Type {contentType}", nameof(contentType));
             }
 
-            return new Property(codename, ContentTypeToTypeName(cmApi)[contentType]);
+            return new Property(codename, ContentTypeToTypeName(cmApi)[contentType], id);
         }
     }
 }
