@@ -6,7 +6,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 {
     public static class ContentTypeJObjectHelper
     {
-        public static string GetElementId(JObject managementContentType, string elementCodename)
+        public static string GetElementIdFromContentType(JObject managementContentType, string elementCodename)
         {
             return managementContentType["elements"].ToObject<List<JObject>>()
                 .FirstOrDefault(el => el["codename"].ToObject<string>() == elementCodename)["id"].ToObject<string>();
