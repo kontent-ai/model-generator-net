@@ -77,9 +77,10 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 ContentManagementApi = cmApi
             });
 
-            var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
+            var deliveryClient = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
+            var managementClient = new Mock<IManagementClient>();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, client, new FileSystemOutputProvider(mockOptions.Object));
+            var codeGenerator = new CodeGenerator(mockOptions.Object, deliveryClient, new FileSystemOutputProvider(mockOptions.Object), managementClient.Object);
 
             await codeGenerator.GenerateContentTypeModels();
             await codeGenerator.GenerateTypeProvider();
@@ -87,7 +88,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             Assert.True(Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Length > 10);
 
             Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR), "*.Generated.cs"));
-            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR)).Where(p=> !p.Contains("*.Generated.cs")));
+            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR)).Where(p => !p.Contains("*.Generated.cs")));
             Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR), "*TypeProvider.cs"));
 
             // Cleanup
@@ -117,9 +118,10 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 ContentManagementApi = cmApi
             });
 
-            var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
+            var deliveryClient = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
+            var managementClient = new Mock<IManagementClient>();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, client, new FileSystemOutputProvider(mockOptions.Object));
+            var codeGenerator = new CodeGenerator(mockOptions.Object, deliveryClient, new FileSystemOutputProvider(mockOptions.Object), managementClient.Object);
 
             await codeGenerator.GenerateContentTypeModels();
 
@@ -157,9 +159,10 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 ContentManagementApi = cmApi
             });
 
-            var client = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
+            var deliveryClient = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
+            var managementClient = new Mock<IManagementClient>();
 
-            var codeGenerator = new CodeGenerator(mockOptions.Object, client, new FileSystemOutputProvider(mockOptions.Object));
+            var codeGenerator = new CodeGenerator(mockOptions.Object, deliveryClient, new FileSystemOutputProvider(mockOptions.Object), managementClient.Object);
 
             await codeGenerator.GenerateContentTypeModels();
 
