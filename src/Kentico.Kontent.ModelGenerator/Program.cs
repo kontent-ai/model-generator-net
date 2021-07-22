@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Kentico.Kontent.Delivery;
 using Kentico.Kontent.Delivery.Abstractions;
@@ -31,6 +32,8 @@ namespace Kentico.Kontent.ModelGenerator
                 // Fill the DI container
                 services.Configure<CodeGeneratorOptions>(configuration);
                 services.AddDeliveryClient(configuration);
+                services.AddTransient<HttpClient>();
+                services.AddTransient<IManagementClient, ManagementClient>();
                 services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
                 services.AddTransient<CodeGenerator>();
 
