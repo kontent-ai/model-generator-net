@@ -133,7 +133,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                     }
 
                     var elementId = _options.ContentManagementApi
-                        ? ContentTypeJObjectHelper.GetElementId(managementContentType, element.Codename)
+                        ? ContentTypeJObjectHelper.GetElementIdFromContentType(managementContentType, element.Codename)
                         : null;
 
                     var property = Property.FromContentType(element.Codename, elementType, _options.ContentManagementApi, elementId);
