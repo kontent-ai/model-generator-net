@@ -148,6 +148,10 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 {
                     Console.WriteLine($"Warning: Can't create valid C# Identifier from '{element.Codename}'. Skipping element.");
                 }
+                catch (InvalidIdException)
+                {
+                    Console.WriteLine($"Warning: Can't create valid Id for '{element.Codename}'. Skipping element.");
+                }
                 catch (ArgumentException)
                 {
                     Console.WriteLine($"Warning: Skipping unknown Content Element type '{element.Type}'. (Content Type: '{classDefinition.ClassName}', Element Codename: '{element.Codename}').");
