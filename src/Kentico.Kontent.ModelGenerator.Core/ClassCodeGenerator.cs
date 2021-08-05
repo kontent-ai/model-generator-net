@@ -35,9 +35,10 @@ namespace Kentico.Kontent.ModelGenerator.Core
         {
             var cmApiUsings = new[]
             {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}")),
                 SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Items.ContentItemModel).Namespace!)),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Assets.AssetModel).Namespace!))
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Assets.AssetModel).Namespace!)),
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Modules.ModelBuilders.IModelProvider).Namespace!)),//todo replace with KontentElementId
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}"))
             };
 
             var deliveryUsings = new[]
