@@ -43,7 +43,6 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [Fact]
         public void GetElementIdFromContentType_InvalidElementsType_ThrowsException()
         {
-            var codename = "codename";
             var managementType = JObject.FromObject(new
             {
                 id = Guid.NewGuid(),
