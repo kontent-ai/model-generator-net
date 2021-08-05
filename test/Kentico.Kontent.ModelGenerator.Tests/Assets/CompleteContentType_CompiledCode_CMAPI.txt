@@ -6,9 +6,10 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using Kentico.Kontent.Management.Models.Items;
 using Kentico.Kontent.Management.Models.Assets;
+using Kentico.Kontent.Management.Modules.ModelBuilders;
+using Newtonsoft.Json;
 
 namespace KenticoKontentModels
 {
