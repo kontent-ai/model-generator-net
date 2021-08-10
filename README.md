@@ -43,7 +43,7 @@ To learn how to generate executables for your favorite target platform, follow t
 | `-n` | `--namespace` | False | `KenticoKontentModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
 | `-o` | `--outputdir` | False | `\.` | An output folder path |
 | `-g` | `--generatepartials` | False | `true` | Generates partial classes for customization. Partial classes are the best practice for customization so the recommended value is `true`. |
-| `-t` | `--withtypeprovider` | False | `true` | Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/Kentico/delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models-(aka-Code-First-Approach)#customizing-the-strong-type-binding-logic) for more info) |
+| `-t` | `--withtypeprovider` | False | `true` | Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/Kentico/kontent-delivery-sdk-net/wiki/Working-with-Strongly-Typed-Models#customizing-the-strong-type-binding-logic) for more info) |
 | `-s` | `--structuredmodel` | False | `false` | Generates `IRichTextContent` instead of `string` for rich-text elements. This enables utilizing [structured rich-text rendering](https://github.com/Kentico/delivery-sdk-net/wiki/Structured-Rich-text-rendering) |
 | `-f` | `--filenamesuffix` | False | `null` | Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs) |
 | `-b` | `--baseclass` | False | `null` | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes |
