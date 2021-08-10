@@ -88,10 +88,8 @@ namespace KenticoKontentModels
 ```
 
 ### Customizing models - Handling content element constraints
-Currently, the generator is built on top of the Delivery API which doesn't provide information about content element constraints such as "Allowed Content Types" or "Limit number of items". In case you want your models to be more specific, this is the best practice on how to extend them:
 
-**Extensibility of CustomTypeProvider**
-CustomTypeProvider is extensible [Working with strongly typed models](https://github.com/Kentico/kontent-delivery-sdk-net/wiki/Working-with-strongly-typed-models#generating-custom-type-providers).
+Currently, the generator is built on top of the Delivery API which doesn't provide information about content element constraints such as "Allowed Content Types" or "Limit number of items". In case you want your models to be more specific, this is the best practice on how to extend them:
 
 Model.Generated.cs
 
