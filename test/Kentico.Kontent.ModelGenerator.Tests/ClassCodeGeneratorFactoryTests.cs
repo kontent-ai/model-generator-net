@@ -1,5 +1,4 @@
 ﻿using System;
-using FluentAssertions;
 using JetBrains.Annotations;
 using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
@@ -132,11 +131,11 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [AssertionMethod]
         private static void AssertClassCodeGenerator<T>(ClassCodeGeneratorBase result, string classDefinitionCodename, string classFileName, string @namespace, bool customPartial = false)
         {
-            result.Should().BeOfType<T>();
-            result.ClassDefinition.Codename.Should().Be(classDefinitionCodename);
-            result.ClassFilename.Should().Be(classFileName);
-            result.CustomPartial.Should().Be(customPartial);
-            result.Namespace.Should().Be(@namespace);
+            Assert.IsType<T>(result);
+            Assert.Equal(classDefinitionCodename, result.ClassDefinition.Codename);
+            Assert.Equal(classFileName, result.ClassFilename);
+            Assert.Equal(customPartial, result.CustomPartial);
+            Assert.Equal(@namespace, result.Namespace);
         }
     }
 }
