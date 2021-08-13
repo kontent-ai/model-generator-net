@@ -48,7 +48,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             {
                 foreach (var codeGenerator in classCodeGenerators)
                 {
-                    _outputProvider.Output(codeGenerator.GenerateCode(_options.ContentManagementApi), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
+                    _outputProvider.Output(codeGenerator.GenerateCode(), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
                 }
 
                 Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
@@ -86,12 +86,12 @@ namespace Kentico.Kontent.ModelGenerator.Core
             }
         }
 
-        internal async Task<IEnumerable<ClassCodeGenerator>> GetClassCodeGenerators(bool structuredModel = false)
+        internal async Task<IEnumerable<ClassCodeGeneratorBase>> GetClassCodeGenerators(bool structuredModel = false)
         {
             IEnumerable<IContentType> deliveryTypes = (await _client.GetTypesAsync()).Types;
             var managementTypes = await _managementClient.GetAllContentTypesAsync(_options);
 
-            var codeGenerators = new List<ClassCodeGenerator>();
+            var codeGenerators = new List<ClassCodeGeneratorBase>();
             if (deliveryTypes != null)
             {
                 foreach (var contentType in deliveryTypes)
@@ -118,7 +118,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return codeGenerators;
         }
 
-        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, bool structuredModel, JObject managementContentType = null)
+        internal ClassCodeGeneratorBase GetClassCodeGenerator(IContentType contentType, bool structuredModel, JObject managementContentType = null)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
 
@@ -173,24 +173,24 @@ namespace Kentico.Kontent.ModelGenerator.Core
             string suffix = string.IsNullOrEmpty(_options.FileNameSuffix) ? "" : $".{_options.FileNameSuffix}";
             string classFilename = $"{classDefinition.ClassName}{suffix}";
 
-            return new ClassCodeGenerator(classDefinition, classFilename, _options.Namespace);
+            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(_options, classDefinition, classFilename);
         }
 
-        internal ClassCodeGenerator GetCustomClassCodeGenerator(IContentType contentType)
+        internal ClassCodeGeneratorBase GetCustomClassCodeGenerator(IContentType contentType)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
             string classFilename = $"{classDefinition.ClassName}";
 
-            return new ClassCodeGenerator(classDefinition, classFilename, _options.Namespace, true);
+            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(_options, classDefinition, classFilename, true);
         }
 
         internal async Task GenerateBaseClass()
         {
-            IEnumerable<ClassCodeGenerator> classCodeGenerators = await GetClassCodeGenerators();
+            IEnumerable<ClassCodeGeneratorBase> classCodeGenerators = await GetClassCodeGenerators();
 
             if (classCodeGenerators.Any())
             {
-                var baseClassCodeGenerator = new BaseClassCodeGenerator(_options.BaseClass, _options.Namespace);
+                var baseClassCodeGenerator = new GeneralClassCodeGenerator(_options.BaseClass, _options.Namespace);
 
                 foreach (var codeGenerator in classCodeGenerators)
                 {

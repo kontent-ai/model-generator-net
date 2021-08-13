@@ -21,11 +21,11 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private readonly string _namespace;
 
-        public TypeProviderCodeGenerator(string @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE)
+        public TypeProviderCodeGenerator(string @namespace = ClassCodeGeneratorBase.DEFAULT_NAMESPACE)
         {
             if (string.IsNullOrEmpty(@namespace))
             {
-                @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE;
+                @namespace = ClassCodeGeneratorBase.DEFAULT_NAMESPACE;
             }
 
             _namespace = @namespace;

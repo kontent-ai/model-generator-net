@@ -11,19 +11,19 @@ using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
 {
-    public class ClassCodeGeneratorTests
+    public class DeliveryClassCodeGeneratorTests
     {
         [Fact]
         public void Constructor_ThrowsAnExceptionForNullArgument()
         {
-            Assert.Throws<ArgumentNullException>(() => new ClassCodeGenerator(null, null));
+            Assert.Throws<ArgumentNullException>(() => new DeliveryClassCodeGenerator(null, null));
         }
 
         [Fact]
         public void Constructor_ReplacesNullNamespaceWithDefault()
         {
             var classDefinition = new ClassDefinition("codename");
-            var classCodeGenerator = new ClassCodeGenerator(classDefinition, null);
+            var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, null);
 
             Assert.Equal("KenticoKontentModels", classCodeGenerator.Namespace);
         }
@@ -46,37 +46,12 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             classDefinition.AddSystemProperty();
 
-            var classCodeGenerator = new ClassCodeGenerator(classDefinition, classDefinition.ClassName);
+            var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, classDefinition.ClassName);
 
-            string compiledCode = classCodeGenerator.GenerateCode();
-
-            string executingPath = AppContext.BaseDirectory;
-            string expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
-
-            Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
-        }
-
-        [Fact]
-        public void Build_CreatesClassWithCompleteContentType_CMAPI()
-        {
-            var classDefinition = new ClassDefinition("Complete content type");
-            classDefinition.AddProperty(Property.FromContentType("text", "text", true, "text_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("rich_text", "rich_text", true, "rich_text_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("number", "number", true, "number_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("multiple_choice", "multiple_choice", true, "multiple_choice_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("date_time", "date_time", true, "date_time_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("asset", "asset", true, "asset_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("modular_content", "modular_content", true, "linked_items_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("taxonomy", "taxonomy", true, "taxonomy_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("url_slug", "url_slug", true, "url_slug_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("custom", "custom", true, "custom_element_id"));
-
-            var classCodeGenerator = new ClassCodeGenerator(classDefinition, classDefinition.ClassName);
-
-            var compiledCode = classCodeGenerator.GenerateCode(true);
+            var compiledCode = classCodeGenerator.GenerateCode();
 
             var executingPath = AppContext.BaseDirectory;
-            var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_CMAPI.txt");
+            var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
 
             Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
         }
@@ -96,8 +71,8 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             definition.AddProperty(Property.FromContentType("taxonomy", "taxonomy"));
             definition.AddProperty(Property.FromContentType("custom", "custom"));
 
-            var classCodeGenerator = new ClassCodeGenerator(definition, definition.ClassName);
-            string compiledCode = classCodeGenerator.GenerateCode();
+            var classCodeGenerator = new DeliveryClassCodeGenerator(definition, definition.ClassName);
+            var compiledCode = classCodeGenerator.GenerateCode();
 
             CSharpCompilation compilation = CSharpCompilation.Create(
                 assemblyName: Path.GetRandomFileName(),
@@ -109,8 +84,8 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
             using var ms = new MemoryStream();
-            EmitResult result = compilation.Emit(ms);
-            string compilationErrors = "Compilation errors:\n";
+            var result = compilation.Emit(ms);
+            var compilationErrors = "Compilation errors:\n";
 
             if (!result.Success)
             {

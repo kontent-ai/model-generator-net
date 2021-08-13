@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.Formatting;
 
 namespace Kentico.Kontent.ModelGenerator.Core
 {
-    public class BaseClassCodeGenerator
+    public class GeneralClassCodeGenerator
     {
         /// <summary>
         /// Collection of classes to extend (HashSet ensures that classes get extended only once)
@@ -23,13 +23,13 @@ namespace Kentico.Kontent.ModelGenerator.Core
         /// </summary>
         public string ExtenderClassName => $"{_className}Extender";
 
-        public BaseClassCodeGenerator(string className, string @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE)
+        public GeneralClassCodeGenerator(string className, string @namespace = ClassCodeGeneratorBase.DEFAULT_NAMESPACE)
         {
             _className = className;
 
             if (string.IsNullOrEmpty(@namespace))
             {
-                @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE;
+                @namespace = ClassCodeGeneratorBase.DEFAULT_NAMESPACE;
             }
 
             _namespace = @namespace;
