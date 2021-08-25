@@ -63,19 +63,19 @@ namespace {_namespace}
 {{
     public class {CLASS_NAME} : ITypeProvider
     {{
-        protected static readonly Dictionary<Type, string> _codenames = new Dictionary<Type, string>
+        protected static readonly Dictionary<Type, string> Codenames = new Dictionary<Type, string>
         {{
 {CreateCodenameDictionaryValues()}
         }};
 
         public virtual Type GetType(string contentType)
         {{
-            return _codenames.Keys.FirstOrDefault(type => GetCodename(type).Equals(contentType));
+            return Codenames.Keys.FirstOrDefault(type => GetCodename(type).Equals(contentType));
         }}
 
         public virtual string GetCodename(Type contentType)
         {{
-            return _codenames.TryGetValue(contentType, out var codename) ? codename : null;
+            return Codenames.TryGetValue(contentType, out var codename) ? codename : null;
         }}
     }}
 }}");
