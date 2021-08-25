@@ -33,23 +33,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public string GenerateCode(bool cmApi = false)
         {
-            var cmApiUsings = new[]
-            {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}")),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Items.ContentItemModel).Namespace!)),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Assets.AssetModel).Namespace!))
-            };
-
-            var deliveryUsings = new[]
-            {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
-            };
-
-            var usings = new[]
-            {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
-            }.Concat(cmApi ? cmApiUsings : deliveryUsings).ToArray();
+            var usings = GetUsings(cmApi);
 
             MemberDeclarationSyntax[] properties = ClassDefinition.Properties.OrderBy(p => p.Identifier).Select((element) =>
                 {
@@ -152,6 +136,32 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             AdhocWorkspace cw = new AdhocWorkspace();
             return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
+        }
+
+        private UsingDirectiveSyntax[] GetUsings(bool cmApi)
+        {
+            var cmApiUsings = new[]
+            {
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}")),
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Items.ContentItemModel).Namespace!)),
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Assets.AssetModel).Namespace!))
+            };
+
+            var deliveryUsings = new[]
+            {
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
+            };
+
+            if (CustomPartial)
+            {
+                return Array.Empty<UsingDirectiveSyntax>();
+            }
+
+            return new[]
+            {
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
+            }.Concat(cmApi ? cmApiUsings : deliveryUsings).ToArray();
         }
     }
 }
