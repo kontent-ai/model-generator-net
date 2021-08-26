@@ -16,12 +16,45 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Theory]
-        [InlineData("element_codename", "text", false, "ElementCodename", "string")]
-        [InlineData("element_codename", "text", true, "ElementCodename", "string")]
-        [InlineData("element_codename", "asset", true, "ElementCodename", "IEnumerable<AssetIdentifier>")]
-        public void FromContentType(string codename, string contentType, bool cmApi, string expectedCodename, string expectedTypeName)
+        [InlineData("text", "string")]
+        [InlineData("rich_text", "string")]
+        [InlineData("rich_text" + Property.STRUCTURED_SUFFIX, "IRichTextContent")]
+        [InlineData("number", "decimal?")]
+        [InlineData("multiple_choice", "IEnumerable<IMultipleChoiceOption>")]
+        [InlineData("date_time", "DateTime?")]
+        [InlineData("asset", "IEnumerable<IAsset>")]
+        [InlineData("modular_content", "IEnumerable<object>")]
+        [InlineData("taxonomy", "IEnumerable<ITaxonomyTerm>")]
+        [InlineData("url_slug", "string")]
+        [InlineData("custom", "string")]
+        public void DAPIModel_FromContentType(string contentType, string expectedTypeName)
         {
-            var element = Property.FromContentType(codename, contentType, cmApi);
+            var codename = "element_codename";
+            var expectedCodename = "ElementCodename";
+
+            var element = Property.FromContentType(codename, contentType, false);
+
+            Assert.Equal(expectedCodename, element.Identifier);
+            Assert.Equal(expectedTypeName, element.TypeName);
+        }
+
+        [Theory]
+        [InlineData("text", "TextElement")]
+        [InlineData("rich_text", "RichTextElement")]
+        [InlineData("number", "NumberElement")]
+        [InlineData("multiple_choice", "MultipleChoiceElement")]
+        [InlineData("date_time", "DateTimeElement")]
+        [InlineData("asset", "AssetElement")]
+        [InlineData("modular_content", "LinkedItemsElement")]
+        [InlineData("taxonomy", "TaxonomyElement")]
+        [InlineData("url_slug", "UrlSlugElement")]
+        [InlineData("custom", "CustomElement")]
+        public void CMAPIModel_FromContentType(string contentType, string expectedTypeName)
+        {
+            var codename = "element_codename";
+            var expectedCodename = "ElementCodename";
+
+            var element = Property.FromContentType(codename, contentType, true);
 
             Assert.Equal(expectedCodename, element.Identifier);
             Assert.Equal(expectedTypeName, element.TypeName);

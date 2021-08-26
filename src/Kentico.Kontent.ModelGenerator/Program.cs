@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Kentico.Kontent.Delivery;
 using Kentico.Kontent.Delivery.Abstractions;
@@ -31,6 +32,8 @@ namespace Kentico.Kontent.ModelGenerator
                 // Fill the DI container
                 services.Configure<CodeGeneratorOptions>(configuration);
                 services.AddDeliveryClient(configuration);
+                services.AddTransient<HttpClient>();
+                services.AddTransient<IManagementClient, ManagementClient>();
                 services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
                 services.AddTransient<CodeGenerator>();
 
@@ -38,7 +41,7 @@ namespace Kentico.Kontent.ModelGenerator
                 var serviceProvider = services.BuildServiceProvider();
 
                 // Validate configuration of the Delivery Client
-                serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value.DeliveryOptions.Validate();
+                serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value.Validate();
 
                 // Code generator entry point
                 return await serviceProvider.GetService<CodeGenerator>().RunAsync();
@@ -72,6 +75,7 @@ namespace Kentico.Kontent.ModelGenerator
                 {"-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
                 {"-s", nameof(CodeGeneratorOptions.StructuredModel) },
                 {"-c", nameof(CodeGeneratorOptions.ContentManagementApi) },
+                {"-k", $"{nameof(CodeGeneratorOptions.ManagementOptions)}:{nameof(CodeGeneratorOptions.ManagementOptions.ApiKey)}" },
                 {"-b", nameof(CodeGeneratorOptions.BaseClass) }
             };
             return mappings;

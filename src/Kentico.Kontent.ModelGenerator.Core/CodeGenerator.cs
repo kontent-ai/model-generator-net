@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 
 namespace Kentico.Kontent.ModelGenerator.Core
 {
@@ -12,13 +13,15 @@ namespace Kentico.Kontent.ModelGenerator.Core
     {
         private readonly CodeGeneratorOptions _options;
         private readonly IDeliveryClient _client;
+        private readonly IManagementClient _managementClient;
         private readonly IOutputProvider _outputProvider;
 
-        public CodeGenerator(IOptions<CodeGeneratorOptions> options, IDeliveryClient deliveryClient, IOutputProvider outputProvider)
+        public CodeGenerator(IOptions<CodeGeneratorOptions> options, IDeliveryClient deliveryClient, IOutputProvider outputProvider, IManagementClient managementClient)
         {
             _options = options.Value;
             _client = deliveryClient;
             _outputProvider = outputProvider;
+            _managementClient = managementClient;
         }
 
         public async Task<int> RunAsync()
@@ -85,11 +88,13 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         internal async Task<IEnumerable<ClassCodeGenerator>> GetClassCodeGenerators(bool structuredModel = false)
         {
-            IEnumerable<IContentType> contentTypes = (await _client.GetTypesAsync()).Types;
+            IEnumerable<IContentType> deliveryTypes = (await _client.GetTypesAsync()).Types;
+            var managementTypes = await _managementClient.GetAllContentTypesAsync(_options);
+
             var codeGenerators = new List<ClassCodeGenerator>();
-            if (contentTypes != null)
+            if (deliveryTypes != null)
             {
-                foreach (var contentType in contentTypes)
+                foreach (var contentType in deliveryTypes)
                 {
                     try
                     {
@@ -97,7 +102,12 @@ namespace Kentico.Kontent.ModelGenerator.Core
                         {
                             codeGenerators.Add(GetCustomClassCodeGenerator(contentType));
                         }
-                        codeGenerators.Add(GetClassCodeGenerator(contentType, structuredModel));
+
+                        var managementContentType = _options.ContentManagementApi
+                            ? managementTypes.FirstOrDefault(ct => ct["codename"].ToObject<string>() == contentType.System.Codename)
+                            : null;
+
+                        codeGenerators.Add(GetClassCodeGenerator(contentType, structuredModel, managementContentType));
                     }
                     catch (InvalidIdentifierException)
                     {
@@ -108,7 +118,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return codeGenerators;
         }
 
-        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, bool structuredModel)
+        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, bool structuredModel, JObject managementContentType = null)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
 
@@ -121,7 +131,12 @@ namespace Kentico.Kontent.ModelGenerator.Core
                     {
                         elementType += Property.STRUCTURED_SUFFIX;
                     }
-                    var property = Property.FromContentType(element.Codename, elementType, _options.ContentManagementApi);
+
+                    var elementId = _options.ContentManagementApi
+                        ? ContentTypeJObjectHelper.GetElementIdFromContentType(managementContentType, element.Codename)
+                        : null;
+
+                    var property = Property.FromContentType(element.Codename, elementType, _options.ContentManagementApi, elementId);
                     classDefinition.AddPropertyCodenameConstant(element);
                     classDefinition.AddProperty(property);
                 }
@@ -132,6 +147,10 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 catch (InvalidIdentifierException)
                 {
                     Console.WriteLine($"Warning: Can't create valid C# Identifier from '{element.Codename}'. Skipping element.");
+                }
+                catch (InvalidIdException)
+                {
+                    Console.WriteLine($"Warning: Can't create valid Id for '{element.Codename}'. Skipping element.");
                 }
                 catch (ArgumentException)
                 {

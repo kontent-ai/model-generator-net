@@ -4,35 +4,43 @@
 // Changes to this file may cause incorrect behavior and will be lost if the code is regenerated. 
 // For further modifications of the class, create a separate file with the partial class.
 
-using System;
-using System.Collections.Generic;
+using Kentico.Kontent.Management.Models.LanguageVariants.Elements;
+using Kentico.Kontent.Management.Modules.ModelBuilders;
 using Newtonsoft.Json;
-using Kentico.Kontent.Management.Models.Items;
-using Kentico.Kontent.Management.Models.Assets;
 
 namespace KenticoKontentModels
 {
     public partial class CompleteContentType
     {
         [JsonProperty("asset")]
-        public IEnumerable<AssetIdentifier> Asset { get; set; }
+        [KontentElementId("asset_element_id")]
+        public AssetElement Asset { get; set; }
         [JsonProperty("custom")]
-        public string Custom { get; set; }
+        [KontentElementId("custom_element_id")]
+        public CustomElement Custom { get; set; }
         [JsonProperty("date_time")]
-        public DateTime? DateTime { get; set; }
+        [KontentElementId("date_time_element_id")]
+        public DateTimeElement DateTime { get; set; }
         [JsonProperty("modular_content")]
-        public IEnumerable<ContentItemIdentifier> ModularContent { get; set; }
+        [KontentElementId("linked_items_element_id")]
+        public LinkedItemsElement ModularContent { get; set; }
         [JsonProperty("multiple_choice")]
-        public IEnumerable<MultipleChoiceOptionIdentifier> MultipleChoice { get; set; }
+        [KontentElementId("multiple_choice_element_id")]
+        public MultipleChoiceElement MultipleChoice { get; set; }
         [JsonProperty("number")]
-        public decimal? Number { get; set; }
+        [KontentElementId("number_element_id")]
+        public NumberElement Number { get; set; }
         [JsonProperty("rich_text")]
-        public string RichText { get; set; }
+        [KontentElementId("rich_text_element_id")]
+        public RichTextElement RichText { get; set; }
         [JsonProperty("taxonomy")]
-        public IEnumerable<TaxonomyTermIdentifier> Taxonomy { get; set; }
+        [KontentElementId("taxonomy_element_id")]
+        public TaxonomyElement Taxonomy { get; set; }
         [JsonProperty("text")]
-        public string Text { get; set; }
+        [KontentElementId("text_element_id")]
+        public TextElement Text { get; set; }
         [JsonProperty("url_slug")]
-        public string UrlSlug { get; set; }
+        [KontentElementId("url_slug_element_id")]
+        public UrlSlugElement UrlSlug { get; set; }
     }
 }
