@@ -163,9 +163,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 return Array.Empty<UsingDirectiveSyntax>();
             }
 
-            var usings = cmApi
-                ? ContentManagementUsings
-                : DeliveryUsings;
+            var usings = cmApi ? ContentManagementUsings : DeliveryUsings;
 
             return GeneralUsings.Concat(usings).ToArray();
         }
