@@ -38,16 +38,16 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private static readonly Dictionary<string, string> ContentManagementTypes = new Dictionary<string, string>
         {
-            { "text", "string" },
-            { "rich_text", "string" },
-            { "number", "decimal?" },
-            { "multiple_choice", "IEnumerable<MultipleChoiceOptionIdentifier>" },
-            { "date_time", "DateTime?" },
-            { "asset", "IEnumerable<AssetIdentifier>" },
-            { "modular_content", "IEnumerable<ContentItemIdentifier>" },
-            { "taxonomy", "IEnumerable<TaxonomyTermIdentifier>" },
-            { "url_slug", "string" },
-            { "custom", "string" }
+            { "text", "TextElement" },
+            { "rich_text", "RichTextElement" },
+            { "number", "NumberElement" },
+            { "multiple_choice", "MultipleChoiceElement" },
+            { "date_time", "DateTimeElement"},
+            { "asset", "AssetElement" },
+            { "modular_content", "LinkedItemsElement" },
+            { "taxonomy", "TaxonomyElement" },
+            { "url_slug", "UrlSlugElement" },
+            { "custom", "CustomElement" }
         };
 
         private static Dictionary<string, string> ContentTypeToTypeName(bool cmApi)

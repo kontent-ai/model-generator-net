@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Kentico.Kontent.Management.Modules.ModelBuilders;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,6 +11,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class ClassCodeGenerator
     {
+        private static readonly string KontentElementIdAttributeName = new string(nameof(KontentElementIdAttribute).SkipLast(9).ToArray());
         public const string DEFAULT_NAMESPACE = "KenticoKontentModels";
 
         public ClassDefinition ClassDefinition { get; }
@@ -35,22 +37,19 @@ namespace Kentico.Kontent.ModelGenerator.Core
         {
             var cmApiUsings = new[]
             {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Items.ContentItemModel).Namespace!)),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Assets.AssetModel).Namespace!)),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Modules.ModelBuilders.IModelProvider).Namespace!)),//todo replace with KontentElementId
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.LanguageVariants.Elements.BaseElement).Namespace!)),
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(KontentElementIdAttribute).Namespace!)),
                 SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}"))
             };
 
             var deliveryUsings = new[]
             {
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
+                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
                 SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
             };
 
-            var usings = new[]
-            {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
-            }.Concat(cmApi ? cmApiUsings : deliveryUsings).ToArray();
+            var usings = (cmApi ? cmApiUsings : deliveryUsings).ToArray();
 
             MemberDeclarationSyntax[] properties = ClassDefinition.Properties.OrderBy(p => p.Identifier).Select((element) =>
                 {
@@ -79,7 +78,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                                                                 SyntaxFactory.Literal(element.Codename)))))))),
                                 SyntaxFactory.AttributeList(
                                     SyntaxFactory.SingletonSeparatedList(
-                                        SyntaxFactory.Attribute(SyntaxFactory.IdentifierName("KontentElementId"))
+                                        SyntaxFactory.Attribute(SyntaxFactory.IdentifierName(KontentElementIdAttributeName))
                                             .WithArgumentList(
                                                 SyntaxFactory.AttributeArgumentList(
                                                     SyntaxFactory.SingletonSeparatedList(
