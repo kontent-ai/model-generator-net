@@ -12,6 +12,24 @@ namespace Kentico.Kontent.ModelGenerator.Core
     {
         public const string DefaultNamespace = "KenticoKontentModels";
 
+        private static readonly UsingDirectiveSyntax[] ContentManagementUsings = new[]
+        {
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}")),
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Items.ContentItemModel).Namespace!)),
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Assets.AssetModel).Namespace!))
+        };
+
+        private static readonly UsingDirectiveSyntax[] DeliveryUsings = new[]
+        {
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
+        };
+
+        private static readonly UsingDirectiveSyntax[] GeneralUsings = new[]
+        {
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!))
+        };
+
         public ClassDefinition ClassDefinition { get; }
 
         public string ClassFilename { get; }
@@ -140,28 +158,16 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private UsingDirectiveSyntax[] GetUsings(bool cmApi)
         {
-            var cmApiUsings = new[]
-            {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}")),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Items.ContentItemModel).Namespace!)),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Assets.AssetModel).Namespace!))
-            };
-
-            var deliveryUsings = new[]
-            {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
-            };
-
             if (CustomPartial)
             {
                 return Array.Empty<UsingDirectiveSyntax>();
             }
 
-            return new[]
-            {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
-            }.Concat(cmApi ? cmApiUsings : deliveryUsings).ToArray();
+            var usings = cmApi
+                ? ContentManagementUsings
+                : DeliveryUsings;
+
+            return GeneralUsings.Concat(usings).ToArray();
         }
     }
 }
