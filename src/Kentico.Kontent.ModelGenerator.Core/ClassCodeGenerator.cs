@@ -10,7 +10,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class ClassCodeGenerator
     {
-        public const string DEFAULT_NAMESPACE = "KenticoKontentModels";
+        public const string DefaultNamespace = "KenticoKontentModels";
 
         public ClassDefinition ClassDefinition { get; }
 
@@ -22,12 +22,12 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public bool OverwriteExisting { get; }
 
-        public ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DEFAULT_NAMESPACE, bool customPartial = false)
+        public ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace, bool customPartial = false)
         {
             ClassDefinition = classDefinition ?? throw new ArgumentNullException(nameof(classDefinition));
             ClassFilename = string.IsNullOrEmpty(classFilename) ? ClassDefinition.ClassName : classFilename;
             CustomPartial = customPartial;
-            Namespace = string.IsNullOrEmpty(@namespace) ? DEFAULT_NAMESPACE : @namespace;
+            Namespace = string.IsNullOrEmpty(@namespace) ? DefaultNamespace : @namespace;
             OverwriteExisting = !CustomPartial;
         }
 
