@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.Management.Models.Types;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
@@ -133,7 +134,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                     }
 
                     var elementId = _options.ContentManagementApi
-                        ? ContentTypeJObjectHelper.GetElementIdFromContentType(managementContentType, element.Codename)
+                        ? managementContentType.ToObject<ContentTypeModel>().Id.ToString()
                         : null;
 
                     var property = Property.FromContentType(element.Codename, elementType, _options.ContentManagementApi, elementId);
@@ -147,10 +148,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 catch (InvalidIdentifierException)
                 {
                     Console.WriteLine($"Warning: Can't create valid C# Identifier from '{element.Codename}'. Skipping element.");
-                }
-                catch (InvalidIdException)
-                {
-                    Console.WriteLine($"Warning: Can't create valid Id for '{element.Codename}'. Skipping element.");
                 }
                 catch (ArgumentException)
                 {
