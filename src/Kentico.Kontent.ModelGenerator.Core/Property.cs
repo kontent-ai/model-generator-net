@@ -8,7 +8,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class Property
     {
-        public const string STRUCTURED_SUFFIX = "(structured)";
+        public const string StructuredSuffix = "(structured)";
 
         public string Identifier => TextHelpers.GetValidPascalCaseIdentifierName(Codename);
 
@@ -23,7 +23,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
         {
             { "text", "string" },
             { "rich_text", "string" },
-            { "rich_text" + STRUCTURED_SUFFIX, nameof(IRichTextContent)},
+            { "rich_text" + StructuredSuffix, nameof(IRichTextContent)},
             { "number", "decimal?" },
             { "multiple_choice", $"{nameof(IEnumerable)}<{nameof(IMultipleChoiceOption)}>"},
             { "date_time", "DateTime?" },

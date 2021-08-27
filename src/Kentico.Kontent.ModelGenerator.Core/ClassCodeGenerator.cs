@@ -10,7 +10,25 @@ namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class ClassCodeGenerator
     {
-        public const string DEFAULT_NAMESPACE = "KenticoKontentModels";
+        public const string DefaultNamespace = "KenticoKontentModels";
+
+        private static readonly UsingDirectiveSyntax[] ContentManagementUsings = new[]
+        {
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}")),
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Items.ContentItemModel).Namespace!)),
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Assets.AssetModel).Namespace!))
+        };
+
+        private static readonly UsingDirectiveSyntax[] DeliveryUsings = new[]
+        {
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
+        };
+
+        private static readonly UsingDirectiveSyntax[] GeneralUsings = new[]
+        {
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!))
+        };
 
         public ClassDefinition ClassDefinition { get; }
 
@@ -22,34 +40,18 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public bool OverwriteExisting { get; }
 
-        public ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DEFAULT_NAMESPACE, bool customPartial = false)
+        public ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace, bool customPartial = false)
         {
             ClassDefinition = classDefinition ?? throw new ArgumentNullException(nameof(classDefinition));
             ClassFilename = string.IsNullOrEmpty(classFilename) ? ClassDefinition.ClassName : classFilename;
             CustomPartial = customPartial;
-            Namespace = string.IsNullOrEmpty(@namespace) ? DEFAULT_NAMESPACE : @namespace;
+            Namespace = string.IsNullOrEmpty(@namespace) ? DefaultNamespace : @namespace;
             OverwriteExisting = !CustomPartial;
         }
 
         public string GenerateCode(bool cmApi = false)
         {
-            var cmApiUsings = new[]
-            {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}")),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Items.ContentItemModel).Namespace!)),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.Assets.AssetModel).Namespace!))
-            };
-
-            var deliveryUsings = new[]
-            {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
-            };
-
-            var usings = new[]
-            {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
-            }.Concat(cmApi ? cmApiUsings : deliveryUsings).ToArray();
+            var usings = GetUsings(cmApi);
 
             MemberDeclarationSyntax[] properties = ClassDefinition.Properties.OrderBy(p => p.Identifier).Select((element) =>
                 {
@@ -152,6 +154,18 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             AdhocWorkspace cw = new AdhocWorkspace();
             return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
+        }
+
+        private UsingDirectiveSyntax[] GetUsings(bool cmApi)
+        {
+            if (CustomPartial)
+            {
+                return Array.Empty<UsingDirectiveSyntax>();
+            }
+
+            var usings = cmApi ? ContentManagementUsings : DeliveryUsings;
+
+            return GeneralUsings.Concat(usings).ToArray();
         }
     }
 }

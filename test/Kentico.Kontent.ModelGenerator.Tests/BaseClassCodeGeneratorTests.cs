@@ -7,53 +7,53 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 {
     public class BaseClassCodeGeneratorTests
     {
-        private const string BASE_CLASS_NAME = "ContentBase";
+        private const string BaseClassName = "ContentBase";
 
         [Fact]
         public void GenerateBaseClassCodeWithDefaultNamespace()
         {
-            var codeGenerator = new BaseClassCodeGenerator(BASE_CLASS_NAME);
+            var codeGenerator = new BaseClassCodeGenerator(BaseClassName);
             codeGenerator.AddClassNameToExtend("Article");
             codeGenerator.AddClassNameToExtend("Office");
 
             var executingPath = AppContext.BaseDirectory;
-            var expected_BaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
+            var expectedBaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
 
-            var actualCompiled_BaseClass = codeGenerator.GenerateBaseClassCode();
+            var actualCompiledBaseClass = codeGenerator.GenerateBaseClassCode();
 
-            Assert.Equal(expected_BaseClassCode, actualCompiled_BaseClass, ignoreLineEndingDifferences:true, ignoreWhiteSpaceDifferences: true);
+            Assert.Equal(expectedBaseClassCode, actualCompiledBaseClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
         }
 
         [Fact]
         public void GenerateBaseClassCodeWithCustomNamespace()
         {
             var customNamespace = "CustomNamespace";
-            var codeGenerator = new BaseClassCodeGenerator(BASE_CLASS_NAME, customNamespace);
+            var codeGenerator = new BaseClassCodeGenerator(BaseClassName, customNamespace);
             codeGenerator.AddClassNameToExtend("Article");
             codeGenerator.AddClassNameToExtend("Office");
 
             var executingPath = AppContext.BaseDirectory;
-            var expected_BaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
-            expected_BaseClassCode = expected_BaseClassCode.Replace(ClassCodeGenerator.DEFAULT_NAMESPACE, customNamespace);
+            var expectedBaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
+            expectedBaseClassCode = expectedBaseClassCode.Replace(ClassCodeGenerator.DefaultNamespace, customNamespace);
 
-            var actualCompiled_BaseClass = codeGenerator.GenerateBaseClassCode();            
+            var actualCompiledBaseClass = codeGenerator.GenerateBaseClassCode();
 
-            Assert.Equal(expected_BaseClassCode, actualCompiled_BaseClass, ignoreLineEndingDifferences:true, ignoreWhiteSpaceDifferences: true);
+            Assert.Equal(expectedBaseClassCode, actualCompiledBaseClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
         }
 
         [Fact]
         public void GenerateExtenderClassCode()
         {
-            var codeGenerator = new BaseClassCodeGenerator(BASE_CLASS_NAME);
+            var codeGenerator = new BaseClassCodeGenerator(BaseClassName);
             codeGenerator.AddClassNameToExtend("Article");
             codeGenerator.AddClassNameToExtend("Office");
 
             var executingPath = AppContext.BaseDirectory;
-            var expected_ExtenderCode = File.ReadAllText(executingPath + "/Assets/BaseClassExtender_CompiledCode.txt");
+            var expectedExtenderCode = File.ReadAllText(executingPath + "/Assets/BaseClassExtender_CompiledCode.txt");
 
-            var actualCompiled_ExtenderClass = codeGenerator.GenereateExtenderCode();
+            var actualCompiledExtenderClass = codeGenerator.GenereateExtenderCode();
 
-            Assert.Equal(expected_ExtenderCode, actualCompiled_ExtenderClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+            Assert.Equal(expectedExtenderCode, actualCompiledExtenderClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
         }
     }
 }

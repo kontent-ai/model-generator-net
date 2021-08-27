@@ -73,8 +73,8 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
                 if (!string.IsNullOrEmpty(typeProviderCode))
                 {
-                    _outputProvider.Output(typeProviderCode, TypeProviderCodeGenerator.CLASS_NAME, true);
-                    Console.WriteLine($"{TypeProviderCodeGenerator.CLASS_NAME} class was successfully created.");
+                    _outputProvider.Output(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
+                    Console.WriteLine($"{TypeProviderCodeGenerator.ClassName} class was successfully created.");
                 }
             }
             else
@@ -117,9 +117,9 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 try
                 {
                     var elementType = element.Type;
-                    if (structuredModel && Property.IsContentTypeSupported(elementType + Property.STRUCTURED_SUFFIX, _options.ContentManagementApi))
+                    if (structuredModel && Property.IsContentTypeSupported(elementType + Property.StructuredSuffix, _options.ContentManagementApi))
                     {
-                        elementType += Property.STRUCTURED_SUFFIX;
+                        elementType += Property.StructuredSuffix;
                     }
                     var property = Property.FromContentType(element.Codename, elementType, _options.ContentManagementApi);
                     classDefinition.AddPropertyCodenameConstant(element);
