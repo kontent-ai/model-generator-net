@@ -18,17 +18,17 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 {
     public class CodeGeneratorTests
     {
-        private readonly string TEMP_DIR = Path.Combine(Path.GetTempPath(), "CodeGeneratorTests");
-        private readonly string PROJECT_ID = "975bf280-fd91-488c-994c-2f04416e5ee3";
+        private readonly string TempDir = Path.Combine(Path.GetTempPath(), "CodeGeneratorTests");
+        private const string ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3";
 
         public CodeGeneratorTests()
         {
             // Cleanup
-            if (Directory.Exists(TEMP_DIR))
+            if (Directory.Exists(TempDir))
             {
-                Directory.Delete(TEMP_DIR, true);
+                Directory.Delete(TempDir, true);
             }
-            Directory.CreateDirectory(TEMP_DIR);
+            Directory.CreateDirectory(TempDir);
         }
 
         [Fact]
@@ -77,12 +77,12 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
                 Namespace = "CustomNamespace",
-                OutputDir = TEMP_DIR,
+                OutputDir = TempDir,
                 ContentManagementApi = cmApi,
                 ManagementOptions = new ManagementOptions { ApiKey = "apiKey" }
             });
 
-            var deliveryClient = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
+            var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
             var managementClient = new Mock<ManagementClient>(httpClient);
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, deliveryClient, new FileSystemOutputProvider(mockOptions.Object), managementClient.Object);
@@ -90,14 +90,14 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             await codeGenerator.GenerateContentTypeModels();
             await codeGenerator.GenerateTypeProvider();
 
-            Assert.True(Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Length > 10);
+            Assert.True(Directory.GetFiles(Path.GetFullPath(TempDir)).Length > 10);
 
-            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR), "*.Generated.cs"));
-            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR)).Where(p => !p.Contains("*.Generated.cs")));
-            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR), "*TypeProvider.cs"));
+            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs"));
+            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")));
+            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs"));
 
             // Cleanup
-            Directory.Delete(TEMP_DIR, true);
+            Directory.Delete(TempDir, true);
         }
 
         [Theory]
@@ -117,31 +117,31 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
-                DeliveryOptions = new DeliveryOptions { ProjectId = PROJECT_ID },
+                DeliveryOptions = new DeliveryOptions { ProjectId = ProjectId },
                 ManagementOptions = new ManagementOptions { ApiKey = "apiKey" },
                 Namespace = "CustomNamespace",
-                OutputDir = TEMP_DIR,
+                OutputDir = TempDir,
                 GeneratePartials = false,
                 FileNameSuffix = transformFilename,
                 ContentManagementApi = cmApi
             });
 
-            var deliveryClient = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
+            var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
             var managementClient = new Mock<ManagementClient>(httpClient);
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, deliveryClient, new FileSystemOutputProvider(mockOptions.Object), managementClient.Object);
 
             await codeGenerator.GenerateContentTypeModels();
 
-            Assert.True(Directory.GetFiles(Path.GetFullPath(TEMP_DIR)).Length > 10);
+            Assert.True(Directory.GetFiles(Path.GetFullPath(TempDir)).Length > 10);
 
-            foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR)))
+            foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir)))
             {
                 Assert.EndsWith($".{transformFilename}.cs", Path.GetFileName(filepath));
             }
 
             // Cleanup
-            Directory.Delete(TEMP_DIR, true);
+            Directory.Delete(TempDir, true);
         }
 
         [Theory]
@@ -161,16 +161,16 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
-                DeliveryOptions = new DeliveryOptions { ProjectId = PROJECT_ID },
+                DeliveryOptions = new DeliveryOptions { ProjectId = ProjectId },
                 Namespace = "CustomNamespace",
-                OutputDir = TEMP_DIR,
+                OutputDir = TempDir,
                 FileNameSuffix = transformFilename,
                 GeneratePartials = true,
                 ContentManagementApi = cmApi,
                 ManagementOptions = new ManagementOptions { ApiKey = "apiKey" }
             });
 
-            var deliveryClient = DeliveryClientBuilder.WithProjectId(PROJECT_ID).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
+            var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
             var managementClient = new Mock<ManagementClient>(httpClient);
 
 
@@ -178,18 +178,18 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             await codeGenerator.GenerateContentTypeModels();
 
-            var allFilesCount = Directory.GetFiles(Path.GetFullPath(TEMP_DIR), "*.cs").Length;
-            var generatedCount = Directory.GetFiles(Path.GetFullPath(TEMP_DIR), $"*.{transformFilename}.cs").Length;
+            var allFilesCount = Directory.GetFiles(Path.GetFullPath(TempDir), "*.cs").Length;
+            var generatedCount = Directory.GetFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs").Length;
             Assert.Equal(allFilesCount, generatedCount * 2);
 
-            foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TEMP_DIR), $"*.{transformFilename}.cs"))
+            foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs"))
             {
                 var customFileExists = File.Exists(filepath.Replace($".{transformFilename}", ""));
                 Assert.True(customFileExists);
             }
 
             // Cleanup
-            Directory.Delete(TEMP_DIR, true);
+            Directory.Delete(TempDir, true);
         }
     }
 }

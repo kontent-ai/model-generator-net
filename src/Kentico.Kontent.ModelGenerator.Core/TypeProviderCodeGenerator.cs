@@ -12,7 +12,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class TypeProviderCodeGenerator
     {
-        public const string CLASS_NAME = "CustomTypeProvider";
+        public const string ClassName = "CustomTypeProvider";
 
         /// <summary>
         /// Codename -> ClassName dictionary
@@ -21,11 +21,11 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private readonly string _namespace;
 
-        public TypeProviderCodeGenerator(string @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE)
+        public TypeProviderCodeGenerator(string @namespace = ClassCodeGenerator.DefaultNamespace)
         {
             if (string.IsNullOrEmpty(@namespace))
             {
-                @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE;
+                @namespace = ClassCodeGenerator.DefaultNamespace;
             }
 
             _namespace = @namespace;
@@ -61,21 +61,21 @@ using {typeof(ITypeProvider).Namespace};
 
 namespace {_namespace}
 {{
-    public class {CLASS_NAME} : ITypeProvider
+    public class {ClassName} : ITypeProvider
     {{
-        protected static readonly Dictionary<Type, string> _codenames = new Dictionary<Type, string>
+        protected static readonly Dictionary<Type, string> Codenames = new Dictionary<Type, string>
         {{
 {CreateCodenameDictionaryValues()}
         }};
 
         public virtual Type GetType(string contentType)
         {{
-            return _codenames.Keys.FirstOrDefault(type => GetCodename(type).Equals(contentType));
+            return Codenames.Keys.FirstOrDefault(type => GetCodename(type).Equals(contentType));
         }}
 
         public virtual string GetCodename(Type contentType)
         {{
-            return _codenames.TryGetValue(contentType, out var codename) ? codename : null;
+            return Codenames.TryGetValue(contentType, out var codename) ? codename : null;
         }}
     }}
 }}");

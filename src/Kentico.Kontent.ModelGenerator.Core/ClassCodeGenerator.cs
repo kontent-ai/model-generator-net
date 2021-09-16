@@ -11,8 +11,22 @@ namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class ClassCodeGenerator
     {
+        public const string DefaultNamespace = "KenticoKontentModels";
         private static readonly string KontentElementIdAttributeName = new string(nameof(KontentElementIdAttribute).SkipLast(9).ToArray());
-        public const string DEFAULT_NAMESPACE = "KenticoKontentModels";
+
+        private static readonly UsingDirectiveSyntax[] ContentManagementUsings = new[]
+        {
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.LanguageVariants.Elements.BaseElement).Namespace!)),
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(KontentElementIdAttribute).Namespace!)),
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}"))
+        };
+
+        private static readonly UsingDirectiveSyntax[] DeliveryUsings = new[]
+        {
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
+            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
+        };
 
         public ClassDefinition ClassDefinition { get; }
 
@@ -24,32 +38,18 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public bool OverwriteExisting { get; }
 
-        public ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DEFAULT_NAMESPACE, bool customPartial = false)
+        public ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace, bool customPartial = false)
         {
             ClassDefinition = classDefinition ?? throw new ArgumentNullException(nameof(classDefinition));
             ClassFilename = string.IsNullOrEmpty(classFilename) ? ClassDefinition.ClassName : classFilename;
             CustomPartial = customPartial;
-            Namespace = string.IsNullOrEmpty(@namespace) ? DEFAULT_NAMESPACE : @namespace;
+            Namespace = string.IsNullOrEmpty(@namespace) ? DefaultNamespace : @namespace;
             OverwriteExisting = !CustomPartial;
         }
 
         public string GenerateCode(bool cmApi = false)
         {
-            var cmApiUsings = new[]
-            {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.LanguageVariants.Elements.BaseElement).Namespace!)),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(KontentElementIdAttribute).Namespace!)),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}"))
-            };
-
-            var deliveryUsings = new[]
-            {
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
-                SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
-            };
-
-            var usings = (cmApi ? cmApiUsings : deliveryUsings).ToArray();
+            var usings = GetUsings(cmApi);
 
             MemberDeclarationSyntax[] properties = ClassDefinition.Properties.OrderBy(p => p.Identifier).Select((element) =>
                 {
@@ -162,6 +162,16 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             AdhocWorkspace cw = new AdhocWorkspace();
             return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
+        }
+
+        private UsingDirectiveSyntax[] GetUsings(bool cmApi)
+        {
+            if (CustomPartial)
+            {
+                return Array.Empty<UsingDirectiveSyntax>();
+            }
+
+            return (cmApi ? ContentManagementUsings : DeliveryUsings).ToArray();
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [Theory]
         [InlineData("text", "string")]
         [InlineData("rich_text", "string")]
-        [InlineData("rich_text" + Property.STRUCTURED_SUFFIX, "IRichTextContent")]
+        [InlineData("rich_text" + Property.StructuredSuffix, "IRichTextContent")]
         [InlineData("number", "decimal?")]
         [InlineData("multiple_choice", "IEnumerable<IMultipleChoiceOption>")]
         [InlineData("date_time", "DateTime?")]

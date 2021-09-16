@@ -23,13 +23,13 @@ namespace Kentico.Kontent.ModelGenerator.Core
         /// </summary>
         public string ExtenderClassName => $"{_className}Extender";
 
-        public BaseClassCodeGenerator(string className, string @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE)
+        public BaseClassCodeGenerator(string className, string @namespace = ClassCodeGenerator.DefaultNamespace)
         {
             _className = className;
 
             if (string.IsNullOrEmpty(@namespace))
             {
-                @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE;
+                @namespace = ClassCodeGenerator.DefaultNamespace;
             }
 
             _namespace = @namespace;

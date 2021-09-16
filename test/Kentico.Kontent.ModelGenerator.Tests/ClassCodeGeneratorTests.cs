@@ -82,6 +82,21 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Fact]
+        public void Build_CreatesCustomPartialContentType()
+        {
+            var classDefinition = new ClassDefinition("Complete content type");
+
+            var classCodeGenerator = new ClassCodeGenerator(classDefinition, classDefinition.ClassName, customPartial: true);
+
+            var compiledCode = classCodeGenerator.GenerateCode(false);
+
+            var executingPath = AppContext.BaseDirectory;
+            var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_CustomPartial.txt");
+
+            Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
+        }
+
+        [Fact]
         public void IntegrationTest_GeneratedCodeCompilesWithoutErrors()
         {
             var definition = new ClassDefinition("Complete content type");
