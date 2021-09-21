@@ -4,9 +4,9 @@
 [![NuGet](https://img.shields.io/nuget/dt/Kentico.Kontent.ModelGenerator.svg)](https://www.nuget.org/packages/Kentico.Kontent.ModelGenerator) 
 [![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?logo=stackoverflow&logoColor=white)](https://stackoverflow.com/tags/kentico-kontent)
 
-# Kentico Kontent model generator utility for .NET
+# Kontent model generator utility for .NET
 
-This utility generates strongly-typed (POCO) models based on [Content Types](https://docs.kontent.ai/tutorials/set-up-projects/define-content-models/creating-and-deleting-content-types) in a Kentico Kontent project. You can choose one of the following:
+This utility generates strongly-typed (POCO) models based on [Content Types](https://docs.kontent.ai/tutorials/set-up-projects/define-content-models/creating-and-deleting-content-types) in a [Kontent by Kentico](https://kontent.ai) project. You can choose one of the following:
 - [Generate models compatible with the Kontent Delivery SDK for .NET](#how-to-use-for-delivery-sdk)
 - [Generate models compatible with the Kontent Management SDK for .NET](#how-to-use-for-management-sdk). 
 
@@ -39,7 +39,7 @@ To learn how to generate executables for your favorite target platform, follow t
 
 | Short key            | Long key | Required  | Default value  | Description |
 | --------------------- |:---------:|:---------:|:--------------:|:-----------:|
-| `-p` | `--projectid` | True  | `null` | A GUID that can be found in [Kentico Kontent](https://app.kontent.ai) -> API keys -> Project ID |
+| `-p` | `--projectid` | True  | `null` | A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID |
 | `-n` | `--namespace` | False | `KenticoKontentModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
 | `-o` | `--outputdir` | False | `\.` | An output folder path |
 | `-g` | `--generatepartials` | False | `true` | Generates partial classes for customization. Partial classes are the best practice for customization so the recommended value is `true`. |
@@ -125,7 +125,7 @@ KontentModelGenerator.exe --projectid "<projectid>" --contentmanagementapi true 
 
 | Short key          | Long key | Required  | Default value  | Description |
 | --------------------- |:---------:|:---------:|:--------------:|:-----------:|
-| `-p` | `--projectid` | True  | `null` | A GUID that can be found in [Kentico Kontent](https://app.kontent.ai) -> API keys -> Project ID |
+| `-p` | `--projectid` | True  | `null` | A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID |
 | `-c` | `--contentmanagementapi` | True  | `false` | Indicates that models should be generated for  [Content Management SDK](https://github.com/Kentico/content-management-sdk-net) |
 | `-n` | `--namespace` | False | `KenticoKontentModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
 | `-o` | `--outputdir` | False | `\.` | An output folder path |
