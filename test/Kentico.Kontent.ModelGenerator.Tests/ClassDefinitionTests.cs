@@ -15,8 +15,17 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             Assert.Equal("ArticleType", definition.ClassName);
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void Constructor_CodenameIsNullEmptyOrWhiteSpace_Throws(string codename)
+        {
+            Assert.Throws<ArgumentException>(() => new ClassDefinition(codename));
+        }
+
         [Fact]
-        public void AddElement_AddsValidElement()
+        public void AddElement_AddCustomElement_PropertyIsAdded()
         {
             var classDefinition = new ClassDefinition("Class name");
             classDefinition.AddProperty(Property.FromContentType("element_1", "text"));
@@ -25,7 +34,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Fact]
-        public void AddElement_RewritesSystemFieldWithUsersCustomOne()
+        public void AddElement_CustomSystemField_SystemFieldIsReplaced()
         {
             var definition = new ClassDefinition("Class name");
 
@@ -36,7 +45,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Fact]
-        public void AddElement_ThrowsAnExceptionWhenAddingElementWithSameCodename()
+        public void AddElement_DuplicateElementCodenames_Throws()
         {
             var definition = new ClassDefinition("Class name");
             definition.AddProperty(Property.FromContentType("element", "text"));
