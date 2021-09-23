@@ -27,7 +27,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public async Task<int> RunAsync()
         {
-            await GenerateContentTypeModels(_options.StructuredModel);
+            await GenerateContentTypeModels();
 
             if (!_options.ContentManagementApi && _options.WithTypeProvider)
             {
@@ -41,80 +41,81 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return 0;
         }
 
-        internal async Task GenerateContentTypeModels(bool structuredModel = false)
+        internal async Task GenerateContentTypeModels()
         {
-            var classCodeGenerators = await GetClassCodeGenerators(structuredModel);
+            var classCodeGenerators = await GetClassCodeGenerators();
 
-            if (classCodeGenerators.Any())
-            {
-                foreach (var codeGenerator in classCodeGenerators)
-                {
-                    _outputProvider.Output(codeGenerator.GenerateCode(), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
-                }
-
-                Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
-            }
-            else
+            if (!classCodeGenerators.Any())
             {
                 Console.WriteLine($@"No content type available for the project ({_options.DeliveryOptions.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.");
+                return;
             }
+
+            foreach (var codeGenerator in classCodeGenerators)
+            {
+                _outputProvider.Output(codeGenerator.GenerateCode(), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
+            }
+
+            Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
         }
 
         internal async Task GenerateTypeProvider()
         {
             var classCodeGenerators = await GetClassCodeGenerators();
 
-            if (classCodeGenerators.Any())
-            {
-                var typeProviderCodeGenerator = new TypeProviderCodeGenerator(_options.Namespace);
-
-                foreach (var codeGenerator in classCodeGenerators)
-                {
-                    typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
-                }
-
-                var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
-                if (!string.IsNullOrEmpty(typeProviderCode))
-                {
-                    _outputProvider.Output(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
-                    Console.WriteLine($"{TypeProviderCodeGenerator.ClassName} class was successfully created.");
-                }
-            }
-            else
+            if (!classCodeGenerators.Any())
             {
                 Console.WriteLine($@"No content type available for the project ({_options.DeliveryOptions.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.");
+                return;
+            }
+
+            var typeProviderCodeGenerator = new TypeProviderCodeGenerator(_options.Namespace);
+
+            foreach (var codeGenerator in classCodeGenerators)
+            {
+                typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
+            }
+
+            var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
+            if (!string.IsNullOrEmpty(typeProviderCode))
+            {
+                _outputProvider.Output(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
+                Console.WriteLine($"{TypeProviderCodeGenerator.ClassName} class was successfully created.");
             }
         }
 
-        internal async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators(bool structuredModel = false)
+        internal async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
             var deliveryTypes = (await _client.GetTypesAsync()).Types;
             var managementTypes = await _managementClient.GetAllContentTypesAsync(_options);
 
             var codeGenerators = new List<ClassCodeGenerator>();
-            if (deliveryTypes != null)
+            if (deliveryTypes == null)
             {
-                foreach (var contentType in deliveryTypes)
+                return codeGenerators;
+            }
+
+            foreach (var contentType in deliveryTypes)
+            {
+                try
                 {
-                    try
+                    if (_options.GeneratePartials)
                     {
-                        if (_options.GeneratePartials)
-                        {
-                            codeGenerators.Add(GetCustomClassCodeGenerator(contentType));
-                        }
-
-                        var managementContentType = _options.ContentManagementApi
-                            ? managementTypes.FirstOrDefault(ct => ct["codename"].ToObject<string>() == contentType.System.Codename)
-                            : null;
-
-                        codeGenerators.Add(GetClassCodeGenerator(contentType, structuredModel, managementContentType));
+                        codeGenerators.Add(GetCustomClassCodeGenerator(contentType));
                     }
-                    catch (InvalidIdentifierException)
-                    {
-                        Console.WriteLine($"Warning: Skipping Content Type '{contentType.System.Codename}'. Can't create valid C# identifier from its name.");
-                    }
+
+                    var managementContentType = _options.ContentManagementApi
+                        ? managementTypes.FirstOrDefault(ct => ct["codename"].ToObject<string>() == contentType.System.Codename)
+                        : null;
+
+                    codeGenerators.Add(GetClassCodeGenerator(contentType, _options.StructuredModel, managementContentType));
+                }
+                catch (InvalidIdentifierException)
+                {
+                    Console.WriteLine($"Warning: Skipping Content Type '{contentType.System.Codename}'. Can't create valid C# identifier from its name.");
                 }
             }
+
             return codeGenerators;
         }
 
@@ -184,32 +185,31 @@ namespace Kentico.Kontent.ModelGenerator.Core
         {
             var classCodeGenerators = await GetClassCodeGenerators();
 
-            if (classCodeGenerators.Any())
-            {
-                var baseClassCodeGenerator = new BaseClassCodeGenerator(_options.BaseClass, _options.Namespace);
-
-                foreach (var codeGenerator in classCodeGenerators)
-                {
-                    baseClassCodeGenerator.AddClassNameToExtend(codeGenerator.ClassDefinition.ClassName);
-                }
-
-                var baseClassCode = baseClassCodeGenerator.GenerateBaseClassCode();
-                if (!string.IsNullOrEmpty(baseClassCode))
-                {
-                    _outputProvider.Output(baseClassCode, _options.BaseClass, false);
-                    Console.WriteLine($"{_options.BaseClass} class was successfully created.");
-                }
-
-                var baseClassExtenderCode = baseClassCodeGenerator.GenereateExtenderCode();
-                if (!string.IsNullOrEmpty(baseClassExtenderCode))
-                {
-                    _outputProvider.Output(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
-                    Console.WriteLine($"{baseClassCodeGenerator.ExtenderClassName} class was successfully created.");
-                }
-            }
-            else
+            if (!classCodeGenerators.Any())
             {
                 Console.WriteLine($@"No content type available for the project ({_options.DeliveryOptions.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.");
+                return;
+            }
+
+            var baseClassCodeGenerator = new BaseClassCodeGenerator(_options.BaseClass, _options.Namespace);
+
+            foreach (var codeGenerator in classCodeGenerators)
+            {
+                baseClassCodeGenerator.AddClassNameToExtend(codeGenerator.ClassDefinition.ClassName);
+            }
+
+            var baseClassCode = baseClassCodeGenerator.GenerateBaseClassCode();
+            if (!string.IsNullOrEmpty(baseClassCode))
+            {
+                _outputProvider.Output(baseClassCode, _options.BaseClass, false);
+                Console.WriteLine($"{_options.BaseClass} class was successfully created.");
+            }
+
+            var baseClassExtenderCode = baseClassCodeGenerator.GenereateExtenderCode();
+            if (!string.IsNullOrEmpty(baseClassExtenderCode))
+            {
+                _outputProvider.Output(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
+                Console.WriteLine($"{baseClassCodeGenerator.ExtenderClassName} class was successfully created.");
             }
         }
     }
