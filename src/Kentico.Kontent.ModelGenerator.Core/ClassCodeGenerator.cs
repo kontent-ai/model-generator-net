@@ -1,32 +1,14 @@
 ﻿using System;
-using System.Linq;
-using Kentico.Kontent.Management.Modules.ModelBuilders;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using Newtonsoft.Json.Serialization;
 
 namespace Kentico.Kontent.ModelGenerator.Core
 {
-    public class ClassCodeGenerator
+    public abstract class ClassCodeGenerator
     {
         public const string DefaultNamespace = "KenticoKontentModels";
-        private static readonly string KontentElementIdAttributeName = new string(nameof(KontentElementIdAttribute).SkipLast(9).ToArray());
-
-        private static readonly UsingDirectiveSyntax[] ContentManagementUsings = new[]
-        {
-            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.LanguageVariants.Elements.BaseElement).Namespace!)),
-            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(KontentElementIdAttribute).Namespace!)),
-            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}"))
-        };
-
-        private static readonly UsingDirectiveSyntax[] DeliveryUsings = new[]
-        {
-            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
-            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
-            SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
-        };
 
         public ClassDefinition ClassDefinition { get; }
 
@@ -38,7 +20,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public bool OverwriteExisting { get; }
 
-        public ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace, bool customPartial = false)
+        protected ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace, bool customPartial = false)
         {
             ClassDefinition = classDefinition ?? throw new ArgumentNullException(nameof(classDefinition));
             ClassFilename = string.IsNullOrEmpty(classFilename) ? ClassDefinition.ClassName : classFilename;
@@ -49,104 +31,16 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public string GenerateCode(bool cmApi = false)
         {
-            var usings = GetUsings(cmApi);
-
-            MemberDeclarationSyntax[] properties = ClassDefinition.Properties.OrderBy(p => p.Identifier).Select((element) =>
-                {
-                    var property = SyntaxFactory
-                        .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
-                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                        .AddAccessorListAccessors(
-                            SyntaxFactory.AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
-                                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken)),
-                            SyntaxFactory.AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                                .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken))
-                        );
-
-                    if (cmApi)
-                    {
-                        property = property.AddAttributeLists(
-                                SyntaxFactory.AttributeList(
-                                    SyntaxFactory.SingletonSeparatedList(
-                                        SyntaxFactory.Attribute(SyntaxFactory.IdentifierName(nameof(JsonProperty)))
-                                            .WithArgumentList(
-                                                SyntaxFactory.AttributeArgumentList(
-                                                    SyntaxFactory.SingletonSeparatedList(
-                                                        SyntaxFactory.AttributeArgument(
-                                                            SyntaxFactory.LiteralExpression(
-                                                                SyntaxKind.StringLiteralExpression,
-                                                                SyntaxFactory.Literal(element.Codename)))))))),
-                                SyntaxFactory.AttributeList(
-                                    SyntaxFactory.SingletonSeparatedList(
-                                        SyntaxFactory.Attribute(SyntaxFactory.IdentifierName(KontentElementIdAttributeName))
-                                            .WithArgumentList(
-                                                SyntaxFactory.AttributeArgumentList(
-                                                    SyntaxFactory.SingletonSeparatedList(
-                                                        SyntaxFactory.AttributeArgument(
-                                                            SyntaxFactory.LiteralExpression(
-                                                                SyntaxKind.StringLiteralExpression,
-                                                                SyntaxFactory.Literal(element.Id)))))))));
-                    }
-
-                    return property;
-                }
-            ).ToArray();
-
-            MemberDeclarationSyntax[] propertyCodenameConstants = ClassDefinition.PropertyCodenameConstants.OrderBy(p => p.Codename).Select(element =>
-                      SyntaxFactory.FieldDeclaration(
-                              SyntaxFactory.VariableDeclaration(
-                                      SyntaxFactory.ParseTypeName("string"),
-                                      SyntaxFactory.SeparatedList(new[] {
-                                        SyntaxFactory.VariableDeclarator(
-                                            SyntaxFactory.Identifier($"{TextHelpers.GetValidPascalCaseIdentifierName(element.Codename)}Codename"),
-                                            null,
-                                            SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression( SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(element.Codename)))
-                                        )
-                                      })
-                                  )
-                              )
-                          .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                          .AddModifiers(SyntaxFactory.Token(SyntaxKind.ConstKeyword))
-            ).ToArray();
-
-            var classDeclaration = SyntaxFactory.ClassDeclaration(ClassDefinition.ClassName)
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
-
-            if (!CustomPartial && !cmApi)
-            {
-                var classCodenameConstant = SyntaxFactory.FieldDeclaration(
-                                SyntaxFactory.VariableDeclaration(
-                                        SyntaxFactory.ParseTypeName("string"),
-                                        SyntaxFactory.SeparatedList(new[] {
-                                            SyntaxFactory.VariableDeclarator(
-                                                SyntaxFactory.Identifier("Codename"),
-                                                null,
-                                                SyntaxFactory.EqualsValueClause(SyntaxFactory.LiteralExpression( SyntaxKind.StringLiteralExpression, SyntaxFactory.Literal(ClassDefinition.Codename)))
-                                            )
-                                        })
-                                    )
-                                )
-                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                            .AddModifiers(SyntaxFactory.Token(SyntaxKind.ConstKeyword));
-
-                classDeclaration = classDeclaration.AddMembers(classCodenameConstant);
-            }
-
-            if (!cmApi)
-            {
-                classDeclaration = classDeclaration.AddMembers(propertyCodenameConstants);
-            }
-
-            classDeclaration = classDeclaration.AddMembers(properties);
+            var usings = GetApiUsings();
+            var classDeclaration = GetClassDeclaration();
 
             var description = SyntaxFactory.Comment(
-@"// This code was generated by a kontent-generators-net tool 
+                @"// This code was generated by a kontent-generators-net tool 
 // (see https://github.com/Kentico/kontent-generators-net).
 // 
 // Changes to this file may cause incorrect behavior and will be lost if the code is regenerated. 
 // For further modifications of the class, create a separate file with the partial class." + Environment.NewLine + Environment.NewLine
-);
+            );
 
             CompilationUnitSyntax cu = SyntaxFactory.CompilationUnit()
                 .AddUsings(usings)
@@ -164,14 +58,13 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
         }
 
-        private UsingDirectiveSyntax[] GetUsings(bool cmApi)
-        {
-            if (CustomPartial)
-            {
-                return Array.Empty<UsingDirectiveSyntax>();
-            }
+        protected abstract UsingDirectiveSyntax[] GetApiUsings();
 
-            return (cmApi ? ContentManagementUsings : DeliveryUsings).ToArray();
-        }
+        protected virtual ClassDeclarationSyntax GetClassDeclaration() => SyntaxFactory.ClassDeclaration(ClassDefinition.ClassName)
+            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
+
+        protected static AccessorDeclarationSyntax GetAccessorDeclaration(SyntaxKind kind) =>
+            SyntaxFactory.AccessorDeclaration(kind).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
     }
 }

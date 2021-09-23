@@ -170,7 +170,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             string suffix = string.IsNullOrEmpty(_options.FileNameSuffix) ? "" : $".{_options.FileNameSuffix}";
             string classFilename = $"{classDefinition.ClassName}{suffix}";
 
-            return new ClassCodeGenerator(classDefinition, classFilename, _options.Namespace);
+            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(_options, classDefinition, classFilename);
         }
 
         internal ClassCodeGenerator GetCustomClassCodeGenerator(IContentType contentType)
@@ -178,7 +178,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             var classDefinition = new ClassDefinition(contentType.System.Codename);
             string classFilename = $"{classDefinition.ClassName}";
 
-            return new ClassCodeGenerator(classDefinition, classFilename, _options.Namespace, true);
+            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(_options, classDefinition, classFilename, true);
         }
 
         internal async Task GenerateBaseClass()
