@@ -14,18 +14,15 @@ namespace Kentico.Kontent.ModelGenerator.Tests
     public class DeliveryClassCodeGeneratorTests
     {
         [Fact]
-        public void Constructor_ThrowsAnExceptionForNullArgument()
+        public void Constructor_CreatesInstance()
         {
-            Assert.Throws<ArgumentNullException>(() => new DeliveryClassCodeGenerator(null, null));
-        }
+            var classDefinition = new ClassDefinition("Complete content type");
 
-        [Fact]
-        public void Constructor_ReplacesNullNamespaceWithDefault()
-        {
-            var classDefinition = new ClassDefinition("codename");
-            var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, null);
+            var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, classDefinition.ClassName);
 
-            Assert.Equal("KenticoKontentModels", classCodeGenerator.Namespace);
+            Assert.NotNull(classCodeGenerator);
+            Assert.False(classCodeGenerator.CustomPartial);
+            Assert.True(classCodeGenerator.OverwriteExisting);
         }
 
         [Fact]

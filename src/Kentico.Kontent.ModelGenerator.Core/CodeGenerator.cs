@@ -49,7 +49,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             {
                 foreach (var codeGenerator in classCodeGenerators)
                 {
-                    _outputProvider.Output(codeGenerator.GenerateCode(_options.ContentManagementApi), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
+                    _outputProvider.Output(codeGenerator.GenerateCode(), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
                 }
 
                 Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
@@ -62,7 +62,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         internal async Task GenerateTypeProvider()
         {
-
             var classCodeGenerators = await GetClassCodeGenerators();
 
             if (classCodeGenerators.Any())

@@ -29,7 +29,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             OverwriteExisting = !CustomPartial;
         }
 
-        public string GenerateCode(bool cmApi = false)
+        public string GenerateCode()
         {
             var usings = GetApiUsings();
             var classDeclaration = GetClassDeclaration();

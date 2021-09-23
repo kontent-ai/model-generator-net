@@ -8,6 +8,18 @@ namespace Kentico.Kontent.ModelGenerator.Tests
     public class ManagementClassCodeGeneratorTests
     {
         [Fact]
+        public void Constructor_CreatesInstance()
+        {
+            var classDefinition = new ClassDefinition("Complete content type");
+
+            var classCodeGenerator = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName);
+
+            Assert.NotNull(classCodeGenerator);
+            Assert.False(classCodeGenerator.CustomPartial);
+            Assert.True(classCodeGenerator.OverwriteExisting);
+        }
+
+        [Fact]
         public void Build_CreatesClassWithCompleteContentType_CMAPI()
         {
             var classDefinition = new ClassDefinition("Complete content type");
