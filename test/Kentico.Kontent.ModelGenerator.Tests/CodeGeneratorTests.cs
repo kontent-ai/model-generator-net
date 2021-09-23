@@ -32,7 +32,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Fact]
-        public void CreateCodeGeneratorOptions_NoOutputSetInJsonNorInParameters_OuputDirHasDefaultValue()
+        public void CreateCodeGeneratorOptions_NoOutputSetInJsonNorInParameters_OutputDirHasDefaultValue()
         {
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             var options = new CodeGeneratorOptions
@@ -47,7 +47,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Fact]
-        public void CreateCodeGeneratorOptions_OutputSetInParameters_OuputDirHasCustomValue()
+        public void CreateCodeGeneratorOptions_OutputSetInParameters_OutputDirHasCustomValue()
         {
             var expectedOutputDir = Environment.CurrentDirectory;
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
