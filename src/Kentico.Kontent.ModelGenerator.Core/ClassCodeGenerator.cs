@@ -23,9 +23,9 @@ namespace Kentico.Kontent.ModelGenerator.Core
         protected ClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace, bool customPartial = false)
         {
             ClassDefinition = classDefinition ?? throw new ArgumentNullException(nameof(classDefinition));
-            ClassFilename = string.IsNullOrEmpty(classFilename) ? ClassDefinition.ClassName : classFilename;
+            ClassFilename = string.IsNullOrWhiteSpace(classFilename) ? ClassDefinition.ClassName : classFilename;
             CustomPartial = customPartial;
-            Namespace = string.IsNullOrEmpty(@namespace) ? DefaultNamespace : @namespace;
+            Namespace = string.IsNullOrWhiteSpace(@namespace) ? DefaultNamespace : @namespace;
             OverwriteExisting = !CustomPartial;
         }
 
