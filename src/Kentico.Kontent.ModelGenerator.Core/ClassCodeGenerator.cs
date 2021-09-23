@@ -42,7 +42,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 // For further modifications of the class, create a separate file with the partial class." + Environment.NewLine + Environment.NewLine
             );
 
-            CompilationUnitSyntax cu = SyntaxFactory.CompilationUnit()
+            var compilationUnit = SyntaxFactory.CompilationUnit()
                 .AddUsings(usings)
                 .AddMembers(
                     SyntaxFactory.NamespaceDeclaration(SyntaxFactory.IdentifierName(Namespace))
@@ -51,11 +51,11 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             if (!CustomPartial)
             {
-                cu = cu.WithLeadingTrivia(description);
+                compilationUnit = compilationUnit.WithLeadingTrivia(description);
             }
 
-            AdhocWorkspace cw = new AdhocWorkspace();
-            return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
+            var customWorkspace = new AdhocWorkspace();
+            return Formatter.Format(compilationUnit, customWorkspace).ToFullString().NormalizeLineEndings();
         }
 
         protected abstract UsingDirectiveSyntax[] GetApiUsings();

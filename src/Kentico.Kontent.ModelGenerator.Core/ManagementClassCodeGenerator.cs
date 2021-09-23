@@ -27,22 +27,22 @@ namespace Kentico.Kontent.ModelGenerator.Core
         {
             var classDeclaration = base.GetClassDeclaration();
 
-            MemberDeclarationSyntax[] properties = ClassDefinition.Properties.OrderBy(p => p.Identifier).Select(element =>
-                    SyntaxFactory
-                        .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
-                        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                        .AddAccessorListAccessors(
-                            GetAccessorDeclaration(SyntaxKind.GetAccessorDeclaration),
-                            GetAccessorDeclaration(SyntaxKind.SetAccessorDeclaration))
-                        .AddAttributeLists(
-                            GetAttributeList(nameof(JsonProperty), element.Codename),
-                            GetAttributeList(KontentElementIdAttributeName, element.Id)))
-                .ToArray();
-
-            classDeclaration = classDeclaration.AddMembers(properties);
+            classDeclaration = classDeclaration.AddMembers(Properties);
 
             return classDeclaration;
         }
+
+        private MemberDeclarationSyntax[] Properties => ClassDefinition.Properties.OrderBy(p => p.Identifier).Select(element =>
+                SyntaxFactory
+                    .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddAccessorListAccessors(
+                        GetAccessorDeclaration(SyntaxKind.GetAccessorDeclaration),
+                        GetAccessorDeclaration(SyntaxKind.SetAccessorDeclaration))
+                    .AddAttributeLists(
+                        GetAttributeList(nameof(JsonProperty), element.Codename),
+                        GetAttributeList(KontentElementIdAttributeName, element.Id)))
+            .ToArray<MemberDeclarationSyntax>();
 
         private static AttributeListSyntax GetAttributeList(string identifier, string literal) =>
             SyntaxFactory.AttributeList(

@@ -18,14 +18,14 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 .AddAccessorListAccessors(
                     GetAccessorDeclaration(SyntaxKind.GetAccessorDeclaration),
                     GetAccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                )).ToArray();
+                )).ToArray<MemberDeclarationSyntax>();
 
         protected MemberDeclarationSyntax[] PropertyCodenameConstants
             => ClassDefinition.PropertyCodenameConstants
                 .OrderBy(p => p.Codename)
                 .Select(element =>
                     GetFieldDeclaration("string", $"{TextHelpers.GetValidPascalCaseIdentifierName(element.Codename)}Codename", element.Codename))
-                .ToArray();
+                .ToArray<MemberDeclarationSyntax>();
 
         protected static FieldDeclarationSyntax GetFieldDeclaration(string typeName, string identifier, string literal) =>
             SyntaxFactory.FieldDeclaration(
