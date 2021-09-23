@@ -38,6 +38,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             {
                 await GenerateBaseClass();
             }
+
             return 0;
         }
 
