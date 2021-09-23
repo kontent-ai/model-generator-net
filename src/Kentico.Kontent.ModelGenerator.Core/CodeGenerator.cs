@@ -86,9 +86,9 @@ namespace Kentico.Kontent.ModelGenerator.Core
             }
         }
 
-        internal async Task<IEnumerable<ClassCodeGenerator>> GetClassCodeGenerators(bool structuredModel = false)
+        internal async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators(bool structuredModel = false)
         {
-            IEnumerable<IContentType> deliveryTypes = (await _client.GetTypesAsync()).Types;
+            var deliveryTypes = (await _client.GetTypesAsync()).Types;
             var managementTypes = await _managementClient.GetAllContentTypesAsync(_options);
 
             var codeGenerators = new List<ClassCodeGenerator>();
@@ -182,7 +182,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         internal async Task GenerateBaseClass()
         {
-            IEnumerable<ClassCodeGenerator> classCodeGenerators = await GetClassCodeGenerators();
+            var classCodeGenerators = await GetClassCodeGenerators();
 
             if (classCodeGenerators.Any())
             {
