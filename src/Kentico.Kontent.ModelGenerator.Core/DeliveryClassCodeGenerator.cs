@@ -6,7 +6,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
     public class DeliveryClassCodeGenerator : DeliveryClassCodeGeneratorBase
     {
         public DeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace)
-            : base(classDefinition, classFilename, false, @namespace)
+            : base(classDefinition, classFilename, @namespace)
         {
         }
 

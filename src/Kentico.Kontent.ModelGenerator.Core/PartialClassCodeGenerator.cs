@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Kentico.Kontent.ModelGenerator.Core
@@ -6,7 +7,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
     public class PartialClassCodeGenerator : DeliveryClassCodeGeneratorBase
     {
         public PartialClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace)
-            : base(classDefinition, classFilename, true, @namespace)
+            : base(classDefinition, classFilename, @namespace)
         {
         }
 
@@ -21,5 +22,12 @@ namespace Kentico.Kontent.ModelGenerator.Core
         }
 
         protected override UsingDirectiveSyntax[] GetApiUsings() => Array.Empty<UsingDirectiveSyntax>();
+
+        protected override CompilationUnitSyntax GetCompilationUnit(ClassDeclarationSyntax classDeclaration, UsingDirectiveSyntax[] usings)
+        {
+            var compilationUnit = base.GetCompilationUnit(classDeclaration, usings);
+            compilationUnit = compilationUnit.WithoutLeadingTrivia();
+            return compilationUnit;
+        }
     }
 }

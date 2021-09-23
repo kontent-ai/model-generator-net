@@ -41,7 +41,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, false);
 
-            AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace, false);
+            AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, true);
 
-            AssertClassCodeGenerator<PartialClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace, true);
+            AssertClassCodeGenerator<PartialClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
         }
 
         [Fact]
@@ -88,7 +88,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, true);
 
-            AssertClassCodeGenerator<PartialClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace, true);
+            AssertClassCodeGenerator<PartialClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
         }
 
         [Fact]
@@ -115,7 +115,6 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             var classDefinitionCodename = "codename";
             var classFileName = "classFileName";
-            var expectedCustomPartial = false;
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
                 ContentManagementApi = true
@@ -123,7 +122,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, customPartial);
 
-            AssertClassCodeGenerator<ManagementClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace, expectedCustomPartial);
+            AssertClassCodeGenerator<ManagementClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
         }
 
         [Fact]
@@ -159,12 +158,11 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [AssertionMethod]
-        private static void AssertClassCodeGenerator<T>(ClassCodeGenerator result, string classDefinitionCodename, string classFileName, string @namespace, bool customPartial = false)
+        private static void AssertClassCodeGenerator<T>(ClassCodeGenerator result, string classDefinitionCodename, string classFileName, string @namespace)
         {
             Assert.IsType<T>(result);
             Assert.Equal(classDefinitionCodename, result.ClassDefinition.Codename);
             Assert.Equal(classFileName, result.ClassFilename);
-            Assert.Equal(customPartial, result.CustomPartial);
             Assert.Equal(@namespace, result.Namespace);
         }
     }

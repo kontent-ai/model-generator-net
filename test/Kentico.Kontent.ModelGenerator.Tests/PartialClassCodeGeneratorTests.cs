@@ -15,7 +15,6 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var classCodeGenerator = new PartialClassCodeGenerator(classDefinition, classDefinition.ClassName);
 
             Assert.NotNull(classCodeGenerator);
-            Assert.True(classCodeGenerator.CustomPartial);
             Assert.False(classCodeGenerator.OverwriteExisting);
         }
 
