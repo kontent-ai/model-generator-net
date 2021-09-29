@@ -17,6 +17,10 @@ namespace Kentico.Kontent.ModelGenerator.Core
         private readonly IManagementClient _managementClient;
         private readonly IOutputProvider _outputProvider;
 
+        private string FilenameSuffix => string.IsNullOrEmpty(_options.FileNameSuffix) ? "" : $".{_options.FileNameSuffix}";
+        private string NoContentTypeAvailableMessage =>
+            $@"No content type available for the project ({_options.DeliveryOptions.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.";
+
         public CodeGenerator(IOptions<CodeGeneratorOptions> options, IDeliveryClient deliveryClient, IOutputProvider outputProvider, IManagementClient managementClient)
         {
             _options = options.Value;
@@ -48,16 +52,11 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             if (!classCodeGenerators.Any())
             {
-                Console.WriteLine($@"No content type available for the project ({_options.DeliveryOptions.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.");
+                Console.WriteLine(NoContentTypeAvailableMessage);
                 return;
             }
 
-            foreach (var codeGenerator in classCodeGenerators)
-            {
-                _outputProvider.Output(codeGenerator.GenerateCode(), codeGenerator.ClassFilename, codeGenerator.OverwriteExisting);
-            }
-
-            Console.WriteLine($"{classCodeGenerators.Count()} content type models were successfully created.");
+            WriteToOutputProvider(classCodeGenerators);
         }
 
         internal async Task GenerateTypeProvider()
@@ -66,7 +65,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             if (!classCodeGenerators.Any())
             {
-                Console.WriteLine($@"No content type available for the project ({_options.DeliveryOptions.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.");
+                Console.WriteLine(NoContentTypeAvailableMessage);
                 return;
             }
 
@@ -78,11 +77,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             }
 
             var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
-            if (!string.IsNullOrEmpty(typeProviderCode))
-            {
-                _outputProvider.Output(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
-                Console.WriteLine($"{TypeProviderCodeGenerator.ClassName} class was successfully created.");
-            }
+            WriteToOutputProvider(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
         }
 
         internal async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
@@ -156,20 +151,9 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 }
             }
 
-            if (!_options.ContentManagementApi)
-            {
-                try
-                {
-                    classDefinition.AddSystemProperty();
-                }
-                catch (InvalidOperationException)
-                {
-                    Console.WriteLine($"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
-                }
-            }
+            TryAddSystemProperty(classDefinition);
 
-            string suffix = string.IsNullOrEmpty(_options.FileNameSuffix) ? "" : $".{_options.FileNameSuffix}";
-            string classFilename = $"{classDefinition.ClassName}{suffix}";
+            var classFilename = $"{classDefinition.ClassName}{FilenameSuffix}";
 
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(_options, classDefinition, classFilename);
         }
@@ -177,7 +161,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
         internal ClassCodeGenerator GetCustomClassCodeGenerator(IContentType contentType)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
-            string classFilename = $"{classDefinition.ClassName}";
+            var classFilename = $"{classDefinition.ClassName}";
 
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(_options, classDefinition, classFilename, true);
         }
@@ -188,7 +172,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             if (!classCodeGenerators.Any())
             {
-                Console.WriteLine($@"No content type available for the project ({_options.DeliveryOptions.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.");
+                Console.WriteLine(NoContentTypeAvailableMessage);
                 return;
             }
 
@@ -200,18 +184,50 @@ namespace Kentico.Kontent.ModelGenerator.Core
             }
 
             var baseClassCode = baseClassCodeGenerator.GenerateBaseClassCode();
-            if (!string.IsNullOrEmpty(baseClassCode))
-            {
-                _outputProvider.Output(baseClassCode, _options.BaseClass, false);
-                Console.WriteLine($"{_options.BaseClass} class was successfully created.");
-            }
+            WriteToOutputProvider(baseClassCode, _options.BaseClass, false);
 
             var baseClassExtenderCode = baseClassCodeGenerator.GenereateExtenderCode();
-            if (!string.IsNullOrEmpty(baseClassExtenderCode))
+            WriteToOutputProvider(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
+        }
+
+        private void TryAddSystemProperty(ClassDefinition classDefinition)
+        {
+            if (_options.ContentManagementApi)
             {
-                _outputProvider.Output(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
-                Console.WriteLine($"{baseClassCodeGenerator.ExtenderClassName} class was successfully created.");
+                return;
             }
+
+            try
+            {
+                classDefinition.AddSystemProperty();
+            }
+            catch (InvalidOperationException)
+            {
+                Console.WriteLine(
+                    $"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
+            }
+        }
+
+        private void WriteToOutputProvider(string content, string fileName, bool overwriteExisting)
+        {
+            if (string.IsNullOrEmpty(content))
+            {
+                return;
+            }
+
+            _outputProvider.Output(content, fileName, overwriteExisting);
+            Console.WriteLine($"{fileName} class was successfully created.");
+        }
+
+        private void WriteToOutputProvider(ICollection<ClassCodeGenerator> classCodeGenerators)
+        {
+            foreach (var codeGenerator in classCodeGenerators)
+            {
+                _outputProvider.Output(codeGenerator.GenerateCode(), codeGenerator.ClassFilename,
+                    codeGenerator.OverwriteExisting);
+            }
+
+            Console.WriteLine($"{classCodeGenerators.Count} content type models were successfully created.");
         }
     }
 }
