@@ -69,8 +69,11 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
                     .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
-            mockHttp.When("https://manage.kontent.ai/v2/projects/*")
+            mockHttp.When("https://manage.kontent.ai/v2/projects/*/types")
                 .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/management_types.json")));
+            mockHttp.When("https://manage.kontent.ai/v2/projects/*/snippets")
+                .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/management_snippets.json")));
+
             var httpClient = mockHttp.ToHttpClient();
 
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -108,8 +111,10 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
                     .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
-            mockHttp.When("https://manage.kontent.ai/v2/projects/*")
+            mockHttp.When("https://manage.kontent.ai/v2/projects/*/types")
                 .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/management_types.json")));
+            mockHttp.When("https://manage.kontent.ai/v2/projects/*/snippets")
+                .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/management_snippets.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             const string transformFilename = "CustomSuffix";
@@ -152,8 +157,10 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
                     .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
-            mockHttp.When("https://manage.kontent.ai/v2/projects/*")
+            mockHttp.When("https://manage.kontent.ai/v2/projects/*/types")
                 .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/management_types.json")));
+            mockHttp.When("https://manage.kontent.ai/v2/projects/*/snippets")
+                .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/management_snippets.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             const string transformFilename = "Generated";
@@ -172,7 +179,6 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
             var managementClient = new Mock<ManagementClient>(httpClient);
-
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, deliveryClient, new FileSystemOutputProvider(mockOptions.Object), managementClient.Object);
 

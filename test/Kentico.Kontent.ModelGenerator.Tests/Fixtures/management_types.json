@@ -1088,6 +1088,14 @@
           "codename": "url_pattern"
         }
       ]
+    },
+    {
+      "snippet": {
+        "id": "edf908da-d4e3-4f63-bbaa-1966e04ba0ff"
+      },
+      "type": "snippet",
+      "id": "b7ca56af-c6a4-4aa9-a2e4-13fe825c1a0c",
+      "codename": "snippet"
     }
   ],
   "pagination": {
