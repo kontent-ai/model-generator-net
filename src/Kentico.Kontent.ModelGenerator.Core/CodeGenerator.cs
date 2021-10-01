@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Management.Models.Types;
+using Kentico.Kontent.Management.Models.TypeSnippets;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 
 namespace Kentico.Kontent.ModelGenerator.Core
 {
@@ -84,6 +84,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
         {
             var deliveryTypes = (await _client.GetTypesAsync()).Types;
             var managementTypes = await _managementClient.GetAllContentTypesAsync(_options);
+            var managementSnippets = await _managementClient.GetAllSnippetsAsync(_options);
 
             var codeGenerators = new List<ClassCodeGenerator>();
             if (deliveryTypes == null)
@@ -101,10 +102,10 @@ namespace Kentico.Kontent.ModelGenerator.Core
                     }
 
                     var managementContentType = _options.ContentManagementApi
-                        ? managementTypes.FirstOrDefault(ct => ct["codename"].ToObject<string>() == contentType.System.Codename)
+                        ? managementTypes.FirstOrDefault(managementType => managementType.Codename == contentType.System.Codename)
                         : null;
 
-                    codeGenerators.Add(GetClassCodeGenerator(contentType, _options.StructuredModel, managementContentType));
+                    codeGenerators.Add(GetClassCodeGenerator(contentType, _options.StructuredModel, managementSnippets, managementContentType));
                 }
                 catch (InvalidIdentifierException)
                 {
@@ -115,7 +116,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return codeGenerators;
         }
 
-        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, bool structuredModel, JObject managementContentType = null)
+        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, bool structuredModel, ICollection<SnippetModel> managementSnippets, ContentTypeModel managementContentType = null)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
 
@@ -129,9 +130,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                         elementType += Property.StructuredSuffix;
                     }
 
-                    var elementId = _options.ContentManagementApi
-                        ? managementContentType.ToObject<ContentTypeModel>().Id.ToString()
-                        : null;
+                    var elementId = ElementIdHelper.GetElementId(_options.ContentManagementApi, managementSnippets, managementContentType, element);
 
                     var property = Property.FromContentType(element.Codename, elementType, _options.ContentManagementApi, elementId);
                     classDefinition.AddPropertyCodenameConstant(element);
@@ -145,7 +144,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 {
                     Console.WriteLine($"Warning: Can't create valid C# Identifier from '{element.Codename}'. Skipping element.");
                 }
-                catch (ArgumentException)
+                catch (Exception e) when (e is ArgumentNullException or ArgumentException)
                 {
                     Console.WriteLine($"Warning: Skipping unknown Content Element type '{element.Type}'. (Content Type: '{classDefinition.ClassName}', Element Codename: '{element.Codename}').");
                 }
