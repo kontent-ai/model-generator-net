@@ -3,13 +3,13 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <Authors>Kentico Software</Authors>
-    <Product>Kentico Kontent</Product>
+    <Product>Kontent by Kentico</Product>
     <PackageIconUrl>https://github.com/Kentico/Home/blob/master/images/kk-logo-nuget.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://github.com/Kentico/kontent-generators-net</RepositoryUrl>
     <Copyright>© 2018 Kentico Software. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>kentico;tool;kentico kontent;generator</PackageTags>
-    <Description>This utility generates strongly-typed models based on Content Types in a Kentico Kontent project. The models are supposed to be used together with the Kentico Kontent Delivery SDK for .NET or Kentico Kontent Content Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
+    <Description>This utility generates strongly-typed models based on Content Types in a Kontent project. The models are supposed to be used together with the Kontent Delivery SDK for .NET or Kontent Content Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
