@@ -1,145 +1,97 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using Kentico.Kontent.ModelGenerator.Core;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
 using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
 {
     public class ClassCodeGeneratorTests
     {
-        [Fact]
-        public void Constructor_ThrowsAnExceptionForNullArgument()
+        [Theory]
+        [MemberData(nameof(GetTypes))]
+        public void Constructor_ClassDefinitionIsNull_Throws(Type type)
         {
-            Assert.Throws<ArgumentNullException>(() => new ClassCodeGenerator(null, null));
+            var exception = Assert.Throws<TargetInvocationException>(() => Activator.CreateInstance(type, ConstructorParams()));
+
+            Assert.NotNull(exception.InnerException);
+            Assert.Equal(typeof(ArgumentNullException), exception.InnerException.GetType());
+            Assert.Contains("classDefinition", exception.InnerException.Message);
         }
 
-        [Fact]
-        public void Constructor_ReplacesNullNamespaceWithDefault()
+        [Theory]
+        [MemberData(nameof(GetTypesWithEmptyStringParam))]
+        public void Constructor_ClassFileNameIsNullOrEmptyOrWhiteSpace_Returns_ClassDefinitionCodename(Type type, string classFilename)
         {
-            var classDefinition = new ClassDefinition("codename");
-            var classCodeGenerator = new ClassCodeGenerator(classDefinition, null);
+            var classDefinitionCodename = "classdefinitioncodename";
 
-            Assert.Equal("KenticoKontentModels", classCodeGenerator.Namespace);
+            var expectedClassFilename = "Classdefinitioncodename";
+
+            var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(classDefinitionCodename, classFilename));
+
+            Assert.NotNull(classCodeGenerator);
+            Assert.Equal(expectedClassFilename, classCodeGenerator.ClassFilename);
         }
 
-        [Fact]
-        public void Build_CreatesClassWithCompleteContentType()
+        [Theory]
+        [MemberData(nameof(GetTypes))]
+        public void Constructor_CustomClassFileName_Returns_CustomClassFileName(Type type)
         {
-            var classDefinition = new ClassDefinition("Complete content type");
-            classDefinition.AddProperty(Property.FromContentType("text", "text"));
-            classDefinition.AddProperty(Property.FromContentType("rich_text", "rich_text"));
-            classDefinition.AddProperty(Property.FromContentType("rich_text_structured", "rich_text(structured)"));
-            classDefinition.AddProperty(Property.FromContentType("number", "number"));
-            classDefinition.AddProperty(Property.FromContentType("multiple_choice", "multiple_choice"));
-            classDefinition.AddProperty(Property.FromContentType("date_time", "date_time"));
-            classDefinition.AddProperty(Property.FromContentType("asset", "asset"));
-            classDefinition.AddProperty(Property.FromContentType("modular_content", "modular_content"));
-            classDefinition.AddProperty(Property.FromContentType("taxonomy", "taxonomy"));
-            classDefinition.AddProperty(Property.FromContentType("url_slug", "url_slug"));
-            classDefinition.AddProperty(Property.FromContentType("custom", "custom"));
+            var classDefinitionCodename = "codename";
+            var classFilename = "CustomClassFileName";
 
-            classDefinition.AddSystemProperty();
+            var expectedClassFilename = "CustomClassFileName";
 
-            var classCodeGenerator = new ClassCodeGenerator(classDefinition, classDefinition.ClassName);
+            var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(classDefinitionCodename, classFilename));
 
-            string compiledCode = classCodeGenerator.GenerateCode();
-
-            string executingPath = AppContext.BaseDirectory;
-            string expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
-
-            Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
+            Assert.NotNull(classCodeGenerator);
+            Assert.Equal(expectedClassFilename, classCodeGenerator.ClassFilename);
         }
 
-        [Fact]
-        public void Build_CreatesClassWithCompleteContentType_CMAPI()
+        [Theory]
+        [MemberData(nameof(GetTypesWithEmptyStringParam))]
+        public void Constructor_NamespaceIsNullOrEmptyOrWhiteSpace_Returns_DefaultNamespace(Type type, string @namespace)
         {
-            var classDefinition = new ClassDefinition("Complete content type");
-            classDefinition.AddProperty(Property.FromContentType("text", "text", true, "text_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("rich_text", "rich_text", true, "rich_text_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("number", "number", true, "number_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("multiple_choice", "multiple_choice", true, "multiple_choice_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("date_time", "date_time", true, "date_time_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("asset", "asset", true, "asset_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("modular_content", "modular_content", true, "linked_items_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("taxonomy", "taxonomy", true, "taxonomy_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("url_slug", "url_slug", true, "url_slug_element_id"));
-            classDefinition.AddProperty(Property.FromContentType("custom", "custom", true, "custom_element_id"));
+            var classDefinitionCodename = "classdefinitioncodename";
 
-            var classCodeGenerator = new ClassCodeGenerator(classDefinition, classDefinition.ClassName);
+            var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(classDefinitionCodename, null, @namespace));
 
-            var compiledCode = classCodeGenerator.GenerateCode(true);
-
-            var executingPath = AppContext.BaseDirectory;
-            var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_CMAPI.txt");
-
-            Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
+            Assert.NotNull(classCodeGenerator);
+            Assert.Equal(ClassCodeGenerator.DefaultNamespace, classCodeGenerator.Namespace);
         }
 
-        [Fact]
-        public void Build_CreatesCustomPartialContentType()
+        [Theory]
+        [MemberData(nameof(GetTypes))]
+        public void Constructor_CustomNamespace_Returns_CustomNamespace(Type type)
         {
-            var classDefinition = new ClassDefinition("Complete content type");
+            var classDefinitionCodename = "classdefinitioncodename";
+            var customNamespace = "CustomNamespace";
 
-            var classCodeGenerator = new ClassCodeGenerator(classDefinition, classDefinition.ClassName, customPartial: true);
+            var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(classDefinitionCodename, null, customNamespace));
 
-            var compiledCode = classCodeGenerator.GenerateCode(false);
-
-            var executingPath = AppContext.BaseDirectory;
-            var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_CustomPartial.txt");
-
-            Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
+            Assert.NotNull(classCodeGenerator);
+            Assert.Equal(customNamespace, classCodeGenerator.Namespace);
         }
 
-        [Fact]
-        public void IntegrationTest_GeneratedCodeCompilesWithoutErrors()
+        public static IEnumerable<object[]> GetTypes()
         {
-            var definition = new ClassDefinition("Complete content type");
-            definition.AddProperty(Property.FromContentType("text", "text"));
-            definition.AddProperty(Property.FromContentType("rich_text", "rich_text"));
-            definition.AddProperty(Property.FromContentType("rich_text_structured", "rich_text(structured)"));
-            definition.AddProperty(Property.FromContentType("number", "number"));
-            definition.AddProperty(Property.FromContentType("multiple_choice", "multiple_choice"));
-            definition.AddProperty(Property.FromContentType("date_time", "date_time"));
-            definition.AddProperty(Property.FromContentType("asset", "asset"));
-            definition.AddProperty(Property.FromContentType("modular_content", "modular_content"));
-            definition.AddProperty(Property.FromContentType("taxonomy", "taxonomy"));
-            definition.AddProperty(Property.FromContentType("custom", "custom"));
-
-            var classCodeGenerator = new ClassCodeGenerator(definition, definition.ClassName);
-            string compiledCode = classCodeGenerator.GenerateCode();
-
-            CSharpCompilation compilation = CSharpCompilation.Create(
-                assemblyName: Path.GetRandomFileName(),
-                syntaxTrees: new[] { CSharpSyntaxTree.ParseText(compiledCode) },
-                references: new[] {
-                    MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
-                    MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.IApiResponse).GetTypeInfo().Assembly.Location)
-                },
-                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-            using var ms = new MemoryStream();
-            EmitResult result = compilation.Emit(ms);
-            string compilationErrors = "Compilation errors:\n";
-
-            if (!result.Success)
-            {
-                IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
-                    diagnostic.IsWarningAsError ||
-                    diagnostic.Severity == DiagnosticSeverity.Error);
-
-                foreach (Diagnostic diagnostic in failures)
-                {
-                    compilationErrors += $"{diagnostic.Id}: {diagnostic.GetMessage()}\n";
-                }
-            }
-
-            Assert.True(result.Success, compilationErrors);
+            yield return new object[] { typeof(PartialClassCodeGenerator) };
+            yield return new object[] { typeof(ManagementClassCodeGenerator) };
+            yield return new object[] { typeof(DeliveryClassCodeGenerator) };
         }
+
+        public static IEnumerable<object[]> GetTypesWithEmptyStringParam()
+        {
+            yield return new object[] { typeof(PartialClassCodeGenerator), "" };
+            yield return new object[] { typeof(ManagementClassCodeGenerator), "  " };
+            yield return new object[] { typeof(DeliveryClassCodeGenerator), null };
+        }
+
+        private static object[] ConstructorParams(string classDefinitionCodename = null, string classFileName = null, string @namespace = null)
+            => new object[] { GetClassDefinition(classDefinitionCodename), classFileName, @namespace };
+
+        private static ClassDefinition GetClassDefinition(string classDefinitionCodename) => classDefinitionCodename == null
+            ? (ClassDefinition)null
+            : new ClassDefinition(classDefinitionCodename);
     }
 }

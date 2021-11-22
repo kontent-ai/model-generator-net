@@ -67,12 +67,12 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public static Property FromContentType(string codename, string contentType, bool cmApi = false, string id = null)
         {
-            if (!IsContentTypeSupported(contentType, cmApi))
+            if (IsContentTypeSupported(contentType, cmApi))
             {
-                throw new ArgumentException($"Unknown Content Type {contentType}", nameof(contentType));
+                return new Property(codename, ContentTypeToTypeName(cmApi)[contentType], id);
             }
 
-            return new Property(codename, ContentTypeToTypeName(cmApi)[contentType], id);
+            throw new ArgumentException($"Unknown Content Type {contentType}", nameof(contentType));
         }
     }
 }
