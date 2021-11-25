@@ -17,7 +17,9 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
 
         public ClassDefinition(string codeName)
         {
-            Codename = string.IsNullOrWhiteSpace(codeName) ? throw new ArgumentException(nameof(codeName)) : codeName;
+            Codename = string.IsNullOrWhiteSpace(codeName)
+                ? throw new ArgumentException("Class codeName must be a non null and not white space string.", nameof(codeName))
+                : codeName;
         }
 
         public void AddProperty(Property property)
