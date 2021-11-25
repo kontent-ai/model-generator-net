@@ -34,9 +34,24 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private async Task<IList<T>> GetObjects<T>(CodeGeneratorOptions options, string modelType)
         {
-            if (!options.ContentManagementApi)
+            if (options == null)
             {
-                return null;
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            if (modelType == null)
+            {
+                throw new ArgumentNullException(nameof(modelType));
+            }
+
+            if (string.IsNullOrEmpty(options.ManagementOptions.ProjectId))
+            {
+                throw new ArgumentException("Not filled required argument.", nameof(options.ManagementOptions.ProjectId));
+            }
+
+            if (string.IsNullOrEmpty(options.ManagementOptions.ApiKey))
+            {
+                throw new ArgumentException("Not filled required argument.", nameof(options.ManagementOptions.ApiKey));
             }
 
             var models = new List<T>();

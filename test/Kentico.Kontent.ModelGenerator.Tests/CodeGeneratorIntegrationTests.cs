@@ -52,7 +52,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 Namespace = "CustomNamespace",
                 OutputDir = TempDir,
                 ContentManagementApi = cmApi,
-                ManagementOptions = new ManagementOptions { ApiKey = "apiKey" }
+                ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
             });
 
             var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
@@ -93,7 +93,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
                 DeliveryOptions = new DeliveryOptions { ProjectId = ProjectId },
-                ManagementOptions = new ManagementOptions { ApiKey = "apiKey" },
+                ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
                 Namespace = "CustomNamespace",
                 OutputDir = TempDir,
                 GeneratePartials = false,
@@ -144,7 +144,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 FileNameSuffix = transformFilename,
                 GeneratePartials = true,
                 ContentManagementApi = cmApi,
-                ManagementOptions = new ManagementOptions { ApiKey = "apiKey" }
+                ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
             });
 
             var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();

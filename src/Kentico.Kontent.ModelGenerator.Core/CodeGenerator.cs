@@ -83,8 +83,14 @@ namespace Kentico.Kontent.ModelGenerator.Core
         internal async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
             var deliveryTypes = (await _client.GetTypesAsync()).Types;
-            var managementTypes = await _managementClient.GetAllContentTypesAsync(_options);
-            var managementSnippets = await _managementClient.GetAllSnippetsAsync(_options);
+            IList<ContentTypeModel> managementTypes = null;
+            IList<SnippetModel> managementSnippets = null;
+
+            if (_options.ContentManagementApi)
+            {
+                managementTypes = await _managementClient.GetAllContentTypesAsync(_options);
+                managementSnippets = await _managementClient.GetAllSnippetsAsync(_options);
+            }
 
             var codeGenerators = new List<ClassCodeGenerator>();
             if (deliveryTypes == null)
@@ -102,7 +108,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                     }
 
                     var managementContentType = _options.ContentManagementApi
-                        ? managementTypes.FirstOrDefault(managementType => managementType.Codename == contentType.System.Codename)
+                        ? managementTypes?.FirstOrDefault(managementType => managementType.Codename == contentType.System.Codename)
                         : null;
 
                     codeGenerators.Add(GetClassCodeGenerator(contentType, _options.StructuredModel, managementSnippets, managementContentType));
