@@ -44,14 +44,19 @@ namespace Kentico.Kontent.ModelGenerator.Core.ManagementClient
                 throw new ArgumentNullException(nameof(modelType));
             }
 
+            if (options.ManagementOptions == null)
+            {
+                throw new ArgumentException($"ManagementClient {nameof(options.ManagementOptions)} cannot be null.");
+            }
+
             if (string.IsNullOrEmpty(options.ManagementOptions.ProjectId))
             {
-                throw new ArgumentException("Not filled required argument.", nameof(options.ManagementOptions.ProjectId));
+                throw new ArgumentException($"ManagementClient {nameof(options.ManagementOptions.ProjectId)} cannot be null.");
             }
 
             if (string.IsNullOrEmpty(options.ManagementOptions.ApiKey))
             {
-                throw new ArgumentException("Not filled required argument.", nameof(options.ManagementOptions.ApiKey));
+                throw new ArgumentException($"ManagementClient {nameof(options.ManagementOptions.ApiKey)} cannot be null.");
             }
 
             var models = new List<T>();

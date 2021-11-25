@@ -12,7 +12,7 @@ using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Xunit;
 using System.Linq;
 using Kentico.Kontent.Management;
-using ManagementClient = Kentico.Kontent.ModelGenerator.Core.ManagementClient.ManagementClient;
+using ManagementClientImpl = Kentico.Kontent.ModelGenerator.Core.ManagementClient.ManagementClient;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
 {
@@ -56,7 +56,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             });
 
             var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
-            var managementClient = new Mock<ManagementClient>(httpClient);
+            var managementClient = new Mock<ManagementClientImpl>(httpClient);
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, deliveryClient, new FileSystemOutputProvider(mockOptions.Object), managementClient.Object);
 
@@ -102,7 +102,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             });
 
             var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
-            var managementClient = new Mock<ManagementClient>(httpClient);
+            var managementClient = new Mock<ManagementClientImpl>(httpClient);
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, deliveryClient, new FileSystemOutputProvider(mockOptions.Object), managementClient.Object);
 
@@ -148,7 +148,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             });
 
             var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
-            var managementClient = new Mock<ManagementClient>(httpClient);
+            var managementClient = new Mock<ManagementClientImpl>(httpClient);
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, deliveryClient, new FileSystemOutputProvider(mockOptions.Object), managementClient.Object);
 
