@@ -1,7 +1,8 @@
 ﻿using System;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
+using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.Common
 {
     public static class ClassCodeGeneratorFactory
     {

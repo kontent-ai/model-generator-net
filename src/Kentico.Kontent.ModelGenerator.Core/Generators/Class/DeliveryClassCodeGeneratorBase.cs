@@ -1,8 +1,10 @@
 ﻿using System.Linq;
+using Kentico.Kontent.ModelGenerator.Core.Common;
+using Kentico.Kontent.ModelGenerator.Core.Helpers;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
 {
     public abstract class DeliveryClassCodeGeneratorBase : ClassCodeGenerator
     {

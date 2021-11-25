@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.ModelGenerator.Core.Helpers;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.Common
 {
     public class ClassDefinition
     {

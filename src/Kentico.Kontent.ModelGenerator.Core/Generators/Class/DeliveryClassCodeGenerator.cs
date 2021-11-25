@@ -1,7 +1,8 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿using Kentico.Kontent.ModelGenerator.Core.Common;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
 {
     public class DeliveryClassCodeGenerator : DeliveryClassCodeGeneratorBase
     {

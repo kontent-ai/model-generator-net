@@ -5,7 +5,11 @@ using System.Threading.Tasks;
 using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Management.Models.Types;
 using Kentico.Kontent.Management.Models.TypeSnippets;
+using Kentico.Kontent.ModelGenerator.Core.Common;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
+using Kentico.Kontent.ModelGenerator.Core.Generators;
+using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
+using Kentico.Kontent.ModelGenerator.Core.Helpers;
 using Kentico.Kontent.ModelGenerator.Core.ManagementClient;
 using Microsoft.Extensions.Options;
 

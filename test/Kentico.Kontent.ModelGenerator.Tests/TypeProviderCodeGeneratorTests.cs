@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Kentico.Kontent.ModelGenerator.Core;
+using Kentico.Kontent.ModelGenerator.Core.Generators;
 using static System.String;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
@@ -25,7 +26,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var expectedCode = File.ReadAllText(executingPath + "/Assets/CustomTypeProvider_CompiledCode.txt");
 
             var compiledCode = codeGenerator.GenerateCode();
-          
+
             Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
         }
 

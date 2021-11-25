@@ -1,7 +1,7 @@
 ﻿using Xunit;
 using System;
 using System.IO;
-using Kentico.Kontent.ModelGenerator.Core;
+using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
 {
