@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
 using Kentico.Kontent.Delivery.Abstractions;
-using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Common;
 using Moq;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests
+namespace Kentico.Kontent.ModelGenerator.Tests.Common
 {
     public class ClassDefinitionTests
     {

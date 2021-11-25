@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests
+namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
 {
     public class DeliveryClassCodeGeneratorTests
     {

@@ -1,9 +1,9 @@
-﻿using Xunit;
-using System;
+﻿using System;
 using System.IO;
 using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
+using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests
+namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
 {
     public class BaseClassCodeGeneratorTests
     {

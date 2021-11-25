@@ -5,7 +5,7 @@ using Kentico.Kontent.ModelGenerator.Core.Common;
 using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests
+namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
 {
     public class ClassCodeGeneratorTests
     {
