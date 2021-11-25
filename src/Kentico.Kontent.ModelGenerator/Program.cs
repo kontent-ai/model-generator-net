@@ -10,6 +10,7 @@ using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Delivery.Extensions;
 using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
+using Kentico.Kontent.ModelGenerator.Core.ManagementClient;
 
 namespace Kentico.Kontent.ModelGenerator
 {

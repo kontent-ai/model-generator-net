@@ -6,6 +6,7 @@ using Kentico.Kontent.Management.Models.Types;
 using Kentico.Kontent.Management.Models.TypeSnippets;
 using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
+using Kentico.Kontent.ModelGenerator.Core.ManagementClient;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;

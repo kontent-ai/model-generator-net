@@ -10,7 +10,7 @@ using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.ManagementClient
 {
     public class ManagementClient : IManagementClient
     {

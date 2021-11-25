@@ -12,7 +12,7 @@ using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Xunit;
 using System.Linq;
 using Kentico.Kontent.Management;
-using ManagementClient = Kentico.Kontent.ModelGenerator.Core.ManagementClient;
+using ManagementClient = Kentico.Kontent.ModelGenerator.Core.ManagementClient.ManagementClient;
 
 namespace Kentico.Kontent.ModelGenerator.Tests
 {

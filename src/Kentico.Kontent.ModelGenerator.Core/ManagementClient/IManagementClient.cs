@@ -4,7 +4,7 @@ using Kentico.Kontent.Management.Models.Types;
 using Kentico.Kontent.Management.Models.TypeSnippets;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.ManagementClient
 {
     public interface IManagementClient
     {
