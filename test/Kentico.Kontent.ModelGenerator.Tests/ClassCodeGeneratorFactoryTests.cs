@@ -1,5 +1,4 @@
 ﻿using System;
-using JetBrains.Annotations;
 using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Xunit;
@@ -157,7 +156,6 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             AssertClassCodeGenerator<ManagementClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
         }
 
-        [AssertionMethod]
         private static void AssertClassCodeGenerator<T>(ClassCodeGenerator result, string classDefinitionCodename, string classFileName, string @namespace)
         {
             Assert.IsType<T>(result);
