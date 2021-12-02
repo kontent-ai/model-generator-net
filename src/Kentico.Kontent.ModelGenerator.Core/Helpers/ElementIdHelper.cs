@@ -12,12 +12,12 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
     {
         public static string GetElementId(bool cmApi, ICollection<SnippetModel> managementSnippets, ContentTypeModel managementContentType, IContentElement element)
         {
-            Validate(managementSnippets, managementContentType, element);
-
             if (!cmApi)
             {
                 return null;
             }
+
+            Validate(managementSnippets, managementContentType, element);
 
             var contentTypeElement = managementContentType.Elements.FirstOrDefault(el => el.Codename == element.Codename);
             if (contentTypeElement != null)

@@ -12,28 +12,46 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
 {
     public class ElementIdHelperTests
     {
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void GetElementId_ManagementSnippetsAreNull_ThrowsException(bool cmApi)
+        [Fact]
+        public void GetElementId_ManagementSnippetsAreNull_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => ElementIdHelper.GetElementId(cmApi, null, new ContentTypeModel(), new FakeContentElement()));
+            Assert.Throws<ArgumentNullException>(() => ElementIdHelper.GetElementId(true, null, new ContentTypeModel(), new FakeContentElement()));
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void GetElementId_ManagementContentTypeIsNull_ThrowsException(bool cmApi)
+        [Fact]
+        public void GetElementId_NotCmApi_ManagementSnippetsAreNull_ReturnsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => ElementIdHelper.GetElementId(cmApi, new List<SnippetModel>(), null, new FakeContentElement()));
+            var result = ElementIdHelper.GetElementId(false, null, new ContentTypeModel(), new FakeContentElement());
+
+            Assert.Null(result);
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void GetElementId_ElementIsNull_ThrowsException(bool cmApi)
+        [Fact]
+        public void GetElementId_ManagementContentTypeIsNull_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => ElementIdHelper.GetElementId(cmApi, new List<SnippetModel>(), new ContentTypeModel(), null));
+            Assert.Throws<ArgumentNullException>(() => ElementIdHelper.GetElementId(true, new List<SnippetModel>(), null, new FakeContentElement()));
+        }
+
+        [Fact]
+        public void GetElementId_NotCmApi_ManagementContentTypeIsNull_ReturnsNull()
+        {
+            var result = ElementIdHelper.GetElementId(false, new List<SnippetModel>(), null, new FakeContentElement());
+
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void GetElementId_ElementIsNull_ThrowsException()
+        {
+            Assert.Throws<ArgumentNullException>(() => ElementIdHelper.GetElementId(true, new List<SnippetModel>(), new ContentTypeModel(), null));
+        }
+
+        [Fact]
+        public void GetElementId_NotCmApi_ElementIsNull_ReturnsNull()
+        {
+            var result = ElementIdHelper.GetElementId(false, new List<SnippetModel>(), new ContentTypeModel(), null);
+
+            Assert.Null(result);
         }
 
         [Fact]
