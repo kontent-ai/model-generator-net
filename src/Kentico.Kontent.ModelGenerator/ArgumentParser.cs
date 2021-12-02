@@ -25,7 +25,7 @@ namespace Kentico.Kontent.ModelGenerator
                 }
 
                 // Arguments and their values that the current 'arg' contains.
-                var argumentStarts = Regex.Matches(arg, @"\s+(-{1,2}\w+)", RegexOptions.Compiled).Cast<Match>().ToList();
+                var argumentStarts = Regex.Matches(arg, @"\s+(-{1,2}\w+)", RegexOptions.Compiled).ToList();
                 if (argumentStarts.Count > 0)
                 {
                     parsedArgs.AddRange(ParseCorruptedArguments(arg, argumentStarts));
@@ -71,7 +71,7 @@ namespace Kentico.Kontent.ModelGenerator
             var valueStart = argumentStarts[argumentIndex].Index + argumentStarts[argumentIndex].Length;
             var valueEnd = argumentIndex == argumentStarts.Count - 1 ? arg.Length : argumentStarts[argumentIndex + 1].Index;
 
-            var rawValue = arg.Substring(valueStart, valueEnd).Trim();
+            var rawValue = arg[valueStart..valueEnd].Trim();
 
             if (!string.IsNullOrEmpty(rawValue))
             {
@@ -88,7 +88,7 @@ namespace Kentico.Kontent.ModelGenerator
             if (lastDoubleQuotesIndex < rawValue.Length)
             {
                 // Trailing values, not terminated with double quotes.
-                trailingValues.AddRange(rawValue.Substring(lastDoubleQuotesIndex).Trim().Split(' '));
+                trailingValues.AddRange(rawValue[lastDoubleQuotesIndex..].Trim().Split(' '));
             }
 
             var merge = quotedValueList.Concat(trailingValues).ToList();
@@ -101,7 +101,7 @@ namespace Kentico.Kontent.ModelGenerator
         internal static (List<string> quotedValueList, int lastDoubleQuotesIndex) ParsePartiallyQuotedValues(string rawValue)
         {
             // Argument value incorrectly parsed by the runtime (due to the use of a "backslash and double quotes" sequence).
-            var valuesWithTrailingQuotes = Regex.Matches(rawValue, @"([^""]+)("")", RegexOptions.Compiled).Cast<Match>();
+            var valuesWithTrailingQuotes = Regex.Matches(rawValue, @"([^""]+)("")", RegexOptions.Compiled);
 
             var quotedValueList = valuesWithTrailingQuotes
                 .Select(value => value.Value.Trim(' ', '"', '\\'))
