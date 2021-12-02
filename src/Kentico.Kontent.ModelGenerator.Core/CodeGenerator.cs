@@ -88,8 +88,8 @@ namespace Kentico.Kontent.ModelGenerator.Core
         internal async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
             var deliveryTypes = (await _client.GetTypesAsync()).Types;
-            IList<ContentTypeModel> managementTypes = null;
-            IList<SnippetModel> managementSnippets = null;
+            IEnumerable<ContentTypeModel> managementTypes = null;
+            IEnumerable<SnippetModel> managementSnippets = null;
 
             if (_options.ContentManagementApi)
             {
@@ -127,7 +127,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return codeGenerators;
         }
 
-        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, bool structuredModel, ICollection<SnippetModel> managementSnippets, ContentTypeModel managementContentType = null)
+        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, bool structuredModel, IEnumerable<SnippetModel> managementSnippets, ContentTypeModel managementContentType = null)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
 

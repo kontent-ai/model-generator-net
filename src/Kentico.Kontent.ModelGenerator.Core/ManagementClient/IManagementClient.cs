@@ -8,7 +8,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.ManagementClient
 {
     public interface IManagementClient
     {
-        Task<IList<ContentTypeModel>> GetAllContentTypesAsync(CodeGeneratorOptions options);
-        Task<IList<SnippetModel>> GetAllSnippetsAsync(CodeGeneratorOptions options);
+        Task<IEnumerable<ContentTypeModel>> GetAllContentTypesAsync(CodeGeneratorOptions options);
+        Task<IEnumerable<SnippetModel>> GetAllSnippetsAsync(CodeGeneratorOptions options);
     }
 }

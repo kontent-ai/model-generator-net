@@ -2,6 +2,7 @@
 using RichardSzalay.MockHttp;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -102,7 +103,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.ManagementClient
             var result = await client.GetAllContentTypesAsync(options);
 
             Assert.NotNull(result);
-            Assert.Equal(14, result.Count);
+            Assert.Equal(14, result.ToList().Count);
         }
 
         [Fact]
@@ -189,7 +190,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.ManagementClient
             var result = await client.GetAllSnippetsAsync(options);
 
             Assert.NotNull(result);
-            Assert.Equal(1, result.Count);
+            Assert.Single(result);
         }
     }
 }

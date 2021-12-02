@@ -22,17 +22,17 @@ namespace Kentico.Kontent.ModelGenerator.Core.ManagementClient
             _httpClient = httpClient;
         }
 
-        public async Task<IList<ContentTypeModel>> GetAllContentTypesAsync(CodeGeneratorOptions options)
+        public async Task<IEnumerable<ContentTypeModel>> GetAllContentTypesAsync(CodeGeneratorOptions options)
         {
             return await GetObjects<ContentTypeModel>(options, "types");
         }
 
-        public async Task<IList<SnippetModel>> GetAllSnippetsAsync(CodeGeneratorOptions options)
+        public async Task<IEnumerable<SnippetModel>> GetAllSnippetsAsync(CodeGeneratorOptions options)
         {
             return await GetObjects<SnippetModel>(options, "snippets");
         }
 
-        private async Task<IList<T>> GetObjects<T>(CodeGeneratorOptions options, string modelType)
+        private async Task<IEnumerable<T>> GetObjects<T>(CodeGeneratorOptions options, string modelType)
         {
             if (options == null)
             {

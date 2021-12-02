@@ -10,7 +10,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
 {
     public static class ElementIdHelper
     {
-        public static string GetElementId(bool cmApi, ICollection<SnippetModel> managementSnippets, ContentTypeModel managementContentType, IContentElement element)
+        public static string GetElementId(bool cmApi, IEnumerable<SnippetModel> managementSnippets, ContentTypeModel managementContentType, IContentElement element)
         {
             if (!cmApi)
             {
@@ -43,7 +43,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
             return snippetElement.Id.ToString();
         }
 
-        private static void Validate(ICollection<SnippetModel> managementSnippets, ContentTypeModel managementContentType, IContentElement element)
+        private static void Validate(IEnumerable<SnippetModel> managementSnippets, ContentTypeModel managementContentType, IContentElement element)
         {
             if (managementSnippets == null)
             {
