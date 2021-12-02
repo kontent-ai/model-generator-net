@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
     <AssemblyName>KontentModelGenerator</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>Kentico.Kontent.ModelGenerator</PackageId>
