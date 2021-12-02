@@ -13,8 +13,6 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         public void GenerateBaseClassCodeWithDefaultNamespace()
         {
             var codeGenerator = new BaseClassCodeGenerator(BaseClassName);
-            codeGenerator.AddClassNameToExtend("Article");
-            codeGenerator.AddClassNameToExtend("Office");
 
             var executingPath = AppContext.BaseDirectory;
             var expectedBaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
@@ -29,8 +27,6 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             var customNamespace = "CustomNamespace";
             var codeGenerator = new BaseClassCodeGenerator(BaseClassName, customNamespace);
-            codeGenerator.AddClassNameToExtend("Article");
-            codeGenerator.AddClassNameToExtend("Office");
 
             var executingPath = AppContext.BaseDirectory;
             var expectedBaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
