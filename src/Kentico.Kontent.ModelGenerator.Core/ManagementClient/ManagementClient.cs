@@ -27,9 +27,9 @@ namespace Kentico.Kontent.ModelGenerator.Core.ManagementClient
             return await GetObjects<ContentTypeModel>(options, "types");
         }
 
-        public async Task<IEnumerable<SnippetModel>> GetAllSnippetsAsync(CodeGeneratorOptions options)
+        public async Task<IEnumerable<ContentTypeSnippetModel>> GetAllSnippetsAsync(CodeGeneratorOptions options)
         {
-            return await GetObjects<SnippetModel>(options, "snippets");
+            return await GetObjects<ContentTypeSnippetModel>(options, "snippets");
         }
 
         private async Task<IEnumerable<T>> GetObjects<T>(CodeGeneratorOptions options, string modelType)

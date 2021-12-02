@@ -69,7 +69,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, deliveryClient.Object, outputProvider.Object, managementClient.Object);
 
-            var result = codeGenerator.GetClassCodeGenerator(contentType.Object, true, new List<SnippetModel>(), new ContentTypeModel());
+            var result = codeGenerator.GetClassCodeGenerator(contentType.Object, true, new List<ContentTypeSnippetModel>(), new ContentTypeModel());
 
             Assert.Equal($"{contentTypeCodename}.Generated", result.ClassFilename);
         }

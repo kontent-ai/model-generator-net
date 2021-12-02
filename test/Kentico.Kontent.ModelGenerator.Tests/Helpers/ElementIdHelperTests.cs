@@ -29,13 +29,13 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
         [Fact]
         public void GetElementId_ManagementContentTypeIsNull_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => ElementIdHelper.GetElementId(true, new List<SnippetModel>(), null, new FakeContentElement()));
+            Assert.Throws<ArgumentNullException>(() => ElementIdHelper.GetElementId(true, new List<ContentTypeSnippetModel>(), null, new FakeContentElement()));
         }
 
         [Fact]
         public void GetElementId_NotCmApi_ManagementContentTypeIsNull_ReturnsNull()
         {
-            var result = ElementIdHelper.GetElementId(false, new List<SnippetModel>(), null, new FakeContentElement());
+            var result = ElementIdHelper.GetElementId(false, new List<ContentTypeSnippetModel>(), null, new FakeContentElement());
 
             Assert.Null(result);
         }
@@ -43,13 +43,13 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
         [Fact]
         public void GetElementId_ElementIsNull_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => ElementIdHelper.GetElementId(true, new List<SnippetModel>(), new ContentTypeModel(), null));
+            Assert.Throws<ArgumentNullException>(() => ElementIdHelper.GetElementId(true, new List<ContentTypeSnippetModel>(), new ContentTypeModel(), null));
         }
 
         [Fact]
         public void GetElementId_NotCmApi_ElementIsNull_ReturnsNull()
         {
-            var result = ElementIdHelper.GetElementId(false, new List<SnippetModel>(), new ContentTypeModel(), null);
+            var result = ElementIdHelper.GetElementId(false, new List<ContentTypeSnippetModel>(), new ContentTypeModel(), null);
 
             Assert.Null(result);
         }
@@ -57,7 +57,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
         [Fact]
         public void GetElementId_NotCmApi_ReturnsNull()
         {
-            var result = ElementIdHelper.GetElementId(false, new List<SnippetModel>(), new ContentTypeModel(), new FakeContentElement());
+            var result = ElementIdHelper.GetElementId(false, new List<ContentTypeSnippetModel>(), new ContentTypeModel(), new FakeContentElement());
 
             Assert.Null(result);
         }
@@ -82,7 +82,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
                 Codename = elementCodename
             };
 
-            var result = ElementIdHelper.GetElementId(true, new List<SnippetModel>(), contentTypeModel, element);
+            var result = ElementIdHelper.GetElementId(true, new List<ContentTypeSnippetModel>(), contentTypeModel, element);
 
             Assert.NotNull(result);
             Assert.Equal(expectedElementId.ToString(), result);
@@ -100,14 +100,14 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
             {
                 Elements = new List<ElementMetadataBase>
                 {
-                    GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.Snippet),
+                    GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.ContentTypeSnippet),
                     GenerateElementMetadataBase(Guid.NewGuid(), "other")
                 }
             };
 
-            var snippets = new List<SnippetModel>
+            var snippets = new List<ContentTypeSnippetModel>
             {
-                new SnippetModel
+                new ContentTypeSnippetModel
                 {
                     Codename = snippetCodename,
                     Elements = new List<ElementMetadataBase>
@@ -140,14 +140,14 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
             {
                 Elements = new List<ElementMetadataBase>
                 {
-                    GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.Snippet),
+                    GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.ContentTypeSnippet),
                     GenerateElementMetadataBase(Guid.NewGuid(), "other")
                 }
             };
 
-            var snippets = new List<SnippetModel>
+            var snippets = new List<ContentTypeSnippetModel>
             {
-                new SnippetModel
+                new ContentTypeSnippetModel
                 {
                     Codename = snippetCodename,
                     Elements = new List<ElementMetadataBase>()
@@ -173,14 +173,14 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
             {
                 Elements = new List<ElementMetadataBase>
                 {
-                    GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.Snippet),
+                    GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.ContentTypeSnippet),
                     GenerateElementMetadataBase(Guid.NewGuid(), "other")
                 }
             };
 
-            var snippets = new List<SnippetModel>
+            var snippets = new List<ContentTypeSnippetModel>
             {
-                new SnippetModel
+                new ContentTypeSnippetModel
                 {
                     Codename = snippetCodename,
                     Elements = new List<ElementMetadataBase>
@@ -210,7 +210,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
             {
                 Elements = new List<ElementMetadataBase>
                 {
-                    GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.Snippet),
+                    GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.ContentTypeSnippet),
                     GenerateElementMetadataBase(Guid.NewGuid(), "other")
                 }
             };
@@ -220,7 +220,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
                 Codename = snippetElementCodename
             };
 
-            Assert.Throws<ArgumentException>(() => ElementIdHelper.GetElementId(true, new List<SnippetModel>(), contentTypeModel, element));
+            Assert.Throws<ArgumentException>(() => ElementIdHelper.GetElementId(true, new List<ContentTypeSnippetModel>(), contentTypeModel, element));
         }
 
         [Fact]
@@ -234,14 +234,14 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
             {
                 Elements = new List<ElementMetadataBase>
                 {
-                    GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.Snippet),
+                    GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.ContentTypeSnippet),
                     GenerateElementMetadataBase(Guid.NewGuid(), "other")
                 }
             };
 
-            var snippets = new List<SnippetModel>
+            var snippets = new List<ContentTypeSnippetModel>
             {
-                new SnippetModel
+                new ContentTypeSnippetModel
                 {
                     Codename = "other_snippet_codename",
                     Elements = new List<ElementMetadataBase>

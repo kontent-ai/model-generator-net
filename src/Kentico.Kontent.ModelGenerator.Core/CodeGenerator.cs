@@ -89,7 +89,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
         {
             var deliveryTypes = (await _client.GetTypesAsync()).Types;
             IEnumerable<ContentTypeModel> managementTypes = null;
-            IEnumerable<SnippetModel> managementSnippets = null;
+            IEnumerable<ContentTypeSnippetModel> managementSnippets = null;
 
             if (_options.ContentManagementApi)
             {
@@ -127,7 +127,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return codeGenerators;
         }
 
-        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, bool structuredModel, IEnumerable<SnippetModel> managementSnippets, ContentTypeModel managementContentType = null)
+        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, bool structuredModel, IEnumerable<ContentTypeSnippetModel> managementSnippets, ContentTypeModel managementContentType = null)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
 
