@@ -3,29 +3,26 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Kentico.Kontent.ModelGenerator.Core;
+using Kentico.Kontent.ModelGenerator.Core.Common;
+using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests
+namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
 {
-    public class ClassCodeGeneratorTests
+    public class DeliveryClassCodeGeneratorTests
     {
         [Fact]
-        public void Constructor_ThrowsAnExceptionForNullArgument()
+        public void Constructor_CreatesInstance()
         {
-            Assert.Throws<ArgumentNullException>(() => new ClassCodeGenerator(null, null));
-        }
+            var classDefinition = new ClassDefinition("Complete content type");
 
-        [Fact]
-        public void Constructor_ReplacesNullNamespaceWithDefault()
-        {
-            var classDefinition = new ClassDefinition("codename");
-            var classCodeGenerator = new ClassCodeGenerator(classDefinition, null);
+            var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, classDefinition.ClassName);
 
-            Assert.Equal("KenticoKontentModels", classCodeGenerator.Namespace);
+            Assert.NotNull(classCodeGenerator);
+            Assert.True(classCodeGenerator.OverwriteExisting);
         }
 
         [Fact]
@@ -46,52 +43,12 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             classDefinition.AddSystemProperty();
 
-            var classCodeGenerator = new ClassCodeGenerator(classDefinition, classDefinition.ClassName);
+            var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, classDefinition.ClassName);
 
             string compiledCode = classCodeGenerator.GenerateCode();
 
             string executingPath = AppContext.BaseDirectory;
             string expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
-
-            Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
-        }
-
-        [Fact]
-        public void Build_CreatesClassWithCompleteContentType_CMAPI()
-        {
-            var classDefinition = new ClassDefinition("Complete content type");
-            classDefinition.AddProperty(Property.FromContentType("text", "text", true));
-            classDefinition.AddProperty(Property.FromContentType("rich_text", "rich_text", true));
-            classDefinition.AddProperty(Property.FromContentType("number", "number", true));
-            classDefinition.AddProperty(Property.FromContentType("multiple_choice", "multiple_choice", true));
-            classDefinition.AddProperty(Property.FromContentType("date_time", "date_time", true));
-            classDefinition.AddProperty(Property.FromContentType("asset", "asset", true));
-            classDefinition.AddProperty(Property.FromContentType("modular_content", "modular_content", true));
-            classDefinition.AddProperty(Property.FromContentType("taxonomy", "taxonomy", true));
-            classDefinition.AddProperty(Property.FromContentType("url_slug", "url_slug", true));
-            classDefinition.AddProperty(Property.FromContentType("custom", "custom", true));
-
-            var classCodeGenerator = new ClassCodeGenerator(classDefinition, classDefinition.ClassName);
-
-            var compiledCode = classCodeGenerator.GenerateCode(true);
-
-            var executingPath = AppContext.BaseDirectory;
-            var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_CMAPI.txt");
-
-            Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
-        }
-
-        [Fact]
-        public void Build_CreatesCustomPartialContentType()
-        {
-            var classDefinition = new ClassDefinition("Complete content type");
-
-            var classCodeGenerator = new ClassCodeGenerator(classDefinition, classDefinition.ClassName, customPartial: true);
-
-            var compiledCode = classCodeGenerator.GenerateCode(false);
-
-            var executingPath = AppContext.BaseDirectory;
-            var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_CustomPartial.txt");
 
             Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
         }
@@ -111,7 +68,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             definition.AddProperty(Property.FromContentType("taxonomy", "taxonomy"));
             definition.AddProperty(Property.FromContentType("custom", "custom"));
 
-            var classCodeGenerator = new ClassCodeGenerator(definition, definition.ClassName);
+            var classCodeGenerator = new DeliveryClassCodeGenerator(definition, definition.ClassName);
             string compiledCode = classCodeGenerator.GenerateCode();
 
             CSharpCompilation compilation = CSharpCompilation.Create(

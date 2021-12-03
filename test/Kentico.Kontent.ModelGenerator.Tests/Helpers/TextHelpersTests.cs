@@ -1,8 +1,9 @@
 ﻿using System;
-using Kentico.Kontent.ModelGenerator.Core;
+using Kentico.Kontent.ModelGenerator.Core.Common;
+using Kentico.Kontent.ModelGenerator.Core.Helpers;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests
+namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
 {
     public class TextHelpersTests
     {

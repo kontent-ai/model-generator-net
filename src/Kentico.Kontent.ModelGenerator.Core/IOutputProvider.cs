@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-
-namespace Kentico.Kontent.ModelGenerator.Core
+﻿namespace Kentico.Kontent.ModelGenerator.Core
 {
     public interface IOutputProvider
     {

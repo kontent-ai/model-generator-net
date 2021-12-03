@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.ModelGenerator.Core.Helpers;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.Common
 {
     public class Property
     {
@@ -13,6 +14,8 @@ namespace Kentico.Kontent.ModelGenerator.Core
         public string Identifier => TextHelpers.GetValidPascalCaseIdentifierName(Codename);
 
         public string Codename { get; }
+
+        public string Id { get; }
 
         /// <summary>
         /// Returns return type of the property in a string format (e.g.: "string").
@@ -36,25 +39,26 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private static readonly Dictionary<string, string> ContentManagementTypes = new Dictionary<string, string>
         {
-            { "text", "string" },
-            { "rich_text", "string" },
-            { "number", "decimal?" },
-            { "multiple_choice", "IEnumerable<MultipleChoiceOptionIdentifier>" },
-            { "date_time", "DateTime?" },
-            { "asset", "IEnumerable<AssetIdentifier>" },
-            { "modular_content", "IEnumerable<ContentItemIdentifier>" },
-            { "taxonomy", "IEnumerable<TaxonomyTermIdentifier>" },
-            { "url_slug", "string" },
-            { "custom", "string" }
+            { "text", "TextElement" },
+            { "rich_text", "RichTextElement" },
+            { "number", "NumberElement" },
+            { "multiple_choice", "MultipleChoiceElement" },
+            { "date_time", "DateTimeElement"},
+            { "asset", "AssetElement" },
+            { "modular_content", "LinkedItemsElement" },
+            { "taxonomy", "TaxonomyElement" },
+            { "url_slug", "UrlSlugElement" },
+            { "custom", "CustomElement" }
         };
 
         private static Dictionary<string, string> ContentTypeToTypeName(bool cmApi)
             => cmApi ? ContentManagementTypes : DeliverTypes;
 
-        public Property(string codename, string typeName)
+        public Property(string codename, string typeName, string id = null)
         {
             Codename = codename;
             TypeName = typeName;
+            Id = id;
         }
 
         public static bool IsContentTypeSupported(string contentType, bool cmApi = false)
@@ -62,14 +66,14 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return ContentTypeToTypeName(cmApi).ContainsKey(contentType);
         }
 
-        public static Property FromContentType(string codename, string contentType, bool cmApi = false)
+        public static Property FromContentType(string codename, string contentType, bool cmApi = false, string id = null)
         {
-            if (!IsContentTypeSupported(contentType, cmApi))
+            if (IsContentTypeSupported(contentType, cmApi))
             {
-                throw new ArgumentException($"Unknown Content Type {contentType}", nameof(contentType));
+                return new Property(codename, ContentTypeToTypeName(cmApi)[contentType], id);
             }
 
-            return new Property(codename, ContentTypeToTypeName(cmApi)[contentType]);
+            throw new ArgumentException($"Unknown Content Type {contentType}", nameof(contentType));
         }
     }
 }
