@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.ModelGenerator.Core.Helpers;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.Common
 {
     public class ClassDefinition
     {
@@ -16,7 +17,9 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public ClassDefinition(string codeName)
         {
-            Codename = codeName;
+            Codename = string.IsNullOrWhiteSpace(codeName)
+                ? throw new ArgumentException("Class codeName must be a non null and not white space string.", nameof(codeName))
+                : codeName;
         }
 
         public void AddProperty(Property property)

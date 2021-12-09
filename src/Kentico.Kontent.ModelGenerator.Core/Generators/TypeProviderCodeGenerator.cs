@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
+using Kentico.Kontent.ModelGenerator.Core.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.Generators
 {
     public class TypeProviderCodeGenerator
     {

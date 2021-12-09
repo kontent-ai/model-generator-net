@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Kentico.Kontent.ModelGenerator.Core.Common;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.Helpers
 {
     public static class TextHelpers
     {

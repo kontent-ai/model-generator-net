@@ -1,0 +1,53 @@
+﻿{
+  "snippets": [
+    {
+      "id": "edf908da-d4e3-4f63-bbaa-1966e04ba0ff",
+      "codename": "snippet",
+      "last_modified": "2021-08-26T14:47:47.2518795Z",
+      "name": "snippet",
+      "elements": [
+        {
+          "maximum_text_length": null,
+          "name": "t",
+          "guidelines": null,
+          "is_required": false,
+          "type": "text",
+          "id": "93805f03-f759-4634-abe0-90ce0f74475d",
+          "codename": "snippet__t"
+        },
+        {
+          "maximum_text_length": null,
+          "maximum_image_size": null,
+          "allowed_content_types": [],
+          "image_width_limit": null,
+          "image_height_limit": null,
+          "allowed_image_types": "any",
+          "allowed_blocks": [],
+          "allowed_formatting": [],
+          "allowed_text_blocks": [],
+          "allowed_table_blocks": [],
+          "allowed_table_formatting": [],
+          "allowed_table_text_blocks": [],
+          "name": "rt",
+          "guidelines": null,
+          "is_required": false,
+          "type": "rich_text",
+          "id": "fb04831a-0ad1-47db-b519-3033cee3f893",
+          "codename": "snippet__rt"
+        },
+        {
+          "name": "n",
+          "guidelines": null,
+          "is_required": false,
+          "type": "number",
+          "id": "4b3f7049-3a15-45b8-bf3e-1a5191f6c328",
+          "codename": "snippet__n"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "continuation_token": null,
+    "next_page": null
+  }
+}
