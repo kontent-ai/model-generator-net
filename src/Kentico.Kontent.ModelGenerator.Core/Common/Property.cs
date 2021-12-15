@@ -23,7 +23,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
         /// </summary>
         public string TypeName { get; }
 
-        private static readonly Dictionary<string, string> DeliverElementTypes = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> DeliverElementTypesDictionary = new Dictionary<string, string>
         {
             { "text", "string" },
             { "rich_text", "string" },
@@ -38,7 +38,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
             { "custom", "string" }
         };
 
-        private static readonly Dictionary<string, string> ContentManagementElementTypes = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> ContentManagementElementTypesDictionary = new Dictionary<string, string>
         {
             { "text", nameof(TextElement) },
             { "rich_text", nameof(RichTextElement) },
@@ -53,8 +53,8 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
             { "custom", nameof(CustomElement) }
         };
 
-        private static Dictionary<string, string> ElementTypesMap(bool cmApi)
-            => cmApi ? ContentManagementElementTypes : DeliverElementTypes;
+        private static Dictionary<string, string> GetElementTypesDictionary(bool cmApi)
+            => cmApi ? ContentManagementElementTypesDictionary : DeliverElementTypesDictionary;
 
         public Property(string codename, string typeName, string id = null)
         {
@@ -65,14 +65,14 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
 
         public static bool IsContentTypeSupported(string contentType, bool cmApi = false)
         {
-            return ElementTypesMap(cmApi).ContainsKey(contentType);
+            return GetElementTypesDictionary(cmApi).ContainsKey(contentType);
         }
 
         public static Property FromContentType(string codename, string elementContentType, bool cmApi = false, string id = null)
         {
             if (IsContentTypeSupported(elementContentType, cmApi))
             {
-                return new Property(codename, ElementTypesMap(cmApi)[elementContentType], id);
+                return new Property(codename, GetElementTypesDictionary(cmApi)[elementContentType], id);
             }
 
             throw new ArgumentException($"Unknown Content Type {elementContentType}", nameof(elementContentType));
