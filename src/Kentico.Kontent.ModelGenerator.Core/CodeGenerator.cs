@@ -116,7 +116,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                         ? managementTypes?.FirstOrDefault(managementType => managementType.Codename == contentType.System.Codename)
                         : null;
 
-                    codeGenerators.Add(GetClassCodeGenerator(contentType, _options.StructuredModel, managementSnippets, managementContentType));
+                    codeGenerators.Add(GetClassCodeGenerator(contentType, managementSnippets, managementContentType));
                 }
                 catch (InvalidIdentifierException)
                 {
@@ -127,7 +127,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return codeGenerators;
         }
 
-        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, bool structuredModel, IEnumerable<ContentTypeSnippetModel> managementSnippets, ContentTypeModel managementContentType = null)
+        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, IEnumerable<ContentTypeSnippetModel> managementSnippets = null, ContentTypeModel managementContentType = null)
         {
             var classDefinition = new ClassDefinition(contentType.System.Codename);
 
@@ -135,15 +135,10 @@ namespace Kentico.Kontent.ModelGenerator.Core
             {
                 try
                 {
-                    var elementType = element.Type;
-                    if (structuredModel && Property.IsContentTypeSupported(elementType + Property.StructuredSuffix, _options.ContentManagementApi))
-                    {
-                        elementType += Property.StructuredSuffix;
-                    }
+                    var managementElement = ManagementElementHelper.GetManagementElement(_options.ContentManagementApi, element, managementSnippets, managementContentType);
+                    var elementType = ElementTypeHelper.GetElementType(_options, element.Type, managementElement);
+                    var property = Property.FromContentType(element.Codename, elementType, _options.ContentManagementApi, managementElement?.Id.ToString());
 
-                    var elementId = ElementIdHelper.GetElementId(_options.ContentManagementApi, managementSnippets, managementContentType, element);
-
-                    var property = Property.FromContentType(element.Codename, elementType, _options.ContentManagementApi, elementId);
                     classDefinition.AddPropertyCodenameConstant(element);
                     classDefinition.AddProperty(property);
                 }
