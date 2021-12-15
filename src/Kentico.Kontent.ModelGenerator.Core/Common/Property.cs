@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.Management.Models.LanguageVariants.Elements;
 using Kentico.Kontent.ModelGenerator.Core.Helpers;
 
 namespace Kentico.Kontent.ModelGenerator.Core.Common
@@ -39,16 +40,17 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
 
         private static readonly Dictionary<string, string> ContentManagementTypes = new Dictionary<string, string>
         {
-            { "text", "TextElement" },
-            { "rich_text", "RichTextElement" },
-            { "number", "NumberElement" },
-            { "multiple_choice", "MultipleChoiceElement" },
-            { "date_time", "DateTimeElement"},
-            { "asset", "AssetElement" },
-            { "modular_content", "LinkedItemsElement" },
-            { "taxonomy", "TaxonomyElement" },
-            { "url_slug", "UrlSlugElement" },
-            { "custom", "CustomElement" }
+            { "text", nameof(TextElement) },
+            { "rich_text", nameof(RichTextElement) },
+            { "number", nameof(NumberElement) },
+            { "multiple_choice", nameof(MultipleChoiceElement) },
+            { "date_time", nameof(DateTimeElement)},
+            { "asset", nameof(AssetElement) },
+            { "modular_content", nameof(LinkedItemsElement) },
+            { "subpages", nameof(SubpagesElement) },
+            { "taxonomy", nameof(TaxonomyElement) },
+            { "url_slug",nameof(UrlSlugElement) },
+            { "custom", nameof(CustomElement) }
         };
 
         private static Dictionary<string, string> ContentTypeToTypeName(bool cmApi)
