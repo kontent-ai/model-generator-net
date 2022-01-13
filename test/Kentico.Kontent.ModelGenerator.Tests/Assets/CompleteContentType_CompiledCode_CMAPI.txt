@@ -33,6 +33,9 @@ namespace KenticoKontentModels
         [JsonProperty("rich_text")]
         [KontentElementId("014d2125-923d-4428-93b4-ad1590274912")]
         public RichTextElement RichText { get; set; }
+        [JsonProperty("subpages")]
+        [KontentElementId("44924563-44d4-4272-a20f-b8745698b082")]
+        public SubpagesElement Subpages { get; set; }
         [JsonProperty("taxonomy")]
         [KontentElementId("83011da2-559d-458c-a4b5-c81a001f4139")]
         public TaxonomyElement Taxonomy { get; set; }
