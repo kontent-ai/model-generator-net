@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.Management.Models.LanguageVariants.Elements;
 using Kentico.Kontent.ModelGenerator.Core.Helpers;
 
 namespace Kentico.Kontent.ModelGenerator.Core.Common
@@ -22,7 +23,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
         /// </summary>
         public string TypeName { get; }
 
-        private static readonly Dictionary<string, string> DeliverTypes = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> DeliverElementTypesDictionary = new Dictionary<string, string>
         {
             { "text", "string" },
             { "rich_text", "string" },
@@ -37,22 +38,23 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
             { "custom", "string" }
         };
 
-        private static readonly Dictionary<string, string> ContentManagementTypes = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> ContentManagementElementTypesDictionary = new Dictionary<string, string>
         {
-            { "text", "TextElement" },
-            { "rich_text", "RichTextElement" },
-            { "number", "NumberElement" },
-            { "multiple_choice", "MultipleChoiceElement" },
-            { "date_time", "DateTimeElement"},
-            { "asset", "AssetElement" },
-            { "modular_content", "LinkedItemsElement" },
-            { "taxonomy", "TaxonomyElement" },
-            { "url_slug", "UrlSlugElement" },
-            { "custom", "CustomElement" }
+            { "text", nameof(TextElement) },
+            { "rich_text", nameof(RichTextElement) },
+            { "number", nameof(NumberElement) },
+            { "multiple_choice", nameof(MultipleChoiceElement) },
+            { "date_time", nameof(DateTimeElement)},
+            { "asset", nameof(AssetElement) },
+            { "modular_content", nameof(LinkedItemsElement) },
+            { "subpages", nameof(SubpagesElement) },
+            { "taxonomy", nameof(TaxonomyElement) },
+            { "url_slug",nameof(UrlSlugElement) },
+            { "custom", nameof(CustomElement) }
         };
 
-        private static Dictionary<string, string> ContentTypeToTypeName(bool cmApi)
-            => cmApi ? ContentManagementTypes : DeliverTypes;
+        private static Dictionary<string, string> GetElementTypesDictionary(bool cmApi)
+            => cmApi ? ContentManagementElementTypesDictionary : DeliverElementTypesDictionary;
 
         public Property(string codename, string typeName, string id = null)
         {
@@ -63,17 +65,17 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
 
         public static bool IsContentTypeSupported(string contentType, bool cmApi = false)
         {
-            return ContentTypeToTypeName(cmApi).ContainsKey(contentType);
+            return GetElementTypesDictionary(cmApi).ContainsKey(contentType);
         }
 
-        public static Property FromContentType(string codename, string contentType, bool cmApi = false, string id = null)
+        public static Property FromContentType(string codename, string elementContentType, bool cmApi = false, string id = null)
         {
-            if (IsContentTypeSupported(contentType, cmApi))
+            if (IsContentTypeSupported(elementContentType, cmApi))
             {
-                return new Property(codename, ContentTypeToTypeName(cmApi)[contentType], id);
+                return new Property(codename, GetElementTypesDictionary(cmApi)[elementContentType], id);
             }
 
-            throw new ArgumentException($"Unknown Content Type {contentType}", nameof(contentType));
+            throw new ArgumentException($"Unknown Content Type {elementContentType}", nameof(elementContentType));
         }
     }
 }

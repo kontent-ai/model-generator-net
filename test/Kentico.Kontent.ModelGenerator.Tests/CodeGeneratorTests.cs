@@ -51,7 +51,11 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         public void GetClassCodeGenerator_Returns(bool contentManagementApi)
         {
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
-            mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions { ContentManagementApi = contentManagementApi });
+            mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+            {
+                ContentManagementApi = contentManagementApi,
+                StructuredModel = true
+            });
 
             var deliveryClient = new Mock<IDeliveryClient>();
             var outputProvider = new Mock<IOutputProvider>();
@@ -69,7 +73,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new CodeGenerator(mockOptions.Object, deliveryClient.Object, outputProvider.Object, managementClient.Object);
 
-            var result = codeGenerator.GetClassCodeGenerator(contentType.Object, true, new List<ContentTypeSnippetModel>(), new ContentTypeModel());
+            var result = codeGenerator.GetClassCodeGenerator(contentType.Object, new List<ContentTypeSnippetModel>(), new ContentTypeModel());
 
             Assert.Equal($"{contentTypeCodename}.Generated", result.ClassFilename);
         }

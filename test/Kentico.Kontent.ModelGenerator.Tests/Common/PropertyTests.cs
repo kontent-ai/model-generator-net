@@ -46,6 +46,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
         [InlineData("date_time", "DateTimeElement")]
         [InlineData("asset", "AssetElement")]
         [InlineData("modular_content", "LinkedItemsElement")]
+        [InlineData("subpages", "SubpagesElement")]
         [InlineData("taxonomy", "TaxonomyElement")]
         [InlineData("url_slug", "UrlSlugElement")]
         [InlineData("custom", "CustomElement")]
