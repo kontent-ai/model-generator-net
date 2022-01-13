@@ -9,7 +9,12 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
 {
     public class ManagementClassCodeGenerator : ClassCodeGenerator
     {
-        private static readonly string KontentElementIdAttributeName = new string(nameof(KontentElementIdAttribute).SkipLast(9).ToArray());
+        private static readonly string KontentElementIdAttributeName = new string
+        (
+            nameof(KontentElementIdAttribute)
+                .Substring(0, nameof(KontentElementIdAttribute).Length - "Attribute".Length)
+                .ToArray()
+        );
 
         public ManagementClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace)
             : base(classDefinition, classFilename, @namespace)
