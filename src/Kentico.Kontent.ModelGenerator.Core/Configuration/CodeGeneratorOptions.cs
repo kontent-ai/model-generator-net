@@ -60,6 +60,5 @@ namespace Kentico.Kontent.ModelGenerator.Core.Configuration
         /// Indicates whether a base class should be created and all output classes should derive from it using a partial class
         /// </summary>
         public string BaseClass { get; set; }
-
     }
 }

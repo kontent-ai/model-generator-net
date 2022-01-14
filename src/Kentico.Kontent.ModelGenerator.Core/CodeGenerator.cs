@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.Management;
+using Kentico.Kontent.Management.Models.Shared;
 using Kentico.Kontent.Management.Models.Types;
 using Kentico.Kontent.Management.Models.TypeSnippets;
 using Kentico.Kontent.ModelGenerator.Core.Common;
@@ -10,7 +12,6 @@ using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Kentico.Kontent.ModelGenerator.Core.Generators;
 using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
 using Kentico.Kontent.ModelGenerator.Core.Helpers;
-using Kentico.Kontent.ModelGenerator.Core.ManagementClient;
 using Microsoft.Extensions.Options;
 
 namespace Kentico.Kontent.ModelGenerator.Core
@@ -85,17 +86,12 @@ namespace Kentico.Kontent.ModelGenerator.Core
             WriteToOutputProvider(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
         }
 
+
         internal async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
             var deliveryTypes = (await _client.GetTypesAsync()).Types;
-            IEnumerable<ContentTypeModel> managementTypes = null;
-            IEnumerable<ContentTypeSnippetModel> managementSnippets = null;
-
-            if (_options.ContentManagementApi)
-            {
-                managementTypes = await _managementClient.GetAllContentTypesAsync(_options);
-                managementSnippets = await _managementClient.GetAllSnippetsAsync(_options);
-            }
+            var managementTypes = await GetAllContentModelsAsync(await _managementClient.ListContentTypesAsync());
+            var managementSnippets = await GetAllContentModelsAsync(await _managementClient.ListContentTypeSnippetsAsync());
 
             var codeGenerators = new List<ClassCodeGenerator>();
             if (deliveryTypes == null)
@@ -233,6 +229,32 @@ namespace Kentico.Kontent.ModelGenerator.Core
             }
 
             Console.WriteLine($"{classCodeGenerators.Count} content type models were successfully created.");
+        }
+
+        private async Task<IEnumerable<T>> GetAllContentModelsAsync<T>(IListingResponseModel<T> response)
+        {
+            if (!_options.ContentManagementApi)
+            {
+                return null;
+            }
+
+            var contentModels = new List<T>();
+            while (true)
+            {
+                foreach (var model in response)
+                {
+                    contentModels.Add(model);
+                }
+
+                if (!response.HasNextPage())
+                {
+                    break;
+                }
+
+                response = await response.GetNextPage();
+            }
+
+            return contentModels;
         }
     }
 }

@@ -21,18 +21,22 @@ namespace Kentico.Kontent.ModelGenerator
         {
             codeGeneratorOptions.DeliveryOptions.Validate();
 
-            if (codeGeneratorOptions.ContentManagementApi)
-            {
-                codeGeneratorOptions.ManagementOptions.ProjectId = codeGeneratorOptions.DeliveryOptions.ProjectId;
-                if (codeGeneratorOptions.ManagementOptions == null || codeGeneratorOptions.ManagementOptions.ProjectId == null)
-                {
-                    throw new Exception($"You have to provide the '{nameof(ManagementOptions.ProjectId)}' to generate type for Content Management SDK. {SeePart}");
-                }
+            if (!codeGeneratorOptions.ContentManagementApi)
+                return;
 
-                if (string.IsNullOrWhiteSpace(codeGeneratorOptions.ManagementOptions.ApiKey))
-                {
-                    throw new Exception($"You have to provide the '{nameof(ManagementOptions.ApiKey)}' to generate type for Content Management SDK. {SeePart}");
-                }
+            if (codeGeneratorOptions.ManagementOptions == null || codeGeneratorOptions.ManagementOptions.ProjectId == null)
+            {
+                throw new Exception($"You have to provide the '{nameof(ManagementOptions.ProjectId)}' to generate type for Content Management SDK. {SeePart}");
+            }
+
+            if (codeGeneratorOptions.ManagementOptions.ProjectId != codeGeneratorOptions.DeliveryOptions.ProjectId)
+            {
+                throw new Exception($"You have to provide same '{nameof(ManagementOptions)}.{nameof(ManagementOptions.ProjectId)}' as '{nameof(DeliveryOptions)}.{nameof(DeliveryOptions.ProjectId)}'");
+            }
+
+            if (string.IsNullOrWhiteSpace(codeGeneratorOptions.ManagementOptions.ApiKey))
+            {
+                throw new Exception($"You have to provide the '{nameof(ManagementOptions.ApiKey)}' to generate type for Content Management SDK. {SeePart}");
             }
         }
 

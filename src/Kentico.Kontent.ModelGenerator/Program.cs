@@ -10,7 +10,6 @@ using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Delivery.Extensions;
 using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
-using Kentico.Kontent.ModelGenerator.Core.ManagementClient;
 
 namespace Kentico.Kontent.ModelGenerator
 {
@@ -32,9 +31,9 @@ namespace Kentico.Kontent.ModelGenerator
 
                 // Fill the DI container
                 services.Configure<CodeGeneratorOptions>(configuration);
+                services.AddManagementClient(configuration);
                 services.AddDeliveryClient(configuration);
                 services.AddTransient<HttpClient>();
-                services.AddTransient<IManagementClient, ManagementClient>();
                 services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
                 services.AddTransient<CodeGenerator>();
 
@@ -77,6 +76,7 @@ namespace Kentico.Kontent.ModelGenerator
                 {"-s", nameof(CodeGeneratorOptions.StructuredModel) },
                 {"-c", nameof(CodeGeneratorOptions.ContentManagementApi) },
                 {"-k", $"{nameof(CodeGeneratorOptions.ManagementOptions)}:{nameof(CodeGeneratorOptions.ManagementOptions.ApiKey)}" },
+                {"-mp", $"{nameof(CodeGeneratorOptions.ManagementOptions)}:{nameof(CodeGeneratorOptions.ManagementOptions.ProjectId)}" },
                 {"-b", nameof(CodeGeneratorOptions.BaseClass) }
             };
             return mappings;
