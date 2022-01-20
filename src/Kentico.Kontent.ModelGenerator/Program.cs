@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Kentico.Kontent.Delivery;
 using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Delivery.Extensions;
+using Kentico.Kontent.Management;
 using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 
@@ -66,17 +67,16 @@ namespace Kentico.Kontent.ModelGenerator
         {
             var mappings = new Dictionary<string, string>
             {
-                {"-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-                {"--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" }, // Backwards compatibility
+                {"-dp", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
                 {"-n", nameof(CodeGeneratorOptions.Namespace) },
                 {"-o", nameof(CodeGeneratorOptions.OutputDir) },
                 {"-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
                 {"-g", nameof(CodeGeneratorOptions.GeneratePartials) },
-                {"-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
+                {"-dt", nameof(CodeGeneratorOptions.WithTypeProvider) },
                 {"-s", nameof(CodeGeneratorOptions.StructuredModel) },
-                {"-c", nameof(CodeGeneratorOptions.ContentManagementApi) },
-                {"-k", $"{nameof(CodeGeneratorOptions.ManagementOptions)}:{nameof(CodeGeneratorOptions.ManagementOptions.ApiKey)}" },
-                {"-mp", $"{nameof(CodeGeneratorOptions.ManagementOptions)}:{nameof(CodeGeneratorOptions.ManagementOptions.ProjectId)}" },
+                {"-m", nameof(CodeGeneratorOptions.ManagementApi) },
+                {"-mk", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
+                {"-mp", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
                 {"-b", nameof(CodeGeneratorOptions.BaseClass) }
             };
             return mappings;
