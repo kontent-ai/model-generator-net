@@ -8,7 +8,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Configuration
         public static bool DefaultGeneratePartials = true;
         public static bool DefaultWithTypeProvider = true;
         public static bool DefaultStructuredModel = false;
-        public static bool DefaultContentManagementApi = false;
+        public static bool DefaultManagementApi = false;
         public static string DefaultFileNameSuffix = "Generated";
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Configuration
         /// <summary>
         /// Indicates whether the classes should be generated for CM API SDK
         /// </summary>
-        public bool ContentManagementApi { get; set; } = DefaultContentManagementApi;
+        public bool ManagementApi { get; set; } = DefaultManagementApi;
 
         /// <summary>
         /// Indicates whether a base class should be created and all output classes should derive from it using a partial class

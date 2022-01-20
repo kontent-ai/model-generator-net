@@ -20,7 +20,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
         }
 
         [Fact]
-        public void Build_CreatesClassWithCompleteContentType_CMAPI()
+        public void Build_CreatesClassWithCompleteContentType_ManagementApi()
         {
             var classDefinition = new ClassDefinition("Complete content type");
             classDefinition.AddProperty(Property.FromContentType("text", "text", true, "6712e528-8504-4a36-b716-a28327d6205f"));
@@ -40,7 +40,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
             var compiledCode = classCodeGenerator.GenerateCode();
 
             var executingPath = AppContext.BaseDirectory;
-            var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_CMAPI.txt");
+            var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_ManagementApi.txt");
 
             Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
         }

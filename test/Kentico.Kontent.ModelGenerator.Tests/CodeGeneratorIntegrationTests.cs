@@ -40,7 +40,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task IntegrationTest(bool cmApi)
+        public async Task IntegrationTest(bool managementApi)
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
@@ -52,7 +52,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             {
                 Namespace = "CustomNamespace",
                 OutputDir = TempDir,
-                ContentManagementApi = cmApi,
+                ManagementApi = managementApi,
                 ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
             });
 
@@ -76,7 +76,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task IntegrationTestWithGeneratedSuffix(bool cmApi)
+        public async Task IntegrationTestWithGeneratedSuffix(bool managementApi)
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
@@ -94,7 +94,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 OutputDir = TempDir,
                 GeneratePartials = false,
                 FileNameSuffix = transformFilename,
-                ContentManagementApi = cmApi
+                ManagementApi = managementApi
             });
 
             var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
@@ -117,7 +117,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task IntegrationTestWithGeneratePartials(bool cmApi)
+        public async Task IntegrationTestWithGeneratePartials(bool managementApi)
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
@@ -134,7 +134,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 OutputDir = TempDir,
                 FileNameSuffix = transformFilename,
                 GeneratePartials = true,
-                ContentManagementApi = cmApi,
+                ManagementApi = managementApi,
                 ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
             });
 

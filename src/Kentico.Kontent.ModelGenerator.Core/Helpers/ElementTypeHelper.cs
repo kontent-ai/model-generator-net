@@ -11,12 +11,12 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
         {
             Validate(options, elementType, managementElement);
 
-            if (options.ContentManagementApi && elementType == "modular_content" && managementElement.Type == ElementMetadataType.Subpages)
+            if (options.ManagementApi && elementType == "modular_content" && managementElement.Type == ElementMetadataType.Subpages)
             {
                 return "subpages";
             }
 
-            if (options.StructuredModel && Property.IsContentTypeSupported(elementType + Property.StructuredSuffix, options.ContentManagementApi))
+            if (options.StructuredModel && Property.IsContentTypeSupported(elementType + Property.StructuredSuffix, options.ManagementApi))
             {
                 elementType += Property.StructuredSuffix;
             }
@@ -36,7 +36,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
                 throw new ArgumentNullException(nameof(elementType));
             }
 
-            if (options.ContentManagementApi && managementElement == null)
+            if (options.ManagementApi && managementElement == null)
             {
                 throw new ArgumentNullException(nameof(managementElement));
             }

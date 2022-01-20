@@ -30,7 +30,7 @@
     <None Update="Assets\CompleteContentType_CompiledCode_CustomPartial.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Assets\CompleteContentType_CompiledCode_CMAPI.txt">
+    <None Update="Assets\CompleteContentType_CompiledCode_ManagementApi.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Assets\CompleteContentType_CompiledCode.txt;Assets\CustomTypeProvider_CompiledCode.txt">

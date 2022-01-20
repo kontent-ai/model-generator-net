@@ -48,12 +48,12 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void GetClassCodeGenerator_Returns(bool contentManagementApi)
+        public void GetClassCodeGenerator_Returns(bool managementApi)
         {
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
             {
-                ContentManagementApi = contentManagementApi,
+                ManagementApi = managementApi,
                 StructuredModel = true
             });
 

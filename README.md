@@ -131,7 +131,7 @@ public partial class Home
 **Usage:**
 
 ```
-KontentModelGenerator.exe --projectid "<projectid>" --contentmanagementapi true [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
+KontentModelGenerator.exe --projectid "<projectid>" --managementapi true [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
 ```
 
 ### Parameters
@@ -139,7 +139,7 @@ KontentModelGenerator.exe --projectid "<projectid>" --contentmanagementapi true 
 | Short key |         Long key         | Required |     Default value      |                                                              Description                                                               |
 | --------- | :----------------------: | :------: | :--------------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
 | `-p`      |      `--projectid`       |   True   |         `null`         |                        A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                         |
-| `-c`      | `--contentmanagementapi` |   True   |        `false`         |     Indicates that models should be generated for [Content Management SDK](https://github.com/Kentico/content-management-sdk-net)      |
+| `-c`      |    `--managementapi`     |   True   |        `false`         |     Indicates that models should be generated for [Content Management SDK](https://github.com/Kentico/content-management-sdk-net)      |
 | `-n`      |      `--namespace`       |  False   | `KenticoKontentModels` |                          A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                          |
 | `-o`      |      `--outputdir`       |  False   |          `\.`          |                                                         An output folder path                                                          |
 | `-f`      |    `--filenamesuffix`    |  False   |         `null`         |                             Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                             |

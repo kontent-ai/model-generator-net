@@ -39,7 +39,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
         {
             await GenerateContentTypeModels();
 
-            if (!_options.ContentManagementApi && _options.WithTypeProvider)
+            if (!_options.ManagementApi && _options.WithTypeProvider)
             {
                 await GenerateTypeProvider();
             }
@@ -108,7 +108,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                         codeGenerators.Add(GetCustomClassCodeGenerator(contentType));
                     }
 
-                    var managementContentType = _options.ContentManagementApi
+                    var managementContentType = _options.ManagementApi
                         ? managementTypes?.FirstOrDefault(managementType => managementType.Codename == contentType.System.Codename)
                         : null;
 
@@ -131,9 +131,9 @@ namespace Kentico.Kontent.ModelGenerator.Core
             {
                 try
                 {
-                    var managementElement = ManagementElementHelper.GetManagementElement(_options.ContentManagementApi, element, managementSnippets, managementContentType);
+                    var managementElement = ManagementElementHelper.GetManagementElement(_options.ManagementApi, element, managementSnippets, managementContentType);
                     var elementType = ElementTypeHelper.GetElementType(_options, element.Type, managementElement);
-                    var property = Property.FromContentType(element.Codename, elementType, _options.ContentManagementApi, managementElement?.Id.ToString());
+                    var property = Property.FromContentType(element.Codename, elementType, _options.ManagementApi, managementElement?.Id.ToString());
 
                     classDefinition.AddPropertyCodenameConstant(element);
                     classDefinition.AddProperty(property);
@@ -193,7 +193,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private void TryAddSystemProperty(ClassDefinition classDefinition)
         {
-            if (_options.ContentManagementApi)
+            if (_options.ManagementApi)
             {
                 return;
             }
@@ -233,7 +233,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private async Task<IEnumerable<T>> GetAllContentModelsAsync<T>(IListingResponseModel<T> response)
         {
-            if (!_options.ContentManagementApi)
+            if (!_options.ManagementApi)
             {
                 return null;
             }

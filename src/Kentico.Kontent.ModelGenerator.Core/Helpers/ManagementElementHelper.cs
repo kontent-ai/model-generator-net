@@ -11,12 +11,12 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
     public static class ManagementElementHelper
     {
         public static ElementMetadataBase GetManagementElement(
-            bool cmApi,
+            bool managementApi,
             IContentElement deliverElement,
             IEnumerable<ContentTypeSnippetModel> managementSnippets,
             ContentTypeModel managementContentType)
         {
-            if (!cmApi)
+            if (!managementApi)
             {
                 return null;
             }

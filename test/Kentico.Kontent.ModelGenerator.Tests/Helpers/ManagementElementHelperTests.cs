@@ -165,7 +165,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
         }
 
         [Fact]
-        public void GetManagementElement_CmApiIsFalse_DeliverElementIsNull_ThrowsException()
+        public void GetManagementElement_ManagementApiIsFalse_DeliverElementIsNull_ThrowsException()
         {
             var result = ManagementElementHelper.GetManagementElement(false, null, new List<ContentTypeSnippetModel>(), new ContentTypeModel());
 
@@ -173,7 +173,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
         }
 
         [Fact]
-        public void GetManagementElement_CmApiIsFalse_ReturnsNull()
+        public void GetManagementElement_ManagementApiIsFalse_ReturnsNull()
         {
             var result = ManagementElementHelper.GetManagementElement(false, new FakeContentElement(), new List<ContentTypeSnippetModel>(), new ContentTypeModel());
 
@@ -181,7 +181,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
         }
 
         [Fact]
-        public void GetManagementElement_CmApiIsFalse_ManagementSnippetsAreNull_ReturnsNull()
+        public void GetManagementElement_ManagementApiIsFalse_ManagementSnippetsAreNull_ReturnsNull()
         {
             var result = ManagementElementHelper.GetManagementElement(false, new FakeContentElement(), null, new ContentTypeModel());
 
@@ -189,7 +189,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
         }
 
         [Fact]
-        public void GetManagementElement_CmApiIsFalse_ManagementContentTypeIsNull_ReturnsNull()
+        public void GetManagementElement_ManagementApiIsFalse_ManagementContentTypeIsNull_ReturnsNull()
         {
             var result = ManagementElementHelper.GetManagementElement(false, new FakeContentElement(), new List<ContentTypeSnippetModel>(), null);
 

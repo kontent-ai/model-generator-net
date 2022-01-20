@@ -11,12 +11,12 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void Validate_Success(bool cmApi)
+        public void Validate_Success(bool managementApi)
         {
             var projectId = Guid.NewGuid().ToString();
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = cmApi,
+                ManagementApi = managementApi,
                 DeliveryOptions = new DeliveryOptions
                 {
                     ProjectId = projectId
@@ -63,7 +63,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var projectId = Guid.NewGuid().ToString();
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = true,
+                ManagementApi = true,
                 DeliveryOptions = new DeliveryOptions
                 {
                     ProjectId = projectId
@@ -81,7 +81,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var projectId = Guid.NewGuid().ToString();
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = true,
+                ManagementApi = true,
                 DeliveryOptions = new DeliveryOptions
                 {
                     ProjectId = projectId
@@ -102,7 +102,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = true,
+                ManagementApi = true,
                 DeliveryOptions = new DeliveryOptions
                 {
                     ProjectId = Guid.NewGuid().ToString()
@@ -127,7 +127,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var projectId = Guid.NewGuid().ToString();
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = true,
+                ManagementApi = true,
                 DeliveryOptions = new DeliveryOptions
                 {
                     ProjectId = projectId

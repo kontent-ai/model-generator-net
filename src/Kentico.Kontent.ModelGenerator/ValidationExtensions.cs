@@ -21,7 +21,7 @@ namespace Kentico.Kontent.ModelGenerator
         {
             codeGeneratorOptions.DeliveryOptions.Validate();
 
-            if (!codeGeneratorOptions.ContentManagementApi)
+            if (!codeGeneratorOptions.ManagementApi)
                 return;
 
             if (codeGeneratorOptions.ManagementOptions == null || codeGeneratorOptions.ManagementOptions.ProjectId == null)

@@ -50,7 +50,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
         [InlineData("taxonomy", "TaxonomyElement")]
         [InlineData("url_slug", "UrlSlugElement")]
         [InlineData("custom", "CustomElement")]
-        public void CMAPIModel_FromContentType(string contentType, string expectedTypeName)
+        public void ManagementApiModel_FromContentType(string contentType, string expectedTypeName)
         {
             var codename = "element_codename";
             var expectedCodename = "ElementCodename";
