@@ -191,7 +191,7 @@ namespace KenticoKontentModels
         public UrlSlugElement UrlSlug { get; set; }
         [JsonProperty("custom_element")]
         [KontentElementId("cb3b9df0-20df-461c-a0f7-4abb44b83c95")]
-	    public CustomElement CustomElement { get; set; }
+	public CustomElement CustomElement { get; set; }
     }
 }
 ```
