@@ -48,7 +48,7 @@ To learn how to generate executables for your favorite target platform, follow t
 ### Parameters
 
 | Short key |         Long key         | Required |     Default value      |                                                                                                                                 Description                                                                                                                                 |
-| --------- |   :------------------:   | :------: | :--------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| --------- | :----------------------: | :------: | :--------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 | `-dp`     |      `--projectid`       |   True   |         `null`         |                                                                                           A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                                                                                           |
 | `-n`      |      `--namespace`       |  False   | `KenticoKontentModels` |                                                                                            A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                                                                                             |
 | `-o`      |      `--outputdir`       |  False   |          `\.`          |                                                                                                                            An output folder path                                                                                                                            |
@@ -136,16 +136,16 @@ KontentModelGenerator.exe --projectid "<projectid>" --managementapi true --manag
 
 ### Parameters
 
-| Short key |             Long key             | Required |     Default value      |                                                              Description                                                               |
-| --------- |     :----------------------:     | :------: | :--------------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
-| `-dp`     |          `--projectid`           |   True   |         `null`         |                        A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                         |
-| `-m`      |        `--managementapi`         |   True   |        `false`         |     Indicates that models should be generated for [Content Management SDK](https://github.com/Kentico/content-management-sdk-net)      |
-| `-mp`     |    `--managementapiprojectid`    |   True   |         `null`         |                        A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                         |
-| `-mk`     |       `--managementapikey`       |   True   |         `null`         |                     A api key that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Management API                     |
-| `-n`      |          `--namespace`           |  False   | `KenticoKontentModels` |                          A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                          |
-| `-o`      |          `--outputdir`           |  False   |          `\.`          |                                                         An output folder path                                                          |
-| `-f`      |        `--filenamesuffix`        |  False   |         `null`         |                             Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                             |
-| `-b`      |          `--baseclass`           |  False   |         `null`         | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes |
+| Short key |            Long key          | Required |     Default value      |                                                              Description                                                               |
+| --------- | :--------------------------: | :------: | :--------------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
+| `-dp`     |        `--projectid`         |   True   |         `null`         |                        A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                         |
+| `-m`      |      `--managementapi`       |   True   |        `false`         |     Indicates that models should be generated for [Content Management SDK](https://github.com/Kentico/content-management-sdk-net)      |
+| `-mp`     |  `--managementapiprojectid`  |   True   |         `null`         |                        A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                         |
+| `-mk`     |     `--managementapikey`     |   True   |         `null`         |                     A api key that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Management API                     |
+| `-n`      |        `--namespace`         |  False   | `KenticoKontentModels` |                          A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                          |
+| `-o`      |        `--outputdir`         |  False   |          `\.`          |                                                         An output folder path                                                          |
+| `-f`      |      `--filenamesuffix`      |  False   |         `null`         |                             Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                             |
+| `-b`      |        `--baseclass`         |  False   |         `null`         | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes |
 
 These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
 
