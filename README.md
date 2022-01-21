@@ -154,6 +154,8 @@ These parameters can also be set via the appSettings.json file located in the sa
 
 ### Example output
 
+> `JsonProperty`'s attribute value is being generated from element codename (not from the type) and  `KontentElementId` attribute value is element's ID.
+
 ```csharp
 using Kentico.Kontent.Management.Models.LanguageVariants.Elements;
 using Kentico.Kontent.Management.Modules.ModelBuilders;
