@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Kentico.Kontent.Delivery;
@@ -27,7 +28,7 @@ namespace Kentico.Kontent.ModelGenerator
                 var configuration = new ConfigurationBuilder()
                             .SetBasePath(Environment.CurrentDirectory)
                             .AddJsonFile("appSettings.json", true)
-                            .AddCommandLine(args, GetSwitchMappings())
+                            .AddCommandLine(args, GetSwitchMappings(args))
                             .Build();
 
                 // Fill the DI container
@@ -36,7 +37,7 @@ namespace Kentico.Kontent.ModelGenerator
                 services.AddDeliveryClient(configuration);
                 services.AddTransient<HttpClient>();
                 services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
-                services.AddTransient<CodeGenerator>();
+                services.AddSingleton<CodeGenerator>();
 
                 // Build the DI container
                 var serviceProvider = services.BuildServiceProvider();
@@ -63,23 +64,38 @@ namespace Kentico.Kontent.ModelGenerator
             }
         }
 
-        private static IDictionary<string, string> GetSwitchMappings()
+        internal static IDictionary<string, string> GetSwitchMappings(string[] args)
         {
-            var mappings = new Dictionary<string, string>
+            var generalMappings = new Dictionary<string, string>
             {
-                {"-dp", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-                {"-n", nameof(CodeGeneratorOptions.Namespace) },
-                {"-o", nameof(CodeGeneratorOptions.OutputDir) },
-                {"-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
-                {"-g", nameof(CodeGeneratorOptions.GeneratePartials) },
-                {"-dt", nameof(CodeGeneratorOptions.WithTypeProvider) },
-                {"-s", nameof(CodeGeneratorOptions.StructuredModel) },
-                {"-m", nameof(CodeGeneratorOptions.ManagementApi) },
-                {"-mk", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
-                {"-mp", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
-                {"-b", nameof(CodeGeneratorOptions.BaseClass) }
+                { "-n", nameof(CodeGeneratorOptions.Namespace) },
+                { "-o", nameof(CodeGeneratorOptions.OutputDir) },
+                { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
+                { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
+                { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
+                { "-b", nameof(CodeGeneratorOptions.BaseClass) }
             };
-            return mappings;
+
+            var deliveryMappings = new Dictionary<string, string>
+            {
+                { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
+                { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
+            };
+
+            var managementMappings = new Dictionary<string, string>
+            {
+                { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
+                { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
+                { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" }
+            };
+
+            return generalMappings
+                .Union(ContainsManageApiArg() ? managementMappings : deliveryMappings)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+            bool ContainsManageApiArg() =>
+                args.Where((value, index) => value == "-m" && index + 1 < args.Length && args[index + 1] == "true")
+                    .Any();
         }
     }
 }
