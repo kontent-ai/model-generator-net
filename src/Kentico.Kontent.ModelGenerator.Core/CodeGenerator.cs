@@ -90,8 +90,14 @@ namespace Kentico.Kontent.ModelGenerator.Core
         internal async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
             var deliveryTypes = (await _client.GetTypesAsync()).Types;
-            var managementTypes = await GetAllContentModelsAsync(await _managementClient.ListContentTypesAsync());
-            var managementSnippets = await GetAllContentModelsAsync(await _managementClient.ListContentTypeSnippetsAsync());
+            IEnumerable<ContentTypeModel> managementTypes = null;
+            IEnumerable<ContentTypeSnippetModel> managementSnippets = null;
+
+            if (_options.ManagementApi)
+            {
+                managementTypes = await GetAllContentModelsAsync(await _managementClient.ListContentTypesAsync());
+                managementSnippets = await GetAllContentModelsAsync(await _managementClient.ListContentTypeSnippetsAsync());
+            }
 
             var codeGenerators = new List<ClassCodeGenerator>();
             if (deliveryTypes == null)
