@@ -8,23 +8,33 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 {
     public class ValidationExtensionsTests
     {
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Validate_Success(bool managementApi)
+        [Fact]
+        public void Validate_ManagementOptions_Success()
         {
             var projectId = Guid.NewGuid().ToString();
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ManagementApi = managementApi,
-                DeliveryOptions = new DeliveryOptions
-                {
-                    ProjectId = projectId
-                },
+                ManagementApi = true,
                 ManagementOptions = new ManagementOptions
                 {
                     ProjectId = projectId,
                     ApiKey = "apiKey"
+                }
+            };
+
+            codeGeneratorOptions.Validate();
+        }
+
+        [Fact]
+        public void Validate_DeliveryOptions_Success()
+        {
+            var projectId = Guid.NewGuid().ToString();
+            var codeGeneratorOptions = new CodeGeneratorOptions
+            {
+                ManagementApi = false,
+                DeliveryOptions = new DeliveryOptions
+                {
+                    ProjectId = projectId
                 }
             };
 
@@ -95,27 +105,6 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
             Assert.Equal("You have to provide the 'ProjectId' to generate type for Content Management SDK. See http://bit.ly/k-params for more details on configuration.", exception.Message);
-        }
-
-        [Fact]
-        public void Validate_ProjectIdsAreNotEqual_ThrowsException()
-        {
-            var codeGeneratorOptions = new CodeGeneratorOptions
-            {
-                ManagementApi = true,
-                DeliveryOptions = new DeliveryOptions
-                {
-                    ProjectId = Guid.NewGuid().ToString()
-                },
-                ManagementOptions = new ManagementOptions
-                {
-                    ProjectId = Guid.NewGuid().ToString(),
-                    ApiKey = "apiKey"
-                }
-            };
-
-            var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-            Assert.Equal("You have to provide same 'ManagementOptions.ProjectId' as 'DeliveryOptions.ProjectId'", exception.Message);
         }
 
         [Theory]

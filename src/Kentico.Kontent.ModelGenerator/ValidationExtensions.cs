@@ -19,22 +19,29 @@ namespace Kentico.Kontent.ModelGenerator
         /// <param name="codeGeneratorOptions">CodeGeneratorOptions object to be validated</param>
         public static void Validate(this CodeGeneratorOptions codeGeneratorOptions)
         {
-            codeGeneratorOptions.DeliveryOptions.Validate();
+            if (codeGeneratorOptions.ManagementApi)
+            {
+                codeGeneratorOptions.ManagementOptions.Validate();
+            }
+            else
+            {
+                codeGeneratorOptions.DeliveryOptions.Validate();
+            }
+        }
 
-            if (!codeGeneratorOptions.ManagementApi)
-                return;
-
-            if (codeGeneratorOptions.ManagementOptions == null || codeGeneratorOptions.ManagementOptions.ProjectId == null)
+        /// <summary>
+        /// Validates that ManagementOptions are initialized
+        /// </summary>
+        /// <param name="managementOptions">ManagementOptions object to be validated</param>
+        /// <exception cref="Exception"></exception>
+        private static void Validate(this ManagementOptions managementOptions)
+        {
+            if (managementOptions?.ProjectId == null)
             {
                 throw new Exception($"You have to provide the '{nameof(ManagementOptions.ProjectId)}' to generate type for Content Management SDK. {SeePart}");
             }
 
-            if (codeGeneratorOptions.ManagementOptions.ProjectId != codeGeneratorOptions.DeliveryOptions.ProjectId)
-            {
-                throw new Exception($"You have to provide same '{nameof(ManagementOptions)}.{nameof(ManagementOptions.ProjectId)}' as '{nameof(DeliveryOptions)}.{nameof(DeliveryOptions.ProjectId)}'");
-            }
-
-            if (string.IsNullOrWhiteSpace(codeGeneratorOptions.ManagementOptions.ApiKey))
+            if (string.IsNullOrWhiteSpace(managementOptions.ApiKey))
             {
                 throw new Exception($"You have to provide the '{nameof(ManagementOptions.ApiKey)}' to generate type for Content Management SDK. {SeePart}");
             }
@@ -50,10 +57,8 @@ namespace Kentico.Kontent.ModelGenerator
             {
                 throw new Exception($"You have to provide at least the '{nameof(DeliveryOptions.ProjectId)}' argument. {SeePart}");
             }
-            else
-            {
-                DeliveryOptionsValidator.Validate(deliveryOptions);
-            }
+
+            DeliveryOptionsValidator.Validate(deliveryOptions);
         }
     }
 }
