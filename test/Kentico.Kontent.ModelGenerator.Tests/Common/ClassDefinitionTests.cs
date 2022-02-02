@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.ModelGenerator.Core.Common;
-using Moq;
 using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests.Common
@@ -31,7 +29,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
         {
             var propertyCodename = "element_1";
             var classDefinition = new ClassDefinition("Class name");
-            classDefinition.AddProperty(Property.FromContentType(propertyCodename, "text"));
+            classDefinition.AddProperty(Property.FromContentTypeElement(propertyCodename, "text"));
 
             Assert.Single(classDefinition.Properties, property => property.Codename == propertyCodename);
         }
@@ -41,7 +39,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
         {
             var classDefinition = new ClassDefinition("Class name");
 
-            var userDefinedSystemProperty = Property.FromContentType("system", "text");
+            var userDefinedSystemProperty = Property.FromContentTypeElement("system", "text");
             classDefinition.AddProperty(userDefinedSystemProperty);
 
             Assert.Equal(userDefinedSystemProperty, classDefinition.Properties.First());
@@ -60,36 +58,32 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
         public void AddPropertyCodenameConstant_PropertyIsAdded()
         {
             var elementCodename = "element_codename";
-            var contentElementMock = new Mock<IContentElement>();
-            contentElementMock.SetupGet(x => x.Codename).Returns(elementCodename);
 
             var classDefinition = new ClassDefinition("Class name");
-            classDefinition.AddPropertyCodenameConstant(contentElementMock.Object);
+            classDefinition.AddPropertyCodenameConstant(elementCodename);
 
-            Assert.Single(classDefinition.PropertyCodenameConstants, property => property.Codename == elementCodename);
+            Assert.Single(classDefinition.PropertyCodenameConstants, property => property == elementCodename);
         }
 
         [Fact]
         public void AddPropertyCodenameConstant_DuplicatePropertyCodenameConstant_Throws()
         {
             var elementCodename = "element_codename";
-            var contentElementMock = new Mock<IContentElement>();
-            contentElementMock.SetupGet(x => x.Codename).Returns(elementCodename);
 
             var classDefinition = new ClassDefinition("Class name");
-            classDefinition.AddPropertyCodenameConstant(contentElementMock.Object);
+            classDefinition.AddPropertyCodenameConstant(elementCodename);
 
-            Assert.Throws<InvalidOperationException>(() => classDefinition.AddPropertyCodenameConstant(contentElementMock.Object));
-            Assert.Single(classDefinition.PropertyCodenameConstants, property => property.Codename == elementCodename);
+            Assert.Throws<InvalidOperationException>(() => classDefinition.AddPropertyCodenameConstant(elementCodename));
+            Assert.Single(classDefinition.PropertyCodenameConstants, property => property == elementCodename);
         }
 
         [Fact]
         public void AddProperty_DuplicateElementCodenames_Throws()
         {
             var classDefinition = new ClassDefinition("Class name");
-            classDefinition.AddProperty(Property.FromContentType("element", "text"));
+            classDefinition.AddProperty(Property.FromContentTypeElement("element", "text"));
 
-            Assert.Throws<InvalidOperationException>(() => classDefinition.AddProperty(Property.FromContentType("element", "text")));
+            Assert.Throws<InvalidOperationException>(() => classDefinition.AddProperty(Property.FromContentTypeElement("element", "text")));
             Assert.Single(classDefinition.Properties);
         }
     }
