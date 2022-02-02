@@ -37,16 +37,20 @@ namespace Kentico.Kontent.ModelGenerator
                 services.AddDeliveryClient(configuration);
                 services.AddTransient<HttpClient>();
                 services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
-                services.AddSingleton<CodeGenerator>();
+                services.AddSingleton<ManagementCodeGenerator>();
+                services.AddSingleton<DeliveryCodeGenerator>();
 
                 // Build the DI container
                 var serviceProvider = services.BuildServiceProvider();
 
                 // Validate configuration of the Delivery Client
-                serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value.Validate();
+                var options = serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value;
+                options.Validate();
 
                 // Code generator entry point
-                return await serviceProvider.GetService<CodeGenerator>().RunAsync();
+                return options.ManagementApi
+                    ? await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync()
+                    : await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync();
             }
             catch (AggregateException aex)
             {
@@ -72,13 +76,13 @@ namespace Kentico.Kontent.ModelGenerator
                 { "-o", nameof(CodeGeneratorOptions.OutputDir) },
                 { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
                 { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
-                { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
                 { "-b", nameof(CodeGeneratorOptions.BaseClass) }
             };
 
             var deliveryMappings = new Dictionary<string, string>
             {
                 { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
+                { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
                 { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
             };
 

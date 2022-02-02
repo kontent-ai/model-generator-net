@@ -19,7 +19,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
             { "-b", nameof(CodeGeneratorOptions.BaseClass) },
             { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-            { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
+            { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
         };
 
         [Fact]
@@ -64,7 +64,6 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 { "-o", nameof(CodeGeneratorOptions.OutputDir) },
                 { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
                 { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
-                { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
                 { "-b", nameof(CodeGeneratorOptions.BaseClass) },
                 { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
                 { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
