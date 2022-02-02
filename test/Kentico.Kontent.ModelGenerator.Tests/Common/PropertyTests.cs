@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Kentico.Kontent.Management.Models.Types.Elements;
 using Kentico.Kontent.ModelGenerator.Core.Common;
 using Xunit;
 
@@ -7,12 +10,26 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
     public class PropertyTests
     {
         [Fact]
-        public void Constructor_ObjectIsInitializedWithCorrectValues()
+        public void Constructor_MissingIdParam_ObjectIsInitializedWithCorrectValues()
         {
             var element = new Property("element_codename", "string");
 
             Assert.Equal("ElementCodename", element.Identifier);
             Assert.Equal("string", element.TypeName);
+            Assert.Null(element.Id);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("id")]
+        public void Constructor_IdParamPresent_ObjectIsInitializedWithCorrectValues(string id)
+        {
+            var element = new Property("element_codename", "string", id);
+
+            Assert.Equal("ElementCodename", element.Identifier);
+            Assert.Equal("string", element.TypeName);
+            Assert.Equal(id, element.Id);
         }
 
         [Theory]
@@ -27,44 +44,58 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
         [InlineData("taxonomy", "IEnumerable<ITaxonomyTerm>")]
         [InlineData("url_slug", "string")]
         [InlineData("custom", "string")]
-        public void DAPIModel_FromContentType(string contentType, string expectedTypeName)
+        public void DeliveryApiModel_FromContentTypeElement(string contentType, string expectedTypeName)
         {
             var codename = "element_codename";
             var expectedCodename = "ElementCodename";
 
-            var element = Property.FromContentType(codename, contentType, false);
+            var element = Property.FromContentTypeElement(codename, contentType);
 
             Assert.Equal(expectedCodename, element.Identifier);
             Assert.Equal(expectedTypeName, element.TypeName);
         }
 
-        [Theory]
-        [InlineData("text", "TextElement")]
-        [InlineData("rich_text", "RichTextElement")]
-        [InlineData("number", "NumberElement")]
-        [InlineData("multiple_choice", "MultipleChoiceElement")]
-        [InlineData("date_time", "DateTimeElement")]
-        [InlineData("asset", "AssetElement")]
-        [InlineData("modular_content", "LinkedItemsElement")]
-        [InlineData("subpages", "SubpagesElement")]
-        [InlineData("taxonomy", "TaxonomyElement")]
-        [InlineData("url_slug", "UrlSlugElement")]
-        [InlineData("custom", "CustomElement")]
-        public void ManagementApiModel_FromContentType(string contentType, string expectedTypeName)
+        [Theory, MemberData(nameof(ManagementElements))]
+        public void ManagementApiModel_FromContentTypeElement(string expectedTypeName, string expectedCodename, ElementMetadataBase element)
         {
-            var codename = "element_codename";
-            var expectedCodename = "ElementCodename";
+            var property = Property.FromContentTypeElement(element);
 
-            var element = Property.FromContentType(codename, contentType, true);
-
-            Assert.Equal(expectedCodename, element.Identifier);
-            Assert.Equal(expectedTypeName, element.TypeName);
+            Assert.Equal(expectedCodename, property.Identifier);
+            Assert.Equal(expectedTypeName, property.TypeName);
+            Assert.Equal(element.Id.ToString(), property.Id);
         }
 
         [Fact]
-        public void FromContentType_ThrowsAnExceptionForInvalidContentType()
+        public void FromContentTypeElement_ThrowsAnExceptionForInvalidContentType()
         {
-            Assert.Throws<ArgumentException>(() => Property.FromContentType("codename", "unknown content type"));
+            Assert.Throws<ArgumentException>(() => Property.FromContentTypeElement("codename", "unknown content type"));
         }
+
+        public static IEnumerable<object[]> ManagementElements =>
+            new List<(string, string, ElementMetadataBase)>
+            {
+                ("TextElement", "TextElement",
+                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "text_element")),
+                ("RichTextElement","RichTextElement",
+                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "rich_text_element", ElementMetadataType.RichText)),
+                ("NumberElement", "NumberElement",
+                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "number_element", ElementMetadataType.Number)),
+                ("MultipleChoiceElement","MultipleChoiceElement",
+                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "multiple_choice_element", ElementMetadataType.MultipleChoice)),
+                ("DateTimeElement","DateTimeElement",
+                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "date_time_element", ElementMetadataType.DateTime)),
+                ("AssetElement", "AssetElement",
+                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "asset_element", ElementMetadataType.Asset)),
+                ("LinkedItemsElement", "LinkedItemsElement",
+                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "linked_items_element", ElementMetadataType.LinkedItems)),
+                ("SubpagesElement", "SubpagesElement",
+                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "subpages_element", ElementMetadataType.Subpages)),
+                ("TaxonomyElement", "TaxonomyElement",
+                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "taxonomy_element", ElementMetadataType.Taxonomy)),
+                ("UrlSlugElement", "UrlSlugElement",
+                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "url_slug_element", ElementMetadataType.UrlSlug)),
+                ("CustomElement", "CustomElement",
+                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "custom_element", ElementMetadataType.Custom))
+            }.Select(triple => new object[] { triple.Item1, triple.Item2, triple.Item3 });
     }
 }

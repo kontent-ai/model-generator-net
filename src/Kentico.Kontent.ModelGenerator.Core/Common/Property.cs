@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Management.Models.LanguageVariants.Elements;
+using Kentico.Kontent.Management.Models.Types.Elements;
 using Kentico.Kontent.ModelGenerator.Core.Helpers;
 
 namespace Kentico.Kontent.ModelGenerator.Core.Common
@@ -23,7 +24,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
         /// </summary>
         public string TypeName { get; }
 
-        private static readonly Dictionary<string, string> DeliverElementTypesDictionary = new Dictionary<string, string>
+        internal static readonly Dictionary<string, string> DeliverElementTypesDictionary = new Dictionary<string, string>
         {
             { "text", "string" },
             { "rich_text", "string" },
@@ -38,23 +39,20 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
             { "custom", "string" }
         };
 
-        private static readonly Dictionary<string, string> ManagementElementTypesDictionary = new Dictionary<string, string>
+        private static readonly Dictionary<ElementMetadataType, string> ManagementElementTypesDictionary = new Dictionary<ElementMetadataType, string>
         {
-            { "text", nameof(TextElement) },
-            { "rich_text", nameof(RichTextElement) },
-            { "number", nameof(NumberElement) },
-            { "multiple_choice", nameof(MultipleChoiceElement) },
-            { "date_time", nameof(DateTimeElement)},
-            { "asset", nameof(AssetElement) },
-            { "modular_content", nameof(LinkedItemsElement) },
-            { "subpages", nameof(SubpagesElement) },
-            { "taxonomy", nameof(TaxonomyElement) },
-            { "url_slug",nameof(UrlSlugElement) },
-            { "custom", nameof(CustomElement) }
+            { ElementMetadataType.Text, nameof(TextElement) },
+            { ElementMetadataType.RichText, nameof(RichTextElement) },
+            { ElementMetadataType.Number, nameof(NumberElement) },
+            { ElementMetadataType.MultipleChoice, nameof(MultipleChoiceElement) },
+            { ElementMetadataType.DateTime, nameof(DateTimeElement)},
+            { ElementMetadataType.Asset, nameof(AssetElement) },
+            { ElementMetadataType.LinkedItems, nameof(LinkedItemsElement) },
+            { ElementMetadataType.Subpages, nameof(SubpagesElement) },
+            { ElementMetadataType.Taxonomy, nameof(TaxonomyElement) },
+            { ElementMetadataType.UrlSlug,nameof(UrlSlugElement) },
+            { ElementMetadataType.Custom, nameof(CustomElement) }
         };
-
-        private static Dictionary<string, string> GetElementTypesDictionary(bool managementApi)
-            => managementApi ? ManagementElementTypesDictionary : DeliverElementTypesDictionary;
 
         public Property(string codename, string typeName, string id = null)
         {
@@ -63,19 +61,34 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
             Id = id;
         }
 
-        public static bool IsContentTypeSupported(string contentType, bool managementApi = false)
+        public static bool IsContentTypeSupported(string elementType)
         {
-            return GetElementTypesDictionary(managementApi).ContainsKey(contentType);
+            return DeliverElementTypesDictionary.ContainsKey(elementType);
         }
 
-        public static Property FromContentType(string codename, string elementContentType, bool managementApi = false, string id = null)
+        public static bool IsContentTypeSupported(ElementMetadataType elementType)
         {
-            if (IsContentTypeSupported(elementContentType, managementApi))
+            return ManagementElementTypesDictionary.ContainsKey(elementType);
+        }
+
+        public static Property FromContentTypeElement(string codename, string elementType)
+        {
+            if (IsContentTypeSupported(elementType))
             {
-                return new Property(codename, GetElementTypesDictionary(managementApi)[elementContentType], id);
+                return new Property(codename, DeliverElementTypesDictionary[elementType]);
             }
 
-            throw new ArgumentException($"Unknown Content Type {elementContentType}", nameof(elementContentType));
+            throw new ArgumentException($"Unknown Content Type {elementType}", nameof(elementType));
+        }
+
+        public static Property FromContentTypeElement(ElementMetadataBase element)
+        {
+            if (IsContentTypeSupported(element.Type))
+            {
+                return new Property(element.Codename, ManagementElementTypesDictionary[element.Type], element.Id.ToString());
+            }
+
+            throw new ArgumentException($"Unknown Content Type {element.Type}", nameof(element));
         }
     }
 }
