@@ -22,7 +22,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
         [Fact]
         public void GetElementType_ManagementApiIsTrue_ThrowsException()
         {
-            Assert.Throws<ArgumentNullException>(() => DeliveryElementHelper.GetElementType(new CodeGeneratorOptions { ManagementApi = true }, "type"));
+            Assert.Throws<InvalidOperationException>(() => DeliveryElementHelper.GetElementType(new CodeGeneratorOptions { ManagementApi = true }, "type"));
         }
 
         [Fact]

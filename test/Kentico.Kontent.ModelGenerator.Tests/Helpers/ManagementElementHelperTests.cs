@@ -27,53 +27,31 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
         [Fact]
         public void GetManagementContentTypeSnippetElements_NoSnippetElements_Throws()
         {
-            var elementCodename = "codename";
-            var snippetCodename = "snippet_codename_";
+            var contentTypeElementCodename = "codename";
 
             var snippets = new List<ContentTypeSnippetModel>
             {
                 new ContentTypeSnippetModel
                 {
-                    Codename = snippetCodename,
+                    Codename = contentTypeElementCodename,
                     Elements = new List<ElementMetadataBase>()
                 }
             };
 
-            var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename, ElementMetadataType.ContentTypeSnippet);
+            var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), contentTypeElementCodename, ElementMetadataType.ContentTypeSnippet);
 
-            Assert.Throws<ArgumentException>(() => ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, snippets));
-        }
+            var result = ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, snippets);
 
-        [Fact]
-        public void GetManagementContentTypeSnippetElements_NoMatchingSnippetElements_Throws()
-        {
-            var elementCodename = "codename";
-            var snippetCodename = "snippet_codename_";
-
-            var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename, ElementMetadataType.ContentTypeSnippet);
-
-            var snippets = new List<ContentTypeSnippetModel>
-            {
-                new ContentTypeSnippetModel
-                {
-                    Codename = snippetCodename,
-                    Elements = new List<ElementMetadataBase>
-                    {
-                        TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), $"{snippetCodename}other"),
-                        TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), $"{snippetCodename}other2", ElementMetadataType.Number)
-                    }
-                }
-            };
-
-            Assert.Throws<ArgumentException>(() => ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, snippets));
+            Assert.NotNull(result);
+            Assert.Empty(result);
         }
 
         [Fact]
         public void GetManagementContentTypeSnippetElements_NoSnippets_Throws()
         {
-            var elementCodename = "codename";
+            var contentTypeElementCodename = "codename";
 
-            var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename, ElementMetadataType.ContentTypeSnippet);
+            var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), contentTypeElementCodename, ElementMetadataType.ContentTypeSnippet);
 
             Assert.Throws<ArgumentException>(() => ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, new List<ContentTypeSnippetModel>()));
         }
@@ -81,21 +59,20 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
         [Fact]
         public void GetManagementContentTypeSnippetElements_NoMatchingSnippet_Throws()
         {
-            var elementCodename = "codename";
-            var snippetCodename = "snippet_codename_";
-            var snippetElementCodename = $"{snippetCodename}{elementCodename}";
+            var contentTypeElementCodename = "codename";
+            var snippetCodename = "other_snippet_codename";
 
-            var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename, ElementMetadataType.ContentTypeSnippet);
+            var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), contentTypeElementCodename, ElementMetadataType.ContentTypeSnippet);
 
             var snippets = new List<ContentTypeSnippetModel>
             {
                 new ContentTypeSnippetModel
                 {
-                    Codename = "other_snippet_codename",
+                    Codename = snippetCodename,
                     Elements = new List<ElementMetadataBase>
                     {
-                        TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), snippetElementCodename),
-                        TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), snippetElementCodename, ElementMetadataType.Number)
+                        TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), $"{snippetCodename}el"),
+                        TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), $"{snippetCodename}el2", ElementMetadataType.Number)
                     }
                 }
             };
@@ -106,9 +83,9 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
         [Fact]
         public void GetManagementContentTypeSnippetElements_NotManagementContentTypeSnippetElement_ReturnsNull()
         {
-            var elementCodename = "codename";
+            var snippetCodename = "codename";
 
-            var element = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename);
+            var element = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename);
 
             var result = ManagementElementHelper.GetManagementContentTypeSnippetElements(element, new List<ContentTypeSnippetModel>());
 
@@ -116,15 +93,13 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
         }
 
         [Fact]
-        public void GetManagementContentTypeSnippetElements_ManagementContentTypeSnippetElement_Returns()
+        public void GetManagementContentTypeSnippetElements_Returns()
         {
-            var elementCodename = "codename";
             var expectedElementId = Guid.NewGuid();
             var expectedElement2Id = Guid.NewGuid();
-            var snippetCodename = "snippet_codename_";
-            var snippetElementCodename = $"{snippetCodename}{elementCodename}";
+            var snippetCodename = "snippet_codename";
 
-            var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename, ElementMetadataType.ContentTypeSnippet);
+            var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.ContentTypeSnippet);
 
             var snippets = new List<ContentTypeSnippetModel>
             {
@@ -133,8 +108,8 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
                     Codename = snippetCodename,
                     Elements = new List<ElementMetadataBase>
                     {
-                        TestHelper.GenerateElementMetadataBase(expectedElementId, snippetElementCodename),
-                        TestHelper.GenerateElementMetadataBase(expectedElement2Id, $"{snippetCodename}other", ElementMetadataType.Number)
+                        TestHelper.GenerateElementMetadataBase(expectedElementId, $"{snippetCodename}_el"),
+                        TestHelper.GenerateElementMetadataBase(expectedElement2Id, $"{snippetCodename}_el2", ElementMetadataType.Number)
                     }
                 }
             };

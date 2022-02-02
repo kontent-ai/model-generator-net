@@ -25,7 +25,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (!options.ManagementApi)
+            if (options.ManagementApi)
             {
                 throw new InvalidOperationException("Cannot generate structured model for the Management models.");
             }
