@@ -24,9 +24,9 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
 
         protected MemberDeclarationSyntax[] PropertyCodenameConstants
             => ClassDefinition.PropertyCodenameConstants
-                .OrderBy(p => p.Codename)
-                .Select(element =>
-                    GetFieldDeclaration("string", $"{TextHelpers.GetValidPascalCaseIdentifierName(element.Codename)}Codename", element.Codename))
+                .OrderBy(p => p)
+                .Select(codename =>
+                    GetFieldDeclaration("string", $"{TextHelpers.GetValidPascalCaseIdentifierName(codename)}Codename", codename))
                 .ToArray<MemberDeclarationSyntax>();
 
         protected static FieldDeclarationSyntax GetFieldDeclaration(string typeName, string identifier, string literal) =>
