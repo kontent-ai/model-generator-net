@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Kentico.Kontent.ModelGenerator.Core.Common;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
 using Microsoft.Extensions.Options;
@@ -99,5 +100,26 @@ namespace Kentico.Kontent.ModelGenerator.Core
         }
 
         internal abstract Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators();
+
+        public void WriteConsoleErrorMessage(Exception e, string elementCodename, string elementType, string className)
+        {
+            switch (e)
+            {
+                case InvalidOperationException:
+                    Console.WriteLine($"Warning: Element '{elementCodename}' is already present in Content Type '{className}'.");
+                    break;
+                case InvalidIdentifierException:
+                    Console.WriteLine($"Warning: Can't create valid C# Identifier from '{elementCodename}'. Skipping element.");
+                    break;
+                case ArgumentNullException or ArgumentException:
+                    Console.WriteLine($"Warning: Skipping unknown Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
+                    break;
+            }
+        }
+
+        public void WriteConsoleErrorMessage(string codename)
+        {
+            Console.WriteLine($"Warning: Skipping Content Type '{codename}'. Can't create valid C# identifier from its name.");
+        }
     }
 }

@@ -54,7 +54,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 }
                 catch (InvalidIdentifierException)
                 {
-                    Console.WriteLine($"Warning: Skipping Content Type '{contentType.Codename}'. Can't create valid C# identifier from its name.");
+                    WriteConsoleErrorMessage(contentType.Codename);
                 }
             }
 
@@ -82,17 +82,9 @@ namespace Kentico.Kontent.ModelGenerator.Core
                         }
                     }
                 }
-                catch (InvalidOperationException)
+                catch (Exception e)
                 {
-                    Console.WriteLine($"Warning: Element '{element.Codename}' is already present in Content Type '{classDefinition.ClassName}'.");
-                }
-                catch (InvalidIdentifierException)
-                {
-                    Console.WriteLine($"Warning: Can't create valid C# Identifier from '{element.Codename}'. Skipping element.");
-                }
-                catch (Exception e) when (e is ArgumentNullException or ArgumentException)
-                {
-                    Console.WriteLine($"Warning: Skipping unknown Content Element type '{element.Type}'. (Content Type: '{classDefinition.ClassName}', Element Codename: '{element.Codename}').");
+                    WriteConsoleErrorMessage(e, element.Codename, element.Type.ToString(), classDefinition.ClassName);
                 }
             }
 
@@ -135,7 +127,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 response = await response.GetNextPage();
             }
 
-            return contentModels;
+            return contentModels.ToList();
         }
     }
 }
