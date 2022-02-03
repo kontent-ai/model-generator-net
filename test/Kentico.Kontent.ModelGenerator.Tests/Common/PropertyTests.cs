@@ -44,7 +44,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
         [InlineData("taxonomy", "IEnumerable<ITaxonomyTerm>")]
         [InlineData("url_slug", "string")]
         [InlineData("custom", "string")]
-        public void DeliveryApiModel_FromContentTypeElement(string contentType, string expectedTypeName)
+        public void FromContentTypeElement_DeliveryApiModel_Returns(string contentType, string expectedTypeName)
         {
             var codename = "element_codename";
             var expectedCodename = "ElementCodename";
@@ -56,7 +56,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
         }
 
         [Theory, MemberData(nameof(ManagementElements))]
-        public void ManagementApiModel_FromContentTypeElement(string expectedTypeName, string expectedCodename, ElementMetadataBase element)
+        public void FromContentTypeElement_ManagementApiModel_Returns(string expectedTypeName, string expectedCodename, ElementMetadataBase element)
         {
             var property = Property.FromContentTypeElement(element);
 
@@ -66,9 +66,16 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
         }
 
         [Fact]
-        public void FromContentTypeElement_ThrowsAnExceptionForInvalidContentType()
+        public void FromContentTypeElement_DeliveryApiModel_InvalidContentTypeElement_Throws()
         {
             Assert.Throws<ArgumentException>(() => Property.FromContentTypeElement("codename", "unknown content type"));
+        }
+
+        [Fact]
+        public void FromContentTypeElement_ManagementApiModel_GuidelinesElement_Throws()
+        {
+            Assert.Throws<ArgumentException>(() =>
+                Property.FromContentTypeElement(TestHelper.GenerateGuidelinesElement(Guid.NewGuid(), "codename")));
         }
 
         public static IEnumerable<object[]> ManagementElements =>

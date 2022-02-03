@@ -13,5 +13,15 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 Codename = elementCodename,
                 type
             }).ToObject<ElementMetadataBase>();
+
+        public static ElementMetadataBase GenerateGuidelinesElement(Guid elementId, string elementCodename) =>
+            JObject.FromObject(new
+            {
+                Id = elementId,
+                Codename = elementCodename,
+                type = ElementMetadataType.Guidelines,
+                guidelines = "guidelines"
+
+            }).ToObject<ElementMetadataBase>();
     }
 }
