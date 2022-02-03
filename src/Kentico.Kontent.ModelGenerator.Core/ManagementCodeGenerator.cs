@@ -30,7 +30,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             _managementClient = managementClient;
         }
 
-        internal override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
+        protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
             var managementTypes = await GetAllContentModelsAsync(await _managementClient.ListContentTypesAsync());
             var managementSnippets = await GetAllContentModelsAsync(await _managementClient.ListContentTypeSnippetsAsync());
@@ -47,7 +47,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 {
                     if (Options.GeneratePartials)
                     {
-                        codeGenerators.Add(GetCustomClassCodeGenerator(contentType));
+                        codeGenerators.Add(GetCustomClassCodeGenerator(contentType.Codename));
                     }
 
                     codeGenerators.Add(GetClassCodeGenerator(contentType, managementSnippets));
@@ -61,7 +61,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return codeGenerators;
         }
 
-        internal ClassCodeGenerator GetClassCodeGenerator(ContentTypeModel contentType, IEnumerable<ContentTypeSnippetModel> managementSnippets = null)
+        internal ClassCodeGenerator GetClassCodeGenerator(ContentTypeModel contentType, IEnumerable<ContentTypeSnippetModel> managementSnippets)
         {
             var classDefinition = new ClassDefinition(contentType.Codename);
 
@@ -69,16 +69,16 @@ namespace Kentico.Kontent.ModelGenerator.Core
             {
                 try
                 {
-                    var snippetElements = ManagementElementHelper.GetManagementContentTypeSnippetElements(element, managementSnippets);
-                    if (snippetElements == null)
+                    if (element.Type != ElementMetadataType.ContentTypeSnippet)
                     {
-                        AddProperty(element, ref classDefinition);
+                        AddProperty(Property.FromContentTypeElement(element), ref classDefinition);
                     }
                     else
                     {
+                        var snippetElements = ManagementElementHelper.GetManagementContentTypeSnippetElements(element, managementSnippets);
                         foreach (var snippetElement in snippetElements)
                         {
-                            AddProperty(snippetElement, ref classDefinition);
+                            AddProperty(Property.FromContentTypeElement(snippetElement), ref classDefinition);
                         }
                     }
                 }
@@ -91,22 +91,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
             var classFilename = GetFileClassName(classDefinition.ClassName);
 
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
-        }
-
-        internal ClassCodeGenerator GetCustomClassCodeGenerator(ContentTypeModel contentType)
-        {
-            var classDefinition = new ClassDefinition(contentType.Codename);
-            var classFilename = $"{classDefinition.ClassName}";
-
-            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, true);
-        }
-
-        private static void AddProperty(ElementMetadataBase element, ref ClassDefinition classDefinition)
-        {
-            var property = Property.FromContentTypeElement(element);
-
-            classDefinition.AddPropertyCodenameConstant(element.Codename);
-            classDefinition.AddProperty(property);
         }
 
         private static async Task<IEnumerable<T>> GetAllContentModelsAsync<T>(IListingResponseModel<T> response)

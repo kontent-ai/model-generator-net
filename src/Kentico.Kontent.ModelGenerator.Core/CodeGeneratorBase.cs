@@ -62,6 +62,43 @@ namespace Kentico.Kontent.ModelGenerator.Core
             Console.WriteLine($"{classCodeGenerators.Count} content type models were successfully created.");
         }
 
+        protected ClassCodeGenerator GetCustomClassCodeGenerator(string contentTypeCodename)
+        {
+            var classDefinition = new ClassDefinition(contentTypeCodename);
+            var classFilename = $"{classDefinition.ClassName}";
+
+            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, true);
+        }
+
+        protected void WriteConsoleErrorMessage(Exception exception, string elementCodename, string elementType, string className)
+        {
+            switch (exception)
+            {
+                case InvalidOperationException:
+                    Console.WriteLine($"Warning: Element '{elementCodename}' is already present in Content Type '{className}'.");
+                    break;
+                case InvalidIdentifierException:
+                    Console.WriteLine($"Warning: Can't create valid C# Identifier from '{elementCodename}'. Skipping element.");
+                    break;
+                case ArgumentNullException or ArgumentException:
+                    Console.WriteLine($"Warning: Skipping unknown Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
+                    break;
+            }
+        }
+
+        protected void WriteConsoleErrorMessage(string contentTypeCodename)
+        {
+            Console.WriteLine($"Warning: Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name.");
+        }
+
+        protected static void AddProperty(Property property, ref ClassDefinition classDefinition)
+        {
+            classDefinition.AddPropertyCodenameConstant(property.Codename);
+            classDefinition.AddProperty(property);
+        }
+
+        protected abstract Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators();
+
         internal async Task GenerateContentTypeModels()
         {
             var classCodeGenerators = await GetClassCodeGenerators();
@@ -75,7 +112,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             WriteToOutputProvider(classCodeGenerators);
         }
 
-        internal async Task GenerateBaseClass()
+        private async Task GenerateBaseClass()
         {
             var classCodeGenerators = await GetClassCodeGenerators();
 
@@ -97,29 +134,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             var baseClassExtenderCode = baseClassCodeGenerator.GenereateExtenderCode();
             WriteToOutputProvider(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
-        }
-
-        internal abstract Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators();
-
-        public void WriteConsoleErrorMessage(Exception e, string elementCodename, string elementType, string className)
-        {
-            switch (e)
-            {
-                case InvalidOperationException:
-                    Console.WriteLine($"Warning: Element '{elementCodename}' is already present in Content Type '{className}'.");
-                    break;
-                case InvalidIdentifierException:
-                    Console.WriteLine($"Warning: Can't create valid C# Identifier from '{elementCodename}'. Skipping element.");
-                    break;
-                case ArgumentNullException or ArgumentException:
-                    Console.WriteLine($"Warning: Skipping unknown Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
-                    break;
-            }
-        }
-
-        public void WriteConsoleErrorMessage(string codename)
-        {
-            Console.WriteLine($"Warning: Skipping Content Type '{codename}'. Can't create valid C# identifier from its name.");
         }
     }
 }

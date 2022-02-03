@@ -39,28 +39,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return 0;
         }
 
-        internal async Task GenerateTypeProvider()
-        {
-            var classCodeGenerators = await GetClassCodeGenerators();
-
-            if (!classCodeGenerators.Any())
-            {
-                Console.WriteLine(NoContentTypeAvailableMessage);
-                return;
-            }
-
-            var typeProviderCodeGenerator = new TypeProviderCodeGenerator(Options.Namespace);
-
-            foreach (var codeGenerator in classCodeGenerators)
-            {
-                typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
-            }
-
-            var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
-            WriteToOutputProvider(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
-        }
-
-        internal override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
+        protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
             var deliveryTypes = (await _client.GetTypesAsync()).Types;
 
@@ -76,7 +55,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 {
                     if (Options.GeneratePartials)
                     {
-                        codeGenerators.Add(GetCustomClassCodeGenerator(contentType));
+                        codeGenerators.Add(GetCustomClassCodeGenerator(contentType.System.Codename));
                     }
 
                     codeGenerators.Add(GetClassCodeGenerator(contentType));
@@ -100,9 +79,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 {
                     var elementType = DeliveryElementHelper.GetElementType(Options, element.Type);
                     var property = Property.FromContentTypeElement(element.Codename, elementType);
-
-                    classDefinition.AddPropertyCodenameConstant(element.Codename);
-                    classDefinition.AddProperty(property);
+                    AddProperty(property, ref classDefinition);
                 }
                 catch (Exception e)
                 {
@@ -117,12 +94,25 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
         }
 
-        internal ClassCodeGenerator GetCustomClassCodeGenerator(IContentType contentType)
+        internal async Task GenerateTypeProvider()
         {
-            var classDefinition = new ClassDefinition(contentType.System.Codename);
-            var classFilename = $"{classDefinition.ClassName}";
+            var classCodeGenerators = await GetClassCodeGenerators();
 
-            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, true);
+            if (!classCodeGenerators.Any())
+            {
+                Console.WriteLine(NoContentTypeAvailableMessage);
+                return;
+            }
+
+            var typeProviderCodeGenerator = new TypeProviderCodeGenerator(Options.Namespace);
+
+            foreach (var codeGenerator in classCodeGenerators)
+            {
+                typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
+            }
+
+            var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
+            WriteToOutputProvider(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
         }
 
         private static void TryAddSystemProperty(ClassDefinition classDefinition)
