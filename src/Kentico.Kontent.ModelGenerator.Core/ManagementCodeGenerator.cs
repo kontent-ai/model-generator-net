@@ -121,8 +121,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 }
             }
 
-            TryAddSystemProperty(classDefinition);
-
             var classFilename = $"{classDefinition.ClassName}{FilenameSuffix}";
 
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
@@ -166,46 +164,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             var baseClassExtenderCode = baseClassCodeGenerator.GenereateExtenderCode();
             WriteToOutputProvider(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
-        }
-
-        private void TryAddSystemProperty(ClassDefinition classDefinition)
-        {
-            if (Options.ManagementApi)
-            {
-                return;
-            }
-
-            try
-            {
-                classDefinition.AddSystemProperty();
-            }
-            catch (InvalidOperationException)
-            {
-                Console.WriteLine(
-                    $"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
-            }
-        }
-
-        private void WriteToOutputProvider(string content, string fileName, bool overwriteExisting)
-        {
-            if (string.IsNullOrEmpty(content))
-            {
-                return;
-            }
-
-            OutputProvider.Output(content, fileName, overwriteExisting);
-            Console.WriteLine($"{fileName} class was successfully created.");
-        }
-
-        private void WriteToOutputProvider(ICollection<ClassCodeGenerator> classCodeGenerators)
-        {
-            foreach (var codeGenerator in classCodeGenerators)
-            {
-                OutputProvider.Output(codeGenerator.GenerateCode(), codeGenerator.ClassFilename,
-                    codeGenerator.OverwriteExisting);
-            }
-
-            Console.WriteLine($"{classCodeGenerators.Count} content type models were successfully created.");
         }
 
         private async Task<IEnumerable<T>> GetAllContentModelsAsync<T>(IListingResponseModel<T> response)

@@ -178,11 +178,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private void TryAddSystemProperty(ClassDefinition classDefinition)
         {
-            if (Options.ManagementApi)
-            {
-                return;
-            }
-
             try
             {
                 classDefinition.AddSystemProperty();
@@ -192,54 +187,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 Console.WriteLine(
                     $"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
             }
-        }
-
-        private void WriteToOutputProvider(string content, string fileName, bool overwriteExisting)
-        {
-            if (string.IsNullOrEmpty(content))
-            {
-                return;
-            }
-
-            OutputProvider.Output(content, fileName, overwriteExisting);
-            Console.WriteLine($"{fileName} class was successfully created.");
-        }
-
-        private void WriteToOutputProvider(ICollection<ClassCodeGenerator> classCodeGenerators)
-        {
-            foreach (var codeGenerator in classCodeGenerators)
-            {
-                OutputProvider.Output(codeGenerator.GenerateCode(), codeGenerator.ClassFilename,
-                    codeGenerator.OverwriteExisting);
-            }
-
-            Console.WriteLine($"{classCodeGenerators.Count} content type models were successfully created.");
-        }
-
-        private async Task<IEnumerable<T>> GetAllContentModelsAsync<T>(IListingResponseModel<T> response)
-        {
-            if (!Options.ManagementApi)
-            {
-                return null;
-            }
-
-            var contentModels = new List<T>();
-            while (true)
-            {
-                foreach (var model in response)
-                {
-                    contentModels.Add(model);
-                }
-
-                if (!response.HasNextPage())
-                {
-                    break;
-                }
-
-                response = await response.GetNextPage();
-            }
-
-            return contentModels;
         }
     }
 }
