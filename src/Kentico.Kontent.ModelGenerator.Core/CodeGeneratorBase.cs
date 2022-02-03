@@ -70,7 +70,15 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, true);
         }
 
-        protected void WriteConsoleErrorMessage(Exception exception, string elementCodename, string elementType, string className)
+        protected static void AddProperty(Property property, ref ClassDefinition classDefinition)
+        {
+            classDefinition.AddPropertyCodenameConstant(property.Codename);
+            classDefinition.AddProperty(property);
+        }
+
+        protected abstract Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators();
+
+        protected static void WriteConsoleErrorMessage(Exception exception, string elementCodename, string elementType, string className)
         {
             switch (exception)
             {
@@ -86,18 +94,10 @@ namespace Kentico.Kontent.ModelGenerator.Core
             }
         }
 
-        protected void WriteConsoleErrorMessage(string contentTypeCodename)
+        protected static void WriteConsoleErrorMessage(string contentTypeCodename)
         {
             Console.WriteLine($"Warning: Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name.");
         }
-
-        protected static void AddProperty(Property property, ref ClassDefinition classDefinition)
-        {
-            classDefinition.AddPropertyCodenameConstant(property.Codename);
-            classDefinition.AddProperty(property);
-        }
-
-        protected abstract Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators();
 
         internal async Task GenerateContentTypeModels()
         {

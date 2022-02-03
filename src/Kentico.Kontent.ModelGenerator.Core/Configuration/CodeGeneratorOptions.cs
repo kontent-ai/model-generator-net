@@ -5,11 +5,11 @@ namespace Kentico.Kontent.ModelGenerator.Core.Configuration
 {
     public class CodeGeneratorOptions
     {
-        public static bool DefaultGeneratePartials = true;
-        public static bool DefaultWithTypeProvider = true;
-        public static bool DefaultStructuredModel = false;
-        public static bool DefaultManagementApi = false;
-        public static string DefaultFileNameSuffix = "Generated";
+        private const bool DefaultGeneratePartials = true;
+        private const bool DefaultWithTypeProvider = true;
+        private const bool DefaultStructuredModel = false;
+        private const bool DefaultManagementApi = false;
+        private const string DefaultFileNameSuffix = "Generated";
 
         /// <summary>
         /// Delivery Client configuration.

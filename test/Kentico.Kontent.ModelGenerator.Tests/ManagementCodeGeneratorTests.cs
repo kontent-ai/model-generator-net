@@ -191,7 +191,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             Directory.Delete(TempDir, true);
         }
 
-        private IManagementClient CreateManagementClient()
+        private static IManagementClient CreateManagementClient()
         {
             var managementModelsProvider = new ManagementModelsProvider();
             var managementClientMock = new Mock<IManagementClient>();

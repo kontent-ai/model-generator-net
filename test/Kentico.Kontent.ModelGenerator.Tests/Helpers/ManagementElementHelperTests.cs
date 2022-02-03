@@ -117,7 +117,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
             var result = ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, snippets).ToList();
 
             Assert.NotNull(result);
-            Assert.Equal(2, result.Count());
+            Assert.Equal(2, result.Count);
             Assert.Contains(result, el => el.Id == expectedElementId);
             Assert.Contains(result, el => el.Id == expectedElement2Id);
         }
