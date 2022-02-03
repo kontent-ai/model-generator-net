@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
 using Microsoft.Extensions.Options;
@@ -44,5 +46,44 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             Console.WriteLine($"{classCodeGenerators.Count} content type models were successfully created.");
         }
+
+        internal async Task GenerateContentTypeModels()
+        {
+            var classCodeGenerators = await GetClassCodeGenerators();
+
+            if (!classCodeGenerators.Any())
+            {
+                Console.WriteLine(NoContentTypeAvailableMessage);
+                return;
+            }
+
+            WriteToOutputProvider(classCodeGenerators);
+        }
+
+        internal async Task GenerateBaseClass()
+        {
+            var classCodeGenerators = await GetClassCodeGenerators();
+
+            if (!classCodeGenerators.Any())
+            {
+                Console.WriteLine(NoContentTypeAvailableMessage);
+                return;
+            }
+
+            var baseClassCodeGenerator = new BaseClassCodeGenerator(Options.BaseClass, Options.Namespace);
+
+            foreach (var codeGenerator in classCodeGenerators)
+            {
+                baseClassCodeGenerator.AddClassNameToExtend(codeGenerator.ClassDefinition.ClassName);
+            }
+
+            var baseClassCode = baseClassCodeGenerator.GenerateBaseClassCode();
+            WriteToOutputProvider(baseClassCode, Options.BaseClass, false);
+
+            var baseClassExtenderCode = baseClassCodeGenerator.GenereateExtenderCode();
+            WriteToOutputProvider(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
+        }
+
+        internal abstract Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators();
     }
 }

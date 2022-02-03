@@ -44,19 +44,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return 0;
         }
 
-        internal async Task GenerateContentTypeModels()
-        {
-            var classCodeGenerators = await GetClassCodeGenerators();
-
-            if (!classCodeGenerators.Any())
-            {
-                Console.WriteLine(NoContentTypeAvailableMessage);
-                return;
-            }
-
-            WriteToOutputProvider(classCodeGenerators);
-        }
-
         internal async Task GenerateTypeProvider()
         {
             var classCodeGenerators = await GetClassCodeGenerators();
@@ -78,7 +65,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             WriteToOutputProvider(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
         }
 
-        internal async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
+        internal override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
             var deliveryTypes = (await _client.GetTypesAsync()).Types;
 
@@ -149,30 +136,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
             var classFilename = $"{classDefinition.ClassName}";
 
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, true);
-        }
-
-        internal async Task GenerateBaseClass()
-        {
-            var classCodeGenerators = await GetClassCodeGenerators();
-
-            if (!classCodeGenerators.Any())
-            {
-                Console.WriteLine(NoContentTypeAvailableMessage);
-                return;
-            }
-
-            var baseClassCodeGenerator = new BaseClassCodeGenerator(Options.BaseClass, Options.Namespace);
-
-            foreach (var codeGenerator in classCodeGenerators)
-            {
-                baseClassCodeGenerator.AddClassNameToExtend(codeGenerator.ClassDefinition.ClassName);
-            }
-
-            var baseClassCode = baseClassCodeGenerator.GenerateBaseClassCode();
-            WriteToOutputProvider(baseClassCode, Options.BaseClass, false);
-
-            var baseClassExtenderCode = baseClassCodeGenerator.GenereateExtenderCode();
-            WriteToOutputProvider(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
         }
 
         private static void TryAddSystemProperty(ClassDefinition classDefinition)
