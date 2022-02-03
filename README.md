@@ -2,19 +2,22 @@
 [![NuGet](https://img.shields.io/nuget/v/Kentico.Kontent.ModelGenerator.svg)](https://www.nuget.org/packages/Kentico.Kontent.ModelGenerator)
 [![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?logo=stackoverflow&logoColor=white)](https://stackoverflow.com/tags/kentico-kontent)
 
-# Kentico Kontent model generator utility for .NET
+# Kontent model generator utility for .NET
 
-This utility generates strongly-typed (POCO) models based on [Content Types](https://docs.kontent.ai/tutorials/set-up-projects/define-content-models/creating-and-deleting-content-types) in a Kentico Kontent project. You can choose one of the following:
+This utility generates strongly-typed (POCO) models based on [content types](https://kontent.ai/learn/tutorials/manage-kontent/content-modeling/create-and-delete-content-types) in a Kontent project. You can choose one of the following:
 - [Generate models compatible with the Kontent Delivery SDK for .NET](#how-to-use-for-delivery-sdk)
 - [Generate models compatible with the Kontent Management SDK for .NET](#how-to-use-for-management-sdk). 
 
 ## How to use for [Delivery SDK](https://github.com/Kentico/kontent-delivery-sdk-net)
+
 To fully understand all benefits of this approach, please read the [documentation](https://github.com/Kentico/kontent-delivery-sdk-net/wiki/Working-with-strongly-typed-models#customizing-the-strong-type-binding-logic).
 
 ### .NET Core Tool
+
 The recommended way of obtaining this tool is installing it as a [.NET Core Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools). You can install it as a global tool or per project as a local tool.
 
 **Global Tool**
+
 - `dotnet tool install -g Kentico.Kontent.ModelGenerator` 
 
 **Local Tool**
@@ -35,6 +38,7 @@ Latest release: [Download](https://github.com/Kentico/kontent-generators-net/rel
 Since the app is [self-contained](https://www.hanselman.com/blog/SelfcontainedNETCoreApplications.aspx), it's an ideal option for machines without .NET Core or .NET Core SDK installed.
 
 **Usage:**
+
 ```
 KontentModelGenerator.exe --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]
 ```
@@ -66,12 +70,15 @@ See the [list of all RIDs](https://docs.microsoft.com/en-us/dotnet/articles/core
 | `-b` | `--baseclass` | False | `null` | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes |
 
 ### CLI Syntax
+
 Short keys such as `-s true` are interchangable with the long keys `--structuredmodel true`. Other possible syntax is `-s=true` or `--structuredmodel=true`. Parameter values are case-insensitive, so you can use both `-s=true` and `-s=True`. To see all aspects of the syntax, see the [MS docs](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.commandlineconfigurationextensions.addcommandline).
 
 ### Config file
+
 These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
 
 ### Advanced configuration (Preview API, Secure API)
+
 There are two ways of configuring advanced Delivery SDK options (such as secure API access, preview API access, and [others](https://github.com/Kentico/kontent-delivery-sdk-net/blob/master/Kentico.Kontent.Delivery/Configuration/DeliveryOptions.cs)):
 
 1. Command-line arguments `--DeliveryOptions:UseSecureAccess true` ([syntax](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.commandlineconfigurationextensions.addcommandline))
@@ -105,6 +112,7 @@ namespace KenticoKontentModels
 ```
 
 ### Customizing models - Handling content element constraints
+
 Currently, the generator is built on top of the Delivery API which doesn't provide information about content element constraints such as "Allowed Content Types" or "Limit number of items". In case you want your models to be more specific, this is the best practice on how to extend them:
 
 Model.Generated.cs
@@ -141,8 +149,8 @@ KontentModelGenerator.exe --projectid "<projectid>" --contentmanagementapi true 
 
 | Short key          | Long key | Required  | Default value  | Description |
 | --------------------- |:---------:|:---------:|:--------------:|:-----------:|
-| `-p` | `--projectid` | True  | `null` | A GUID that can be found in [Kentico Kontent](https://app.kontent.ai) -> API keys -> Project ID |
-| `-c` | `--contentmanagementapi` | True  | `false` | Indicates that models should be generated for  [Content Management SDK](https://github.com/Kentico/content-management-sdk-net) |
+| `-p` | `--projectid` | True  | `null` | A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID |
+| `-c` | `--contentmanagementapi` | True  | `false` | Indicates that models should be generated for [Management SDK](https://github.com/Kentico/content-management-sdk-net) |
 | `-n` | `--namespace` | False | `KenticoKontentModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
 | `-o` | `--outputdir` | False | `\.` | An output folder path |
 | `-f` | `--filenamesuffix` | False | `null` | Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs) |
@@ -179,9 +187,11 @@ namespace KenticoKontentModels
 ```
 
 ## Feedback & Contributing
+
 Check out the [contributing](https://github.com/Kentico/kontent-generators-net/blob/master/CONTRIBUTING.md) page to see the best places to file issues, start discussions and begin contributing.
 
 ### Wall of Fame
+
 We would like to express our thanks to the following people who contributed and made the project possible:
 
 - [Dražen Janjiček](https://github.com/djanjicek) - [EXLRT](http://www.exlrt.com/) 
