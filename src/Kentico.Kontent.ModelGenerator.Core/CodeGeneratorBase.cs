@@ -25,6 +25,20 @@ namespace Kentico.Kontent.ModelGenerator.Core
             OutputProvider = outputProvider;
         }
 
+        public async Task<int> RunAsync()
+        {
+            await GenerateContentTypeModels();
+
+            if (!string.IsNullOrEmpty(Options.BaseClass))
+            {
+                await GenerateBaseClass();
+            }
+
+            return 0;
+        }
+
+        protected string GetFileClassName(string className) => $"{className}{FilenameSuffix}";
+
         protected void WriteToOutputProvider(string content, string fileName, bool overwriteExisting)
         {
             if (string.IsNullOrEmpty(content))

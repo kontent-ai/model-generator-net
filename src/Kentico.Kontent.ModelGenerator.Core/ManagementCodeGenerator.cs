@@ -30,18 +30,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
             _managementClient = managementClient;
         }
 
-        public async Task<int> RunAsync()
-        {
-            await GenerateContentTypeModels();
-
-            if (!string.IsNullOrEmpty(Options.BaseClass))
-            {
-                await GenerateBaseClass();
-            }
-
-            return 0;
-        }
-
         internal override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
             var managementTypes = await GetAllContentModelsAsync(await _managementClient.ListContentTypesAsync());
@@ -108,7 +96,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 }
             }
 
-            var classFilename = $"{classDefinition.ClassName}{FilenameSuffix}";
+            var classFilename = GetFileClassName(classDefinition.ClassName);
 
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
         }

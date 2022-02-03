@@ -48,9 +48,11 @@ namespace Kentico.Kontent.ModelGenerator
                 options.Validate();
 
                 // Code generator entry point
-                return options.ManagementApi
-                    ? await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync()
-                    : await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync();
+                var codeGenerator = (CodeGeneratorBase)(options.ManagementApi
+                    ? serviceProvider.GetService<ManagementCodeGenerator>()
+                    : serviceProvider.GetService<DeliveryCodeGenerator>());
+
+                return await codeGenerator.RunAsync();
             }
             catch (AggregateException aex)
             {

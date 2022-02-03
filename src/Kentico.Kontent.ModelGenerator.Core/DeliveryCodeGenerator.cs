@@ -27,18 +27,13 @@ namespace Kentico.Kontent.ModelGenerator.Core
             _client = deliveryClient;
         }
 
-        public async Task<int> RunAsync()
+        public new async Task<int> RunAsync()
         {
-            await GenerateContentTypeModels();
+            await base.RunAsync();
 
             if (Options.WithTypeProvider)
             {
                 await GenerateTypeProvider();
-            }
-
-            if (!string.IsNullOrEmpty(Options.BaseClass))
-            {
-                await GenerateBaseClass();
             }
 
             return 0;
@@ -125,7 +120,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             TryAddSystemProperty(classDefinition);
 
-            var classFilename = $"{classDefinition.ClassName}{FilenameSuffix}";
+            var classFilename = GetFileClassName(classDefinition.ClassName);
 
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
         }
