@@ -2,24 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Management;
 using Kentico.Kontent.Management.Models.Shared;
 using Kentico.Kontent.Management.Models.Types;
+using Kentico.Kontent.Management.Models.Types.Elements;
 using Kentico.Kontent.Management.Models.TypeSnippets;
 using Kentico.Kontent.ModelGenerator.Core.Common;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
-using Kentico.Kontent.ModelGenerator.Core.Generators;
 using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
 using Kentico.Kontent.ModelGenerator.Core.Helpers;
 using Microsoft.Extensions.Options;
 
 namespace Kentico.Kontent.ModelGenerator.Core
 {
-    public class CodeGenerator
+    public class ManagementCodeGenerator
     {
         private readonly CodeGeneratorOptions _options;
-        private readonly IDeliveryClient _client;
         private readonly IManagementClient _managementClient;
         private readonly IOutputProvider _outputProvider;
 
@@ -27,10 +25,14 @@ namespace Kentico.Kontent.ModelGenerator.Core
         private string NoContentTypeAvailableMessage =>
             $@"No content type available for the project ({_options.DeliveryOptions.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.";
 
-        public CodeGenerator(IOptions<CodeGeneratorOptions> options, IDeliveryClient deliveryClient, IOutputProvider outputProvider, IManagementClient managementClient)
+        public ManagementCodeGenerator(IOptions<CodeGeneratorOptions> options, IManagementClient managementClient, IOutputProvider outputProvider)
         {
+            if (!options.Value.ManagementApi)
+            {
+                throw new InvalidOperationException("Cannot create Management models with Delivery API options.");
+            }
+
             _options = options.Value;
-            _client = deliveryClient;
             _outputProvider = outputProvider;
             _managementClient = managementClient;
         }
@@ -38,11 +40,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
         public async Task<int> RunAsync()
         {
             await GenerateContentTypeModels();
-
-            if (!_options.ManagementApi && _options.WithTypeProvider)
-            {
-                await GenerateTypeProvider();
-            }
 
             if (!string.IsNullOrEmpty(_options.BaseClass))
             {
@@ -65,47 +62,18 @@ namespace Kentico.Kontent.ModelGenerator.Core
             WriteToOutputProvider(classCodeGenerators);
         }
 
-        internal async Task GenerateTypeProvider()
-        {
-            var classCodeGenerators = await GetClassCodeGenerators();
-
-            if (!classCodeGenerators.Any())
-            {
-                Console.WriteLine(NoContentTypeAvailableMessage);
-                return;
-            }
-
-            var typeProviderCodeGenerator = new TypeProviderCodeGenerator(_options.Namespace);
-
-            foreach (var codeGenerator in classCodeGenerators)
-            {
-                typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
-            }
-
-            var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
-            WriteToOutputProvider(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
-        }
-
-
         internal async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
-            var deliveryTypes = (await _client.GetTypesAsync()).Types;
-            IEnumerable<ContentTypeModel> managementTypes = null;
-            IEnumerable<ContentTypeSnippetModel> managementSnippets = null;
-
-            if (_options.ManagementApi)
-            {
-                managementTypes = await GetAllContentModelsAsync(await _managementClient.ListContentTypesAsync());
-                managementSnippets = await GetAllContentModelsAsync(await _managementClient.ListContentTypeSnippetsAsync());
-            }
+            var managementTypes = await GetAllContentModelsAsync(await _managementClient.ListContentTypesAsync());
+            var managementSnippets = await GetAllContentModelsAsync(await _managementClient.ListContentTypeSnippetsAsync());
 
             var codeGenerators = new List<ClassCodeGenerator>();
-            if (deliveryTypes == null)
+            if (managementTypes == null || !managementTypes.Any())
             {
                 return codeGenerators;
             }
 
-            foreach (var contentType in deliveryTypes)
+            foreach (var contentType in managementTypes)
             {
                 try
                 {
@@ -114,35 +82,37 @@ namespace Kentico.Kontent.ModelGenerator.Core
                         codeGenerators.Add(GetCustomClassCodeGenerator(contentType));
                     }
 
-                    var managementContentType = _options.ManagementApi
-                        ? managementTypes?.FirstOrDefault(managementType => managementType.Codename == contentType.System.Codename)
-                        : null;
-
-                    codeGenerators.Add(GetClassCodeGenerator(contentType, managementSnippets, managementContentType));
+                    codeGenerators.Add(GetClassCodeGenerator(contentType, managementSnippets));
                 }
                 catch (InvalidIdentifierException)
                 {
-                    Console.WriteLine($"Warning: Skipping Content Type '{contentType.System.Codename}'. Can't create valid C# identifier from its name.");
+                    Console.WriteLine($"Warning: Skipping Content Type '{contentType.Codename}'. Can't create valid C# identifier from its name.");
                 }
             }
 
             return codeGenerators;
         }
 
-        internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType, IEnumerable<ContentTypeSnippetModel> managementSnippets = null, ContentTypeModel managementContentType = null)
+        internal ClassCodeGenerator GetClassCodeGenerator(ContentTypeModel contentType, IEnumerable<ContentTypeSnippetModel> managementSnippets = null)
         {
-            var classDefinition = new ClassDefinition(contentType.System.Codename);
+            var classDefinition = new ClassDefinition(contentType.Codename);
 
-            foreach (var element in contentType.Elements.Values)
+            foreach (var element in contentType.Elements)
             {
                 try
                 {
-                    var managementElement = ManagementElementHelper.GetManagementElement(_options.ManagementApi, element, managementSnippets, managementContentType);
-                    var elementType = ElementTypeHelper.GetElementType(_options, element.Type, managementElement);
-                    var property = Property.FromContentType(element.Codename, elementType, _options.ManagementApi, managementElement?.Id.ToString());
-
-                    classDefinition.AddPropertyCodenameConstant(element);
-                    classDefinition.AddProperty(property);
+                    var snippetElements = ManagementElementHelper.GetManagementContentTypeSnippetElements(element, managementSnippets);
+                    if (snippetElements == null)
+                    {
+                        AddProperty(element, ref classDefinition);
+                    }
+                    else
+                    {
+                        foreach (var snippetElement in snippetElements)
+                        {
+                            AddProperty(snippetElement, ref classDefinition);
+                        }
+                    }
                 }
                 catch (InvalidOperationException)
                 {
@@ -165,9 +135,17 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(_options, classDefinition, classFilename);
         }
 
-        internal ClassCodeGenerator GetCustomClassCodeGenerator(IContentType contentType)
+        private void AddProperty(ElementMetadataBase element, ref ClassDefinition classDefinition)
         {
-            var classDefinition = new ClassDefinition(contentType.System.Codename);
+            var property = Property.FromContentTypeElement(element);
+
+            classDefinition.AddPropertyCodenameConstant(element.Codename);
+            classDefinition.AddProperty(property);
+        }
+
+        internal ClassCodeGenerator GetCustomClassCodeGenerator(ContentTypeModel contentType)
+        {
+            var classDefinition = new ClassDefinition(contentType.Codename);
             var classFilename = $"{classDefinition.ClassName}";
 
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(_options, classDefinition, classFilename, true);
