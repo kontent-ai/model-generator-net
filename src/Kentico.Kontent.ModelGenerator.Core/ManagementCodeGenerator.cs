@@ -126,14 +126,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
         }
 
-        private void AddProperty(ElementMetadataBase element, ref ClassDefinition classDefinition)
-        {
-            var property = Property.FromContentTypeElement(element);
-
-            classDefinition.AddPropertyCodenameConstant(element.Codename);
-            classDefinition.AddProperty(property);
-        }
-
         internal ClassCodeGenerator GetCustomClassCodeGenerator(ContentTypeModel contentType)
         {
             var classDefinition = new ClassDefinition(contentType.Codename);
@@ -166,13 +158,16 @@ namespace Kentico.Kontent.ModelGenerator.Core
             WriteToOutputProvider(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
         }
 
-        private async Task<IEnumerable<T>> GetAllContentModelsAsync<T>(IListingResponseModel<T> response)
+        private static void AddProperty(ElementMetadataBase element, ref ClassDefinition classDefinition)
         {
-            if (!Options.ManagementApi)
-            {
-                return null;
-            }
+            var property = Property.FromContentTypeElement(element);
 
+            classDefinition.AddPropertyCodenameConstant(element.Codename);
+            classDefinition.AddProperty(property);
+        }
+
+        private static async Task<IEnumerable<T>> GetAllContentModelsAsync<T>(IListingResponseModel<T> response)
+        {
             var contentModels = new List<T>();
             while (true)
             {

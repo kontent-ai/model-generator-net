@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Kentico.Kontent.Delivery.Abstractions;
-using Kentico.Kontent.Management.Models.Shared;
 using Kentico.Kontent.ModelGenerator.Core.Common;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Kentico.Kontent.ModelGenerator.Core.Generators;
@@ -176,7 +175,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             WriteToOutputProvider(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
         }
 
-        private void TryAddSystemProperty(ClassDefinition classDefinition)
+        private static void TryAddSystemProperty(ClassDefinition classDefinition)
         {
             try
             {
