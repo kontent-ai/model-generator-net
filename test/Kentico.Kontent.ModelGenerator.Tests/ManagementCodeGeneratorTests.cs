@@ -28,6 +28,20 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Fact]
+        public void Constructor_ManagementIsTrue_Throws()
+        {
+            var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+            mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+            {
+                ManagementApi = false
+            });
+
+            var outputProvider = new Mock<IOutputProvider>();
+
+            Assert.Throws<InvalidOperationException>(() => new ManagementCodeGenerator(mockOptions.Object, outputProvider.Object, _managementClient));
+        }
+
+        [Fact]
         public void CreateCodeGeneratorOptions_NoOutputSetInJsonNorInParameters_OutputDirHasDefaultValue()
         {
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -69,7 +83,6 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var outputProvider = new Mock<IOutputProvider>();
             var managementClient = new Mock<IManagementClient>();
 
-
             var contentTypeCodename = "Contenttype";
             var elementCodename = "element_codename";
             var contentType = new ContentTypeModel
@@ -81,7 +94,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 }
             };
 
-            var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, managementClient.Object, outputProvider.Object);
+            var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, outputProvider.Object, managementClient.Object);
 
             var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>());
 
@@ -100,7 +113,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
             });
 
-            var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, _managementClient, new FileSystemOutputProvider(mockOptions.Object));
+            var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
 
             await codeGenerator.GenerateContentTypeModels();
 
@@ -129,7 +142,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 ManagementApi = true
             });
 
-            var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, _managementClient, new FileSystemOutputProvider(mockOptions.Object));
+            var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
 
             await codeGenerator.GenerateContentTypeModels();
 
@@ -160,7 +173,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
             });
 
-            var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, _managementClient, new FileSystemOutputProvider(mockOptions.Object));
+            var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
 
             await codeGenerator.GenerateContentTypeModels();
 

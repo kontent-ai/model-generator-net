@@ -19,7 +19,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
     {
         private readonly IManagementClient _managementClient;
 
-        public ManagementCodeGenerator(IOptions<CodeGeneratorOptions> options, IManagementClient managementClient, IOutputProvider outputProvider)
+        public ManagementCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IManagementClient managementClient)
             : base(options, outputProvider)
         {
             if (!options.Value.ManagementApi)

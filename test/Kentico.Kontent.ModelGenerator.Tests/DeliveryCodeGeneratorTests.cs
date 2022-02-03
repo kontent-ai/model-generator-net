@@ -20,6 +20,21 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         protected override string TempDir => Path.Combine(Path.GetTempPath(), "DeliveryCodeGeneratorIntegrationTests");
 
         [Fact]
+        public void Constructor_ManagementIsTrue_Throws()
+        {
+            var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+            mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+            {
+                ManagementApi = true
+            });
+
+            var deliveryClient = new Mock<IDeliveryClient>();
+            var outputProvider = new Mock<IOutputProvider>();
+
+            Assert.Throws<InvalidOperationException>(() => new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object));
+        }
+
+        [Fact]
         public void CreateCodeGeneratorOptions_NoOutputSetInJsonNorInParameters_OutputDirHasDefaultValue()
         {
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();

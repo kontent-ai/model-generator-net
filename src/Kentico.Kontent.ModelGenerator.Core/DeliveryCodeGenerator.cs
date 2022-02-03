@@ -14,7 +14,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class DeliveryCodeGenerator : CodeGeneratorBase
     {
-        private readonly IDeliveryClient _client;
+        private readonly IDeliveryClient _deliveryClient;
 
         public DeliveryCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IDeliveryClient deliveryClient)
             : base(options, outputProvider)
@@ -24,7 +24,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 throw new InvalidOperationException("Cannot create Delivery models with Management API options.");
             }
 
-            _client = deliveryClient;
+            _deliveryClient = deliveryClient;
         }
 
         public new async Task<int> RunAsync()
@@ -41,7 +41,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
-            var deliveryTypes = (await _client.GetTypesAsync()).Types;
+            var deliveryTypes = (await _deliveryClient.GetTypesAsync()).Types;
 
             var codeGenerators = new List<ClassCodeGenerator>();
             if (deliveryTypes == null)
