@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Kentico.Kontent.ModelGenerator.Core.Configuration;
+﻿using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace Kentico.Kontent.ModelGenerator.Core
