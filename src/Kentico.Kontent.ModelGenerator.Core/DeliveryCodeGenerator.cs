@@ -13,38 +13,31 @@ using Microsoft.Extensions.Options;
 
 namespace Kentico.Kontent.ModelGenerator.Core
 {
-    public class DeliveryCodeGenerator
+    public class DeliveryCodeGenerator : CodeGeneratorBase
     {
-        private readonly CodeGeneratorOptions _options;
         private readonly IDeliveryClient _client;
-        private readonly IOutputProvider _outputProvider;
-
-        private string FilenameSuffix => string.IsNullOrEmpty(_options.FileNameSuffix) ? "" : $".{_options.FileNameSuffix}";
-        private string NoContentTypeAvailableMessage =>
-            $@"No content type available for the project ({_options.DeliveryOptions.ProjectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.";
 
         public DeliveryCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IDeliveryClient deliveryClient)
+            : base(options, outputProvider)
         {
             if (options.Value.ManagementApi)
             {
                 throw new InvalidOperationException("Cannot create Delivery models with Management API options.");
             }
 
-            _options = options.Value;
             _client = deliveryClient;
-            _outputProvider = outputProvider;
         }
 
         public async Task<int> RunAsync()
         {
             await GenerateContentTypeModels();
 
-            if (_options.WithTypeProvider)
+            if (Options.WithTypeProvider)
             {
                 await GenerateTypeProvider();
             }
 
-            if (!string.IsNullOrEmpty(_options.BaseClass))
+            if (!string.IsNullOrEmpty(Options.BaseClass))
             {
                 await GenerateBaseClass();
             }
@@ -75,7 +68,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 return;
             }
 
-            var typeProviderCodeGenerator = new TypeProviderCodeGenerator(_options.Namespace);
+            var typeProviderCodeGenerator = new TypeProviderCodeGenerator(Options.Namespace);
 
             foreach (var codeGenerator in classCodeGenerators)
             {
@@ -100,7 +93,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             {
                 try
                 {
-                    if (_options.GeneratePartials)
+                    if (Options.GeneratePartials)
                     {
                         codeGenerators.Add(GetCustomClassCodeGenerator(contentType));
                     }
@@ -124,7 +117,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             {
                 try
                 {
-                    var elementType = DeliveryElementHelper.GetElementType(_options, element.Type);
+                    var elementType = DeliveryElementHelper.GetElementType(Options, element.Type);
                     var property = Property.FromContentTypeElement(element.Codename, elementType);
 
                     classDefinition.AddPropertyCodenameConstant(element.Codename);
@@ -148,7 +141,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             var classFilename = $"{classDefinition.ClassName}{FilenameSuffix}";
 
-            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(_options, classDefinition, classFilename);
+            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
         }
 
         internal ClassCodeGenerator GetCustomClassCodeGenerator(IContentType contentType)
@@ -156,7 +149,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             var classDefinition = new ClassDefinition(contentType.System.Codename);
             var classFilename = $"{classDefinition.ClassName}";
 
-            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(_options, classDefinition, classFilename, true);
+            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, true);
         }
 
         internal async Task GenerateBaseClass()
@@ -169,7 +162,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 return;
             }
 
-            var baseClassCodeGenerator = new BaseClassCodeGenerator(_options.BaseClass, _options.Namespace);
+            var baseClassCodeGenerator = new BaseClassCodeGenerator(Options.BaseClass, Options.Namespace);
 
             foreach (var codeGenerator in classCodeGenerators)
             {
@@ -177,7 +170,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             }
 
             var baseClassCode = baseClassCodeGenerator.GenerateBaseClassCode();
-            WriteToOutputProvider(baseClassCode, _options.BaseClass, false);
+            WriteToOutputProvider(baseClassCode, Options.BaseClass, false);
 
             var baseClassExtenderCode = baseClassCodeGenerator.GenereateExtenderCode();
             WriteToOutputProvider(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
@@ -185,7 +178,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private void TryAddSystemProperty(ClassDefinition classDefinition)
         {
-            if (_options.ManagementApi)
+            if (Options.ManagementApi)
             {
                 return;
             }
@@ -208,7 +201,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 return;
             }
 
-            _outputProvider.Output(content, fileName, overwriteExisting);
+            OutputProvider.Output(content, fileName, overwriteExisting);
             Console.WriteLine($"{fileName} class was successfully created.");
         }
 
@@ -216,7 +209,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
         {
             foreach (var codeGenerator in classCodeGenerators)
             {
-                _outputProvider.Output(codeGenerator.GenerateCode(), codeGenerator.ClassFilename,
+                OutputProvider.Output(codeGenerator.GenerateCode(), codeGenerator.ClassFilename,
                     codeGenerator.OverwriteExisting);
             }
 
@@ -225,7 +218,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private async Task<IEnumerable<T>> GetAllContentModelsAsync<T>(IListingResponseModel<T> response)
         {
-            if (!_options.ManagementApi)
+            if (!Options.ManagementApi)
             {
                 return null;
             }
