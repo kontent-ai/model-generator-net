@@ -11,7 +11,7 @@
 
 # Kontent model generator utility for .NET
 
-This utility generates strongly-typed (POCO) models based on [Content Types](https://docs.kontent.ai/tutorials/set-up-projects/define-content-models/creating-and-deleting-content-types) in a [Kontent by Kentico](https://kontent.ai) project. You can choose one of the following:
+This utility generates strongly-typed (POCO) models based on [content types](https://kontent.ai/learn/tutorials/manage-kontent/content-modeling/create-and-delete-content-types) in a Kontent project. You can choose one of the following:
 
 - [Generate models compatible with the Kontent Delivery SDK for .NET](#how-to-use-for-delivery-sdk)
 - [Generate models compatible with the Kontent Management SDK for .NET](#how-to-use-for-management-sdk).
@@ -144,7 +144,7 @@ KontentModelGenerator.exe --projectid "<projectid>" --contentmanagementapi true 
 | Short key |         Long key         | Required |     Default value      |                                                              Description                                                               |
 | --------- | :----------------------: | :------: | :--------------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
 | `-p`      |      `--projectid`       |   True   |         `null`         |                        A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                         |
-| `-c`      | `--contentmanagementapi` |   True   |        `false`         |     Indicates that models should be generated for [Content Management SDK](https://github.com/Kentico/content-management-sdk-net)      |
+| `-c`      | `--contentmanagementapi` |   True   |        `false`         |     Indicates that models should be generated for [Management SDK](https://github.com/Kentico/content-management-sdk-net)              |
 | `-n`      |      `--namespace`       |  False   | `KenticoKontentModels` |                          A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                          |
 | `-o`      |      `--outputdir`       |  False   |          `\.`          |                                                         An output folder path                                                          |
 | `-f`      |    `--filenamesuffix`    |  False   |         `null`         |                             Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                             |
