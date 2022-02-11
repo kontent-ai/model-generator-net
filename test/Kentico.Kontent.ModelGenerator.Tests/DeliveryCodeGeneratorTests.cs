@@ -101,7 +101,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
-                .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")).ConfigureAwait(false));
+                .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -116,8 +116,8 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient);
 
-            await codeGenerator.GenerateContentTypeModels().ConfigureAwait(false);
-            await codeGenerator.GenerateTypeProvider().ConfigureAwait(false);
+            await codeGenerator.GenerateContentTypeModels();
+            await codeGenerator.GenerateTypeProvider();
 
             Assert.True(Directory.GetFiles(Path.GetFullPath(TempDir)).Length > 10);
 
@@ -134,7 +134,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
-                .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")).ConfigureAwait(false));
+                .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             const string transformFilename = "CustomSuffix";
@@ -154,7 +154,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient);
 
-            await codeGenerator.GenerateContentTypeModels().ConfigureAwait(false);
+            await codeGenerator.GenerateContentTypeModels();
 
             Assert.True(Directory.GetFiles(Path.GetFullPath(TempDir)).Length > 10);
 
@@ -172,7 +172,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
-                .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")).ConfigureAwait(false));
+                .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
             var httpClient = mockHttp.ToHttpClient();
 
             const string transformFilename = "Generated";
@@ -193,7 +193,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient);
 
-            await codeGenerator.GenerateContentTypeModels().ConfigureAwait(false);
+            await codeGenerator.GenerateContentTypeModels();
 
             var allFilesCount = Directory.GetFiles(Path.GetFullPath(TempDir), "*.cs").Length;
             var generatedCount = Directory.GetFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs").Length;

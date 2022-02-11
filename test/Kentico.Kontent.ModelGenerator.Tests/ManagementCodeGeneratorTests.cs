@@ -115,7 +115,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
 
-            await codeGenerator.GenerateContentTypeModels().ConfigureAwait(false);
+            await codeGenerator.GenerateContentTypeModels();
 
             Assert.True(Directory.GetFiles(Path.GetFullPath(TempDir)).Length > 10);
 
@@ -144,7 +144,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
 
-            await codeGenerator.GenerateContentTypeModels().ConfigureAwait(false);
+            await codeGenerator.GenerateContentTypeModels();
 
             Assert.True(Directory.GetFiles(Path.GetFullPath(TempDir)).Length > 10);
 
@@ -175,7 +175,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
 
-            await codeGenerator.GenerateContentTypeModels().ConfigureAwait(false);
+            await codeGenerator.GenerateContentTypeModels();
 
             var allFilesCount = Directory.GetFiles(Path.GetFullPath(TempDir), "*.cs").Length;
             var generatedCount = Directory.GetFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs").Length;

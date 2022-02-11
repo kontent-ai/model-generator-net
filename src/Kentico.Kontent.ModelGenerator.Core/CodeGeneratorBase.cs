@@ -28,11 +28,11 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public async Task<int> RunAsync()
         {
-            await GenerateContentTypeModels().ConfigureAwait(false);
+            await GenerateContentTypeModels();
 
             if (!string.IsNullOrEmpty(Options.BaseClass))
             {
-                await GenerateBaseClass().ConfigureAwait(false);
+                await GenerateBaseClass();
             }
 
             return 0;
@@ -101,7 +101,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         internal async Task GenerateContentTypeModels()
         {
-            var classCodeGenerators = await GetClassCodeGenerators().ConfigureAwait(false);
+            var classCodeGenerators = await GetClassCodeGenerators();
 
             if (!classCodeGenerators.Any())
             {
@@ -114,7 +114,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private async Task GenerateBaseClass()
         {
-            var classCodeGenerators = await GetClassCodeGenerators().ConfigureAwait(false);
+            var classCodeGenerators = await GetClassCodeGenerators();
 
             if (!classCodeGenerators.Any())
             {
