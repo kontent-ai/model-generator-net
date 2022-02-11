@@ -25,7 +25,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         [Fact]
         public async Task CreateCodeGeneratorOptions_NoProjectId_ReturnsError()
         {
-            var result = await Program.Main(Array.Empty<string>());
+            var result = await Program.Main(Array.Empty<string>()).ConfigureAwait(false);
             Assert.Equal(1, result);
         }
 

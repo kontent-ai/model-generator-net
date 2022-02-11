@@ -29,11 +29,11 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public new async Task<int> RunAsync()
         {
-            await base.RunAsync();
+            await base.RunAsync().ConfigureAwait(false);
 
             if (Options.WithTypeProvider)
             {
-                await GenerateTypeProvider();
+                await GenerateTypeProvider().ConfigureAwait(false);
             }
 
             return 0;
@@ -41,7 +41,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
-            var deliveryTypes = (await _deliveryClient.GetTypesAsync()).Types;
+            var deliveryTypes = (await _deliveryClient.GetTypesAsync().ConfigureAwait(false)).Types;
 
             var codeGenerators = new List<ClassCodeGenerator>();
             if (deliveryTypes == null)
@@ -96,7 +96,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         internal async Task GenerateTypeProvider()
         {
-            var classCodeGenerators = await GetClassCodeGenerators();
+            var classCodeGenerators = await GetClassCodeGenerators().ConfigureAwait(false);
 
             if (!classCodeGenerators.Any())
             {

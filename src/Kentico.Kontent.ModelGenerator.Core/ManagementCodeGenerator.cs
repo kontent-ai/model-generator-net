@@ -32,8 +32,10 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
-            var managementTypes = await GetAllContentModelsAsync(await _managementClient.ListContentTypesAsync());
-            var managementSnippets = await GetAllContentModelsAsync(await _managementClient.ListContentTypeSnippetsAsync());
+            var managementTypesListingResponse = await _managementClient.ListContentTypesAsync().ConfigureAwait(false);
+            var managementSnippetsListingResponse = await _managementClient.ListContentTypeSnippetsAsync().ConfigureAwait(false);
+            var managementTypes = await GetAllContentModelsAsync(managementTypesListingResponse).ConfigureAwait(false);
+            var managementSnippets = await GetAllContentModelsAsync(managementSnippetsListingResponse).ConfigureAwait(false);
 
             var codeGenerators = new List<ClassCodeGenerator>();
             if (managementTypes == null || !managementTypes.Any())
@@ -108,7 +110,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                     break;
                 }
 
-                response = await response.GetNextPage();
+                response = await response.GetNextPage().ConfigureAwait(false);
             }
 
             return contentModels.ToList();
