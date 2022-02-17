@@ -1054,6 +1054,33 @@
           "type": "multiple_choice",
           "id": "7cd27ee9-6dd5-4f63-8708-7c767df3203a",
           "codename": "display_options"
+        },
+        {
+          "guidelines": "<p>So, guidelines as a text type are intended to give advice about a particular issue or task<br/></p>",
+          "type": "guidelines",
+          "id": "576d3c12-7158-45a6-862b-6b3eac00a1d8",
+          "codename": "guidelines"
+        },
+        {
+          "source_url": "https://app.kontent.ai/d2971204-e1ac-0013-b41e-1644276d0e61/content-models/types/edit/b7c58971-c975-4a57-8508-a89a00fb6939",
+          "json_parameters": null,
+          "allowed_elements": [],
+          "name": "CustomElement",
+          "guidelines": null,
+          "is_required": false,
+          "type": "custom",
+          "id": "78c9f891-857e-4978-bddd-8b962df5be77",
+          "codename": "customelement"
+        },
+        {
+          "item_count_limit": null,
+          "allowed_content_types": [],
+          "name": "subpages",
+          "guidelines": null,
+          "is_required": false,
+          "type": "subpages",
+          "id": "c7ed478d-c792-49a8-a145-4ed1815c5919",
+          "codename": "subpages"
         }
       ]
     },
