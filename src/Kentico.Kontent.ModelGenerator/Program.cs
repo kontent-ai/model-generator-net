@@ -82,6 +82,7 @@ namespace Kentico.Kontent.ModelGenerator
             var deliveryMappings = new Dictionary<string, string>
             {
                 { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
+                {"--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" }, // Backwards compatibility
                 { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
                 { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
             };
@@ -89,8 +90,10 @@ namespace Kentico.Kontent.ModelGenerator
             var managementMappings = new Dictionary<string, string>
             {
                 { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
+                {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" }, // Backwards compatibility
                 { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
-                { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" }
+                { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
+                { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" } // Backwards compatibility
             };
 
             return generalMappings
@@ -98,8 +101,7 @@ namespace Kentico.Kontent.ModelGenerator
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             bool ContainsManageApiArg() =>
-                args.Where((value, index) => value == "-m" && index + 1 < args.Length && args[index + 1] == "true")
-                    .Any();
+                args.Where((value, index) => (value is "-m" or "--managementapi") && index + 1 < args.Length && args[index + 1] == "true").Any();
         }
     }
 }

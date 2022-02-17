@@ -82,7 +82,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             };
 
             var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-            Assert.Equal("You have to provide the 'ProjectId' to generate type for Content Management SDK. See http://bit.ly/k-params for more details on configuration.", exception.Message);
+            Assert.Equal("You have to provide the 'ProjectId' to generate type for Management SDK. See https://bit.ly/3rSMeDA for more details on configuration.", exception.Message);
         }
 
         [Fact]
@@ -104,7 +104,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             };
 
             var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-            Assert.Equal("You have to provide the 'ProjectId' to generate type for Content Management SDK. See http://bit.ly/k-params for more details on configuration.", exception.Message);
+            Assert.Equal("You have to provide the 'ProjectId' to generate type for Management SDK. See https://bit.ly/3rSMeDA for more details on configuration.", exception.Message);
         }
 
         [Theory]
@@ -129,7 +129,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             };
 
             var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-            Assert.Equal("You have to provide the 'ApiKey' to generate type for Content Management SDK. See http://bit.ly/k-params for more details on configuration.", exception.Message);
+            Assert.Equal("You have to provide the 'ApiKey' to generate type for Management SDK. See https://bit.ly/3rSMeDA for more details on configuration.", exception.Message);
         }
     }
 }

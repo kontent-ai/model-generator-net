@@ -19,6 +19,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
             { "-b", nameof(CodeGeneratorOptions.BaseClass) },
             { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
+            { "--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
             { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
         };
 
@@ -66,8 +67,10 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
                 { "-b", nameof(CodeGeneratorOptions.BaseClass) },
                 { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
+                { "--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
                 { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
-                { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" }
+                { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
+                { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" }
             };
 
             var mappings = Program.GetSwitchMappings(new string[]

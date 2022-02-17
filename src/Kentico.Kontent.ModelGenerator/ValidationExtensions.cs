@@ -11,7 +11,9 @@ namespace Kentico.Kontent.ModelGenerator
     /// </summary>
     public static class ValidationExtensions
     {
-        private const string SeePart = "See http://bit.ly/k-params for more details on configuration.";
+        private const string DeliveryParamsLink = "http://bit.ly/k-params";
+        private const string ManagementParamsLink = "https://bit.ly/3rSMeDA";
+        private static string SeePart(bool managementApi) => $"See {(managementApi ? ManagementParamsLink : DeliveryParamsLink)} for more details on configuration.";
 
         /// <summary>
         /// Validates that CodeGeneratorOptions are initialized and performs some extra integrity validations.
@@ -36,14 +38,15 @@ namespace Kentico.Kontent.ModelGenerator
         /// <exception cref="Exception"></exception>
         private static void Validate(this ManagementOptions managementOptions)
         {
+            var seePart = SeePart(true);
             if (managementOptions?.ProjectId == null)
             {
-                throw new Exception($"You have to provide the '{nameof(ManagementOptions.ProjectId)}' to generate type for Content Management SDK. {SeePart}");
+                throw new Exception($"You have to provide the '{nameof(ManagementOptions.ProjectId)}' to generate type for Management SDK. {seePart}");
             }
 
             if (string.IsNullOrWhiteSpace(managementOptions.ApiKey))
             {
-                throw new Exception($"You have to provide the '{nameof(ManagementOptions.ApiKey)}' to generate type for Content Management SDK. {SeePart}");
+                throw new Exception($"You have to provide the '{nameof(ManagementOptions.ApiKey)}' to generate type for Management SDK. {seePart}");
             }
         }
 
@@ -55,7 +58,7 @@ namespace Kentico.Kontent.ModelGenerator
         {
             if (deliveryOptions == null)
             {
-                throw new Exception($"You have to provide at least the '{nameof(DeliveryOptions.ProjectId)}' argument. {SeePart}");
+                throw new Exception($"You have to provide at least the '{nameof(DeliveryOptions.ProjectId)}' argument. {SeePart(false)}");
             }
 
             DeliveryOptionsValidator.Validate(deliveryOptions);
