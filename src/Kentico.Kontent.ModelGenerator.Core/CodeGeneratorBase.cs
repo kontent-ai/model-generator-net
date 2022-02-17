@@ -99,7 +99,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             Console.WriteLine($"Warning: Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name.");
         }
 
-        internal async Task GenerateContentTypeModels()
+        private async Task GenerateContentTypeModels()
         {
             var classCodeGenerators = await GetClassCodeGenerators();
 

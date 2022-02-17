@@ -94,7 +94,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
         }
 
-        internal async Task GenerateTypeProvider()
+        private async Task GenerateTypeProvider()
         {
             var classCodeGenerators = await GetClassCodeGenerators();
 

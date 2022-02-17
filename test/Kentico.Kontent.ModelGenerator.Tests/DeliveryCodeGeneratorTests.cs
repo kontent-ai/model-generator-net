@@ -17,6 +17,10 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 {
     public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     {
+        /// <summary>
+        /// represents count of elements in 'delivery_types.json'
+        /// </summary>
+        private const int NumberOfContentTypes = 13;
         protected override string TempDir => Path.Combine(Path.GetTempPath(), "DeliveryCodeGeneratorIntegrationTests");
 
         [Fact]
@@ -97,7 +101,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Fact]
-        public async Task IntegrationTest()
+        public async Task IntegrationTest_RunAsync_CorrectFiles()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
@@ -107,30 +111,33 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
             {
+                DeliveryOptions = new DeliveryOptions { ProjectId = ProjectId },
                 Namespace = "CustomNamespace",
                 OutputDir = TempDir,
-                ManagementApi = false
+                ManagementApi = false,
+                GeneratePartials = false,
+                WithTypeProvider = false,
+                StructuredModel = false
             });
 
             var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
             var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient);
 
-            await codeGenerator.GenerateContentTypeModels();
-            await codeGenerator.GenerateTypeProvider();
+            await codeGenerator.RunAsync();
 
-            Assert.True(Directory.GetFiles(Path.GetFullPath(TempDir)).Length > 10);
+            Assert.Equal(NumberOfContentTypes, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
 
             Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs"));
             Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")));
-            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs"));
+            Assert.Empty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs"));
 
             // Cleanup
             Directory.Delete(TempDir, true);
         }
 
         [Fact]
-        public async Task IntegrationTestWithGeneratedSuffix()
+        public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
@@ -146,6 +153,8 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 Namespace = "CustomNamespace",
                 OutputDir = TempDir,
                 GeneratePartials = false,
+                StructuredModel = false,
+                WithTypeProvider = false,
                 FileNameSuffix = transformFilename,
                 ManagementApi = false
             });
@@ -154,9 +163,9 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient);
 
-            await codeGenerator.GenerateContentTypeModels();
+            await codeGenerator.RunAsync();
 
-            Assert.True(Directory.GetFiles(Path.GetFullPath(TempDir)).Length > 10);
+            Assert.Equal(NumberOfContentTypes, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
 
             foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir)))
             {
@@ -168,7 +177,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Fact]
-        public async Task IntegrationTestWithGeneratePartials()
+        public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles()
         {
             var mockHttp = new MockHttpMessageHandler();
             mockHttp.When("https://deliver.kontent.ai/*")
@@ -185,6 +194,8 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 OutputDir = TempDir,
                 FileNameSuffix = transformFilename,
                 GeneratePartials = true,
+                WithTypeProvider = false,
+                StructuredModel = false,
                 ManagementApi = false
             });
 
@@ -193,7 +204,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient);
 
-            await codeGenerator.GenerateContentTypeModels();
+            await codeGenerator.RunAsync();
 
             var allFilesCount = Directory.GetFiles(Path.GetFullPath(TempDir), "*.cs").Length;
             var generatedCount = Directory.GetFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs").Length;
@@ -204,6 +215,40 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 var customFileExists = File.Exists(filepath.Replace($".{transformFilename}", ""));
                 Assert.True(customFileExists);
             }
+
+            // Cleanup
+            Directory.Delete(TempDir, true);
+        }
+
+        [Fact]
+        public async Task IntegrationTest_RunAsync_TypeProvider_CorrectFiles()
+        {
+            var mockHttp = new MockHttpMessageHandler();
+            mockHttp.When("https://deliver.kontent.ai/*")
+                .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
+            var httpClient = mockHttp.ToHttpClient();
+
+            var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+            mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+            {
+                DeliveryOptions = new DeliveryOptions { ProjectId = ProjectId },
+                Namespace = "CustomNamespace",
+                OutputDir = TempDir,
+                ManagementApi = false,
+                GeneratePartials = false,
+                WithTypeProvider = true,
+                StructuredModel = false
+            });
+
+            var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
+
+            var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient);
+
+            await codeGenerator.RunAsync();
+
+            Assert.Equal(NumberOfContentTypes + 1, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
+
+            Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs"));
 
             // Cleanup
             Directory.Delete(TempDir, true);

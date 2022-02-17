@@ -19,6 +19,10 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 {
     public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
     {
+        /// <summary>
+        /// represents count of elements in 'management_types.json'
+        /// </summary>
+        private const int NumberOfContentTypes = 14;
         private readonly IManagementClient _managementClient;
         protected override string TempDir => Path.Combine(Path.GetTempPath(), "ManagementCodeGeneratorIntegrationTests");
 
@@ -102,7 +106,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Fact]
-        public async Task IntegrationTest()
+        public async Task IntegrationTest_RunAsync_CorrectFiles()
         {
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
@@ -110,14 +114,15 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 Namespace = "CustomNamespace",
                 OutputDir = TempDir,
                 ManagementApi = true,
+                GeneratePartials = false,
                 ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
             });
 
             var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
 
-            await codeGenerator.GenerateContentTypeModels();
+            await codeGenerator.RunAsync();
 
-            Assert.True(Directory.GetFiles(Path.GetFullPath(TempDir)).Length > 10);
+            Assert.Equal(NumberOfContentTypes, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
 
             Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs"));
             Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")));
@@ -127,7 +132,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Fact]
-        public async Task IntegrationTestWithGeneratedSuffix()
+        public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles()
         {
             const string transformFilename = "CustomSuffix";
 
@@ -144,9 +149,9 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
 
-            await codeGenerator.GenerateContentTypeModels();
+            await codeGenerator.RunAsync();
 
-            Assert.True(Directory.GetFiles(Path.GetFullPath(TempDir)).Length > 10);
+            Assert.Equal(NumberOfContentTypes, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
 
             foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir)))
             {
@@ -158,7 +163,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Fact]
-        public async Task IntegrationTestWithGeneratePartials()
+        public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles()
         {
             const string transformFilename = "Generated";
 
@@ -175,7 +180,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
 
-            await codeGenerator.GenerateContentTypeModels();
+            await codeGenerator.RunAsync();
 
             var allFilesCount = Directory.GetFiles(Path.GetFullPath(TempDir), "*.cs").Length;
             var generatedCount = Directory.GetFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs").Length;
