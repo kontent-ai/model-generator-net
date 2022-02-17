@@ -43,10 +43,10 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
 
             var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, classDefinition.ClassName);
 
-            string compiledCode = classCodeGenerator.GenerateCode();
+            var compiledCode = classCodeGenerator.GenerateCode();
 
-            string executingPath = AppContext.BaseDirectory;
-            string expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
+            var executingPath = AppContext.BaseDirectory;
+            var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
 
             Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
         }
@@ -67,7 +67,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
             definition.AddProperty(Property.FromContentTypeElement("custom", "custom"));
 
             var classCodeGenerator = new DeliveryClassCodeGenerator(definition, definition.ClassName);
-            string compiledCode = classCodeGenerator.GenerateCode();
+            var compiledCode = classCodeGenerator.GenerateCode();
 
             var compilation = CSharpCompilation.Create(
                 assemblyName: Path.GetRandomFileName(),
