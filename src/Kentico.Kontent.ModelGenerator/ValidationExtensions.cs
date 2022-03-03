@@ -11,7 +11,9 @@ namespace Kentico.Kontent.ModelGenerator
     /// </summary>
     public static class ValidationExtensions
     {
-        private const string SeePart = "See http://bit.ly/k-params for more details on configuration.";
+        private const string DeliveryParamsLink = "http://bit.ly/k-params";
+        private const string ManagementParamsLink = "https://bit.ly/3rSMeDA";
+        private static string SeePart(bool managementApi) => $"See {(managementApi ? ManagementParamsLink : DeliveryParamsLink)} for more details on configuration.";
 
         /// <summary>
         /// Validates that CodeGeneratorOptions are initialized and performs some extra integrity validations.
@@ -19,20 +21,32 @@ namespace Kentico.Kontent.ModelGenerator
         /// <param name="codeGeneratorOptions">CodeGeneratorOptions object to be validated</param>
         public static void Validate(this CodeGeneratorOptions codeGeneratorOptions)
         {
-            codeGeneratorOptions.DeliveryOptions.Validate();
-
-            if (codeGeneratorOptions.ContentManagementApi)
+            if (codeGeneratorOptions.ManagementApi)
             {
-                codeGeneratorOptions.ManagementOptions.ProjectId = codeGeneratorOptions.DeliveryOptions.ProjectId;
-                if (codeGeneratorOptions.ManagementOptions == null || codeGeneratorOptions.ManagementOptions.ProjectId == null)
-                {
-                    throw new Exception($"You have to provide the '{nameof(ManagementOptions.ProjectId)}' to generate type for Content Management SDK. {SeePart}");
-                }
+                codeGeneratorOptions.ManagementOptions.Validate();
+            }
+            else
+            {
+                codeGeneratorOptions.DeliveryOptions.Validate();
+            }
+        }
 
-                if (string.IsNullOrWhiteSpace(codeGeneratorOptions.ManagementOptions.ApiKey))
-                {
-                    throw new Exception($"You have to provide the '{nameof(ManagementOptions.ApiKey)}' to generate type for Content Management SDK. {SeePart}");
-                }
+        /// <summary>
+        /// Validates that ManagementOptions are initialized
+        /// </summary>
+        /// <param name="managementOptions">ManagementOptions object to be validated</param>
+        /// <exception cref="Exception"></exception>
+        private static void Validate(this ManagementOptions managementOptions)
+        {
+            var seePart = SeePart(true);
+            if (managementOptions?.ProjectId == null)
+            {
+                throw new Exception($"You have to provide the '{nameof(ManagementOptions.ProjectId)}' to generate type for Management SDK. {seePart}");
+            }
+
+            if (string.IsNullOrWhiteSpace(managementOptions.ApiKey))
+            {
+                throw new Exception($"You have to provide the '{nameof(ManagementOptions.ApiKey)}' to generate type for Management SDK. {seePart}");
             }
         }
 
@@ -44,12 +58,10 @@ namespace Kentico.Kontent.ModelGenerator
         {
             if (deliveryOptions == null)
             {
-                throw new Exception($"You have to provide at least the '{nameof(DeliveryOptions.ProjectId)}' argument. See http://bit.ly/k-params for more details on configuration.");
+                throw new Exception($"You have to provide at least the '{nameof(DeliveryOptions.ProjectId)}' argument. {SeePart(false)}");
             }
-            else
-            {
-                DeliveryOptionsValidator.Validate(deliveryOptions);
-            }
+
+            DeliveryOptionsValidator.Validate(deliveryOptions);
         }
     }
 }

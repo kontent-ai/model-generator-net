@@ -1090,12 +1090,21 @@
       ]
     },
     {
-      "snippet": {
-        "id": "edf908da-d4e3-4f63-bbaa-1966e04ba0ff"
-      },
-      "type": "snippet",
-      "id": "b7ca56af-c6a4-4aa9-a2e4-13fe825c1a0c",
-      "codename": "snippet"
+      "id": "111870f9-4fc1-4b34-92e8-42f8c316b848",
+      "codename": "snippet_content_model",
+      "last_modified": "2017-08-02T20:11:37.2303901Z",
+      "name": "Snippet content model",
+      "content_groups": [],
+      "elements": [
+        {
+          "snippet": {
+            "id": "edf908da-d4e3-4f63-bbaa-1966e04ba0ff"
+          },
+          "type": "snippet",
+          "id": "18892080-cd34-4c4d-af3a-9ba19a5fa5a4",
+          "codename": "snippet"
+        }
+      ]
     }
   ],
   "pagination": {

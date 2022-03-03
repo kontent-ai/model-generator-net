@@ -36,7 +36,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
             var classFileName = "classFileName";
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = false
+                ManagementApi = false
             };
 
             var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, false);
@@ -51,7 +51,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
             var classFileName = "classFileName";
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = false
+                ManagementApi = false
             };
 
             var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
@@ -66,7 +66,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
             var classFileName = "classFileName";
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = false
+                ManagementApi = false
             };
 
             var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, true);
@@ -82,7 +82,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
             var customNamespace = "CustomNameSpace";
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = false,
+                ManagementApi = false,
                 Namespace = customNamespace
             };
 
@@ -99,7 +99,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
             var customNamespace = "CustomNameSpace";
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = false,
+                ManagementApi = false,
                 Namespace = customNamespace
             };
 
@@ -117,7 +117,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
             var classFileName = "classFileName";
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = true
+                ManagementApi = true
             };
 
             var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, customPartial);
@@ -132,7 +132,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
             var classFileName = "classFileName";
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = true
+                ManagementApi = true
             };
 
             var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
@@ -148,7 +148,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
             var customNamespace = "CustomNameSpace";
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ContentManagementApi = true,
+                ManagementApi = true,
                 Namespace = customNamespace
             };
 

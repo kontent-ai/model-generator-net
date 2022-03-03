@@ -10,60 +10,38 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
 {
     public static class ManagementElementHelper
     {
-        public static ElementMetadataBase GetManagementElement(
-            bool cmApi,
-            IContentElement deliverElement,
-            IEnumerable<ContentTypeSnippetModel> managementSnippets,
-            ContentTypeModel managementContentType)
+        public static IEnumerable<ElementMetadataBase> GetManagementContentTypeSnippetElements(
+            ElementMetadataBase element,
+            IEnumerable<ContentTypeSnippetModel> managementSnippets)
         {
-            if (!cmApi)
+            Validate(element, managementSnippets);
+
+            if (element.Type != ElementMetadataType.ContentTypeSnippet)
             {
                 return null;
             }
 
-            Validate(deliverElement, managementSnippets, managementContentType);
-
-            var managementContentTypeElement = managementContentType.Elements.FirstOrDefault(el => el.Codename == deliverElement.Codename);
-            if (managementContentTypeElement != null)
-            {
-                return managementContentTypeElement;
-            }
-
-            var managementSnippet = managementSnippets.FirstOrDefault(s =>
-                managementContentType.Elements.FirstOrDefault(el =>
-                    el.Type == ElementMetadataType.ContentTypeSnippet && el.Codename == s.Codename) != null);
+            var managementSnippet = managementSnippets.FirstOrDefault(s => element.Codename == s.Codename);
             if (managementSnippet == null)
             {
                 throw new ArgumentException($"{nameof(managementSnippet)} shouldn't be null.");
             }
 
-            var managementSnippetElement = managementSnippet.Elements.FirstOrDefault(el => el.Codename == deliverElement.Codename);
-            if (managementSnippetElement == null)
-            {
-                throw new ArgumentException($"{nameof(managementSnippetElement)} shouldn't be null.");
-            }
-
-            return managementSnippetElement;
+            return managementSnippet.Elements;
         }
 
         private static void Validate(
-            IContentElement deliverElement,
-            IEnumerable<ContentTypeSnippetModel> managementSnippets,
-            ContentTypeModel managementContentType)
+            ElementMetadataBase element,
+            IEnumerable<ContentTypeSnippetModel> managementSnippets)
         {
-            if (deliverElement == null)
+            if (element == null)
             {
-                throw new ArgumentNullException(nameof(deliverElement));
+                throw new ArgumentNullException(nameof(element));
             }
 
             if (managementSnippets == null)
             {
                 throw new ArgumentNullException(nameof(managementSnippets));
-            }
-
-            if (managementContentType == null)
-            {
-                throw new ArgumentNullException(nameof(managementContentType));
             }
         }
     }
