@@ -11,7 +11,7 @@
 
 # Kontent model generator utility for .NET
 
-This utility generates strongly-typed (POCO) models based on [Content Types](https://docs.kontent.ai/tutorials/set-up-projects/define-content-models/creating-and-deleting-content-types) in a [Kontent by Kentico](https://kontent.ai) project. You can choose one of the following:
+This utility generates strongly-typed (POCO) models based on [content types](https://kontent.ai/learn/tutorials/manage-kontent/content-modeling/create-and-delete-content-types) in a Kontent project. You can choose one of the following:
 
 - [Generate models compatible with the Kontent Delivery SDK for .NET](#how-to-use-for-delivery-sdk)
 - [Generate models compatible with the Kontent Management SDK for .NET](#how-to-use-for-management-sdk).
