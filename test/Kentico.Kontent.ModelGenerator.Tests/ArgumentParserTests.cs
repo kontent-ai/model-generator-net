@@ -11,33 +11,78 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         {
             yield return new object[]
             {
+                new[] { "-o", @"C:\KC\demo\"" --namespace Some.NameSpace" },
+                new[] { "-o", @"C:\KC\demo", "--namespace", "Some.NameSpace" },
+            };
+            yield return new object[]
+            {
                 new[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace" },
                 new[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace" },
             };
             yield return new object[]
             {
-                new[] { "--outputdir", @"C:\KC\demo\"" -n Some.NameSpace" },
-                new[] { "--outputdir", @"C:\KC\demo", "-n", "Some.NameSpace" },
+                new[] { "-o", @"C:\KC\demo\"" -n Some.NameSpace" },
+                new[] { "-o", @"C:\KC\demo", "-n", "Some.NameSpace" },
             };
             yield return new object[]
             {
-                new[] { "--outputdir", @"C:\KC\demo\"" --generatepartials"  },
-                new[] { "--outputdir", @"C:\KC\demo", "--generatepartials" }
+                new[] { "-o", @"C:\KC\demo\"" --generatepartials"  },
+                new[] { "-o", @"C:\KC\demo", "--generatepartials" }
             };
             yield return new object[]
             {
-                new[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace -g" },
-                new[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace", "-g" },
+                new[] { "-o", @"C:\KC\demo\"" --namespace Some.NameSpace -g" },
+                new[] { "-o", @"C:\KC\demo", "--namespace", "Some.NameSpace", "-g" },
             };
             yield return new object[]
             {
-                new[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace --generatepartials" },
-                new[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace", "--generatepartials" },
+                new[] { "-o", @"C:\KC\demo\"" --namespace Some.NameSpace --generatepartials" },
+                new[] { "-o", @"C:\KC\demo", "--namespace", "Some.NameSpace", "--generatepartials" },
             };
             yield return new object[]
             {
-                new[] { "--outputdir", @"C:\KC\demo\"" --namespace Some.NameSpace --generatepartials -s --projectId 975bf280-fd91-488c-994c-2f04416e5ee3" },
-                new[] { "--outputdir", @"C:\KC\demo", "--namespace", "Some.NameSpace", "--generatepartials", "-s", "--projectId", "975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new[] { "-o", @"C:\KC\demo\"" --namespace Some.NameSpace --generatepartials -s --projectId 975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new[] { "-o", @"C:\KC\demo", "--namespace", "Some.NameSpace", "--generatepartials", "-s", "--projectId", "975bf280-fd91-488c-994c-2f04416e5ee3" },
+            };
+            yield return new object[]
+            {
+                new[] { "-o", @"C:\KC\demo\"" -s --projectId 975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new[] { "-o", @"C:\KC\demo", "-s", "--projectId", "975bf280-fd91-488c-994c-2f04416e5ee3" },
+            };
+            yield return new object[]
+            {
+                new[] { "-o", @"C:\KC\demo\"" --structuredmodel --projectId 975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new[] { "-o", @"C:\KC\demo", "--structuredmodel", "--projectId", "975bf280-fd91-488c-994c-2f04416e5ee3" },
+            };
+            yield return new object[]
+            {
+                new[] { "-o", @"C:\KC\demo\"" -b ""CodeGeneratorBase"" -p 975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new[] { "-o", @"C:\KC\demo", "-b", "CodeGeneratorBase", "-p", "975bf280-fd91-488c-994c-2f04416e5ee3" },
+            };
+            yield return new object[]
+            {
+                new[] { "-o", @"C:\KC\demo\"" --baseclass ""CodeGeneratorBase""  -p 975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new[] { "-o", @"C:\KC\demo", "--baseclass", "CodeGeneratorBase", "-p", "975bf280-fd91-488c-994c-2f04416e5ee3" },
+            };
+            yield return new object[]
+            {
+                new[] { "-o", @"C:\KC\demo\"" -t -p 975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new[] { "-o", @"C:\KC\demo", "-t", "-p", "975bf280-fd91-488c-994c-2f04416e5ee3" },
+            };
+            yield return new object[]
+            {
+                new[] { "-o", @"C:\KC\demo\"" --withtypeprovider -p 975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new[] { "-o", @"C:\KC\demo", "--withtypeprovider", "-p", "975bf280-fd91-488c-994c-2f04416e5ee3" },
+            };
+            yield return new object[]
+            {
+                new[] { "-o", @"C:\KC\demo\"" --managementapi true --apikey ""key"" -p 975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new[] { "-o", @"C:\KC\demo", "--managementapi", "true", "--apikey", "key", "-p", "975bf280-fd91-488c-994c-2f04416e5ee3" },
+            };
+            yield return new object[]
+            {
+                new[] { "-o", @"C:\KC\demo\"" -m true -k ""key"" -p 975bf280-fd91-488c-994c-2f04416e5ee3" },
+                new[] { "-o", @"C:\KC\demo", "-m", "true", "-k", "key", "-p", "975bf280-fd91-488c-994c-2f04416e5ee3" },
             };
         }
 
@@ -91,7 +136,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 };
             }
         }
-        
+
         [Theory]
         [MemberData(nameof(ParseCorruptedArguments_GetFixture))]
         public void ParseCorruptedArguments_ParsesArguments(string arg, List<Match> argumentStarts, List<string> expectedResult)

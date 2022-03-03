@@ -23,7 +23,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
                 throw new ArgumentNullException(nameof(classFilename));
             }
 
-            if (options.ContentManagementApi)
+            if (options.ManagementApi)
             {
                 return new ManagementClassCodeGenerator(classDefinition, classFilename, options.Namespace);
             }
