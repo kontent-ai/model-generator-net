@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Kentico.Kontent.Management;
-using Kentico.Kontent.Management.Models.Shared;
+using Kentico.Kontent.Management.Extenstions;
 using Kentico.Kontent.Management.Models.Types;
 using Kentico.Kontent.Management.Models.Types.Elements;
 using Kentico.Kontent.Management.Models.TypeSnippets;
@@ -32,8 +32,8 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
         {
-            var managementTypes = await GetAllContentModelsAsync(await _managementClient.ListContentTypesAsync());
-            var managementSnippets = await GetAllContentModelsAsync(await _managementClient.ListContentTypeSnippetsAsync());
+            var managementTypes = await _managementClient.ListContentTypesAsync().GetAllAsync();
+            var managementSnippets = await _managementClient.ListContentTypeSnippetsAsync().GetAllAsync();
 
             var codeGenerators = new List<ClassCodeGenerator>();
             if (managementTypes == null || !managementTypes.Any())
@@ -91,27 +91,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
             var classFilename = GetFileClassName(classDefinition.ClassName);
 
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
-        }
-
-        private static async Task<IEnumerable<T>> GetAllContentModelsAsync<T>(IListingResponseModel<T> response)
-        {
-            var contentModels = new List<T>();
-            while (true)
-            {
-                foreach (var model in response)
-                {
-                    contentModels.Add(model);
-                }
-
-                if (!response.HasNextPage())
-                {
-                    break;
-                }
-
-                response = await response.GetNextPage();
-            }
-
-            return contentModels.ToList();
         }
     }
 }

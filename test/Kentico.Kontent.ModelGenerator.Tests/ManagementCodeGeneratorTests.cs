@@ -202,14 +202,14 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var managementClientMock = new Mock<IManagementClient>();
 
             var contentTypeListingResponseModel = new Mock<IListingResponseModel<ContentTypeModel>>();
-            contentTypeListingResponseModel
+            contentTypeListingResponseModel.As<IEnumerable<ContentTypeModel>>()
                 .Setup(c => c.GetEnumerator())
-                .Returns(managementModelsProvider.ManagementContentTypeModels);
+                .Returns(() => managementModelsProvider.ManagementContentTypeModels);
 
             var contentTypeSnippetListingResponseModel = new Mock<IListingResponseModel<ContentTypeSnippetModel>>();
-            contentTypeSnippetListingResponseModel
+            contentTypeSnippetListingResponseModel.As<IEnumerable<ContentTypeSnippetModel>>()
                 .Setup(c => c.GetEnumerator())
-                .Returns(managementModelsProvider.ManagementContentTypeSnippetModels);
+                .Returns(() => managementModelsProvider.ManagementContentTypeSnippetModels);
 
             managementClientMock.Setup(client => client.ListContentTypeSnippetsAsync())
                 .Returns(Task.FromResult(contentTypeSnippetListingResponseModel.Object));
