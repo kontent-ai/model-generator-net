@@ -202,6 +202,7 @@ namespace KenticoKontentModels
     }
 }
 ```
+⚠️ Please note that _Guidelines_ element is not supported, thus it will not be included in the generated model.
 
 ## Feedback & Contributing
 
