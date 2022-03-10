@@ -91,6 +91,9 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 case ArgumentNullException or ArgumentException:
                     Console.WriteLine($"Warning: Skipping unknown Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
                     break;
+                case UnsupportedTypeException:
+                    Console.WriteLine($"Info: Skipping unsupported Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
+                    break;
             }
         }
 

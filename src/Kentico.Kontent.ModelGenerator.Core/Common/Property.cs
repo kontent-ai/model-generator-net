@@ -88,6 +88,11 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
                 return new Property(element.Codename, ManagementElementTypesDictionary[element.Type], element.Id.ToString());
             }
 
+            if (element.Type == ElementMetadataType.Guidelines)
+            {
+                throw new UnsupportedTypeException();
+            }
+
             throw new ArgumentException($"Unknown Content Type {element.Type}", nameof(element));
         }
     }

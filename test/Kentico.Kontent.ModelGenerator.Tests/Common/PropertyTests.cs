@@ -74,7 +74,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
         [Fact]
         public void FromContentTypeElement_ManagementApiModel_GuidelinesElement_Throws()
         {
-            Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<UnsupportedTypeException>(() =>
                 Property.FromContentTypeElement(TestHelper.GenerateGuidelinesElement(Guid.NewGuid(), "codename")));
         }
 
