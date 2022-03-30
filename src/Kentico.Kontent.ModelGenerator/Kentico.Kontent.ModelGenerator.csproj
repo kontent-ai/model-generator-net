@@ -29,6 +29,7 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="Kentico.Kontent.Delivery.Abstractions" Version="16.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
   
