@@ -1,4 +1,5 @@
 ﻿using Kentico.Kontent.Management;
+using Kentico.Kontent.Management.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Kentico.Kontent.Management;
+using Kentico.Kontent.Management.Configuration;
 using Kentico.Kontent.Management.Models.Shared;
 using Kentico.Kontent.Management.Models.Types;
 using Kentico.Kontent.Management.Models.Types.Elements;

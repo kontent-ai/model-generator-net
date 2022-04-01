@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kentico.Kontent.Delivery.Abstractions;
-using Kentico.Kontent.Management;
+using Kentico.Kontent.Management.Configuration;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Xunit;
 
