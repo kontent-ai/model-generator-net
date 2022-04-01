@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Kentico.Kontent.Delivery;
 using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Delivery.Extensions;
-using Kentico.Kontent.Management;
+using Kentico.Kontent.Management.Configuration;
 using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Delivery.Configuration;
-using Kentico.Kontent.Management;
+using Kentico.Kontent.Management.Configuration;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 
 namespace Kentico.Kontent.ModelGenerator

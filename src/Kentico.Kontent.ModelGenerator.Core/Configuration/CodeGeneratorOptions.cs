@@ -1,5 +1,5 @@
 ﻿using Kentico.Kontent.Delivery.Abstractions;
-using Kentico.Kontent.Management;
+using Kentico.Kontent.Management.Configuration;
 
 namespace Kentico.Kontent.ModelGenerator.Core.Configuration
 {
