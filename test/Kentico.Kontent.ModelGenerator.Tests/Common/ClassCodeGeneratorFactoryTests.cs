@@ -59,14 +59,16 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
             AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
         }
 
-        [Fact]
-        public void CreateClassCodeGenerator_PartialClassCodeGenerator_Returns()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void CreateClassCodeGenerator_PartialClassCodeGenerator_Returns(bool managementApi)
         {
             var classDefinitionCodename = "codename";
             var classFileName = "classFileName";
             var codeGeneratorOptions = new CodeGeneratorOptions
             {
-                ManagementApi = false
+                ManagementApi = managementApi
             };
 
             var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, true);
@@ -106,23 +108,6 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
             var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
 
             AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
-        }
-
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void CreateClassCodeGenerator_ManagementClassCodeGenerator_WithCustomPartialProperty_Returns(bool customPartial)
-        {
-            var classDefinitionCodename = "codename";
-            var classFileName = "classFileName";
-            var codeGeneratorOptions = new CodeGeneratorOptions
-            {
-                ManagementApi = true
-            };
-
-            var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, customPartial);
-
-            AssertClassCodeGenerator<ManagementClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
         }
 
         [Fact]
