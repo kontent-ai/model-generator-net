@@ -135,7 +135,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             var baseClassCode = baseClassCodeGenerator.GenerateBaseClassCode();
             WriteToOutputProvider(baseClassCode, Options.BaseClass, false);
 
-            var baseClassExtenderCode = baseClassCodeGenerator.GenereateExtenderCode();
+            var baseClassExtenderCode = baseClassCodeGenerator.GenerateExtenderCode();
             WriteToOutputProvider(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);
         }
     }

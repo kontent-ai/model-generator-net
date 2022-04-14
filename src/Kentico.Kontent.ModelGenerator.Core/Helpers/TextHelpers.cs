@@ -36,5 +36,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
         {
             return LineEndings.Replace(text, Environment.NewLine);
         }
+
+        public static string AppendNewLines(this string text) => $"{text}{Environment.NewLine}{Environment.NewLine}";
     }
 }

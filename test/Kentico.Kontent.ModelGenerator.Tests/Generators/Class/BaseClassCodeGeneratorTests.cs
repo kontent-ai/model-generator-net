@@ -47,7 +47,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
             var executingPath = AppContext.BaseDirectory;
             var expectedExtenderCode = File.ReadAllText(executingPath + "/Assets/BaseClassExtender_CompiledCode.txt");
 
-            var actualCompiledExtenderClass = codeGenerator.GenereateExtenderCode();
+            var actualCompiledExtenderClass = codeGenerator.GenerateExtenderCode();
 
             Assert.Equal(expectedExtenderCode, actualCompiledExtenderClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
         }
