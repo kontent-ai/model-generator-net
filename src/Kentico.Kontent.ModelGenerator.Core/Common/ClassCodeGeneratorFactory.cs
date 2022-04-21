@@ -23,13 +23,13 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
                 throw new ArgumentNullException(nameof(classFilename));
             }
 
-            if (options.ManagementApi)
+            if (customPartial)
             {
-                return new ManagementClassCodeGenerator(classDefinition, classFilename, options.Namespace);
+                return new PartialClassCodeGenerator(classDefinition, classFilename, options.Namespace);
             }
 
-            return customPartial
-                ? new PartialClassCodeGenerator(classDefinition, classFilename, options.Namespace)
+            return options.ManagementApi
+                ? new ManagementClassCodeGenerator(classDefinition, classFilename, options.Namespace)
                 : new DeliveryClassCodeGenerator(classDefinition, classFilename, options.Namespace);
         }
     }
