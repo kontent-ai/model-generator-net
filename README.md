@@ -18,8 +18,6 @@ This utility generates strongly-typed (POCO) models based on [content types](htt
 
 ⚠️ Please note that this tool uses [Delivery SDK](https://github.com/Kentico/kontent-delivery-sdk-net) and [Management SDK](https://github.com/Kentico/kontent-management-sdk-net).
 
-ℹ If you want to take a look at the next version supporting all features, checkout the vNext branch. ℹ
-
 ## How to use for [Delivery SDK](https://github.com/Kentico/kontent-delivery-sdk-net)
 
 To fully understand all benefits of this approach, please read the [documentation](https://github.com/Kentico/kontent-delivery-sdk-net/wiki/Working-with-strongly-typed-models#customizing-the-strong-type-binding-logic).
