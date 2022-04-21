@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.Common
 {
     public class InvalidIdentifierException : Exception
     {

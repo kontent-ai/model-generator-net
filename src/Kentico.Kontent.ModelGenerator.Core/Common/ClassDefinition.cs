@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.ModelGenerator.Core.Helpers;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.Common
 {
     public class ClassDefinition
     {
         public List<Property> Properties { get; } = new List<Property>();
 
-        public List<IContentElement> PropertyCodenameConstants { get; } = new List<IContentElement>();
+        public List<string> PropertyCodenameConstants { get; } = new List<string>();
 
         public string ClassName => TextHelpers.GetValidPascalCaseIdentifierName(Codename);
 
@@ -16,7 +17,9 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         public ClassDefinition(string codeName)
         {
-            Codename = codeName;
+            Codename = string.IsNullOrWhiteSpace(codeName)
+                ? throw new ArgumentException("Class codeName must be a non null and not white space string.", nameof(codeName))
+                : codeName;
         }
 
         public void AddProperty(Property property)
@@ -29,14 +32,14 @@ namespace Kentico.Kontent.ModelGenerator.Core
             Properties.Add(property);
         }
 
-        public void AddPropertyCodenameConstant(IContentElement element)
+        public void AddPropertyCodenameConstant(string codeName)
         {
-            if (PropertyCodenameConstantIsAlreadyPresent(element))
+            if (PropertyCodenameConstants.Contains(codeName))
             {
-                throw new InvalidOperationException($"Property with code name '{element.Codename}' is already included. Can't add two members with the same code name.");
+                throw new InvalidOperationException($"Property with code name '{codeName}' is already included. Can't add two members with the same code name.");
             }
 
-            PropertyCodenameConstants.Add(element);
+            PropertyCodenameConstants.Add(codeName);
         }
 
         public void AddSystemProperty()
@@ -47,11 +50,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
         private bool PropertyIsAlreadyPresent(Property property)
         {
             return Properties.Exists(e => e.Identifier == property.Identifier);
-        }
-
-        private bool PropertyCodenameConstantIsAlreadyPresent(IContentElement element)
-        {
-            return PropertyCodenameConstants.Exists(e => e.Codename == element.Codename);
         }
     }
 }

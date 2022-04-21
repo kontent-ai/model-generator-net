@@ -3,10 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Kentico.Kontent.Delivery;
 using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Delivery.Extensions;
+using Kentico.Kontent.Management.Configuration;
 using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
 
@@ -25,23 +28,29 @@ namespace Kentico.Kontent.ModelGenerator
                 var configuration = new ConfigurationBuilder()
                             .SetBasePath(Environment.CurrentDirectory)
                             .AddJsonFile("appSettings.json", true)
-                            .AddCommandLine(args, GetSwitchMappings())
+                            .AddCommandLine(args, GetSwitchMappings(args))
                             .Build();
 
                 // Fill the DI container
                 services.Configure<CodeGeneratorOptions>(configuration);
+                services.AddManagementClient(configuration);
                 services.AddDeliveryClient(configuration);
+                services.AddTransient<HttpClient>();
                 services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
-                services.AddTransient<CodeGenerator>();
+                services.AddSingleton<ManagementCodeGenerator>();
+                services.AddSingleton<DeliveryCodeGenerator>();
 
                 // Build the DI container
                 var serviceProvider = services.BuildServiceProvider();
 
                 // Validate configuration of the Delivery Client
-                serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value.DeliveryOptions.Validate();
+                var options = serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value;
+                options.Validate();
 
                 // Code generator entry point
-                return await serviceProvider.GetService<CodeGenerator>().RunAsync();
+                return options.ManagementApi
+                    ? await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync()
+                    : await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync();
             }
             catch (AggregateException aex)
             {
@@ -59,22 +68,40 @@ namespace Kentico.Kontent.ModelGenerator
             }
         }
 
-        private static IDictionary<string, string> GetSwitchMappings()
+        internal static IDictionary<string, string> GetSwitchMappings(string[] args)
         {
-            var mappings = new Dictionary<string, string>
+            var generalMappings = new Dictionary<string, string>
             {
-                {"-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-                {"--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" }, // Backwards compatibility
-                {"-n", nameof(CodeGeneratorOptions.Namespace) },
-                {"-o", nameof(CodeGeneratorOptions.OutputDir) },
-                {"-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
-                {"-g", nameof(CodeGeneratorOptions.GeneratePartials) },
-                {"-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
-                {"-s", nameof(CodeGeneratorOptions.StructuredModel) },
-                {"-c", nameof(CodeGeneratorOptions.ContentManagementApi) },
-                {"-b", nameof(CodeGeneratorOptions.BaseClass) }
+                { "-n", nameof(CodeGeneratorOptions.Namespace) },
+                { "-o", nameof(CodeGeneratorOptions.OutputDir) },
+                { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
+                { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
+                { "-b", nameof(CodeGeneratorOptions.BaseClass) }
             };
-            return mappings;
+
+            var deliveryMappings = new Dictionary<string, string>
+            {
+                { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
+                {"--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" }, // Backwards compatibility
+                { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
+                { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
+            };
+
+            var managementMappings = new Dictionary<string, string>
+            {
+                { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
+                {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" }, // Backwards compatibility
+                { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
+                { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
+                { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" } // Backwards compatibility
+            };
+
+            return generalMappings
+                .Union(ContainsManageApiArg() ? managementMappings : deliveryMappings)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+            bool ContainsManageApiArg() =>
+                args.Where((value, index) => (value is "-m" or "--managementapi") && index + 1 < args.Length && args[index + 1] == "true").Any();
         }
     }
 }

@@ -488,6 +488,14 @@
               "codename": "hide_thread"
             }
           ]
+        },
+        "subpages": {
+          "type": "modular_content",
+          "name": "subpages"
+        },
+        "customelement": {
+          "type": "custom",
+          "name": "CustomElement"
         }
       }
     }

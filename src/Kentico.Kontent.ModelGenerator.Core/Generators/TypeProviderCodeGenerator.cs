@@ -3,32 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
+using Kentico.Kontent.ModelGenerator.Core.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.Generators
 {
-    public class TypeProviderCodeGenerator
+    public class TypeProviderCodeGenerator : GeneralGenerator
     {
-        public const string CLASS_NAME = "CustomTypeProvider";
+        public const string ClassName = "CustomTypeProvider";
 
         /// <summary>
         /// Codename -> ClassName dictionary
         /// </summary>
         private readonly Dictionary<string, string> _contentTypes = new Dictionary<string, string>();
 
-        private readonly string _namespace;
-
-        public TypeProviderCodeGenerator(string @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE)
+        public TypeProviderCodeGenerator(string @namespace = ClassCodeGenerator.DefaultNamespace) : base(@namespace)
         {
-            if (string.IsNullOrEmpty(@namespace))
-            {
-                @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE;
-            }
-
-            _namespace = @namespace;
         }
 
         public void AddContentType(string codename, string className)
@@ -53,38 +47,43 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 return null;
             }
 
-            var tree = CSharpSyntaxTree.ParseText(
-                $@"using System;
-using System.Collections.Generic;
-using System.Linq;
-using {typeof(ITypeProvider).Namespace};
-
-namespace {_namespace}
-{{
-    public class {CLASS_NAME} : ITypeProvider
-    {{
-        private static readonly Dictionary<Type, string> _codenames = new Dictionary<Type, string>
-        {{
-{CreateCodenameDictionaryValues()}
-        }};
-
-        public Type GetType(string contentType)
-        {{
-            return _codenames.Keys.FirstOrDefault(type => GetCodename(type).Equals(contentType));
-        }}
-
-        public string GetCodename(Type contentType)
-        {{
-            return _codenames.TryGetValue(contentType, out var codename) ? codename : null;
-        }}
-    }}
-}}");
-
-            var cu = (CompilationUnitSyntax)tree.GetRoot();
+            var cu = (CompilationUnitSyntax)SyntaxTree.GetRoot();
+            cu = cu.WithLeadingTrivia(ClassDescription());
 
             AdhocWorkspace cw = new AdhocWorkspace();
             return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
         }
+
+        protected override SyntaxTrivia ClassDescription() => ClassDeclarationHelper.GenerateSyntaxTrivia(
+@"// Changes to this file will not be lost if the code is regenerated.
+// It will maintain an up-to-date list of the Content types available");
+
+        private SyntaxTree SyntaxTree => CSharpSyntaxTree.ParseText(
+$@"using System;
+using System.Collections.Generic;
+using System.Linq;
+using {typeof(ITypeProvider).Namespace};
+
+namespace {Namespace}
+{{
+    public class {ClassName} : ITypeProvider
+    {{
+        protected static readonly Dictionary<Type, string> Codenames = new Dictionary<Type, string>
+        {{
+{CreateCodenameDictionaryValues()}
+        }};
+
+        public virtual Type GetType(string contentType)
+        {{
+            return Codenames.Keys.FirstOrDefault(type => GetCodename(type).Equals(contentType));
+        }}
+
+        public virtual string GetCodename(Type contentType)
+        {{
+            return Codenames.TryGetValue(contentType, out var codename) ? codename : null;
+        }}
+    }}
+}}");
 
         private string CreateCodenameDictionaryValues()
         {

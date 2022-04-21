@@ -1,16 +1,14 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
-using Xunit;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Kentico.Kontent.ModelGenerator.Core;
+using Kentico.Kontent.ModelGenerator.Core.Generators;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Xunit;
 using static System.String;
 
-namespace Kentico.Kontent.ModelGenerator.Tests
+namespace Kentico.Kontent.ModelGenerator.Tests.Generators
 {
     public class TypeProviderCodeGeneratorTests
     {
@@ -25,7 +23,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             var expectedCode = File.ReadAllText(executingPath + "/Assets/CustomTypeProvider_CompiledCode.txt");
 
             var compiledCode = codeGenerator.GenerateCode();
-          
+
             Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
         }
 
@@ -41,7 +39,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             // Dummy implementation of Article and Office class to make compilation work
             var dummyClasses = "public class Article {} public class Office {}";
 
-            CSharpCompilation compilation = CSharpCompilation.Create(
+            var compilation = CSharpCompilation.Create(
                 assemblyName: Path.GetRandomFileName(),
                 syntaxTrees: new[] {
                     CSharpSyntaxTree.ParseText(compiledCode),
@@ -58,16 +56,16 @@ namespace Kentico.Kontent.ModelGenerator.Tests
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
             using var ms = new MemoryStream();
-            EmitResult result = compilation.Emit(ms);
+            var result = compilation.Emit(ms);
             var compilationErrors = $"Compilation errors:{Environment.NewLine}";
 
             if (!result.Success)
             {
-                IEnumerable<Diagnostic> failures = result.Diagnostics.Where(diagnostic =>
+                var failures = result.Diagnostics.Where(diagnostic =>
                     diagnostic.IsWarningAsError ||
                     diagnostic.Severity == DiagnosticSeverity.Error);
 
-                foreach (Diagnostic diagnostic in failures)
+                foreach (var diagnostic in failures)
                 {
                     compilationErrors += Format($"{diagnostic.Id}: {diagnostic.GetMessage()}{Environment.NewLine}");
                 }

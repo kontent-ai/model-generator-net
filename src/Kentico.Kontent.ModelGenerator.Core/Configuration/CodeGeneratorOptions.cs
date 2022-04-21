@@ -1,19 +1,25 @@
 ﻿using Kentico.Kontent.Delivery.Abstractions;
+using Kentico.Kontent.Management.Configuration;
 
 namespace Kentico.Kontent.ModelGenerator.Core.Configuration
 {
     public class CodeGeneratorOptions
     {
-        public static bool DefaultGeneratePartials = true;
-        public static bool DefaultWithTypeProvider = true;
-        public static bool DefaultStructuredModel = false;
-        public static bool DefaultContentManagementApi = false;
-        public static string DefaultFileNameSuffix = "Generated";
+        private const bool DefaultGeneratePartials = true;
+        private const bool DefaultWithTypeProvider = true;
+        private const bool DefaultStructuredModel = false;
+        private const bool DefaultManagementApi = false;
+        private const string DefaultFileNameSuffix = "Generated";
 
         /// <summary>
         /// Delivery Client configuration.
         /// </summary>
         public DeliveryOptions DeliveryOptions { get; set; }
+
+        /// <summary>
+        /// Management Client configuration.
+        /// </summary>
+        public ManagementOptions ManagementOptions { get; set; }
 
         /// <summary>
         /// Namespace name of the generated classes
@@ -48,12 +54,11 @@ namespace Kentico.Kontent.ModelGenerator.Core.Configuration
         /// <summary>
         /// Indicates whether the classes should be generated for CM API SDK
         /// </summary>
-        public bool ContentManagementApi { get; set; } = DefaultContentManagementApi;
+        public bool ManagementApi { get; set; } = DefaultManagementApi;
 
         /// <summary>
         /// Indicates whether a base class should be created and all output classes should derive from it using a partial class
         /// </summary>
         public string BaseClass { get; set; }
-
     }
 }

@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Kentico.Kontent.ModelGenerator.Core.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 
-namespace Kentico.Kontent.ModelGenerator.Core
+namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
 {
-    public class BaseClassCodeGenerator
+    public class BaseClassCodeGenerator : GeneralGenerator
     {
         /// <summary>
         /// Collection of classes to extend (HashSet ensures that classes get extended only once)
         /// </summary>
         private readonly ICollection<string> _classesToExtend = new HashSet<string>();
 
-        private readonly string _namespace;
         private readonly string _className;
 
         /// <summary>
@@ -23,16 +23,9 @@ namespace Kentico.Kontent.ModelGenerator.Core
         /// </summary>
         public string ExtenderClassName => $"{_className}Extender";
 
-        public BaseClassCodeGenerator(string className, string @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE)
+        public BaseClassCodeGenerator(string className, string @namespace = ClassCodeGenerator.DefaultNamespace) : base(@namespace)
         {
             _className = className;
-
-            if (string.IsNullOrEmpty(@namespace))
-            {
-                @namespace = ClassCodeGenerator.DEFAULT_NAMESPACE;
-            }
-
-            _namespace = @namespace;
         }
 
         /// <summary>
@@ -59,7 +52,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 $@"using System;
 using Kentico.Kontent.Delivery.Abstractions;
 
-namespace {_namespace}
+namespace {Namespace}
 {{
     public partial class {_className}
     {{
@@ -68,6 +61,7 @@ namespace {_namespace}
 }}");
 
             var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
+            cu = cu.WithLeadingTrivia(ClassDescription());
 
             AdhocWorkspace cw = new AdhocWorkspace();
             return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
@@ -76,10 +70,9 @@ namespace {_namespace}
         /// <summary>
         /// Creates the extender code that uses partials to make all output classes derive from the base class
         /// </summary>
-        public string GenereateExtenderCode()
+        public string GenerateExtenderCode()
         {
-
-            string extenders = _classesToExtend.OrderBy(c => c)
+            var extenders = _classesToExtend.OrderBy(c => c)
                 .Select((c) => $"public partial class {c} : {_className} {{ }}")
                 .Aggregate((p, n) => p + Environment.NewLine + n);
 
@@ -87,7 +80,7 @@ namespace {_namespace}
 $@"using System;
 using Kentico.Kontent.Delivery.Abstractions;
 
-namespace {_namespace}
+namespace {Namespace}
 {{
         // These classes extend the generated models to all inherit from the common basetype {_className}.
 
@@ -95,9 +88,17 @@ namespace {_namespace}
 }}");
 
             var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
+            cu = cu.WithLeadingTrivia(ExtenderClassDescription);
 
             AdhocWorkspace cw = new AdhocWorkspace();
             return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
         }
+
+        protected override SyntaxTrivia ClassDescription() =>
+            ClassDeclarationHelper.GenerateSyntaxTrivia(@"// You can make changes to this class and it will not get overwritten if it already exists.");
+
+        private SyntaxTrivia ExtenderClassDescription => ClassDeclarationHelper.GenerateSyntaxTrivia(
+@$"{LostChangesComment}
+// For further modifications of the class, create or modify the '{_className}.cs' file with the partial class.");
     }
 }
