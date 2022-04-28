@@ -7,12 +7,12 @@
     <Authors>Kentico Software</Authors>
     <Product>Kontent by Kentico</Product>
     <PackageIconUrl>https://github.com/Kentico/Home/blob/master/images/kk-logo-nuget.png?raw=true</PackageIconUrl>
-    <RepositoryUrl>https://github.com/Kentico/kontent-generators-net</RepositoryUrl>  
+    <RepositoryUrl>https://github.com/Kentico/kontent-generators-net</RepositoryUrl>
     <Copyright>© 2018 Kentico Software. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>kentico;tool;kentico kontent;generator</PackageTags>
     <PackAsTool>true</PackAsTool>
-    <Description>This utility generates strongly-typed models based on Content Types in a Kontent project. The models are supposed to be used together with the Kontent Delivery SDK for .NET or Kontent Content Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
+    <Description>This utility generates strongly-typed models based on content types in a Kontent project. The models are supposed to be used together with the Kontent Delivery SDK for .NET or Kontent Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -21,17 +21,17 @@
   <ItemGroup>
     <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
   </ItemGroup>
-  
+
   <PropertyGroup>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Kentico.Kontent.Delivery" Version="16.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.1.0" />
@@ -39,7 +39,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\Kentico.Kontent.ModelGenerator.Core\Kentico.Kontent.ModelGenerator.Core.csproj" />
   </ItemGroup>
