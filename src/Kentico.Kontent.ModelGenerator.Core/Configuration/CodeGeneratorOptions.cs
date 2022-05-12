@@ -6,6 +6,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Configuration
     public class CodeGeneratorOptions
     {
         private const bool DefaultGeneratePartials = true;
+        private const bool DefaultExtendedDeliverModels = false;
         private const bool DefaultWithTypeProvider = true;
         private const bool DefaultStructuredModel = false;
         private const bool DefaultManagementApi = false;
@@ -45,6 +46,11 @@ namespace Kentico.Kontent.ModelGenerator.Core.Configuration
         /// Indicates whether the CustomTypeProvider class should be generated
         /// </summary>
         public bool WithTypeProvider { get; set; } = DefaultWithTypeProvider;
+
+        /// <summary>
+        /// Indicates whether the extended Delivery models are generated
+        /// </summary>
+        public bool ExtendedDeliverModels { get; set; } = DefaultExtendedDeliverModels;
 
         /// <summary>
         /// Indicates whether the classes should be generated with types that represent structured data model

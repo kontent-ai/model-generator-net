@@ -21,7 +21,7 @@ namespace Kentico.Kontent.ModelGenerator
         /// <param name="codeGeneratorOptions">CodeGeneratorOptions object to be validated</param>
         public static void Validate(this CodeGeneratorOptions codeGeneratorOptions)
         {
-            if (codeGeneratorOptions.ManagementApi)
+            if (codeGeneratorOptions.ManagementApi || codeGeneratorOptions.ExtendedDeliverModels)
             {
                 codeGeneratorOptions.ManagementOptions.Validate();
             }
