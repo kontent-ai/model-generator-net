@@ -39,6 +39,7 @@ namespace Kentico.Kontent.ModelGenerator
                 services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
                 services.AddSingleton<ManagementCodeGenerator>();
                 services.AddSingleton<DeliveryCodeGenerator>();
+                services.AddSingleton<ExtendedDeliveryCodeGenerator>();
 
                 // Build the DI container
                 var serviceProvider = services.BuildServiceProvider();
@@ -48,8 +49,13 @@ namespace Kentico.Kontent.ModelGenerator
                 options.Validate();
 
                 // Code generator entry point
-                return options.ManagementApi
-                    ? await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync()
+                if (options.ManagementApi())
+                {
+                    return await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync();
+                }
+
+                return options.ExtendedDeliverModels
+                    ? await serviceProvider.GetService<ExtendedDeliveryCodeGenerator>().RunAsync()
                     : await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync();
             }
             catch (AggregateException aex)
@@ -87,6 +93,18 @@ namespace Kentico.Kontent.ModelGenerator
                 { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
             };
 
+            var extendedDeliveryMappings = new Dictionary<string, string>
+            {
+                { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
+                {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" }, // Backwards compatibility
+                { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
+                { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
+                { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
+                { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
+                { "-e", nameof(CodeGeneratorOptions.ExtendedDeliverModels) },
+                { "-r", nameof(CodeGeneratorOptions.ExtendedDeliverPreviewModels) }
+            };
+
             var managementMappings = new Dictionary<string, string>
             {
                 { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
@@ -97,11 +115,23 @@ namespace Kentico.Kontent.ModelGenerator
             };
 
             return generalMappings
-                .Union(ContainsManageApiArg() ? managementMappings : deliveryMappings)
+                .Union(GetSpecificMappings())
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-            bool ContainsManageApiArg() =>
-                args.Where((value, index) => (value is "-m" or "--managementapi") && index + 1 < args.Length && args[index + 1] == "true").Any();
+            Dictionary<string, string> GetSpecificMappings()
+            {
+                if (ContainsArg("m", "managementapi"))
+                {
+                    return managementMappings;
+                }
+
+                return ContainsArg("e", "extendeddelivermodels")
+                    ? extendedDeliveryMappings
+                    : deliveryMappings;
+            }
+
+            bool ContainsArg(string shortcutArg, string arg) =>
+                args.Where((value, index) => (value == $"-{shortcutArg}" || value == $"--{arg}") && index + 1 < args.Length && args[index + 1] == "true").Any();
         }
     }
 }

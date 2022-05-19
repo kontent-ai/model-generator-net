@@ -7,6 +7,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Configuration
     {
         private const bool DefaultGeneratePartials = true;
         private const bool DefaultExtendedDeliverModels = false;
+        private const bool DefaultExtendedDeliverPreviewModels = false;
         private const bool DefaultWithTypeProvider = true;
         private const bool DefaultStructuredModel = false;
         private const bool DefaultManagementApi = false;
@@ -51,6 +52,11 @@ namespace Kentico.Kontent.ModelGenerator.Core.Configuration
         /// Indicates whether the extended Delivery models are generated
         /// </summary>
         public bool ExtendedDeliverModels { get; set; } = DefaultExtendedDeliverModels;
+
+        /// <summary>
+        /// Indicates whether the extended preview Delivery models are generated
+        /// </summary>
+        public bool ExtendedDeliverPreviewModels { get; set; } = DefaultExtendedDeliverPreviewModels;
 
         /// <summary>
         /// Indicates whether the classes should be generated with types that represent structured data model

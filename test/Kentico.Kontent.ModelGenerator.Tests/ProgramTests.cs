@@ -83,5 +83,64 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             Assert.Equal(expectedMappings, mappings);
         }
+
+        [Fact]
+        public void GetSwitchMappings_ExtendedDeliverSwitchIsTrue_ReturnsManagementMappings()
+        {
+            var expectedMappings = new Dictionary<string, string>
+            {
+                { "-n", nameof(CodeGeneratorOptions.Namespace) },
+                { "-o", nameof(CodeGeneratorOptions.OutputDir) },
+                { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
+                { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
+                { "-b", nameof(CodeGeneratorOptions.BaseClass) },
+                { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
+                { "--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
+                { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
+                { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
+                { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
+                { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
+                { "-e", nameof(CodeGeneratorOptions.ExtendedDeliverModels) },
+                { "-r", nameof(CodeGeneratorOptions.ExtendedDeliverPreviewModels) }
+            };
+
+            var mappings = Program.GetSwitchMappings(new string[]
+            {
+                "-p",
+                Guid.NewGuid().ToString(),
+                "-e",
+                "true"
+            });
+
+            Assert.Equal(expectedMappings, mappings);
+        }
+
+        [Fact]
+        public void GetSwitchMappings_ExtendedDeliverIsFalse_ReturnsDeliveryMappings()
+        {
+            var mappings = Program.GetSwitchMappings(new string[]
+            {
+                "-p",
+                Guid.NewGuid().ToString(),
+                "-e",
+                "false"
+            });
+
+            Assert.Equal(ExpectedDeliveryMappings, mappings);
+        }
+
+        [Fact]
+        public void GetSwitchMappings_ExtendedPreviewDeliverIsFalse_ReturnsDeliveryMappings()
+        {
+            var mappings = Program.GetSwitchMappings(new string[]
+            {
+                "-p",
+                Guid.NewGuid().ToString(),
+                "-r",
+                "false"
+            });
+
+            Assert.Equal(ExpectedDeliveryMappings, mappings);
+        }
     }
 }
