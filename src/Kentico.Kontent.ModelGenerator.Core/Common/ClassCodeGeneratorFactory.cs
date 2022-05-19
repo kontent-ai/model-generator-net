@@ -28,8 +28,13 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
                 return new PartialClassCodeGenerator(classDefinition, classFilename, options.Namespace);
             }
 
-            return options.ManagementApi
-                ? new ManagementClassCodeGenerator(classDefinition, classFilename, options.Namespace)
+            if (options.ManagementApi())
+            {
+                return new ManagementClassCodeGenerator(classDefinition, classFilename, options.Namespace);
+            }
+
+            return options.ExtendedDeliverModels && string.IsNullOrWhiteSpace(options.BaseClass)
+                ? new ExtendedDeliveryClassCodeGenerator(classDefinition, classFilename, ContentItemClassCodeGenerator.DefaultContentItemClassName, options.Namespace)
                 : new DeliveryClassCodeGenerator(classDefinition, classFilename, options.Namespace);
         }
     }

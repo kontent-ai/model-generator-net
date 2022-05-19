@@ -13,15 +13,6 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
         {
         }
 
-        protected MemberDeclarationSyntax[] Properties
-            => ClassDefinition.Properties.OrderBy(p => p.Identifier).Select(element => SyntaxFactory
-                .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
-                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                .AddAccessorListAccessors(
-                    GetAccessorDeclaration(SyntaxKind.GetAccessorDeclaration),
-                    GetAccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-                )).ToArray<MemberDeclarationSyntax>();
-
         protected MemberDeclarationSyntax[] PropertyCodenameConstants
             => ClassDefinition.PropertyCodenameConstants
                 .OrderBy(p => p)

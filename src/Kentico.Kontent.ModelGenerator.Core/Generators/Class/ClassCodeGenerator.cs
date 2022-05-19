@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Kentico.Kontent.ModelGenerator.Core.Common;
 using Kentico.Kontent.ModelGenerator.Core.Helpers;
 using Microsoft.CodeAnalysis;
@@ -36,6 +37,15 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
         }
 
         protected abstract UsingDirectiveSyntax[] GetApiUsings();
+
+        protected virtual MemberDeclarationSyntax[] Properties
+            => ClassDefinition.Properties.OrderBy(p => p.Identifier).Select(element => SyntaxFactory
+                .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                .AddAccessorListAccessors(
+                    GetAccessorDeclaration(SyntaxKind.GetAccessorDeclaration),
+                    GetAccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                )).ToArray<MemberDeclarationSyntax>();
 
         protected virtual ClassDeclarationSyntax GetClassDeclaration() => SyntaxFactory.ClassDeclaration(ClassDefinition.ClassName)
             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))

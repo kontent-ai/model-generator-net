@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Kentico.Kontent.ModelGenerator.Core.Configuration;
 using Kentico.Kontent.ModelGenerator.Core.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,16 +17,16 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
         /// </summary>
         private readonly ICollection<string> _classesToExtend = new HashSet<string>();
 
-        private readonly string _className;
+        private readonly CodeGeneratorOptions _options;
 
         /// <summary>
         /// The calculated Extender Classname
         /// </summary>
-        public string ExtenderClassName => $"{_className}Extender";
+        public string ExtenderClassName => $"{_options.BaseClass}Extender";
 
-        public BaseClassCodeGenerator(string className, string @namespace = ClassCodeGenerator.DefaultNamespace) : base(@namespace)
+        public BaseClassCodeGenerator(CodeGeneratorOptions options) : base(options.Namespace)
         {
-            _className = className;
+            _options = options;
         }
 
         /// <summary>
@@ -54,7 +55,7 @@ using Kentico.Kontent.Delivery.Abstractions;
 
 namespace {Namespace}
 {{
-    public partial class {_className}
+    public partial class {_options.BaseClass}{GetBaseClassExtender()}
     {{
         // This class can be used to extend the generated classes. They inherit from this type in {ExtenderClassName}.cs.
     }}
@@ -73,7 +74,7 @@ namespace {Namespace}
         public string GenerateExtenderCode()
         {
             var extenders = _classesToExtend.OrderBy(c => c)
-                .Select((c) => $"public partial class {c} : {_className} {{ }}")
+                .Select((c) => $"public partial class {c} : {_options.BaseClass} {{ }}")
                 .Aggregate((p, n) => p + Environment.NewLine + n);
 
             var tree = CSharpSyntaxTree.ParseText(
@@ -82,7 +83,7 @@ using Kentico.Kontent.Delivery.Abstractions;
 
 namespace {Namespace}
 {{
-        // These classes extend the generated models to all inherit from the common basetype {_className}.
+        // These classes extend the generated models to all inherit from the common basetype {_options.BaseClass}.
 
         {extenders}
 }}");
@@ -99,6 +100,8 @@ namespace {Namespace}
 
         private SyntaxTrivia ExtenderClassDescription => ClassDeclarationHelper.GenerateSyntaxTrivia(
 @$"{LostChangesComment}
-// For further modifications of the class, create or modify the '{_className}.cs' file with the partial class.");
+// For further modifications of the class, create or modify the '{_options.BaseClass}.cs' file with the partial class.");
+
+        private string GetBaseClassExtender() => _options.ExtendedDeliverModels ? $" : {ContentItemClassCodeGenerator.DefaultContentItemClassName}" : "";
     }
 }

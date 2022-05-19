@@ -49,7 +49,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
         public void AddSystemProperty_SystemPropertyIsAdded()
         {
             var classDefinition = new ClassDefinition("Class name");
-            classDefinition.AddSystemProperty();
+            classDefinition.TryAddSystemProperty();
 
             Assert.Single(classDefinition.Properties, property => property.Codename == "system");
         }

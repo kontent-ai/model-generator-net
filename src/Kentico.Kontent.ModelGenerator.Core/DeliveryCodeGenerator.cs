@@ -87,7 +87,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 }
             }
 
-            TryAddSystemProperty(classDefinition);
+            classDefinition.TryAddSystemProperty();
 
             var classFilename = GetFileClassName(classDefinition.ClassName);
 
@@ -113,19 +113,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
             var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
             WriteToOutputProvider(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
-        }
-
-        private static void TryAddSystemProperty(ClassDefinition classDefinition)
-        {
-            try
-            {
-                classDefinition.AddSystemProperty();
-            }
-            catch (InvalidOperationException)
-            {
-                Console.WriteLine(
-                    $"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
-            }
         }
     }
 }

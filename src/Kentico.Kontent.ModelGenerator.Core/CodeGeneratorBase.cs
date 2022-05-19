@@ -117,7 +117,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 
         private async Task GenerateBaseClass()
         {
-            var classCodeGenerators = await GetClassCodeGenerators();
+            var classCodeGenerators = (await GetClassCodeGenerators()).Where(x => x.GetType() != typeof(ContentItemClassCodeGenerator));
 
             if (!classCodeGenerators.Any())
             {
@@ -125,7 +125,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 return;
             }
 
-            var baseClassCodeGenerator = new BaseClassCodeGenerator(Options.BaseClass, Options.Namespace);
+            var baseClassCodeGenerator = new BaseClassCodeGenerator(Options);
 
             foreach (var codeGenerator in classCodeGenerators)
             {

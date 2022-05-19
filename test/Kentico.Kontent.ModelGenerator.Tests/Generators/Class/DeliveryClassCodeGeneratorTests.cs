@@ -39,7 +39,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
             classDefinition.AddProperty(Property.FromContentTypeElement("url_slug", "url_slug"));
             classDefinition.AddProperty(Property.FromContentTypeElement("custom", "custom"));
 
-            classDefinition.AddSystemProperty();
+            classDefinition.TryAddSystemProperty();
 
             var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, classDefinition.ClassName);
 

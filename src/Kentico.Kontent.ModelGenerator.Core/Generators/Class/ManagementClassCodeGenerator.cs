@@ -38,7 +38,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
             return classDeclaration;
         }
 
-        private MemberDeclarationSyntax[] Properties => ClassDefinition.Properties.OrderBy(p => p.Identifier).Select(element =>
+        protected override MemberDeclarationSyntax[] Properties => ClassDefinition.Properties.OrderBy(p => p.Identifier).Select(element =>
                 SyntaxFactory
                     .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
                     .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))

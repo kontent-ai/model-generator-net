@@ -39,6 +39,21 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
             { "custom", "string" }
         };
 
+        internal static readonly Dictionary<string, string> ExtendedDeliverElementTypesDictionary = new Dictionary<string, string>
+        {
+            { ElementMetadataType.Text.ToString(), "string" },
+            { ElementMetadataType.RichText.ToString(), "string" },
+            { ElementMetadataType.RichText + StructuredSuffix, nameof(IRichTextContent)},
+            { ElementMetadataType.Number.ToString(), "decimal?" },
+            { ElementMetadataType.MultipleChoice.ToString(), $"{nameof(IEnumerable)}<{nameof(IMultipleChoiceOption)}>"},
+            { ElementMetadataType.DateTime.ToString(), "DateTime?" },
+            { ElementMetadataType.Asset.ToString(), $"{nameof(IEnumerable)}<{nameof(IAsset)}>" },
+            { ElementMetadataType.LinkedItems.ToString(), null },
+            { ElementMetadataType.Taxonomy.ToString(), $"{nameof(IEnumerable)}<{nameof(ITaxonomyTerm)}>" },
+            { ElementMetadataType.UrlSlug.ToString(), "string" },
+            { ElementMetadataType.Custom.ToString(), "string" }
+        };
+
         private static readonly Dictionary<ElementMetadataType, string> ManagementElementTypesDictionary = new Dictionary<ElementMetadataType, string>
         {
             { ElementMetadataType.Text, nameof(TextElement) },
@@ -61,9 +76,11 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
             Id = id;
         }
 
-        public static bool IsContentTypeSupported(string elementType)
+        public static bool IsContentTypeSupported(string elementType, bool extendedDeliverModels)
         {
-            return DeliverElementTypesDictionary.ContainsKey(elementType);
+            return extendedDeliverModels
+                ? ExtendedDeliverElementTypesDictionary.ContainsKey(elementType)
+                : DeliverElementTypesDictionary.ContainsKey(elementType);
         }
 
         public static bool IsContentTypeSupported(ElementMetadataType elementType)
@@ -73,7 +90,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
 
         public static Property FromContentTypeElement(string codename, string elementType)
         {
-            if (IsContentTypeSupported(elementType))
+            if (IsContentTypeSupported(elementType, false))
             {
                 return new Property(codename, DeliverElementTypesDictionary[elementType]);
             }
@@ -86,6 +103,25 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
             if (IsContentTypeSupported(element.Type))
             {
                 return new Property(element.Codename, ManagementElementTypesDictionary[element.Type], element.Id.ToString());
+            }
+
+            if (element.Type == ElementMetadataType.Guidelines)
+            {
+                throw new UnsupportedTypeException();
+            }
+
+            throw new ArgumentException($"Unknown Content Type {element.Type}", nameof(element));
+        }
+
+        public static Property FromContentTypeElement(ElementMetadataBase element, string elementType)
+        {
+            if (IsContentTypeSupported(element.Type.ToString(), true))
+            {
+                var resultElementType = element.Type == ElementMetadataType.LinkedItems
+                    ? elementType
+                    : ExtendedDeliverElementTypesDictionary[elementType];
+
+                return new Property(element.Codename, resultElementType);
             }
 
             if (element.Type == ElementMetadataType.Guidelines)

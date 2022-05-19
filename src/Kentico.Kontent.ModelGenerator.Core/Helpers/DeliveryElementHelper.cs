@@ -10,7 +10,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
         {
             Validate(options, elementType);
 
-            if (options.StructuredModel && Property.IsContentTypeSupported(elementType + Property.StructuredSuffix))
+            if (options.StructuredModel && Property.IsContentTypeSupported(elementType + Property.StructuredSuffix, options.ExtendedDeliverModels))
             {
                 elementType += Property.StructuredSuffix;
             }
@@ -25,7 +25,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (options.ManagementApi)
+            if (options.ManagementApi())
             {
                 throw new InvalidOperationException("Cannot generate structured model for the Management models.");
             }
