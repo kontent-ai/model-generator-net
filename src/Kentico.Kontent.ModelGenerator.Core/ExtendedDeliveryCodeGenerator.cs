@@ -108,14 +108,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
             var elementType = DeliveryElementHelper.GetElementType(Options, el.Type.ToString());
             if (elementType == ElementMetadataType.LinkedItems.ToString())
             {
-                var linkedItemsElement = el.ToElement<LinkedItemsElementMetadataModel>();
-                var linkedTypeCodename = linkedItemsElement.AllowedTypes.Count() == 1 && !Options.ExtendedDeliverPreviewModels
-                    ? contentTypes.FirstOrDefault(type => linkedItemsElement.AllowedTypes.First().Id == type.Id).Codename
-                    : null;
-
-                elementType = linkedTypeCodename == null
-                    ? $"{nameof(IEnumerable)}<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"
-                    : $"{nameof(IEnumerable)}<{TextHelpers.GetValidPascalCaseIdentifierName(linkedTypeCodename)}>";
+                elementType = ContentTypeToDeliverTypeNameMapper.Map(el, contentTypes, Options);
             }
 
             var property = Property.FromContentTypeElement(el, elementType);
