@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Kentico.Kontent.Management.Extensions;
@@ -14,13 +15,45 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
         public static string Map(ElementMetadataBase el, List<ContentTypeModel> contentTypes, CodeGeneratorOptions options)
         {
             var linkedItemsElement = el.ToElement<LinkedItemsElementMetadataModel>();
+            if (linkedItemsElement == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (contentTypes == null)
+            {
+                throw new ArgumentNullException(nameof(contentTypes));
+            }
+
+            if (!contentTypes.Any())
+            {
+                throw new ArgumentException($"{nameof(contentTypes)} cannot be empty");
+            }
+
+            if (options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
             var linkedTypeCodename = linkedItemsElement.AllowedTypes.Count() == 1 && !options.ExtendedDeliverPreviewModels
-                ? contentTypes.FirstOrDefault(type => linkedItemsElement.AllowedTypes.First().Id == type.Id).Codename
+                ? GetAllowedContentType(linkedItemsElement.AllowedTypes.First().Id.Value, contentTypes).Codename
                 : null;
 
             return linkedTypeCodename == null
                 ? $"{nameof(IEnumerable)}<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"
                 : $"{nameof(IEnumerable)}<{TextHelpers.GetValidPascalCaseIdentifierName(linkedTypeCodename)}>";
+        }
+
+        private static ContentTypeModel GetAllowedContentType(Guid allowedTypeId, List<ContentTypeModel> contentTypes)
+        {
+            var allowedType = contentTypes.FirstOrDefault(type => allowedTypeId == type.Id);
+
+            if (allowedType == null)
+            {
+                throw new ArgumentException("Could not find allowed type.");
+            }
+
+            return allowedType;
         }
     }
 }
