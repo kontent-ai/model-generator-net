@@ -26,6 +26,24 @@ namespace Kentico.Kontent.ModelGenerator.Tests
         }
 
         [Fact]
+        public void Validate_ManagementOptions_ExtendedDeliveryModels_Success()
+        {
+            var projectId = Guid.NewGuid().ToString();
+            var codeGeneratorOptions = new CodeGeneratorOptions
+            {
+                ManagementApi = false,
+                ExtendedDeliverModels = true,
+                ManagementOptions = new ManagementOptions
+                {
+                    ProjectId = projectId,
+                    ApiKey = "apiKey"
+                }
+            };
+
+            codeGeneratorOptions.Validate();
+        }
+
+        [Fact]
         public void Validate_DeliveryOptions_Success()
         {
             var projectId = Guid.NewGuid().ToString();
