@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using Kentico.Kontent.Management.Models.Types.Elements;
 using Kentico.Kontent.ModelGenerator.Core.Common;
@@ -11,7 +10,7 @@ using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
 {
-    public class ManagementClassCodeGeneratorTests
+    public class ManagementClassCodeGeneratorTests : TestBaseClassCodeGenerator
     {
         [Fact]
         public void Constructor_CreatesInstance()
@@ -105,23 +104,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
                 },
                 options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-            using var ms = new MemoryStream();
-            var result = compilation.Emit(ms);
-            var compilationErrors = "Compilation errors:\n";
-
-            if (!result.Success)
-            {
-                var failures = result.Diagnostics.Where(diagnostic =>
-                    diagnostic.IsWarningAsError ||
-                    diagnostic.Severity == DiagnosticSeverity.Error);
-
-                foreach (var diagnostic in failures)
-                {
-                    compilationErrors += $"{diagnostic.Id}: {diagnostic.GetMessage()}\n";
-                }
-            }
-
-            Assert.True(result.Success, compilationErrors);
+            AssertCompiledCode(compilation);
         }
     }
 }
