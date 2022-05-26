@@ -5,13 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Kentico.Kontent.Management;
 using Kentico.Kontent.Management.Configuration;
-using Kentico.Kontent.Management.Models.Shared;
 using Kentico.Kontent.Management.Models.Types;
 using Kentico.Kontent.Management.Models.Types.Elements;
 using Kentico.Kontent.Management.Models.TypeSnippets;
 using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
-using Kentico.Kontent.ModelGenerator.Tests.Fixtures;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -165,29 +163,6 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             // Cleanup
             Directory.Delete(TempDir, true);
-        }
-
-        private static IManagementClient CreateManagementClient()
-        {
-            var managementModelsProvider = new ManagementModelsProvider();
-            var managementClientMock = new Mock<IManagementClient>();
-
-            var contentTypeListingResponseModel = new Mock<IListingResponseModel<ContentTypeModel>>();
-            contentTypeListingResponseModel.As<IEnumerable<ContentTypeModel>>()
-                .Setup(c => c.GetEnumerator())
-                .Returns(() => managementModelsProvider.ManagementContentTypeModels);
-
-            var contentTypeSnippetListingResponseModel = new Mock<IListingResponseModel<ContentTypeSnippetModel>>();
-            contentTypeSnippetListingResponseModel.As<IEnumerable<ContentTypeSnippetModel>>()
-                .Setup(c => c.GetEnumerator())
-                .Returns(() => managementModelsProvider.ManagementContentTypeSnippetModels);
-
-            managementClientMock.Setup(client => client.ListContentTypeSnippetsAsync())
-                .Returns(Task.FromResult(contentTypeSnippetListingResponseModel.Object));
-            managementClientMock.Setup(client => client.ListContentTypesAsync())
-                .Returns(Task.FromResult(contentTypeListingResponseModel.Object));
-
-            return managementClientMock.Object;
         }
     }
 }
