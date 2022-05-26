@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Kentico.Kontent.Management;
 using Kentico.Kontent.Management.Configuration;
+using Kentico.Kontent.Management.Models.Shared;
 using Kentico.Kontent.Management.Models.Types;
 using Kentico.Kontent.Management.Models.Types.Elements;
 using Kentico.Kontent.Management.Models.TypeSnippets;
@@ -66,17 +67,62 @@ namespace Kentico.Kontent.ModelGenerator.Tests
             Assert.Throws<InvalidOperationException>(() => new ExtendedDeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, managementClient.Object));
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void GetClassCodeGenerator_Returns(bool extendedDeliverPreviewModels)
+        [Fact]
+        public void GetClassCodeGenerator_ExtendedDeliverPreviewModelsIsFalse_Returns()
         {
             var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
             mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
             {
                 ManagementApi = false,
                 ExtendedDeliverModels = true,
-                ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
+                ExtendedDeliverPreviewModels = false
+            });
+
+            var outputProvider = new Mock<IOutputProvider>();
+            var managementClient = new Mock<IManagementClient>();
+
+            var heroContentTypeModel = new ContentTypeModel
+            {
+                Codename = "hero",
+                Id = Guid.NewGuid()
+            };
+
+            var contentTypeCodename = "Contenttype";
+            var elementCodename = "element_codename";
+
+            var linkedElement =
+                (LinkedItemsElementMetadataModel)TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename, ElementMetadataType.LinkedItems);
+            linkedElement.AllowedTypes = new List<Reference> { Reference.ById(heroContentTypeModel.Id) };
+
+            var contentType = new ContentTypeModel
+            {
+                Codename = contentTypeCodename,
+                Elements = new List<ElementMetadataBase>
+                {
+                    linkedElement
+                }
+            };
+
+            var contentTypes = new List<ContentTypeModel> { contentType, heroContentTypeModel };
+
+            var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, managementClient.Object);
+
+            var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>(), contentTypes);
+
+            Assert.Equal("IEnumerable<Hero>", result.ClassDefinition.Properties[0].TypeName);
+            Assert.Equal(typeof(ExtendedDeliveryClassCodeGenerator), result.GetType());
+            Assert.Equal($"{contentTypeCodename}.Generated", result.ClassFilename);
+        }
+
+        [Fact]
+        public void GetClassCodeGenerator_ExtendedDeliverPreviewModelsIsFalse_MultipleAllowedTypes_Returns()
+        {
+            var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+            mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+            {
+                ManagementApi = false,
+                ExtendedDeliverModels = true,
+                ExtendedDeliverPreviewModels = false
             });
 
             var outputProvider = new Mock<IOutputProvider>();
@@ -84,21 +130,86 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var contentTypeCodename = "Contenttype";
             var elementCodename = "element_codename";
+
+            var linkedElement =
+                (LinkedItemsElementMetadataModel)TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename, ElementMetadataType.LinkedItems);
+            linkedElement.AllowedTypes = new List<Reference>
+            {
+                Reference.ById(Guid.NewGuid()),
+                Reference.ById(Guid.NewGuid())
+            };
+
             var contentType = new ContentTypeModel
             {
                 Codename = contentTypeCodename,
                 Elements = new List<ElementMetadataBase>
                 {
-                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename)
+                    linkedElement
                 }
             };
 
-            var contentTypes = new List<ContentTypeModel> { contentType };
+            var contentTypes = new List<ContentTypeModel>
+            {
+                contentType,
+                new ContentTypeModel
+                {
+                    Id = Guid.NewGuid()
+                },
+                new ContentTypeModel
+                {
+                    Id = Guid.NewGuid()
+                }
+            };
 
             var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, managementClient.Object);
 
             var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>(), contentTypes);
 
+            Assert.Equal($"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>", result.ClassDefinition.Properties[0].TypeName);
+            Assert.Equal(typeof(ExtendedDeliveryClassCodeGenerator), result.GetType());
+            Assert.Equal($"{contentTypeCodename}.Generated", result.ClassFilename);
+        }
+
+        [Fact]
+        public void GetClassCodeGenerator_ExtendedDeliverPreviewModelsIsTrue_Returns()
+        {
+            var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+            mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+            {
+                ManagementApi = false,
+                ExtendedDeliverModels = true,
+                ExtendedDeliverPreviewModels = true
+            });
+
+            var outputProvider = new Mock<IOutputProvider>();
+            var managementClient = new Mock<IManagementClient>();
+
+            var heroContentTypeModel = new ContentTypeModel { Codename = "hero" };
+
+            var contentTypeCodename = "Contenttype";
+            var elementCodename = "element_codename";
+
+            var linkedElement =
+                (LinkedItemsElementMetadataModel)TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename, ElementMetadataType.LinkedItems);
+            linkedElement.AllowedTypes = new List<Reference> { Reference.ByCodename(heroContentTypeModel.Codename) };
+
+            var contentType = new ContentTypeModel
+            {
+                Codename = contentTypeCodename,
+                Elements = new List<ElementMetadataBase>
+                {
+                    linkedElement
+                }
+            };
+
+            var contentTypes = new List<ContentTypeModel> { contentType, heroContentTypeModel };
+
+            var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, managementClient.Object);
+
+            var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>(), contentTypes);
+
+            Assert.Equal($"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>", result.ClassDefinition.Properties[0].TypeName);
+            Assert.Equal(typeof(ExtendedDeliveryClassCodeGenerator), result.GetType());
             Assert.Equal($"{contentTypeCodename}.Generated", result.ClassFilename);
         }
 
