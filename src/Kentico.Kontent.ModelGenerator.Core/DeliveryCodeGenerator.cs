@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.ModelGenerator.Core.Common;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
-using Kentico.Kontent.ModelGenerator.Core.Generators;
 using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
 using Kentico.Kontent.ModelGenerator.Core.Helpers;
 using Microsoft.Extensions.Options;
 
 namespace Kentico.Kontent.ModelGenerator.Core
 {
-    public class DeliveryCodeGenerator : CodeGeneratorBase
+    public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
     {
         private readonly IDeliveryClient _deliveryClient;
 
@@ -25,18 +23,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
             }
 
             _deliveryClient = deliveryClient;
-        }
-
-        public new async Task<int> RunAsync()
-        {
-            await base.RunAsync();
-
-            if (Options.WithTypeProvider)
-            {
-                await GenerateTypeProvider();
-            }
-
-            return 0;
         }
 
         protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
@@ -92,27 +78,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
             var classFilename = GetFileClassName(classDefinition.ClassName);
 
             return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
-        }
-
-        private async Task GenerateTypeProvider()
-        {
-            var classCodeGenerators = await GetClassCodeGenerators();
-
-            if (!classCodeGenerators.Any())
-            {
-                Console.WriteLine(NoContentTypeAvailableMessage);
-                return;
-            }
-
-            var typeProviderCodeGenerator = new TypeProviderCodeGenerator(Options.Namespace);
-
-            foreach (var codeGenerator in classCodeGenerators)
-            {
-                typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
-            }
-
-            var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
-            WriteToOutputProvider(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
         }
     }
 }

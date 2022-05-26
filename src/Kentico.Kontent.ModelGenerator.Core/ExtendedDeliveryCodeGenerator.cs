@@ -9,14 +9,13 @@ using Kentico.Kontent.Management.Models.Types.Elements;
 using Kentico.Kontent.Management.Models.TypeSnippets;
 using Kentico.Kontent.ModelGenerator.Core.Common;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
-using Kentico.Kontent.ModelGenerator.Core.Generators;
 using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
 using Kentico.Kontent.ModelGenerator.Core.Helpers;
 using Microsoft.Extensions.Options;
 
 namespace Kentico.Kontent.ModelGenerator.Core
 {
-    public class ExtendedDeliveryCodeGenerator : CodeGeneratorBase
+    public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
     {
         private readonly IManagementClient _managementClient;
 
@@ -34,18 +33,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
             }
 
             _managementClient = managementClient;
-        }
-
-        public new async Task<int> RunAsync()
-        {
-            await base.RunAsync();
-
-            if (Options.WithTypeProvider)
-            {
-                await GenerateTypeProvider();
-            }
-
-            return 0;
         }
 
         protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
@@ -123,27 +110,6 @@ namespace Kentico.Kontent.ModelGenerator.Core
             var property = Property.FromContentTypeElement(el, elementType);
 
             AddProperty(property, ref classDefinition);
-        }
-
-        private async Task GenerateTypeProvider()
-        {
-            var classCodeGenerators = await GetClassCodeGenerators();
-
-            if (!classCodeGenerators.Any())
-            {
-                Console.WriteLine(NoContentTypeAvailableMessage);
-                return;
-            }
-
-            var typeProviderCodeGenerator = new TypeProviderCodeGenerator(Options.Namespace);
-
-            foreach (var codeGenerator in classCodeGenerators)
-            {
-                typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
-            }
-
-            var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
-            WriteToOutputProvider(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
         }
     }
 }
