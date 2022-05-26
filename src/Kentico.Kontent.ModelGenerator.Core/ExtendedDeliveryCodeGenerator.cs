@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,6 +23,16 @@ namespace Kentico.Kontent.ModelGenerator.Core
         public ExtendedDeliveryCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IManagementClient managementClient)
             : base(options, outputProvider)
         {
+            if (options.Value.ManagementApi)
+            {
+                throw new InvalidOperationException("Cannot create Extended Delivery models with Management API enabled.");
+            }
+
+            if (!options.Value.ExtendedDeliverModels)
+            {
+                throw new InvalidOperationException("Cannot create Extended Delivery models.");
+            }
+
             _managementClient = managementClient;
         }
 
