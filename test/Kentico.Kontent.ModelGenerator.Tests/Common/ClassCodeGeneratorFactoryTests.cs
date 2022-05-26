@@ -142,6 +142,82 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
             AssertClassCodeGenerator<ManagementClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void CreateClassCodeGenerator_ExtendedDeliveryClassCodeGenerator_BaseClassIsNullOrEmpty_CustomNamespace_Returns(string baseClass)
+        {
+            var classDefinitionCodename = "codename";
+            var classFileName = "classFileName";
+            var customNamespace = "CustomNameSpace";
+            var codeGeneratorOptions = new CodeGeneratorOptions
+            {
+                ManagementApi = false,
+                BaseClass = baseClass,
+                ExtendedDeliverModels = true,
+                Namespace = customNamespace
+            };
+
+            var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+
+            AssertClassCodeGenerator<ExtendedDeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void CreateClassCodeGenerator_ExtendedDeliveryClassCodeGenerator_BaseClassIsNullOrEmpty_Returns(string baseClass)
+        {
+            var classDefinitionCodename = "codename";
+            var classFileName = "classFileName";
+            var codeGeneratorOptions = new CodeGeneratorOptions
+            {
+                ManagementApi = false,
+                BaseClass = baseClass,
+                ExtendedDeliverModels = true
+            };
+
+            var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+
+            AssertClassCodeGenerator<ExtendedDeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
+        }
+
+        [Fact]
+        public void CreateClassCodeGenerator_ExtendedDeliveryClassCodeGenerator_BaseClassIsNotNullOrEmpty_CustomNamespace_Returns()
+        {
+            var classDefinitionCodename = "codename";
+            var classFileName = "classFileName";
+            var customNamespace = "CustomNameSpace";
+            var codeGeneratorOptions = new CodeGeneratorOptions
+            {
+                ManagementApi = false,
+                BaseClass = "BaseClass",
+                ExtendedDeliverModels = true,
+                Namespace = customNamespace
+            };
+
+            var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+
+            AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
+        }
+
+        [Fact]
+        public void CreateClassCodeGenerator_ExtendedDeliveryClassCodeGenerator_BaseClassIsNotNullOrEmpty_Returns()
+        {
+            var classDefinitionCodename = "codename";
+            var classFileName = "classFileName";
+            var codeGeneratorOptions = new CodeGeneratorOptions
+            {
+                ManagementApi = false,
+                BaseClass = "BaseClass",
+                ExtendedDeliverModels = true,
+            };
+
+            var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+
+            AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
+        }
+
         private static void AssertClassCodeGenerator<T>(ClassCodeGenerator result, string classDefinitionCodename, string classFileName, string @namespace)
         {
             Assert.IsType<T>(result);
