@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
+using Kentico.Kontent.ModelGenerator.Core.Common;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Xunit;
@@ -8,6 +9,8 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
 {
     public class TestBaseClassCodeGenerator
     {
+        protected readonly ClassDefinition ClassDefinition = new ClassDefinition("Complete content type");
+
         public void AssertCompiledCode(CSharpCompilation compilation)
         {
             using var ms = new MemoryStream();
