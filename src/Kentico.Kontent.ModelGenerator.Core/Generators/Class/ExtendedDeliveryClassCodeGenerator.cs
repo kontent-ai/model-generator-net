@@ -6,15 +6,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
 {
     public class ExtendedDeliveryClassCodeGenerator : DeliveryClassCodeGenerator
     {
-        private readonly string BaseTypeName;
-
-        public ExtendedDeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string baseTypeName, string @namespace = DefaultNamespace)
-            : base(classDefinition, classFilename, @namespace)
-        {
-            BaseTypeName = baseTypeName;
-        }
-
-        private ExtendedDeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace)
+        public ExtendedDeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace)
             : base(classDefinition, classFilename, @namespace)
         {
         }
@@ -23,7 +15,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
         {
             var classDeclaration = base.GetClassDeclaration();
 
-            var baseType = SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(BaseTypeName));
+            var baseType = SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(ContentItemClassCodeGenerator.DefaultContentItemClassName));
             classDeclaration = classDeclaration.AddBaseListTypes(baseType);
 
             return classDeclaration;

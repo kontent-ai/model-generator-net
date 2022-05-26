@@ -34,7 +34,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
             }
 
             return options.ExtendedDeliverModels && string.IsNullOrWhiteSpace(options.BaseClass)
-                ? new ExtendedDeliveryClassCodeGenerator(classDefinition, classFilename, ContentItemClassCodeGenerator.DefaultContentItemClassName, options.Namespace)
+                ? new ExtendedDeliveryClassCodeGenerator(classDefinition, classFilename, options.Namespace)
                 : new DeliveryClassCodeGenerator(classDefinition, classFilename, options.Namespace);
         }
     }
