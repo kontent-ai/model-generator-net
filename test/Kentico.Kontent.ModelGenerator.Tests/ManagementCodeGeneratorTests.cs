@@ -10,6 +10,7 @@ using Kentico.Kontent.Management.Models.Types.Elements;
 using Kentico.Kontent.Management.Models.TypeSnippets;
 using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
+using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -71,6 +72,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>());
 
+            Assert.Equal(typeof(ManagementClassCodeGenerator), result.GetType());
             Assert.Equal($"{contentTypeCodename}.Generated", result.ClassFilename);
         }
 

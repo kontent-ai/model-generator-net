@@ -8,6 +8,7 @@ using Kentico.Kontent.Delivery.Abstractions;
 using Kentico.Kontent.Delivery.Builders.DeliveryClient;
 using Kentico.Kontent.ModelGenerator.Core;
 using Kentico.Kontent.ModelGenerator.Core.Configuration;
+using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
 using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
@@ -67,6 +68,7 @@ namespace Kentico.Kontent.ModelGenerator.Tests
 
             var result = codeGenerator.GetClassCodeGenerator(contentType.Object);
 
+            Assert.Equal(typeof(DeliveryClassCodeGenerator), result.GetType());
             Assert.Equal($"{contentTypeCodename}.Generated", result.ClassFilename);
         }
 
