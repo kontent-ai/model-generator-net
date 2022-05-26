@@ -86,5 +86,24 @@ namespace Kentico.Kontent.ModelGenerator.Tests.Common
             Assert.Throws<InvalidOperationException>(() => classDefinition.AddProperty(Property.FromContentTypeElement("element", "text")));
             Assert.Single(classDefinition.Properties);
         }
+
+        [Fact]
+        public void TryAddSystemProperty_PropertyIsAdded()
+        {
+            var classDefinition = new ClassDefinition("Class name");
+            classDefinition.TryAddSystemProperty();
+
+            Assert.Single(classDefinition.Properties, property => property.Codename == "system");
+        }
+
+        [Fact]
+        public void TryAddSystemProperty_Duplicate_PropertyIsNotAdded()
+        {
+            var classDefinition = new ClassDefinition("Class name");
+            classDefinition.TryAddSystemProperty();
+            classDefinition.TryAddSystemProperty();
+
+            Assert.Single(classDefinition.Properties, property => property.Codename == "system");
+        }
     }
 }
