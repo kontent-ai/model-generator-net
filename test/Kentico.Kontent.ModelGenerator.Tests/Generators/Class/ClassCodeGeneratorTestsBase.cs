@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
 {
-    public class TestBaseClassCodeGenerator
+    public class ClassCodeGeneratorTestsBase
     {
         protected readonly ClassDefinition ClassDefinition = new ClassDefinition("Complete content type");
 

@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
 {
-    public class ExtendedDeliveryClassCodeGeneratorTests : TestBaseClassCodeGenerator
+    public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
     {
         public ExtendedDeliveryClassCodeGeneratorTests()
         {

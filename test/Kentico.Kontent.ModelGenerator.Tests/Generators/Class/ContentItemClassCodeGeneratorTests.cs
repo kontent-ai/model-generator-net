@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
 {
-    public class ContentItemClassCodeGeneratorTests : TestBaseClassCodeGenerator
+    public class ContentItemClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
     {
         [Fact]
         public void Constructor_CreatesInstance()
