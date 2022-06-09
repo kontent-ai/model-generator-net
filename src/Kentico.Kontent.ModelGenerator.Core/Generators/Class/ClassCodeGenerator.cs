@@ -47,9 +47,10 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
                     GetAccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
                 )).ToArray<MemberDeclarationSyntax>();
 
-        protected virtual ClassDeclarationSyntax GetClassDeclaration() => SyntaxFactory.ClassDeclaration(ClassDefinition.ClassName)
+        protected virtual TypeDeclarationSyntax GetClassDeclaration() => SyntaxFactory.ClassDeclaration(ClassDefinition.ClassName)
             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
+
 
         protected override SyntaxTrivia ClassDescription() => ClassDeclarationHelper.GenerateSyntaxTrivia(
 @$"{LostChangesComment}
@@ -58,7 +59,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
         protected static AccessorDeclarationSyntax GetAccessorDeclaration(SyntaxKind kind) =>
             SyntaxFactory.AccessorDeclaration(kind).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
-        private CompilationUnitSyntax GetCompilationUnit(ClassDeclarationSyntax classDeclaration, UsingDirectiveSyntax[] usings)
+        private CompilationUnitSyntax GetCompilationUnit(TypeDeclarationSyntax classDeclaration, UsingDirectiveSyntax[] usings)
         {
             var compilationUnit = SyntaxFactory.CompilationUnit()
                 .AddUsings(usings)

@@ -11,12 +11,14 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
         {
         }
 
-        protected override ClassDeclarationSyntax GetClassDeclaration()
+        protected override TypeDeclarationSyntax GetClassDeclaration()
         {
+            ClassDefinition.TryAddSystemProperty();
+
             var classDeclaration = base.GetClassDeclaration();
 
             var baseType = SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(ContentItemClassCodeGenerator.DefaultContentItemClassName));
-            classDeclaration = classDeclaration.AddBaseListTypes(baseType);
+            classDeclaration = (TypeDeclarationSyntax)classDeclaration.AddBaseListTypes(baseType);
 
             return classDeclaration;
         }

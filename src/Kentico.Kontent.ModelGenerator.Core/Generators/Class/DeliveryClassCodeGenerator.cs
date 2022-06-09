@@ -11,7 +11,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
         {
         }
 
-        protected override ClassDeclarationSyntax GetClassDeclaration()
+        protected override TypeDeclarationSyntax GetClassDeclaration()
         {
             var classDeclaration = base.GetClassDeclaration();
 

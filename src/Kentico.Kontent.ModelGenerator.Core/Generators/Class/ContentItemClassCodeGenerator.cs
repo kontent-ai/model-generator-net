@@ -8,7 +8,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
 {
     public class ContentItemClassCodeGenerator : ClassCodeGenerator
     {
-        public const string DefaultContentItemClassName = "ContentItem";
+        public const string DefaultContentItemClassName = "IContentItem";
 
         public ContentItemClassCodeGenerator(string @namespace = DefaultNamespace)
             : this(new ClassDefinition(DefaultContentItemClassName), DefaultContentItemClassName, @namespace)
@@ -25,11 +25,11 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
             SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
         };
 
-        protected override ClassDeclarationSyntax GetClassDeclaration()
+        protected override TypeDeclarationSyntax GetClassDeclaration()
         {
             ClassDefinition.TryAddSystemProperty();
 
-            var classDeclaration = SyntaxFactory.ClassDeclaration(ClassDefinition.Codename)
+            var classDeclaration = SyntaxFactory.InterfaceDeclaration(ClassDefinition.Codename)
                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
                .AddMembers(Properties);
 
