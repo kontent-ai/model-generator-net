@@ -115,13 +115,18 @@ namespace Kentico.Kontent.ModelGenerator.Core.Common
 
         public static Property FromContentTypeElement(ElementMetadataBase element, string elementType)
         {
+            return FromContentTypeElement(element, elementType, element.Codename);
+        }
+
+        public static Property FromContentTypeElement(ElementMetadataBase element, string elementType, string finalPropertyName)
+        {
             if (IsContentTypeSupported(element.Type.ToString(), true))
             {
                 var resultElementType = element.Type == ElementMetadataType.LinkedItems
                     ? elementType
                     : ExtendedDeliverElementTypesDictionary[elementType];
 
-                return new Property(element.Codename, resultElementType);
+                return new Property(finalPropertyName, resultElementType);
             }
 
             if (element.Type == ElementMetadataType.Guidelines)

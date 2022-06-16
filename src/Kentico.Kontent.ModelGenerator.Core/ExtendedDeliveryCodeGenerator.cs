@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Kentico.Kontent.Management;
 using Kentico.Kontent.Management.Extensions;
@@ -17,6 +17,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
 {
     public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
     {
+        private const string TypedSuffixFileName = ".Typed";
         private readonly IManagementClient _managementClient;
 
         public ExtendedDeliveryCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IManagementClient managementClient)
@@ -57,7 +58,7 @@ namespace Kentico.Kontent.ModelGenerator.Core
                         codeGenerators.Add(GetCustomClassCodeGenerator(contentType.Codename));
                     }
 
-                    codeGenerators.Add(GetClassCodeGenerator(contentType, managementSnippets, deliveryTypes));
+                    codeGenerators.AddRange(GetClassCodeGenerator(contentType, managementSnippets, deliveryTypes));
                 }
                 catch (InvalidIdentifierException)
                 {
@@ -68,9 +69,10 @@ namespace Kentico.Kontent.ModelGenerator.Core
             return codeGenerators;
         }
 
-        internal ClassCodeGenerator GetClassCodeGenerator(ContentTypeModel contentType, List<ContentTypeSnippetModel> managementSnippets, List<ContentTypeModel> contentTypes)
+        internal IEnumerable<ClassCodeGenerator> GetClassCodeGenerator(ContentTypeModel contentType, List<ContentTypeSnippetModel> managementSnippets, List<ContentTypeModel> contentTypes)
         {
             var classDefinition = new ClassDefinition(contentType.Codename);
+            var typedClassDefinition = new ClassDefinition(contentType.Codename);
 
             foreach (var element in contentType.Elements)
             {
@@ -78,14 +80,14 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 {
                     if (element.Type != ElementMetadataType.ContentTypeSnippet)
                     {
-                        AddProperty(element, ref classDefinition, contentTypes);
+                        AddProperty(element, ref classDefinition, ref typedClassDefinition, contentTypes);
                     }
                     else
                     {
                         var snippetElements = ManagementElementHelper.GetManagementContentTypeSnippetElements(element, managementSnippets);
                         foreach (var snippetElement in snippetElements)
                         {
-                            AddProperty(snippetElement, ref classDefinition, contentTypes);
+                            AddProperty(snippetElement, ref classDefinition, ref typedClassDefinition, contentTypes);
                         }
                     }
                 }
@@ -95,19 +97,25 @@ namespace Kentico.Kontent.ModelGenerator.Core
                 }
             }
 
-            var classFilename = GetFileClassName(classDefinition.ClassName);
-            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
+            yield return new TypedExtendedDeliveryClassCodeGenerator(typedClassDefinition, GetFileClassName(classDefinition.ClassName + TypedSuffixFileName));
+            yield return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, GetFileClassName(classDefinition.ClassName));
         }
 
-        private void AddProperty(ElementMetadataBase el, ref ClassDefinition classDefinition, List<ContentTypeModel> contentTypes)
+        private void AddProperty(ElementMetadataBase el, ref ClassDefinition classDefinition, ref ClassDefinition typedClassDefinition, List<ContentTypeModel> contentTypes)
         {
             var elementType = DeliveryElementHelper.GetElementType(Options, el.Type.ToString());
             if (elementType == ElementMetadataType.LinkedItems.ToString())
             {
-                elementType = ContentTypeToDeliverTypeNameMapper.Map(el, contentTypes, Options);
+                var typedProperties = ContentTypeToDeliverTypeNameMapper.Map(el, contentTypes, Options);
+                foreach (var typedProperty in typedProperties)
+                {
+                    AddProperty(typedProperty, ref typedClassDefinition);
+                }
+
+                elementType = $"{nameof(IEnumerable)}<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>";
             }
 
-            var property = Property.FromContentTypeElement(el, elementType);
+            var property = Property.FromContentTypeElement(el, elementType!);
 
             AddProperty(property, ref classDefinition);
         }
