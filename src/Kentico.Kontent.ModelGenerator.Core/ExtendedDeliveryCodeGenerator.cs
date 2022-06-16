@@ -106,8 +106,8 @@ namespace Kentico.Kontent.ModelGenerator.Core
             var elementType = DeliveryElementHelper.GetElementType(Options, el.Type.ToString());
             if (elementType == ElementMetadataType.LinkedItems.ToString())
             {
-                var typedProperties = ContentTypeToDeliverTypeNameMapper.Map(el, contentTypes, Options);
-                foreach (var typedProperty in typedProperties)
+                var typedProperty = ContentTypeToDeliverTypeNameMapper.Map(el, contentTypes, Options);
+                if (typedProperty != null)
                 {
                     AddProperty(typedProperty, ref typedClassDefinition);
                 }

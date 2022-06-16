@@ -13,7 +13,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
 {
     public static class ContentTypeToDeliverTypeNameMapper
     {
-        public static IEnumerable<Property> Map(ElementMetadataBase el, List<ContentTypeModel> contentTypes, CodeGeneratorOptions options)
+        public static Property Map(ElementMetadataBase el, List<ContentTypeModel> contentTypes, CodeGeneratorOptions options)
         {
             var linkedItemsElement = el.ToElement<LinkedItemsElementMetadataModel>();
             if (linkedItemsElement == null)
@@ -36,37 +36,24 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (!linkedItemsElement.AllowedTypes.Any() || options.ExtendedDeliverPreviewModels)
+
+            if (linkedItemsElement.AllowedTypes.Count() != 1)
             {
-
-                yield return Property.FromContentTypeElement(el, GetEnumerablePropertyName(ContentItemClassCodeGenerator.DefaultContentItemClassName));
-                yield break;
-            }
-
-            var elementCodename = TextHelpers.GetValidPascalCaseIdentifierName(el.Codename);
-            if (linkedItemsElement.AllowedTypes.Count() > 1)
-            {
-                foreach (var allowedType in linkedItemsElement.AllowedTypes)
-                {
-                    var allowedTypeName = TextHelpers.GetValidPascalCaseIdentifierName(GetAllowedContentType(allowedType.Id.Value, contentTypes).Codename);
-                    if (linkedItemsElement.ItemCountLimit is { Condition: LimitType.Exactly, Value: 1 } or { Condition: LimitType.AtMost, Value: 1 })
-                    {
-                        continue;
-                    }
-
-                    yield return Property.FromContentTypeElement(el, GetEnumerablePropertyName(allowedTypeName), GetCompoundPropertyName(elementCodename, allowedTypeName));
-                }
-                yield break;
+                return null;
             }
 
             var typeName = TextHelpers.GetValidPascalCaseIdentifierName(GetAllowedContentType(linkedItemsElement.AllowedTypes.First().Id.Value, contentTypes).Codename);
             if (linkedItemsElement.ItemCountLimit.Condition == LimitType.Exactly && linkedItemsElement.ItemCountLimit.Value == 1)
             {
-                yield return Property.FromContentTypeElement(el, typeName);
-                yield break;
+                return Property.FromContentTypeElement(el, typeName);
             }
 
-            yield return Property.FromContentTypeElement(el, GetEnumerablePropertyName(typeName), GetCompoundPropertyName(elementCodename, typeName));
+            if (linkedItemsElement.ItemCountLimit == null || !(linkedItemsElement.ItemCountLimit.Condition == LimitType.AtMost && linkedItemsElement.ItemCountLimit.Value == 1))
+            {
+                return Property.FromContentTypeElement(el, GetEnumerablePropertyTypeName(typeName));
+            }
+
+            return Property.FromContentTypeElement(el, GetEnumerablePropertyTypeName(ContentItemClassCodeGenerator.DefaultContentItemClassName));
         }
 
         private static ContentTypeModel GetAllowedContentType(Guid allowedTypeId, List<ContentTypeModel> contentTypes)
@@ -81,8 +68,6 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
             return allowedType;
         }
 
-        private static string GetEnumerablePropertyName(string typeName) => $"{nameof(IEnumerable)}<{typeName}>";
-
-        private static string GetCompoundPropertyName(string codename, string typeName) => $"{codename}_{typeName}";
+        private static string GetEnumerablePropertyTypeName(string typeName) => $"{nameof(IEnumerable)}<{typeName}>";
     }
 }

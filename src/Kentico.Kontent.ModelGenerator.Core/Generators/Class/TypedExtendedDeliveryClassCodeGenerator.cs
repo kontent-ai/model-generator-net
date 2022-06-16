@@ -53,7 +53,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
                                     SyntaxFactory.InvocationExpression(
                                         SyntaxFactory.MemberAccessExpression(
                                             SyntaxKind.SimpleMemberAccessExpression,
-                                            SyntaxFactory.IdentifierName(GetOriginalPropertyName(element.Identifier, element.TypeName)),
+                                            SyntaxFactory.IdentifierName(element.Identifier),
                                             SyntaxFactory.GenericName(SyntaxFactory.Identifier(OfTypeName))
                                                 .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(
                                                     SyntaxFactory.SingletonSeparatedList<TypeSyntax>(SyntaxFactory.IdentifierName(element.TypeName)))))),
@@ -73,7 +73,7 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
                                 SyntaxFactory.InvocationExpression(
                                     SyntaxFactory.MemberAccessExpression(
                                         SyntaxKind.SimpleMemberAccessExpression,
-                                        SyntaxFactory.IdentifierName(GetOriginalPropertyName(element.Identifier, typeName)),
+                                        SyntaxFactory.IdentifierName(element.Identifier),
                                         SyntaxFactory.GenericName(SyntaxFactory.Identifier(OfTypeName))
                                             .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(
                                                 SyntaxFactory.SingletonSeparatedList<TypeSyntax>(SyntaxFactory.IdentifierName(typeName))))))))
@@ -84,16 +84,5 @@ namespace Kentico.Kontent.ModelGenerator.Core.Generators.Class
         }
 
         private static string GetNonEnumerableTypeName(string typeName) => Regex.Match(typeName, "[^\\>|\\<]\\w+\\b(?<!\\bIEnumerable)").Value;
-
-        private static string GetOriginalPropertyName(string propertyName, string typeName)
-        {
-            if (propertyName == typeName)
-            {
-                return typeName;
-            }
-
-            return propertyName.Substring(0, propertyName.Length - typeName.Length);
-        }
     }
-
 }

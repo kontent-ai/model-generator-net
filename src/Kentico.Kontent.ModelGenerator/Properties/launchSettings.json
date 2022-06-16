@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Kentico.Kontent.ModelGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "-p 91e2ce54-09a0-004c-f3b4-0e120a925675 -e true -m false -t false -k ew0KICAiYWxnIjogIkhTMjU2IiwNCiAgInR5cCI6ICJKV1QiDQp9.ew0KICAianRpIjogIjhjZjMxZmU3YjAzZDQ2YzY4NzNmNmQ4MTE1NWY3NmVlIiwNCiAgImlhdCI6ICIxNjU0NzY0MTYxIiwNCiAgImV4cCI6ICIyMDAwMzY0MTYxIiwNCiAgInZlciI6ICIyLjEuMCIsDQogICJ1aWQiOiAiSVZrM29BQy0xeTlCMGNYTzVHdkRiTWhrWG1JVnJDUDJudUt4UzhuREVaWSIsDQogICJwcm9qZWN0X2lkIjogIjkxZTJjZTU0MDlhMDAwNGNmM2I0MGUxMjBhOTI1Njc1IiwNCiAgImF1ZCI6ICJtYW5hZ2Uua2VudGljb2Nsb3VkLmNvbSINCn0.cduroOVU2Q5_sms_jSm46-CULn1CQe0-_NUuK1V2Q1c"
+    }
+  }
+}
