@@ -51,10 +51,12 @@ namespace Kentico.Kontent.ModelGenerator.Core.Helpers
                     var allowedTypeName = TextHelpers.GetValidPascalCaseIdentifierName(GetAllowedContentType(allowedType.Id.Value, contentTypes).Codename);
                     if (linkedItemsElement.ItemCountLimit is { Condition: LimitType.Exactly, Value: 1 } or { Condition: LimitType.AtMost, Value: 1 })
                     {
-                        continue;
+                        yield return Property.FromContentTypeElement(el, allowedTypeName, GetCompoundPropertyName(elementCodename, allowedTypeName));
                     }
-
-                    yield return Property.FromContentTypeElement(el, GetEnumerablePropertyName(allowedTypeName), GetCompoundPropertyName(elementCodename, allowedTypeName));
+                    else
+                    {
+                        yield return Property.FromContentTypeElement(el, GetEnumerablePropertyName(allowedTypeName), GetCompoundPropertyName(elementCodename, allowedTypeName));
+                    }
                 }
                 yield break;
             }
