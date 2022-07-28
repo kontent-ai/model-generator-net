@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using Kontent.Ai.Delivery;
 using Kontent.Ai.Delivery.Abstractions;
@@ -46,6 +47,8 @@ namespace Kontent.Ai.ModelGenerator
                 // Validate configuration of the Delivery Client
                 var options = serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value;
                 options.Validate();
+
+                PrintSdkVersion(options.ManagementApi);
 
                 // Code generator entry point
                 return options.ManagementApi
@@ -102,6 +105,25 @@ namespace Kontent.Ai.ModelGenerator
 
             bool ContainsManageApiArg() =>
                 args.Where((value, index) => (value is "-m" or "--managementapi") && index + 1 < args.Length && args[index + 1] == "true").Any();
+        }
+
+        private static void PrintSdkVersion(bool managementApi)
+        {
+            string sdkName, sdkVersion;
+            if (managementApi)
+            {
+                sdkName = "management-sdk-net";
+                sdkVersion = SdkVersion(typeof(ManagementOptions));
+            }
+            else
+            {
+                sdkName = "delivery-sdk-net";
+                sdkVersion = SdkVersion(typeof(DeliveryOptions));
+            }
+
+            Console.WriteLine($"Models were generated for {sdkName} version {sdkVersion}");
+
+            static string SdkVersion(Type type) => Assembly.GetAssembly(type).GetName().Version.ToString(3);
         }
     }
 }
