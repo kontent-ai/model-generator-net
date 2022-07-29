@@ -18,6 +18,9 @@ namespace Kontent.Ai.ModelGenerator
 {
     internal class Program
     {
+        private static readonly OptionsTypeData ManagementOptionsTypeData = new OptionsTypeData(typeof(ManagementOptions), "management-sdk-net");
+        private static readonly OptionsTypeData DeliveryOptionsTypeData = new OptionsTypeData(typeof(DeliveryOptions), "delivery-sdk-net");
+
         public static async Task<int> Main(string[] args)
         {
             try
@@ -25,11 +28,18 @@ namespace Kontent.Ai.ModelGenerator
                 // Create an instance of a DI container
                 var services = new ServiceCollection();
 
+                var switchMappings = GetSwitchMappings(args);
+                if (ContainsContainsUnsupportedArg(args, switchMappings))
+                {
+                    Console.WriteLine("Failed to run due to invalid configuration.");
+                    return 1;
+                }
+
                 // Build a configuration object from given sources
                 var configuration = new ConfigurationBuilder()
                             .SetBasePath(Environment.CurrentDirectory)
                             .AddJsonFile("appSettings.json", true)
-                            .AddCommandLine(args, GetSwitchMappings(args))
+                            .AddCommandLine(args, switchMappings)
                             .Build();
 
                 // Fill the DI container
@@ -84,19 +94,19 @@ namespace Kontent.Ai.ModelGenerator
 
             var deliveryMappings = new Dictionary<string, string>
             {
-                { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-                {"--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" }, // Backwards compatibility
+                { "-p", $"{DeliveryOptionsTypeData.OptionsName}:{nameof(DeliveryOptions.ProjectId)}" },
+                {"--projectid", $"{DeliveryOptionsTypeData.OptionsName}:{nameof(DeliveryOptions.ProjectId)}" }, // Backwards compatibility
                 { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
                 { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
             };
 
             var managementMappings = new Dictionary<string, string>
             {
-                { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
-                {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" }, // Backwards compatibility
+                { "-p", $"{ManagementOptionsTypeData.OptionsName}:{nameof(ManagementOptions.ProjectId)}" },
+                {"--projectid", $"{ManagementOptionsTypeData.OptionsName}:{nameof(ManagementOptions.ProjectId)}" }, // Backwards compatibility
                 { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
-                { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
-                { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" } // Backwards compatibility
+                { "-k", $"{ManagementOptionsTypeData.OptionsName}:{nameof(ManagementOptions.ApiKey)}" },
+                { "--apikey", $"{ManagementOptionsTypeData.OptionsName}:{nameof(ManagementOptions.ApiKey)}" } // Backwards compatibility
             };
 
             return generalMappings
@@ -107,23 +117,59 @@ namespace Kontent.Ai.ModelGenerator
                 args.Where((value, index) => (value is "-m" or "--managementapi") && index + 1 < args.Length && args[index + 1] == "true").Any();
         }
 
+        internal static bool ContainsContainsUnsupportedArg(string[] args, IDictionary<string, string> usedMappings)
+        {
+            var containsUnsupportedArg = false;
+            var codeGeneratorOptionsProperties = typeof(CodeGeneratorOptions).GetProperties()
+                .Where(p => p.PropertyType != ManagementOptionsTypeData.Type && p.PropertyType != DeliveryOptionsTypeData.Type)
+                .Select(p => p.Name.ToLower())
+                .ToList();
+
+            foreach (var arg in args.Where(a => a.StartsWith('-')))
+            {
+                if (!usedMappings.ContainsKey(arg) &&
+                    IsOptionPropertyUnsupported(ManagementOptionsTypeData, arg) &&
+                    IsOptionPropertyUnsupported(DeliveryOptionsTypeData, arg) &&
+                    IsOptionPropertyUnsupported(codeGeneratorOptionsProperties, arg))
+                {
+                    Console.WriteLine($"Unsupported parameter: {arg}");
+                    containsUnsupportedArg = true;
+                }
+            }
+
+            return containsUnsupportedArg;
+
+
+        }
+
+        private static bool IsOptionPropertyUnsupported(OptionsTypeData optionsTypeData, string arg) =>
+            IsOptionPropertyUnsupported(optionsTypeData.OptionProperties.Select(prop => $"{optionsTypeData.OptionsName}:{prop.Name}"), arg);
+
+        private static bool IsOptionPropertyUnsupported(IEnumerable<string> optionProperties, string arg) =>
+            optionProperties.All(prop => $"--{prop}" != arg);
+
         private static void PrintSdkVersion(bool managementApi)
         {
-            string sdkName, sdkVersion;
-            if (managementApi)
-            {
-                sdkName = "management-sdk-net";
-                sdkVersion = SdkVersion(typeof(ManagementOptions));
-            }
-            else
-            {
-                sdkName = "delivery-sdk-net";
-                sdkVersion = SdkVersion(typeof(DeliveryOptions));
-            }
+            var optionsTypeData = managementApi ? ManagementOptionsTypeData : DeliveryOptionsTypeData;
+            Console.WriteLine($"Models were generated for {optionsTypeData.SdkName} version {optionsTypeData.SdkVersion}");
+        }
 
-            Console.WriteLine($"Models were generated for {sdkName} version {sdkVersion}");
+        private class OptionsTypeData
+        {
+            public IEnumerable<PropertyInfo> OptionProperties { get; }
+            public string OptionsName { get; }
+            public string SdkName { get; }
+            public string SdkVersion { get; }
+            public Type Type { get; }
 
-            static string SdkVersion(Type type) => Assembly.GetAssembly(type).GetName().Version.ToString(3);
+            public OptionsTypeData(Type type, string sdkName)
+            {
+                SdkName = sdkName;
+                SdkVersion = Assembly.GetAssembly(type).GetName().Version.ToString(3);
+                Type = type;
+                OptionProperties = type.GetProperties();
+                OptionsName = type.Name;
+            }
         }
     }
 }
