@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
-    <Authors>Kentico Software</Authors>
-    <Product>Kontent by Kentico</Product>
-    <PackageIconUrl>https://github.com/Kentico/Home/blob/master/images/kk-logo-nuget.png?raw=true</PackageIconUrl>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <Authors>Kontent s.r.o.</Authors>
+    <Product>Kontent.ai</Product>
+    <PackageIconUrl>https://github.com/kontent-ai/.github/blob/main/logos/kai-logo-symbol-color-rgb.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://github.com/kontent-ai/model-generator-net</RepositoryUrl>
-    <Copyright>© 2018 Kentico Software. All rights reserved.</Copyright>
+    <Copyright>© 2022 Kontent.ai s.r.o. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageTags>kentico;tool;kentico kontent;generator</PackageTags>
-    <Description>This utility generates strongly-typed models based on content-types in a Kontent project. The models are supposed to be used together with the Kontent Delivery SDK for .NET or Kontent Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
+    <PackageTags>tool;kontent-ai;generator</PackageTags>
+    <Description>This utility generates strongly-typed models based on content-types in a Kontent.ai project. The models are supposed to be used together with the Kontent.ai Delivery SDK for .NET or Kontent.ai Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="Kontent.Ai.Management" Version="3.0.1" />
-    <PackageReference Include="Kontent.Ai.Delivery.Abstractions" Version="16.0.0" />
+    <PackageReference Include="Kontent.Ai.Delivery.Abstractions" Version="17.0.0-beta.2" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.1.0" />
   </ItemGroup>
 
