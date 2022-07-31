@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Kentico.Kontent.Delivery.Abstractions;
-using Kentico.Kontent.Management.Configuration;
-using Kentico.Kontent.ModelGenerator.Core.Configuration;
+using Kontent.Ai.Delivery.Abstractions;
+using Kontent.Ai.Management.Configuration;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests
+namespace Kontent.Ai.ModelGenerator.Tests
 {
     public class ProgramTests
     {

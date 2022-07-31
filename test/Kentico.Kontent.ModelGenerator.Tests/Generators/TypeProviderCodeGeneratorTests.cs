@@ -2,13 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Kentico.Kontent.ModelGenerator.Core.Generators;
+using Kontent.Ai.ModelGenerator.Core.Generators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Xunit;
 using static System.String;
 
-namespace Kentico.Kontent.ModelGenerator.Tests.Generators
+namespace Kontent.Ai.ModelGenerator.Tests.Generators
 {
     public class TypeProviderCodeGeneratorTests
     {

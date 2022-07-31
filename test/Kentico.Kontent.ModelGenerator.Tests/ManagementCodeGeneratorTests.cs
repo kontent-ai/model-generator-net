@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Kentico.Kontent.Management;
-using Kentico.Kontent.Management.Configuration;
-using Kentico.Kontent.Management.Models.Shared;
-using Kentico.Kontent.Management.Models.Types;
-using Kentico.Kontent.Management.Models.Types.Elements;
-using Kentico.Kontent.Management.Models.TypeSnippets;
-using Kentico.Kontent.ModelGenerator.Core;
-using Kentico.Kontent.ModelGenerator.Core.Configuration;
-using Kentico.Kontent.ModelGenerator.Tests.Fixtures;
+using Kontent.Ai.Management;
+using Kontent.Ai.Management.Configuration;
+using Kontent.Ai.Management.Models.Shared;
+using Kontent.Ai.Management.Models.Types;
+using Kontent.Ai.Management.Models.Types.Elements;
+using Kontent.Ai.Management.Models.TypeSnippets;
+using Kontent.Ai.ModelGenerator.Core;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Tests.Fixtures;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests
+namespace Kontent.Ai.ModelGenerator.Tests
 {
     public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
     {

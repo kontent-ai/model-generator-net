@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Kentico.Kontent.ModelGenerator.Tests
+namespace Kontent.Ai.ModelGenerator.Tests
 {
     public abstract class CodeGeneratorTestsBase
     {

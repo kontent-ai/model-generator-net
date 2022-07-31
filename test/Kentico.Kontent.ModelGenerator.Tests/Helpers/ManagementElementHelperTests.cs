@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Kentico.Kontent.Management.Models.Types.Elements;
-using Kentico.Kontent.Management.Models.TypeSnippets;
-using Kentico.Kontent.ModelGenerator.Core.Helpers;
+using Kontent.Ai.Management.Models.Types.Elements;
+using Kontent.Ai.Management.Models.TypeSnippets;
+using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
+namespace Kontent.Ai.ModelGenerator.Tests.Helpers
 {
     public class ManagementElementHelperTests
     {

@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Kentico.Kontent.Delivery;
-using Kentico.Kontent.Delivery.Abstractions;
-using Kentico.Kontent.Delivery.Builders.DeliveryClient;
-using Kentico.Kontent.ModelGenerator.Core;
-using Kentico.Kontent.ModelGenerator.Core.Configuration;
+using Kontent.Ai.Delivery;
+using Kontent.Ai.Delivery.Abstractions;
+using Kontent.Ai.Delivery.Builders.DeliveryClient;
+using Kontent.Ai.ModelGenerator.Core;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests
+namespace Kontent.Ai.ModelGenerator.Tests
 {
     public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     {

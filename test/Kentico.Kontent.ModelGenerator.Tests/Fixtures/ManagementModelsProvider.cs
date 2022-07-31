@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Kentico.Kontent.Management.Models.Types;
-using Kentico.Kontent.Management.Models.TypeSnippets;
+using Kontent.Ai.Management.Models.Types;
+using Kontent.Ai.Management.Models.TypeSnippets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Kentico.Kontent.ModelGenerator.Tests.Fixtures
+namespace Kontent.Ai.ModelGenerator.Tests.Fixtures
 {
     internal class ManagementModelsProvider
     {

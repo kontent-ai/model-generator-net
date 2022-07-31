@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Kentico.Kontent.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Core.Common;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests.Common
+namespace Kontent.Ai.ModelGenerator.Tests.Common
 {
     public class ClassDefinitionTests
     {

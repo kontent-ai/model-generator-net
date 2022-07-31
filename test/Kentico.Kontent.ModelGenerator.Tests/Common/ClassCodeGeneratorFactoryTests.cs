@@ -1,10 +1,10 @@
 ﻿using System;
-using Kentico.Kontent.ModelGenerator.Core.Common;
-using Kentico.Kontent.ModelGenerator.Core.Configuration;
-using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
+using Kontent.Ai.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests.Common
+namespace Kontent.Ai.ModelGenerator.Tests.Common
 {
     public class ClassCodeGeneratorFactoryTests
     {

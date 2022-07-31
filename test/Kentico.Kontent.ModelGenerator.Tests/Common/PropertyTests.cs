@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Kentico.Kontent.Management.Models.Types.Elements;
-using Kentico.Kontent.ModelGenerator.Core.Common;
+using Kontent.Ai.Management.Models.Types.Elements;
+using Kontent.Ai.ModelGenerator.Core.Common;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests.Common
+namespace Kontent.Ai.ModelGenerator.Tests.Common
 {
     public class PropertyTests
     {

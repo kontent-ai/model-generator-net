@@ -2,14 +2,14 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Kentico.Kontent.Management.Models.Types.Elements;
-using Kentico.Kontent.ModelGenerator.Core.Common;
-using Kentico.Kontent.ModelGenerator.Core.Generators.Class;
+using Kontent.Ai.Management.Models.Types.Elements;
+using Kontent.Ai.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests.Generators.Class
+namespace Kontent.Ai.ModelGenerator.Tests.Generators.Class
 {
     public class ManagementClassCodeGeneratorTests
     {

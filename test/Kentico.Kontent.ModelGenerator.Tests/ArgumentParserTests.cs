@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests
+namespace Kontent.Ai.ModelGenerator.Tests
 {
     public class ArgumentParserTests
     {

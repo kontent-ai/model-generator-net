@@ -11,11 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kentico.Kontent.ModelGenerator", "src\Kentico.Kontent.ModelGenerator\Kentico.Kontent.ModelGenerator.csproj", "{AE486A26-56D7-4FAF-8D5F-9732EA703EF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kontent.Ai.ModelGenerator", "src\Kontent.Ai.ModelGenerator\Kontent.Ai.ModelGenerator.csproj", "{AE486A26-56D7-4FAF-8D5F-9732EA703EF0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kentico.Kontent.ModelGenerator.Tests", "test\Kentico.Kontent.ModelGenerator.Tests\Kentico.Kontent.ModelGenerator.Tests.csproj", "{9D6A9E5B-EB41-472A-90B2-DF7E5EB43397}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kontent.Ai.ModelGenerator.Tests", "test\Kontent.Ai.ModelGenerator.Tests\Kontent.Ai.ModelGenerator.Tests.csproj", "{9D6A9E5B-EB41-472A-90B2-DF7E5EB43397}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kentico.Kontent.ModelGenerator.Core", "src\Kentico.Kontent.ModelGenerator.Core\Kentico.Kontent.ModelGenerator.Core.csproj", "{66C29DDB-8ED8-4D45-B8E8-003488E145E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kontent.Ai.ModelGenerator.Core", "src\Kontent.Ai.ModelGenerator.Core\Kontent.Ai.ModelGenerator.Core.csproj", "{66C29DDB-8ED8-4D45-B8E8-003488E145E4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

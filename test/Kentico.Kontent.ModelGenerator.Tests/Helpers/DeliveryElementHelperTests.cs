@@ -1,9 +1,9 @@
 ﻿using System;
-using Kentico.Kontent.ModelGenerator.Core.Configuration;
-using Kentico.Kontent.ModelGenerator.Core.Helpers;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Xunit;
 
-namespace Kentico.Kontent.ModelGenerator.Tests.Helpers
+namespace Kontent.Ai.ModelGenerator.Tests.Helpers
 {
     public class DeliveryElementHelperTests
     {
