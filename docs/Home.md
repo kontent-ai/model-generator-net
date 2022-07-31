@@ -1,4 +1,4 @@
-Welcome to the kontent-generators-net wiki!
+Welcome to the kontent-generators-net docs!
 
 ## Table of Contents
 

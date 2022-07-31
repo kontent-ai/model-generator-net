@@ -5,7 +5,7 @@
 
 | Packages                       |                                                                     Version                                                                     |                                                                   Downloads                                                                   |                                                                  Compatibility                                                                   |     Documentation     |
 | ------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------: |
-| Kontent.Ai.ModelGenerator | [![NuGet](https://img.shields.io/nuget/vpre/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [![NuGet](https://img.shields.io/nuget/dt/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [`net6.0`](https://dotnet.microsoft.com/download/dotnet/6.0) | [📖 Wiki](../../wiki) |
+| Kontent.Ai.ModelGenerator | [![NuGet](https://img.shields.io/nuget/vpre/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [![NuGet](https://img.shields.io/nuget/dt/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [`net6.0`](https://dotnet.microsoft.com/download/dotnet/6.0) | [📖 Docs](./docs/Home.md) |
 
 
 # Kontent.ai model generator utility for .NET
@@ -19,7 +19,7 @@ This utility generates strongly-typed (POCO) models based on [content types](htt
 
 ## How to use for [Delivery SDK](https://github.com/kontent-ai/delivery-sdk-net)
 
-To fully understand all benefits of this approach, please read the [documentation](https://github.com/kontent-ai/delivery-sdk-net/wiki/Working-with-strongly-typed-models#customizing-the-strong-type-binding-logic).
+To fully understand all benefits of this approach, please read the [documentation](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/strongly-typed-models.md#customizing-the-strong-type-binding-logic).
 
 ### .NET Tool
 
@@ -44,7 +44,7 @@ Latest release: [Download](https://github.com/kontent-ai/model-generator-net/rel
 
 - `KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]`
 
-To learn how to generate executables for your favorite target platform, follow the steps in the [wiki](https://github.com/kontent-ai/model-generator-net/wiki/Building-and-running-the-generator-for-your-target-platform).
+To learn how to generate executables for your favorite target platform, follow the steps in the [docs](./docs/Building-and-running-the-generator-for-your-target-platform.md).
 
 ### Parameters
 
