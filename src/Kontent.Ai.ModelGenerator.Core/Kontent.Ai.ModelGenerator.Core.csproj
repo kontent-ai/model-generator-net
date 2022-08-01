@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <Authors>Kontent s.r.o.</Authors>
+    <Product>Kontent.ai</Product>
+    <PackageIconUrl>https://github.com/kontent-ai/.github/blob/main/logos/kai-logo-symbol-color-rgb.png?raw=true</PackageIconUrl>
+    <RepositoryUrl>https://github.com/kontent-ai/model-generator-net</RepositoryUrl>
+    <Copyright>© 2022 Kontent.ai s.r.o. All rights reserved.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>tool;kontent-ai;generator</PackageTags>
+    <Description>This utility generates strongly-typed models based on content-types in a Kontent.ai project. The models are supposed to be used together with the Kontent.ai Delivery SDK for .NET or Kontent.ai Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
+    <RepositoryType>git</RepositoryType>
+    <LangVersion>latest</LangVersion>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Kontent.Ai.Management" Version="4.0.0-beta.4" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Kontent.Ai.Delivery.Abstractions" Version="17.0.0-beta.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.2.0" />
+  </ItemGroup>
+
+</Project>

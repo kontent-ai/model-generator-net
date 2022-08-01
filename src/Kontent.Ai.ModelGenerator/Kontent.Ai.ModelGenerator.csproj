@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <AssemblyName>KontentModelGenerator</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>Kontent.Ai.ModelGenerator</PackageId>
+    <Authors>Kontent s.r.o.</Authors>
+    <Company>Kontent s.r.o.</Company>
+    <Product>Kontent.ai</Product>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>kai-logo-symbol-color-rgb.png</PackageIcon>
+    <PackageIconUrl>https://github.com/kontent-ai/.github/blob/main/logos/kai-logo-symbol-color-rgb.png?raw=true</PackageIconUrl>
+    <RepositoryUrl>https://github.com/kontent-ai/model-generator-net</RepositoryUrl>
+    <Copyright>© 2022 Kontent.ai s.r.o. All rights reserved.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>tool;kontent-ai;generator</PackageTags>
+    <PackAsTool>true</PackAsTool>
+    <Description>This utility generates strongly-typed models based on content types in a Kontent.ai project. The models are supposed to be used together with the Kontent.ai Delivery SDK for .NET or Kontent.ai Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
+    <RepositoryType>git</RepositoryType>
+    <LangVersion>latest</LangVersion>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Kontent.Ai.Delivery" Version="17.0.0-beta.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Kontent.Ai.ModelGenerator.Core\Kontent.Ai.ModelGenerator.Core.csproj" />
+  </ItemGroup>
+</Project>
