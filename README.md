@@ -1,14 +1,13 @@
+# Kontent.ai model generator utility for .NET
+
 [![Build & Test](https://github.com/kontent-ai/model-generator-net/actions/workflows/integrate.yml/badge.svg)](https://github.com/kontent-ai/model-generator-net/actions/workflows/integrate.yml)
 [![codecov](https://codecov.io/gh/kontent-ai/model-generator-net/branch/master/graph/badge.svg?token=9LvfJ7m8gT)](https://codecov.io/gh/kontent-ai/model-generator-net)
 [![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?logo=stackoverflow&logoColor=white)](https://stackoverflow.com/tags/kontent-ai)
 [![Discord](https://img.shields.io/discord/821885171984891914?color=%237289DA&label=Kontent%20Discord&logo=discord)](https://discord.gg/SKCxwPtevJ)
 
-| Packages                       |                                                                     Version                                                                     |                                                                   Downloads                                                                   |                                                                  Compatibility                                                                   |     Documentation     |
-| ------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------: |
+| Packages                  |                                                                Version                                                                |                                                              Downloads                                                              |                        Compatibility                         |        Documentation        |
+| ------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------: | :-------------------------: |
 | Kontent.Ai.ModelGenerator | [![NuGet](https://img.shields.io/nuget/vpre/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [![NuGet](https://img.shields.io/nuget/dt/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [`net6.0`](https://dotnet.microsoft.com/download/dotnet/6.0) | [📖 Docs](./docs/README.md) |
-
-
-# Kontent.ai model generator utility for .NET
 
 This utility generates strongly-typed (POCO) models based on [content types](https://kontent.ai/learn/tutorials/manage-kontent/content-modeling/create-and-delete-content-types) in a Kontent.ai project. You can choose one of the following:
 
@@ -25,12 +24,12 @@ To fully understand all benefits of this approach, please read the [documentatio
 
 The recommended way of obtaining this tool is installing it as a [.NET Tool](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools). You can install it as a global tool or per project as a local tool.
 
-**Global Tool**
+#### Global Tool
 
 - `dotnet tool install -g Kontent.Ai.ModelGenerator`
 - `KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]`
 
-**Local Tool**
+#### Local Tool
 
 - `dotnet new tool-manifest` to initialize the tools manifest (if you haven't done that already)
 - `dotnet tool install Kontent.Ai.ModelGenerator` (to install the latest version
@@ -46,18 +45,18 @@ Latest release: [Download](https://github.com/kontent-ai/model-generator-net/rel
 
 To learn how to generate executables for your favorite target platform, follow the steps in the [docs](./docs/build-and-run.md).
 
-### Parameters
+### Delivery API parameters
 
-| Short key |         Long key         | Required |     Default value      |                                                                                                                                 Description                                                                                                                                 |
-| --------- | :----------------------: | :------: | :--------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| `-p`      |      `--projectid`       |   True   |         `null`         |                                                                                           A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                                                                                           |
-| `-n`      |      `--namespace`       |  False   | `KontentAiModels` |                                                                                            A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                                                                                             |
-| `-o`      |      `--outputdir`       |  False   |          `\.`          |                                                                                                                            An output folder path                                                                                                                            |
-| `-g`      |   `--generatepartials`   |  False   |         `true`         |                                                                  Generates partial classes for customization. Partial classes are the best practice for customization so the recommended value is `true`.                                                                   |
-| `-t`      |   `--withtypeprovider`   |  False   |         `true`         | Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/strongly-typed-models.md#customizing-the-strong-type-binding-logic) for more info) |
-| `-s`      |   `--structuredmodel`    |  False   |        `false`         |                              Generates `IRichTextContent` instead of `string` for rich-text elements. This enables utilizing [structured rich-text rendering](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/rich-text/structured-rich-text-rendering.md)                              |
-| `-f`      |    `--filenamesuffix`    |  False   |         `null`         |                                                                                               Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                                                                                                |
-| `-b`      |      `--baseclass`       |  False   |         `null`         |                                                                   If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes                                                                    |
+| Short key |       Long key       | Required |   Default value   |                                                                                                                                               Description                                                                                                                                                |
+| --------- | :------------------: | :------: | :---------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| `-p`      |    `--projectid`     |   True   |      `null`       |                                                                                                         A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                                                                                                          |
+| `-n`      |    `--namespace`     |  False   | `KontentAiModels` |                                                                                                           A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                                                                                                           |
+| `-o`      |    `--outputdir`     |  False   |       `\.`        |                                                                                                                                          An output folder path                                                                                                                                           |
+| `-g`      | `--generatepartials` |  False   |      `true`       |                                                                                 Generates partial classes for customization. Partial classes are the best practice for customization so the recommended value is `true`.                                                                                 |
+| `-t`      | `--withtypeprovider` |  False   |      `true`       | Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/strongly-typed-models.md#customizing-the-strong-type-binding-logic) for more info) |
+| `-s`      | `--structuredmodel`  |  False   |      `false`      |              Generates `IRichTextContent` instead of `string` for rich-text elements. This enables utilizing [structured rich-text rendering](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/rich-text/structured-rich-text-rendering.md)               |
+| `-f`      |  `--filenamesuffix`  |  False   |      `null`       |                                                                                                              Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                                                                                                              |
+| `-b`      |    `--baseclass`     |  False   |      `null`       |                                                                                  If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes                                                                                  |
 
 ### CLI Syntax
 
@@ -75,7 +74,7 @@ There are two ways of configuring advanced Delivery SDK options (such as secure 
 
 2. [`appSettings.json`](./src/Kontent.AI.ModelGenerator/appSettings.json) - suitable for the standalone app release
 
-### Example output
+### Delivery API example output
 
 ```csharp
 using System;
@@ -130,29 +129,29 @@ public partial class Home
 
 ## How to use for [Management SDK](https://github.com/kontent-ai/management-sdk-net)
 
-**Usage:**
+### Usage
 
-```
+```sh
 KontentModelGenerator.exe --projectid "<projectid>" --managementapi true --managementapikey "<managementapikey>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
 ```
 
-### Parameters
+### Management API parameters
 
-| Short key |            Long key          | Required |     Default value      |                                                              Description                                                               |
-| --------- | :--------------------------: | :------: | :--------------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
-| `-p`      |        `--projectid`         |   True   |         `null`         |                        A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                         |
-| `-m`      |      `--managementapi`       |   True   |        `false`         |     Indicates that models should be generated for [Content Management SDK](https://github.com/kontent-ai/management-sdk-net)      |
-| `-k`      |          `--apikey`          |   True   |         `null`         |                     A api key that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Management API                     |
-| `-n`      |        `--namespace`         |  False   | `KontentAiModels` |                          A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                          |
-| `-o`      |        `--outputdir`         |  False   |          `\.`          |                                                         An output folder path                                                          |
-| `-f`      |      `--filenamesuffix`      |  False   |         `null`         |                             Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                             |
-| `-b`      |        `--baseclass`         |  False   |         `null`         | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes |
+| Short key |      Long key      | Required |   Default value   |                                                              Description                                                               |
+| --------- | :----------------: | :------: | :---------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
+| `-p`      |   `--projectid`    |   True   |      `null`       |                        A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                         |
+| `-m`      | `--managementapi`  |   True   |      `false`      |        Indicates that models should be generated for [Content Management SDK](https://github.com/kontent-ai/management-sdk-net)        |
+| `-k`      |     `--apikey`     |   True   |      `null`       |                     A api key that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Management API                     |
+| `-n`      |   `--namespace`    |  False   | `KontentAiModels` |                          A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                          |
+| `-o`      |   `--outputdir`    |  False   |       `\.`        |                                                         An output folder path                                                          |
+| `-f`      | `--filenamesuffix` |  False   |      `null`       |                             Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                             |
+| `-b`      |   `--baseclass`    |  False   |      `null`       | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes |
 
 These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
 
-### Example output
+### Management API example output
 
-> `JsonProperty`'s attribute value is being generated from element codename (not from the type) and  `KontentElementId` attribute value is element's ID.
+> `JsonProperty`'s attribute value is being generated from element codename (not from the type) and `KontentElementId` attribute value is element's ID.
 
 ```csharp
 using Kontent.Ai.Management.Models.LanguageVariants.Elements;
@@ -195,10 +194,11 @@ namespace KontentAiModels
         public UrlSlugElement UrlSlug { get; set; }
         [JsonProperty("custom_element")]
         [KontentElementId("cb3b9df0-20df-461c-a0f7-4abb44b83c95")]
-	public CustomElement CustomElement { get; set; }
+        public CustomElement CustomElement { get; set; }
     }
 }
 ```
+
 ⚠️ Please note that _Guidelines_ element is not supported, thus it will not be included in the generated model.
 
 ## Feedback & Contributing
