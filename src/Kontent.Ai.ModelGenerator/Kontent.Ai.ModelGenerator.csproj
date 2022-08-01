@@ -5,6 +5,7 @@
     <OutputType>Exe</OutputType>
     <PackageId>Kontent.Ai.ModelGenerator</PackageId>
     <Authors>Kontent s.r.o.</Authors>
+    <Company>Kontent s.r.o.</Company>
     <Product>Kontent.ai</Product>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>kai-logo-symbol-color-rgb.png</PackageIcon>
