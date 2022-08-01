@@ -1,7 +1,7 @@
 # Publish self-contained apps for Windows, Linux, and macOS
 
 $runtimes = "win-x64", "linux-x64", "osx-x64"
-$targets = "net5.0", "net6.0"
+$targets = "net6.0"
 
 Foreach($r in $runtimes)
 {
