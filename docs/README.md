@@ -1,4 +1,6 @@
-Welcome to the kontent-generators-net docs!
+# Kontent.ai Model Generator .NET docs
+
+Welcome to the Kontent.ai Model Generateor .NET docs!
 
 ## Table of Contents
 
