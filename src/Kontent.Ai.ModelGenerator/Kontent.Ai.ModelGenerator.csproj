@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>KontentModelGenerator</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>Kontent.Ai.ModelGenerator</PackageId>
@@ -15,6 +15,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>tool;kontent-ai;generator</PackageTags>
     <PackAsTool>true</PackAsTool>
+    <IsPackable>true</IsPackable>
     <Description>This utility generates strongly-typed models based on content types in a Kontent.ai project. The models are supposed to be used together with the Kontent.ai Delivery SDK for .NET or Kontent.ai Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
@@ -42,6 +43,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+
+    <None Include="../../README.md" Pack="true" PackagePath=""/>
+    <None Include="../../kai-logo-symbol-color-rgb.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 
   <ItemGroup>

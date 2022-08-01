@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
     <Authors>Kontent s.r.o.</Authors>
     <Product>Kontent.ai</Product>
     <PackageIconUrl>https://github.com/kontent-ai/.github/blob/main/logos/kai-logo-symbol-color-rgb.png?raw=true</PackageIconUrl>
@@ -10,6 +10,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>tool;kontent-ai;generator</PackageTags>
     <Description>This utility generates strongly-typed models based on content-types in a Kontent.ai project. The models are supposed to be used together with the Kontent.ai Delivery SDK for .NET or Kontent.ai Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>kai-logo-symbol-color-rgb.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -31,6 +33,8 @@
   <ItemGroup>
     <PackageReference Include="Kontent.Ai.Delivery.Abstractions" Version="17.0.0-beta.2" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.2.0" />
+    <None Include="../../README.md" Pack="true" PackagePath=""/>
+    <None Include="../../kai-logo-symbol-color-rgb.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 
 </Project>
