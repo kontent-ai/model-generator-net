@@ -3,16 +3,19 @@ Welcome to the kontent-generators-net docs!
 ## Table of Contents
 
 * [**Release & version management**](https://github.com/kontent-ai/kontent-ai.github.io/blob/main/docs/articles/Release-%26-version-management-of-.NET-projects.md)
-* [**Building and running the generator for your target platform**](Building-and-running-the-generator-for-your-target-platform)
+* [**Building and running the generator for your target platform**](./build-and-run.md)
 
 ***
 
 ## Blog
+
 * [Kontent blog](https://kontent.ai/blog)
 
 ## Documentation
-* [Developer Hub](https://docs.kontent.ai)
-* [API Reference](https://docs.kontent.ai/reference)
+
+* [Kontent.ai Learn portal](https://kontent.ai/learn)
+* [Kontent.ai API reference](https://kontent.ai/learn/reference)
 
 ## Product roadmap
+
 * [Kontent Roadmap](https://kontent.ai/roadmap)

@@ -5,7 +5,7 @@
 
 | Packages                       |                                                                     Version                                                                     |                                                                   Downloads                                                                   |                                                                  Compatibility                                                                   |     Documentation     |
 | ------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------: |
-| Kontent.Ai.ModelGenerator | [![NuGet](https://img.shields.io/nuget/vpre/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [![NuGet](https://img.shields.io/nuget/dt/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [`net6.0`](https://dotnet.microsoft.com/download/dotnet/6.0) | [📖 Docs](./docs/Home.md) |
+| Kontent.Ai.ModelGenerator | [![NuGet](https://img.shields.io/nuget/vpre/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [![NuGet](https://img.shields.io/nuget/dt/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [`net6.0`](https://dotnet.microsoft.com/download/dotnet/6.0) | [📖 Docs](./docs/README.md) |
 
 
 # Kontent.ai model generator utility for .NET
@@ -44,7 +44,7 @@ Latest release: [Download](https://github.com/kontent-ai/model-generator-net/rel
 
 - `KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel <True|False>] [--filenamesuffix "<suffix>"]`
 
-To learn how to generate executables for your favorite target platform, follow the steps in the [docs](./docs/Building-and-running-the-generator-for-your-target-platform.md).
+To learn how to generate executables for your favorite target platform, follow the steps in the [docs](./docs/build-and-run.md).
 
 ### Parameters
 
