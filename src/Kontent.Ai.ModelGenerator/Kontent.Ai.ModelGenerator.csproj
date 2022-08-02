@@ -15,7 +15,6 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>tool;kontent-ai;generator</PackageTags>
     <PackAsTool>true</PackAsTool>
-    <IsPackable>true</IsPackable>
     <Description>This utility generates strongly-typed models based on content types in a Kontent.ai project. The models are supposed to be used together with the Kontent.ai Delivery SDK for .NET or Kontent.ai Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
@@ -33,7 +32,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
