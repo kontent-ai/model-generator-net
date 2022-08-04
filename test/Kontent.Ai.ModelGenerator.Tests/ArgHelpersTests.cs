@@ -100,7 +100,7 @@ public class ArgHelpersTests
             .Concat(AppendValuesToArgs(typeof(DeliveryOptions)))
             .ToArray();
 
-        var result = ArgHelpers.ContainsUnsupportedArg(args, ExpectedDeliveryMappings);
+        var result = ArgHelpers.ContainsUnsupportedArg(args);
 
         Assert.False(result);
     }
@@ -117,7 +117,7 @@ public class ArgHelpersTests
                 arg,
                 "arg_value"
             };
-        var result = ArgHelpers.ContainsUnsupportedArg(args, ExpectedDeliveryMappings);
+        var result = ArgHelpers.ContainsUnsupportedArg(args);
 
         Assert.True(result);
     }
@@ -134,7 +134,7 @@ public class ArgHelpersTests
             .Concat(AppendValuesToArgs(typeof(ManagementOptions)))
             .ToArray();
 
-        var result = ArgHelpers.ContainsUnsupportedArg(args, ExpectedManagementMappings);
+        var result = ArgHelpers.ContainsUnsupportedArg(args);
 
         Assert.False(result);
     }
@@ -152,7 +152,7 @@ public class ArgHelpersTests
                 arg,
                 "arg_value"
             };
-        var result = ArgHelpers.ContainsUnsupportedArg(args, ExpectedManagementMappings);
+        var result = ArgHelpers.ContainsUnsupportedArg(args);
 
         Assert.True(result);
     }

@@ -13,43 +13,43 @@ internal static class ArgHelpers
     private static readonly ProgramOptionsData ManagementProgramOptionsData = new ProgramOptionsData(typeof(ManagementOptions), "management-sdk-net");
     private static readonly ProgramOptionsData DeliveryProgramOptionsData = new ProgramOptionsData(typeof(DeliveryOptions), "delivery-sdk-net");
 
+    private static readonly IDictionary<string, string> GeneralMappings = new Dictionary<string, string>
+    {
+        { "-n", nameof(CodeGeneratorOptions.Namespace) },
+        { "-o", nameof(CodeGeneratorOptions.OutputDir) },
+        { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
+        { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
+        { "-b", nameof(CodeGeneratorOptions.BaseClass) }
+    };
+    private static readonly IDictionary<string, string> DeliveryMappings = new Dictionary<string, string>
+    {
+        { "-p", $"{DeliveryProgramOptionsData.OptionsName}:{nameof(DeliveryOptions.ProjectId)}" },
+        {"--projectid", $"{DeliveryProgramOptionsData.OptionsName}:{nameof(DeliveryOptions.ProjectId)}" }, // Backwards compatibility
+        { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
+        { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
+    };
+    private static readonly IDictionary<string, string> ManagementMappings = new Dictionary<string, string>
+    {
+        { "-p", $"{ManagementProgramOptionsData.OptionsName}:{nameof(ManagementOptions.ProjectId)}" },
+        {"--projectid", $"{ManagementProgramOptionsData.OptionsName}:{nameof(ManagementOptions.ProjectId)}" }, // Backwards compatibility
+        { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
+        { "-k", $"{ManagementProgramOptionsData.OptionsName}:{nameof(ManagementOptions.ApiKey)}" },
+        { "--apikey", $"{ManagementProgramOptionsData.OptionsName}:{nameof(ManagementOptions.ApiKey)}" } // Backwards compatibility
+    };
+
+    private static readonly IEnumerable<string> AllMappingsKeys = GeneralMappings.Keys.Union(DeliveryMappings.Keys).Union(ManagementMappings.Keys);
+
     public static IDictionary<string, string> GetSwitchMappings(string[] args)
     {
-        var generalMappings = new Dictionary<string, string>
-            {
-                { "-n", nameof(CodeGeneratorOptions.Namespace) },
-                { "-o", nameof(CodeGeneratorOptions.OutputDir) },
-                { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
-                { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
-                { "-b", nameof(CodeGeneratorOptions.BaseClass) }
-            };
-
-        var deliveryMappings = new Dictionary<string, string>
-            {
-                { "-p", $"{DeliveryProgramOptionsData.OptionsName}:{nameof(DeliveryOptions.ProjectId)}" },
-                {"--projectid", $"{DeliveryProgramOptionsData.OptionsName}:{nameof(DeliveryOptions.ProjectId)}" }, // Backwards compatibility
-                { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
-                { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
-            };
-
-        var managementMappings = new Dictionary<string, string>
-            {
-                { "-p", $"{ManagementProgramOptionsData.OptionsName}:{nameof(ManagementOptions.ProjectId)}" },
-                {"--projectid", $"{ManagementProgramOptionsData.OptionsName}:{nameof(ManagementOptions.ProjectId)}" }, // Backwards compatibility
-                { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
-                { "-k", $"{ManagementProgramOptionsData.OptionsName}:{nameof(ManagementOptions.ApiKey)}" },
-                { "--apikey", $"{ManagementProgramOptionsData.OptionsName}:{nameof(ManagementOptions.ApiKey)}" } // Backwards compatibility
-            };
-
-        return generalMappings
-            .Union(ContainsManageApiArg() ? managementMappings : deliveryMappings)
+        return GeneralMappings
+            .Union(ContainsManageApiArg() ? ManagementMappings : DeliveryMappings)
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         bool ContainsManageApiArg() =>
             args.Where((value, index) => (value is "-m" or "--managementapi") && index + 1 < args.Length && args[index + 1] == "true").Any();
     }
 
-    public static bool ContainsUnsupportedArg(string[] args, IDictionary<string, string> usedMappings)
+    public static bool ContainsUnsupportedArg(string[] args)
     {
         var containsUnsupportedArg = false;
         var codeGeneratorOptionsProperties = typeof(CodeGeneratorOptions).GetProperties()
@@ -59,7 +59,7 @@ internal static class ArgHelpers
 
         foreach (var arg in args.Where(a => a.StartsWith('-')))
         {
-            if (!usedMappings.ContainsKey(arg) &&
+            if (!AllMappingsKeys.Contains(arg) &&
                 IsOptionPropertyUnsupported(ManagementProgramOptionsData, arg) &&
                 IsOptionPropertyUnsupported(DeliveryProgramOptionsData, arg) &&
                 IsOptionPropertyUnsupported(codeGeneratorOptionsProperties, arg))

@@ -20,8 +20,7 @@ namespace Kontent.Ai.ModelGenerator
                 // Create an instance of a DI container
                 var services = new ServiceCollection();
 
-                var switchMappings = ArgHelpers.GetSwitchMappings(args);
-                if (ArgHelpers.ContainsUnsupportedArg(args, switchMappings))
+                if (ArgHelpers.ContainsUnsupportedArg(args))
                 {
                     Console.WriteLine("Failed to run due to invalid configuration.");
                     return 1;
@@ -31,7 +30,7 @@ namespace Kontent.Ai.ModelGenerator
                 var configuration = new ConfigurationBuilder()
                             .SetBasePath(Environment.CurrentDirectory)
                             .AddJsonFile("appSettings.json", true)
-                            .AddCommandLine(args, switchMappings)
+                            .AddCommandLine(args, ArgHelpers.GetSwitchMappings(args))
                             .Build();
 
                 // Fill the DI container
