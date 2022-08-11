@@ -20,7 +20,7 @@ namespace Kontent.Ai.ModelGenerator
                 // Create an instance of a DI container
                 var services = new ServiceCollection();
 
-                if (ArgHelpers.ContainsUnsupportedArg(args))
+                if (!ArgHelpers.ContainsValidArgs(args))
                 {
                     Console.WriteLine("Failed to run due to invalid configuration.");
                     return 1;

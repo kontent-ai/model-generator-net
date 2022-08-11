@@ -88,7 +88,7 @@ public class ArgHelpersTests
     }
 
     [Fact]
-    public void ContainsContainsUnsupportedArg_SupportedDeliveryOptions_ReturnsFalse()
+    public void ContainsContainsValidArgs_SupportedDeliveryOptions_ReturnsTrue()
     {
         var args = AppendValuesToArgs(ExpectedDeliveryMappings)
             .Concat(AppendValuesToArgs(ToLower(new List<string>
@@ -100,9 +100,9 @@ public class ArgHelpersTests
             .Concat(AppendValuesToArgs(typeof(DeliveryOptions)))
             .ToArray();
 
-        var result = ArgHelpers.ContainsUnsupportedArg(args);
+        var result = ArgHelpers.ContainsValidArgs(args);
 
-        Assert.False(result);
+        Assert.True(result);
     }
 
     [Theory]
@@ -110,20 +110,20 @@ public class ArgHelpersTests
     [InlineData("--projectidX")]
     [InlineData("--DeliveryOptionsX:UseSecureAccess")]
     [InlineData("--DeliveryOptions:UseSecureAccessX")]
-    public void ContainsContainsUnsupportedArg_UnsupportedDeliveryOptions_ReturnsTrue(string arg)
+    public void ContainsContainsValidArgs_UnsupportedDeliveryOptions_ReturnsFalse(string arg)
     {
         var args = new[]
         {
                 arg,
                 "arg_value"
             };
-        var result = ArgHelpers.ContainsUnsupportedArg(args);
+        var result = ArgHelpers.ContainsValidArgs(args);
 
-        Assert.True(result);
+        Assert.False(result);
     }
 
     [Fact]
-    public void ContainsContainsUnsupportedArg_SupportedManagementOptions_ReturnsFalse()
+    public void ContainsContainsValidArgs_SupportedManagementOptions_ReturnsTrue()
     {
         var args = AppendValuesToArgs(ExpectedManagementMappings)
             .Concat(AppendValuesToArgs(ToLower(new List<string>
@@ -134,9 +134,9 @@ public class ArgHelpersTests
             .Concat(AppendValuesToArgs(typeof(ManagementOptions)))
             .ToArray();
 
-        var result = ArgHelpers.ContainsUnsupportedArg(args);
+        var result = ArgHelpers.ContainsValidArgs(args);
 
-        Assert.False(result);
+        Assert.True(result);
     }
 
     [Theory]
@@ -145,16 +145,16 @@ public class ArgHelpersTests
     [InlineData("--managementapiX")]
     [InlineData("--ManagementOptions:ApiKeyX")]
     [InlineData("--ManagementOptionsX:ApiKey")]
-    public void ContainsContainsUnsupportedArg_UnsupportedManagementOptions_ReturnsTrue(string arg)
+    public void ContainsContainsValidArgs_UnsupportedManagementOptions_ReturnsFalse(string arg)
     {
         var args = new[]
         {
                 arg,
                 "arg_value"
             };
-        var result = ArgHelpers.ContainsUnsupportedArg(args);
+        var result = ArgHelpers.ContainsValidArgs(args);
 
-        Assert.True(result);
+        Assert.False(result);
     }
 
     [Fact]

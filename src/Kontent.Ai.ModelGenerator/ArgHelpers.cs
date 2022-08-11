@@ -49,37 +49,36 @@ internal static class ArgHelpers
             args.Where((value, index) => (value is "-m" or "--managementapi") && index + 1 < args.Length && args[index + 1] == "true").Any();
     }
 
-    public static bool ContainsUnsupportedArg(string[] args)
+    public static bool ContainsValidArgs(string[] args)
     {
-        var containsUnsupportedArg = false;
+        var containsValidArgs = true;
         var codeGeneratorOptionsProperties = typeof(CodeGeneratorOptions).GetProperties()
             .Where(p => p.PropertyType != ManagementProgramOptionsData.Type && p.PropertyType != DeliveryProgramOptionsData.Type)
             .Select(p => p.Name.ToLower())
             .ToList();
 
-        foreach (var arg in args.Where(a => a.StartsWith('-')))
+        foreach (var arg in args.Where(a =>
+            a.StartsWith('-') &&
+            !AllMappingsKeys.Contains(a) &&
+            !IsOptionPropertyValid(ManagementProgramOptionsData, a) &&
+            !IsOptionPropertyValid(DeliveryProgramOptionsData, a) &&
+            !IsOptionPropertyValid(codeGeneratorOptionsProperties, a)))
         {
-            if (!AllMappingsKeys.Contains(arg) &&
-                IsOptionPropertyUnsupported(ManagementProgramOptionsData, arg) &&
-                IsOptionPropertyUnsupported(DeliveryProgramOptionsData, arg) &&
-                IsOptionPropertyUnsupported(codeGeneratorOptionsProperties, arg))
-            {
-                Console.WriteLine($"Unsupported parameter: {arg}");
-                containsUnsupportedArg = true;
-            }
+            Console.WriteLine($"Unsupported parameter: {arg}");
+            containsValidArgs = false;
         }
 
-        return containsUnsupportedArg;
+        return containsValidArgs;
     }
 
     public static UsedSdkInfo GetUsedSdkInfo(bool managementApi) =>
         managementApi ? ManagementProgramOptionsData.UsedSdkInfo : DeliveryProgramOptionsData.UsedSdkInfo;
 
-    private static bool IsOptionPropertyUnsupported(ProgramOptionsData programOptionsData, string arg) =>
-        IsOptionPropertyUnsupported(programOptionsData.OptionProperties.Select(prop => $"{programOptionsData.OptionsName}:{prop.Name}"), arg);
+    private static bool IsOptionPropertyValid(ProgramOptionsData programOptionsData, string arg) =>
+        IsOptionPropertyValid(programOptionsData.OptionProperties.Select(prop => $"{programOptionsData.OptionsName}:{prop.Name}"), arg);
 
-    private static bool IsOptionPropertyUnsupported(IEnumerable<string> optionProperties, string arg) =>
-        optionProperties.All(prop => $"--{prop}" != arg);
+    private static bool IsOptionPropertyValid(IEnumerable<string> optionProperties, string arg) =>
+        optionProperties.Any(prop => $"--{prop}" == arg);
 
     private class ProgramOptionsData
     {
