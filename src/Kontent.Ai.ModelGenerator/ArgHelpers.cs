@@ -46,7 +46,7 @@ internal static class ArgHelpers
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         bool ContainsManageApiArg() =>
-            args.Where((value, index) => (value is "-m" or "--managementapi") && index + 1 < args.Length && args[index + 1] == "true").Any();
+            args.Where((value, index) => value is "-m" or "--managementapi" && index + 1 < args.Length && args[index + 1] == "true").Any();
     }
 
     public static bool ContainsValidArgs(string[] args)

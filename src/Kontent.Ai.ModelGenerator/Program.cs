@@ -49,7 +49,7 @@ namespace Kontent.Ai.ModelGenerator
                 var options = serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value;
                 options.Validate();
 
-                PrintSdkVersion(options.ManagementApi);
+                PrintSdkVersion(options);
 
                 // Code generator entry point
                 return options.ManagementApi
@@ -72,9 +72,9 @@ namespace Kontent.Ai.ModelGenerator
             }
         }
 
-        private static void PrintSdkVersion(bool managementApi)
+        private static void PrintSdkVersion(CodeGeneratorOptions options)
         {
-            var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(managementApi);
+            var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(options.ManagementApi);
             Console.WriteLine($"Models were generated for {usedSdkInfo.Name} version {usedSdkInfo.Version}");
         }
     }
