@@ -64,7 +64,7 @@ internal static class ArgHelpers
             !IsOptionPropertyValid(DeliveryProgramOptionsData, a) &&
             !IsOptionPropertyValid(codeGeneratorOptionsProperties, a)))
         {
-            Console.WriteLine($"Unsupported parameter: {arg}");
+            Console.Error.WriteLine($"Unsupported parameter: {arg}");
             containsValidArgs = false;
         }
 

@@ -22,7 +22,7 @@ namespace Kontent.Ai.ModelGenerator
 
                 if (!ArgHelpers.ContainsValidArgs(args))
                 {
-                    Console.WriteLine("Failed to run due to invalid configuration.");
+                    await WriteErrorMessageAsync("Failed to run due to invalid configuration.");
                     return 1;
                 }
 
@@ -61,16 +61,18 @@ namespace Kontent.Ai.ModelGenerator
                 if ((aex.InnerExceptions.Count == 1) && aex.InnerException is DeliveryException)
                 {
                     // Return a friendlier message
-                    Console.WriteLine(aex.InnerException.Message);
+                    await WriteErrorMessageAsync(aex.InnerException.Message);
                 }
                 return 1;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                await WriteErrorMessageAsync(ex.Message);
                 return 1;
             }
         }
+
+        private static async Task WriteErrorMessageAsync(string message) => await Console.Error.WriteLineAsync(message);
 
         private static void PrintSdkVersion(CodeGeneratorOptions options)
         {
