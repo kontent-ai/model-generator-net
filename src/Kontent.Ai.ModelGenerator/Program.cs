@@ -52,9 +52,12 @@ internal class Program
             PrintSdkVersion(options);
 
             // Code generator entry point
-            return options.ManagementApi
-                ? await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync()
-                : await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync();
+            if (options.ManagementApi())
+            {
+                return await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync();
+            }
+
+            return await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync();
         }
         catch (AggregateException aex)
         {
@@ -76,7 +79,7 @@ internal class Program
 
     private static void PrintSdkVersion(CodeGeneratorOptions options)
     {
-        var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(options.ManagementApi);
+        var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(options.ManagementApi());
         Console.WriteLine($"Models were generated for {usedSdkInfo.Name} version {usedSdkInfo.Version}");
     }
 }
