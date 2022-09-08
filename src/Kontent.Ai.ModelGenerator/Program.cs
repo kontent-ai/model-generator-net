@@ -2,14 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Kontent.Ai.Delivery;
-using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Delivery.Extensions;
-using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.ModelGenerator.Core;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 
@@ -24,11 +20,17 @@ namespace Kontent.Ai.ModelGenerator
                 // Create an instance of a DI container
                 var services = new ServiceCollection();
 
+                if (!ArgHelpers.ContainsValidArgs(args))
+                {
+                    await WriteErrorMessageAsync("Failed to run due to invalid configuration.");
+                    return 1;
+                }
+
                 // Build a configuration object from given sources
                 var configuration = new ConfigurationBuilder()
                             .SetBasePath(Environment.CurrentDirectory)
                             .AddJsonFile("appSettings.json", true)
-                            .AddCommandLine(args, GetSwitchMappings(args))
+                            .AddCommandLine(args, ArgHelpers.GetSwitchMappings(args))
                             .Build();
 
                 // Fill the DI container
@@ -47,6 +49,8 @@ namespace Kontent.Ai.ModelGenerator
                 var options = serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value;
                 options.Validate();
 
+                PrintSdkVersion(options);
+
                 // Code generator entry point
                 return options.ManagementApi
                     ? await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync()
@@ -57,51 +61,23 @@ namespace Kontent.Ai.ModelGenerator
                 if ((aex.InnerExceptions.Count == 1) && aex.InnerException is DeliveryException)
                 {
                     // Return a friendlier message
-                    Console.WriteLine(aex.InnerException.Message);
+                    await WriteErrorMessageAsync(aex.InnerException.Message);
                 }
                 return 1;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                await WriteErrorMessageAsync(ex.Message);
                 return 1;
             }
         }
 
-        internal static IDictionary<string, string> GetSwitchMappings(string[] args)
+        private static async Task WriteErrorMessageAsync(string message) => await Console.Error.WriteLineAsync(message);
+
+        private static void PrintSdkVersion(CodeGeneratorOptions options)
         {
-            var generalMappings = new Dictionary<string, string>
-            {
-                { "-n", nameof(CodeGeneratorOptions.Namespace) },
-                { "-o", nameof(CodeGeneratorOptions.OutputDir) },
-                { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
-                { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
-                { "-b", nameof(CodeGeneratorOptions.BaseClass) }
-            };
-
-            var deliveryMappings = new Dictionary<string, string>
-            {
-                { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-                {"--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" }, // Backwards compatibility
-                { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
-                { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
-            };
-
-            var managementMappings = new Dictionary<string, string>
-            {
-                { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
-                {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" }, // Backwards compatibility
-                { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
-                { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
-                { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" } // Backwards compatibility
-            };
-
-            return generalMappings
-                .Union(ContainsManageApiArg() ? managementMappings : deliveryMappings)
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
-            bool ContainsManageApiArg() =>
-                args.Where((value, index) => (value is "-m" or "--managementapi") && index + 1 < args.Length && args[index + 1] == "true").Any();
+            var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(options.ManagementApi);
+            Console.WriteLine($"Models were generated for {usedSdkInfo.Name} version {usedSdkInfo.Version}");
         }
     }
 }
