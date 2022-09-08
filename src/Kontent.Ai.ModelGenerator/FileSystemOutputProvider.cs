@@ -3,47 +3,46 @@ using Kontent.Ai.ModelGenerator.Core;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Microsoft.Extensions.Options;
 
-namespace Kontent.Ai.ModelGenerator
+namespace Kontent.Ai.ModelGenerator;
+
+public class FileSystemOutputProvider : IOutputProvider
 {
-    public class FileSystemOutputProvider : IOutputProvider
+    private readonly IOptions<CodeGeneratorOptions> _options;
+
+    internal string OutputDir
     {
-        private readonly IOptions<CodeGeneratorOptions> _options;
-
-        internal string OutputDir
+        get
         {
-            get
+            var outputDir = _options.Value.OutputDir;
+
+            // Setting OutputDir default value here instead of in the <see cref="Parse"/> method as it would overwrite the JSON value.
+            if (string.IsNullOrEmpty(outputDir))
             {
-                var outputDir = _options.Value.OutputDir;
-
-                // Setting OutputDir default value here instead of in the <see cref="Parse"/> method as it would overwrite the JSON value.
-                if (string.IsNullOrEmpty(outputDir))
-                {
-                    outputDir = "./";
-                }
-
-                // Resolve relative path to full path
-                outputDir = Path.GetFullPath(outputDir);
-
-                return outputDir;
+                outputDir = "./";
             }
+
+            // Resolve relative path to full path
+            outputDir = Path.GetFullPath(outputDir);
+
+            return outputDir;
         }
+    }
 
-        public FileSystemOutputProvider(IOptions<CodeGeneratorOptions> options)
+    public FileSystemOutputProvider(IOptions<CodeGeneratorOptions> options)
+    {
+        _options = options;
+    }
+
+    public void Output(string content, string fileName, bool overwriteExisting)
+    {
+        // Make sure the output dir exists
+        Directory.CreateDirectory(OutputDir);
+
+        string outputPath = Path.Combine(OutputDir, $"{fileName}.cs");
+        bool fileExists = File.Exists(outputPath);
+        if (!fileExists || overwriteExisting)
         {
-            _options = options;
-        }
-
-        public void Output(string content, string fileName, bool overwriteExisting)
-        {
-            // Make sure the output dir exists
-            Directory.CreateDirectory(OutputDir);
-
-            string outputPath = Path.Combine(OutputDir, $"{fileName}.cs");
-            bool fileExists = File.Exists(outputPath);
-            if (!fileExists || overwriteExisting)
-            {
-                File.WriteAllText(outputPath, content);
-            }
+            File.WriteAllText(outputPath, content);
         }
     }
 }

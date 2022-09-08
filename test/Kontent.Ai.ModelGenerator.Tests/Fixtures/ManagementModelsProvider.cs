@@ -6,34 +6,33 @@ using Kontent.Ai.Management.Models.TypeSnippets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Kontent.Ai.ModelGenerator.Tests.Fixtures
+namespace Kontent.Ai.ModelGenerator.Tests.Fixtures;
+
+internal class ManagementModelsProvider
 {
-    internal class ManagementModelsProvider
+    public IEnumerator<ContentTypeModel> ManagementContentTypeModels { get; }
+    public IEnumerator<ContentTypeSnippetModel> ManagementContentTypeSnippetModels { get; }
+
+    public ManagementModelsProvider()
     {
-        public IEnumerator<ContentTypeModel> ManagementContentTypeModels { get; }
-        public IEnumerator<ContentTypeSnippetModel> ManagementContentTypeSnippetModels { get; }
+        ManagementContentTypeModels = GetModels<ContentTypeModel>("Fixtures/management_types.json");
+        ManagementContentTypeSnippetModels = GetModels<ContentTypeSnippetModel>("Fixtures/management_snippets.json");
+    }
 
-        public ManagementModelsProvider()
+    private static IEnumerator<T> GetModels<T>(string filePath)
+    {
+        var stringServerResponse = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, filePath));
+        var jTokenServerResponse = JToken.ReadFrom(new JsonTextReader(new StringReader(stringServerResponse)));
+
+        var objectTypesProperty = Activator.CreateInstance(typeof(T)) switch
         {
-            ManagementContentTypeModels = GetModels<ContentTypeModel>("Fixtures/management_types.json");
-            ManagementContentTypeSnippetModels = GetModels<ContentTypeSnippetModel>("Fixtures/management_snippets.json");
-        }
+            ContentTypeModel => "types",
+            ContentTypeSnippetModel => "snippets",
+            _ => throw new NotSupportedException()
+        };
 
-        private static IEnumerator<T> GetModels<T>(string filePath)
-        {
-            var stringServerResponse = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, filePath));
-            var jTokenServerResponse = JToken.ReadFrom(new JsonTextReader(new StringReader(stringServerResponse)));
-
-            var objectTypesProperty = Activator.CreateInstance(typeof(T)) switch
-            {
-                ContentTypeModel => "types",
-                ContentTypeSnippetModel => "snippets",
-                _ => throw new NotSupportedException()
-            };
-
-            return jTokenServerResponse[objectTypesProperty]
-                .ToObject<IEnumerable<T>>()
-                .GetEnumerator();
-        }
+        return jTokenServerResponse[objectTypesProperty]
+            .ToObject<IEnumerable<T>>()
+            .GetEnumerator();
     }
 }

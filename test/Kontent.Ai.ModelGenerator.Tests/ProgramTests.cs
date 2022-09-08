@@ -2,15 +2,14 @@
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Kontent.Ai.ModelGenerator.Tests
+namespace Kontent.Ai.ModelGenerator.Tests;
+
+public class ProgramTests
 {
-    public class ProgramTests
+    [Fact]
+    public async Task CreateCodeGeneratorOptions_NoProjectId_ReturnsError()
     {
-        [Fact]
-        public async Task CreateCodeGeneratorOptions_NoProjectId_ReturnsError()
-        {
-            var result = await Program.Main(Array.Empty<string>());
-            Assert.Equal(1, result);
-        }
+        var result = await Program.Main(Array.Empty<string>());
+        Assert.Equal(1, result);
     }
 }

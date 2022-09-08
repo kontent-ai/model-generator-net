@@ -1,8 +1,7 @@
 ﻿using System;
 
-namespace Kontent.Ai.ModelGenerator.Core.Common
+namespace Kontent.Ai.ModelGenerator.Core.Common;
+
+public class UnsupportedTypeException : Exception
 {
-    public class UnsupportedTypeException : Exception
-    {
-    }
 }

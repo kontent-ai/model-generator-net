@@ -3,53 +3,52 @@ using System.IO;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Xunit;
 
-namespace Kontent.Ai.ModelGenerator.Tests.Generators.Class
+namespace Kontent.Ai.ModelGenerator.Tests.Generators.Class;
+
+public class BaseClassCodeGeneratorTests
 {
-    public class BaseClassCodeGeneratorTests
+    private const string BaseClassName = "ContentBase";
+
+    [Fact]
+    public void GenerateBaseClassCodeWithDefaultNamespace()
     {
-        private const string BaseClassName = "ContentBase";
+        var codeGenerator = new BaseClassCodeGenerator(BaseClassName);
 
-        [Fact]
-        public void GenerateBaseClassCodeWithDefaultNamespace()
-        {
-            var codeGenerator = new BaseClassCodeGenerator(BaseClassName);
+        var executingPath = AppContext.BaseDirectory;
+        var expectedBaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
 
-            var executingPath = AppContext.BaseDirectory;
-            var expectedBaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
+        var actualCompiledBaseClass = codeGenerator.GenerateBaseClassCode();
 
-            var actualCompiledBaseClass = codeGenerator.GenerateBaseClassCode();
+        Assert.Equal(expectedBaseClassCode, actualCompiledBaseClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+    }
 
-            Assert.Equal(expectedBaseClassCode, actualCompiledBaseClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
-        }
+    [Fact]
+    public void GenerateBaseClassCodeWithCustomNamespace()
+    {
+        var customNamespace = "CustomNamespace";
+        var codeGenerator = new BaseClassCodeGenerator(BaseClassName, customNamespace);
 
-        [Fact]
-        public void GenerateBaseClassCodeWithCustomNamespace()
-        {
-            var customNamespace = "CustomNamespace";
-            var codeGenerator = new BaseClassCodeGenerator(BaseClassName, customNamespace);
+        var executingPath = AppContext.BaseDirectory;
+        var expectedBaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
+        expectedBaseClassCode = expectedBaseClassCode.Replace(ClassCodeGenerator.DefaultNamespace, customNamespace);
 
-            var executingPath = AppContext.BaseDirectory;
-            var expectedBaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
-            expectedBaseClassCode = expectedBaseClassCode.Replace(ClassCodeGenerator.DefaultNamespace, customNamespace);
+        var actualCompiledBaseClass = codeGenerator.GenerateBaseClassCode();
 
-            var actualCompiledBaseClass = codeGenerator.GenerateBaseClassCode();
+        Assert.Equal(expectedBaseClassCode, actualCompiledBaseClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+    }
 
-            Assert.Equal(expectedBaseClassCode, actualCompiledBaseClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
-        }
+    [Fact]
+    public void GenerateExtenderClassCode()
+    {
+        var codeGenerator = new BaseClassCodeGenerator(BaseClassName);
+        codeGenerator.AddClassNameToExtend("Article");
+        codeGenerator.AddClassNameToExtend("Office");
 
-        [Fact]
-        public void GenerateExtenderClassCode()
-        {
-            var codeGenerator = new BaseClassCodeGenerator(BaseClassName);
-            codeGenerator.AddClassNameToExtend("Article");
-            codeGenerator.AddClassNameToExtend("Office");
+        var executingPath = AppContext.BaseDirectory;
+        var expectedExtenderCode = File.ReadAllText(executingPath + "/Assets/BaseClassExtender_CompiledCode.txt");
 
-            var executingPath = AppContext.BaseDirectory;
-            var expectedExtenderCode = File.ReadAllText(executingPath + "/Assets/BaseClassExtender_CompiledCode.txt");
+        var actualCompiledExtenderClass = codeGenerator.GenerateExtenderCode();
 
-            var actualCompiledExtenderClass = codeGenerator.GenerateExtenderCode();
-
-            Assert.Equal(expectedExtenderCode, actualCompiledExtenderClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
-        }
+        Assert.Equal(expectedExtenderCode, actualCompiledExtenderClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
     }
 }

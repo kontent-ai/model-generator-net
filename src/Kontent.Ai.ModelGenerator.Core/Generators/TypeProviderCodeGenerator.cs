@@ -10,56 +10,56 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 
-namespace Kontent.Ai.ModelGenerator.Core.Generators
+namespace Kontent.Ai.ModelGenerator.Core.Generators;
+
+public class TypeProviderCodeGenerator : GeneralGenerator
 {
-    public class TypeProviderCodeGenerator : GeneralGenerator
+    public const string ClassName = "CustomTypeProvider";
+
+    /// <summary>
+    /// Codename -> ClassName dictionary
+    /// </summary>
+    private readonly Dictionary<string, string> _contentTypes = new Dictionary<string, string>();
+
+    public TypeProviderCodeGenerator(string @namespace = ClassCodeGenerator.DefaultNamespace) : base(@namespace)
     {
-        public const string ClassName = "CustomTypeProvider";
+    }
 
-        /// <summary>
-        /// Codename -> ClassName dictionary
-        /// </summary>
-        private readonly Dictionary<string, string> _contentTypes = new Dictionary<string, string>();
-
-        public TypeProviderCodeGenerator(string @namespace = ClassCodeGenerator.DefaultNamespace) : base(@namespace)
+    public void AddContentType(string codename, string className)
+    {
+        if (string.IsNullOrEmpty(codename))
         {
+            throw new ArgumentException("Codename must be a non empty string", nameof(codename));
         }
 
-        public void AddContentType(string codename, string className)
+        if (string.IsNullOrEmpty(className))
         {
-            if (string.IsNullOrEmpty(codename))
-            {
-                throw new ArgumentException("Codename must be a non empty string", nameof(codename));
-            }
-
-            if (string.IsNullOrEmpty(className))
-            {
-                throw new ArgumentException("Class name must be a non empty string", nameof(className));
-            }
-
-            _contentTypes[codename] = className;
+            throw new ArgumentException("Class name must be a non empty string", nameof(className));
         }
 
-        public string GenerateCode()
+        _contentTypes[codename] = className;
+    }
+
+    public string GenerateCode()
+    {
+        if (!_contentTypes.Any())
         {
-            if (!_contentTypes.Any())
-            {
-                return null;
-            }
-
-            var cu = (CompilationUnitSyntax)SyntaxTree.GetRoot();
-            cu = cu.WithLeadingTrivia(ClassDescription());
-
-            AdhocWorkspace cw = new AdhocWorkspace();
-            return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
+            return null;
         }
 
-        protected override SyntaxTrivia ClassDescription() => ClassDeclarationHelper.GenerateSyntaxTrivia(
-@"// Changes to this file will not be lost if the code is regenerated.
+        var cu = (CompilationUnitSyntax)SyntaxTree.GetRoot();
+        cu = cu.WithLeadingTrivia(ClassDescription());
+
+        AdhocWorkspace cw = new AdhocWorkspace();
+        return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
+    }
+
+    protected override SyntaxTrivia ClassDescription() => ClassDeclarationHelper.GenerateSyntaxTrivia(
+        @"// Changes to this file will not be lost if the code is regenerated.
 // It will maintain an up-to-date list of the Content types available");
 
-        private SyntaxTree SyntaxTree => CSharpSyntaxTree.ParseText(
-$@"using System;
+    private SyntaxTree SyntaxTree => CSharpSyntaxTree.ParseText(
+        $@"using System;
 using System.Collections.Generic;
 using System.Linq;
 using {typeof(ITypeProvider).Namespace};
@@ -85,22 +85,21 @@ namespace {Namespace}
     }}
 }}");
 
-        private string CreateCodenameDictionaryValues()
+    private string CreateCodenameDictionaryValues()
+    {
+        if (_contentTypes.Count == 0) return null;
+
+        var dictionaryValuesBuilder = new StringBuilder();
+
+        foreach (var entry in _contentTypes.Take(_contentTypes.Count - 1))
         {
-            if (_contentTypes.Count == 0) return null;
-
-            var dictionaryValuesBuilder = new StringBuilder();
-
-            foreach (var entry in _contentTypes.Take(_contentTypes.Count - 1))
-            {
-                dictionaryValuesBuilder.AppendLine($"\t\t\t{{typeof({entry.Value}), \"{entry.Key}\"}},");
-            }
-
-            var lastEntry = _contentTypes.Last();
-            dictionaryValuesBuilder
-                .Append($"\t\t\t{{typeof({lastEntry.Value}), \"{lastEntry.Key}\"}}");
-
-            return dictionaryValuesBuilder.ToString();
+            dictionaryValuesBuilder.AppendLine($"\t\t\t{{typeof({entry.Value}), \"{entry.Key}\"}},");
         }
+
+        var lastEntry = _contentTypes.Last();
+        dictionaryValuesBuilder
+            .Append($"\t\t\t{{typeof({lastEntry.Value}), \"{lastEntry.Key}\"}}");
+
+        return dictionaryValuesBuilder.ToString();
     }
 }

@@ -13,84 +13,83 @@ using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Microsoft.Extensions.Options;
 
-namespace Kontent.Ai.ModelGenerator.Core
+namespace Kontent.Ai.ModelGenerator.Core;
+
+public class ManagementCodeGenerator : CodeGeneratorBase
 {
-    public class ManagementCodeGenerator : CodeGeneratorBase
+    private readonly IManagementClient _managementClient;
+
+    public ManagementCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IManagementClient managementClient)
+        : base(options, outputProvider)
     {
-        private readonly IManagementClient _managementClient;
-
-        public ManagementCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IManagementClient managementClient)
-            : base(options, outputProvider)
+        if (!options.Value.ManagementApi)
         {
-            if (!options.Value.ManagementApi)
-            {
-                throw new InvalidOperationException("Cannot create Management models with Delivery API options.");
-            }
-
-            _managementClient = managementClient;
+            throw new InvalidOperationException("Cannot create Management models with Delivery API options.");
         }
 
-        protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
+        _managementClient = managementClient;
+    }
+
+    protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
+    {
+        var managementTypes = await _managementClient.ListContentTypesAsync().GetAllAsync();
+        var managementSnippets = await _managementClient.ListContentTypeSnippetsAsync().GetAllAsync();
+
+        var codeGenerators = new List<ClassCodeGenerator>();
+        if (managementTypes == null || !managementTypes.Any())
         {
-            var managementTypes = await _managementClient.ListContentTypesAsync().GetAllAsync();
-            var managementSnippets = await _managementClient.ListContentTypeSnippetsAsync().GetAllAsync();
-
-            var codeGenerators = new List<ClassCodeGenerator>();
-            if (managementTypes == null || !managementTypes.Any())
-            {
-                return codeGenerators;
-            }
-
-            foreach (var contentType in managementTypes)
-            {
-                try
-                {
-                    if (Options.GeneratePartials)
-                    {
-                        codeGenerators.Add(GetCustomClassCodeGenerator(contentType.Codename));
-                    }
-
-                    codeGenerators.Add(GetClassCodeGenerator(contentType, managementSnippets));
-                }
-                catch (InvalidIdentifierException)
-                {
-                    WriteConsoleErrorMessage(contentType.Codename);
-                }
-            }
-
             return codeGenerators;
         }
 
-        internal ClassCodeGenerator GetClassCodeGenerator(ContentTypeModel contentType, IEnumerable<ContentTypeSnippetModel> managementSnippets)
+        foreach (var contentType in managementTypes)
         {
-            var classDefinition = new ClassDefinition(contentType.Codename);
-
-            foreach (var element in contentType.Elements)
+            try
             {
-                try
+                if (Options.GeneratePartials)
                 {
-                    if (element.Type != ElementMetadataType.ContentTypeSnippet)
-                    {
-                        AddProperty(Property.FromContentTypeElement(element), ref classDefinition);
-                    }
-                    else
-                    {
-                        var snippetElements = ManagementElementHelper.GetManagementContentTypeSnippetElements(element, managementSnippets);
-                        foreach (var snippetElement in snippetElements)
-                        {
-                            AddProperty(Property.FromContentTypeElement(snippetElement), ref classDefinition);
-                        }
-                    }
+                    codeGenerators.Add(GetCustomClassCodeGenerator(contentType.Codename));
                 }
-                catch (Exception e)
+
+                codeGenerators.Add(GetClassCodeGenerator(contentType, managementSnippets));
+            }
+            catch (InvalidIdentifierException)
+            {
+                WriteConsoleErrorMessage(contentType.Codename);
+            }
+        }
+
+        return codeGenerators;
+    }
+
+    internal ClassCodeGenerator GetClassCodeGenerator(ContentTypeModel contentType, IEnumerable<ContentTypeSnippetModel> managementSnippets)
+    {
+        var classDefinition = new ClassDefinition(contentType.Codename);
+
+        foreach (var element in contentType.Elements)
+        {
+            try
+            {
+                if (element.Type != ElementMetadataType.ContentTypeSnippet)
                 {
-                    WriteConsoleErrorMessage(e, element.Codename, element.Type.ToString(), classDefinition.ClassName);
+                    AddProperty(Property.FromContentTypeElement(element), ref classDefinition);
+                }
+                else
+                {
+                    var snippetElements = ManagementElementHelper.GetManagementContentTypeSnippetElements(element, managementSnippets);
+                    foreach (var snippetElement in snippetElements)
+                    {
+                        AddProperty(Property.FromContentTypeElement(snippetElement), ref classDefinition);
+                    }
                 }
             }
-
-            var classFilename = GetFileClassName(classDefinition.ClassName);
-
-            return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
+            catch (Exception e)
+            {
+                WriteConsoleErrorMessage(e, element.Codename, element.Type.ToString(), classDefinition.ClassName);
+            }
         }
+
+        var classFilename = GetFileClassName(classDefinition.ClassName);
+
+        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
     }
 }

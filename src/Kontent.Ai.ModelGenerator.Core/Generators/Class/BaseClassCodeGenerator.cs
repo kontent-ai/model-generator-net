@@ -7,49 +7,49 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 
-namespace Kontent.Ai.ModelGenerator.Core.Generators.Class
+namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
+
+public class BaseClassCodeGenerator : GeneralGenerator
 {
-    public class BaseClassCodeGenerator : GeneralGenerator
+    /// <summary>
+    /// Collection of classes to extend (HashSet ensures that classes get extended only once)
+    /// </summary>
+    private readonly ICollection<string> _classesToExtend = new HashSet<string>();
+
+    private readonly string _className;
+
+    /// <summary>
+    /// The calculated Extender Classname
+    /// </summary>
+    public string ExtenderClassName => $"{_className}Extender";
+
+    public BaseClassCodeGenerator(string className, string @namespace = ClassCodeGenerator.DefaultNamespace) : base(@namespace)
     {
-        /// <summary>
-        /// Collection of classes to extend (HashSet ensures that classes get extended only once)
-        /// </summary>
-        private readonly ICollection<string> _classesToExtend = new HashSet<string>();
+        _className = className;
+    }
 
-        private readonly string _className;
-
-        /// <summary>
-        /// The calculated Extender Classname
-        /// </summary>
-        public string ExtenderClassName => $"{_className}Extender";
-
-        public BaseClassCodeGenerator(string className, string @namespace = ClassCodeGenerator.DefaultNamespace) : base(@namespace)
+    /// <summary>
+    /// Add string values for classes that should be added as partials so they inherit from the base class
+    /// </summary>
+    /// <param name="className"></param>
+    public void AddClassNameToExtend(string className)
+    {
+        if (string.IsNullOrEmpty(className))
         {
-            _className = className;
+            throw new ArgumentException("Class name must be a non empty string", nameof(className));
         }
 
-        /// <summary>
-        /// Add string values for classes that should be added as partials so they inherit from the base class
-        /// </summary>
-        /// <param name="className"></param>
-        public void AddClassNameToExtend(string className)
-        {
-            if (string.IsNullOrEmpty(className))
-            {
-                throw new ArgumentException("Class name must be a non empty string", nameof(className));
-            }
+        _classesToExtend.Add(className);
+    }
 
-            _classesToExtend.Add(className);
-        }
-
-        /// <summary>
-        /// Creates the base class output
-        /// </summary>
-        /// <returns></returns>
-        public string GenerateBaseClassCode()
-        {
-            var tree = CSharpSyntaxTree.ParseText(
-$@"using System;
+    /// <summary>
+    /// Creates the base class output
+    /// </summary>
+    /// <returns></returns>
+    public string GenerateBaseClassCode()
+    {
+        var tree = CSharpSyntaxTree.ParseText(
+            $@"using System;
 using Kontent.Ai.Delivery.Abstractions;
 
 namespace {Namespace}
@@ -60,24 +60,24 @@ namespace {Namespace}
     }}
 }}");
 
-            var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
-            cu = cu.WithLeadingTrivia(ClassDescription());
+        var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
+        cu = cu.WithLeadingTrivia(ClassDescription());
 
-            AdhocWorkspace cw = new AdhocWorkspace();
-            return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
-        }
+        AdhocWorkspace cw = new AdhocWorkspace();
+        return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
+    }
 
-        /// <summary>
-        /// Creates the extender code that uses partials to make all output classes derive from the base class
-        /// </summary>
-        public string GenerateExtenderCode()
-        {
-            var extenders = _classesToExtend.OrderBy(c => c)
-                .Select((c) => $"public partial class {c} : {_className} {{ }}")
-                .Aggregate((p, n) => p + Environment.NewLine + n);
+    /// <summary>
+    /// Creates the extender code that uses partials to make all output classes derive from the base class
+    /// </summary>
+    public string GenerateExtenderCode()
+    {
+        var extenders = _classesToExtend.OrderBy(c => c)
+            .Select((c) => $"public partial class {c} : {_className} {{ }}")
+            .Aggregate((p, n) => p + Environment.NewLine + n);
 
-            var tree = CSharpSyntaxTree.ParseText(
-$@"using System;
+        var tree = CSharpSyntaxTree.ParseText(
+            $@"using System;
 using Kontent.Ai.Delivery.Abstractions;
 
 namespace {Namespace}
@@ -87,18 +87,17 @@ namespace {Namespace}
         {extenders}
 }}");
 
-            var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
-            cu = cu.WithLeadingTrivia(ExtenderClassDescription);
+        var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
+        cu = cu.WithLeadingTrivia(ExtenderClassDescription);
 
-            AdhocWorkspace cw = new AdhocWorkspace();
-            return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
-        }
-
-        protected override SyntaxTrivia ClassDescription() =>
-            ClassDeclarationHelper.GenerateSyntaxTrivia(@"// You can make changes to this class and it will not get overwritten if it already exists.");
-
-        private SyntaxTrivia ExtenderClassDescription => ClassDeclarationHelper.GenerateSyntaxTrivia(
-@$"{LostChangesComment}
-// For further modifications of the class, create or modify the '{_className}.cs' file with the partial class.");
+        AdhocWorkspace cw = new AdhocWorkspace();
+        return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
     }
+
+    protected override SyntaxTrivia ClassDescription() =>
+        ClassDeclarationHelper.GenerateSyntaxTrivia(@"// You can make changes to this class and it will not get overwritten if it already exists.");
+
+    private SyntaxTrivia ExtenderClassDescription => ClassDeclarationHelper.GenerateSyntaxTrivia(
+        @$"{LostChangesComment}
+// For further modifications of the class, create or modify the '{_className}.cs' file with the partial class.");
 }
