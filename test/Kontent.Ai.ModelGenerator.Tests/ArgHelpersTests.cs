@@ -5,6 +5,7 @@ using System.Reflection;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Options;
 using Xunit;
 
 namespace Kontent.Ai.ModelGenerator.Tests;
@@ -34,7 +35,7 @@ public class ArgHelpersTests
             { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" }
         };
 
-    private static IDictionary<string, string> ExpectedDeliveryMappings => new Dictionary<string, string>
+    private static IDictionary<string, string> ExpectedExtendedDeliveryMappings => new Dictionary<string, string>
         {
             { "-n", nameof(CodeGeneratorOptions.Namespace) },
             { "-o", nameof(CodeGeneratorOptions.OutputDir) },
@@ -42,27 +43,45 @@ public class ArgHelpersTests
             { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
             { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
             { "-b", nameof(CodeGeneratorOptions.BaseClass) },
-            { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-            { "--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-            { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
+            { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
+            {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
+            { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
+            { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
+            { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
+            { "-e", nameof(CodeGeneratorOptions.ExtendedDeliverModels) },
+            { "-r", nameof(CodeGeneratorOptions.ExtendedDeliverPreviewModels) }
         };
+
+    private static IDictionary<string, string> ExpectedDeliveryMappings => new Dictionary<string, string>
+    {
+        { "-n", nameof(CodeGeneratorOptions.Namespace) },
+        { "-o", nameof(CodeGeneratorOptions.OutputDir) },
+        { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
+        { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
+        { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
+        { "-b", nameof(CodeGeneratorOptions.BaseClass) },
+        { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
+        { "--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
+        { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
+    };
 
     [Fact]
     public void GetSwitchMappings_MissingMapiSwitch_ReturnsDeliveryMappings()
     {
-        var mappings = ArgHelpers.GetSwitchMappings(new string[]
+        var result = ArgHelpers.GetSwitchMappings(new string[]
         {
                 "-p",
                 Guid.NewGuid().ToString()
         });
 
-        Assert.Equal(ExpectedDeliveryMappings, mappings);
+        Assert.Equal(ExpectedDeliveryMappings, result.Mappings);
+        Assert.Equal(UsedMappingsType.Delivery, result.UsedMappingsType);
     }
 
     [Fact]
     public void GetSwitchMappings_MapiSwitchIsFalse_ReturnsDeliveryMappings()
     {
-        var mappings = ArgHelpers.GetSwitchMappings(new string[]
+        var result = ArgHelpers.GetSwitchMappings(new string[]
         {
                 "-p",
                 Guid.NewGuid().ToString(),
@@ -70,13 +89,14 @@ public class ArgHelpersTests
                 "false"
         });
 
-        Assert.Equal(ExpectedDeliveryMappings, mappings);
+        Assert.Equal(ExpectedDeliveryMappings, result.Mappings);
+        Assert.Equal(UsedMappingsType.Delivery, result.UsedMappingsType);
     }
 
     [Fact]
     public void GetSwitchMappings_MapiSwitchIsTrue_ReturnsManagementMappings()
     {
-        var mappings = ArgHelpers.GetSwitchMappings(new string[]
+        var result = ArgHelpers.GetSwitchMappings(new string[]
         {
                 "-p",
                 Guid.NewGuid().ToString(),
@@ -84,7 +104,55 @@ public class ArgHelpersTests
                 "true"
         });
 
-        Assert.Equal(ExpectedManagementMappings, mappings);
+        Assert.Equal(ExpectedManagementMappings, result.Mappings);
+        Assert.Equal(UsedMappingsType.Management, result.UsedMappingsType);
+    }
+
+    [Fact]
+    public void GetSwitchMappings_ExtendedDeliveryIsTrue_ReturnsManagementMappings()
+    {
+        var result = ArgHelpers.GetSwitchMappings(new string[]
+        {
+            "-p",
+            Guid.NewGuid().ToString(),
+            "-e",
+            "true"
+        });
+
+        Assert.Equal(ExpectedExtendedDeliveryMappings, result.Mappings);
+        Assert.Equal(UsedMappingsType.ExtendedDelivery, result.UsedMappingsType);
+    }
+
+    [Fact]
+    public void GetSwitchMappings_ExtendedDeliveryPreviewIsTrue_ReturnsManagementMappings()
+    {
+        var result = ArgHelpers.GetSwitchMappings(new string[]
+        {
+            "-p",
+            Guid.NewGuid().ToString(),
+            "-r",
+            "true"
+        });
+
+        Assert.Equal(ExpectedExtendedDeliveryMappings, result.Mappings);
+        Assert.Equal(UsedMappingsType.ExtendedDelivery, result.UsedMappingsType);
+    }
+
+    [Fact]
+    public void GetSwitchMappings_ExtendedDeliveryAndPreviewIsTrue_ReturnsManagementMappings()
+    {
+        var result = ArgHelpers.GetSwitchMappings(new string[]
+        {
+            "-p",
+            Guid.NewGuid().ToString(),
+            "-e",
+            "true",
+            "-r",
+            "true"
+        });
+
+        Assert.Equal(ExpectedExtendedDeliveryMappings, result.Mappings);
+        Assert.Equal(UsedMappingsType.ExtendedDelivery, result.UsedMappingsType);
     }
 
     [Fact]
@@ -114,9 +182,9 @@ public class ArgHelpersTests
     {
         var args = new[]
         {
-                arg,
-                "arg_value"
-            };
+            arg,
+            "arg_value"
+        };
         var result = ArgHelpers.ContainsValidArgs(args);
 
         Assert.False(result);
@@ -128,7 +196,7 @@ public class ArgHelpersTests
         var args = AppendValuesToArgs(ExpectedManagementMappings)
             .Concat(AppendValuesToArgs(ToLower(new List<string>
             {
-                    nameof(CodeGeneratorOptions.ManagementApi)
+                nameof(CodeGeneratorOptions.ManagementApi)
             })))
             .Concat(AppendValuesToArgs(GeneralOptionArgs))
             .Concat(AppendValuesToArgs(typeof(ManagementOptions)))
@@ -149,9 +217,48 @@ public class ArgHelpersTests
     {
         var args = new[]
         {
-                arg,
-                "arg_value"
-            };
+            arg,
+            "arg_value"
+        };
+        var result = ArgHelpers.ContainsValidArgs(args);
+
+        Assert.False(result);
+    }
+
+    [Fact]
+    public void ContainsContainsValidArgs_SupportedExtendedDeliveryOptions_ReturnsTrue()
+    {
+        var args = AppendValuesToArgs(ExpectedExtendedDeliveryMappings)
+            .Concat(AppendValuesToArgs(ToLower(new List<string>
+            {
+                nameof(CodeGeneratorOptions.StructuredModel),
+                nameof(CodeGeneratorOptions.WithTypeProvider)
+            })))
+            .Concat(AppendValuesToArgs(GeneralOptionArgs))
+            .Concat(AppendValuesToArgs(typeof(ManagementOptions)))
+            .ToArray();
+
+        var result = ArgHelpers.ContainsValidArgs(args);
+
+        Assert.True(result);
+    }
+
+    [Theory]
+    [InlineData("-x")]
+    [InlineData("--contentmanagementapi")]
+    [InlineData("--managementapix")]
+    [InlineData("--ManagementOptions:ApiKeyX")]
+    [InlineData("--ManagementOptionsX:ApiKey")]
+    [InlineData("--DeliveryOptionsX:UseSecureAccess")]
+    [InlineData("--DeliveryOptions:UseSecureAccessX")]
+    public void ContainsContainsValidArgs_UnsupportedExtendedDeliveryOptions_ReturnsFalse(string arg)
+    {
+        var args = new[]
+        {
+            arg,
+            "arg_value"
+        };
+
         var result = ArgHelpers.ContainsValidArgs(args);
 
         Assert.False(result);
@@ -160,7 +267,7 @@ public class ArgHelpersTests
     [Fact]
     public void GetProgramOptionsData_ManagementApi_ReturnsManagementProgramOptionsData()
     {
-        var result = ArgHelpers.GetUsedSdkInfo(true);
+        var result = ArgHelpers.GetUsedSdkInfo(UsedMappingsType.Management);
 
         Assert.Equal("management-sdk-net", result.Name);
         Assert.Equal(Assembly.GetAssembly(typeof(ManagementOptions)).GetName().Version.ToString(3), result.Version);
@@ -169,7 +276,16 @@ public class ArgHelpersTests
     [Fact]
     public void GetProgramOptionsData_DeliveryApi_ReturnsDeliveryProgramOptionsData()
     {
-        var result = ArgHelpers.GetUsedSdkInfo(false);
+        var result = ArgHelpers.GetUsedSdkInfo(UsedMappingsType.Delivery);
+
+        Assert.Equal("delivery-sdk-net", result.Name);
+        Assert.Equal(Assembly.GetAssembly(typeof(DeliveryOptions)).GetName().Version.ToString(3), result.Version);
+    }
+
+    [Fact]
+    public void GetProgramOptionsData_ExtendedDeliveryApi_ReturnsExtendedDeliveryProgramOptionsData()
+    {
+        var result = ArgHelpers.GetUsedSdkInfo(UsedMappingsType.ExtendedDelivery);
 
         Assert.Equal("delivery-sdk-net", result.Name);
         Assert.Equal(Assembly.GetAssembly(typeof(DeliveryOptions)).GetName().Version.ToString(3), result.Version);

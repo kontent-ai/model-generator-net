@@ -1,5 +1,5 @@
 ﻿using System;
-using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Options;
 using Xunit;
 
 namespace Kontent.Ai.ModelGenerator.Tests;

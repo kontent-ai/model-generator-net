@@ -8,6 +8,7 @@ using Kontent.Ai.Delivery;
 using Kontent.Ai.Delivery.Extensions;
 using Kontent.Ai.ModelGenerator.Core;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Options;
 
 namespace Kontent.Ai.ModelGenerator;
 
@@ -26,11 +27,13 @@ internal class Program
                 return 1;
             }
 
+            var usedMappings = ArgHelpers.GetSwitchMappings(args);
+
             // Build a configuration object from given sources
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Environment.CurrentDirectory)
                 .AddJsonFile("appSettings.json", true)
-                .AddCommandLine(args, ArgHelpers.GetSwitchMappings(args))
+                .AddCommandLine(args, usedMappings.Mappings)
                 .Build();
 
             // Fill the DI container
@@ -49,7 +52,7 @@ internal class Program
             var options = serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value;
             options.Validate();
 
-            PrintSdkVersion(options);
+            PrintSdkVersion(usedMappings);
 
             // Code generator entry point
             if (options.ManagementApi())
@@ -77,9 +80,9 @@ internal class Program
 
     private static async Task WriteErrorMessageAsync(string message) => await Console.Error.WriteLineAsync(message);
 
-    private static void PrintSdkVersion(CodeGeneratorOptions options)
+    private static void PrintSdkVersion(UsedMappings usedMappings)
     {
-        var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(options.ManagementApi());
+        var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(usedMappings.UsedMappingsType);
         Console.WriteLine($"Models were generated for {usedSdkInfo.Name} version {usedSdkInfo.Version}");
     }
 }

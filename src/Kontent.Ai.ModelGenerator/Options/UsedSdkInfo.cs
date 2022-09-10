@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Kontent.Ai.ModelGenerator;
+namespace Kontent.Ai.ModelGenerator.Options;
 
 internal class UsedSdkInfo
 {
