@@ -49,7 +49,6 @@ public class ArgHelpersTests
             { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
             { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
             { "-e", nameof(CodeGeneratorOptions.ExtendedDeliverModels) },
-            { "-r", nameof(CodeGeneratorOptions.ExtendedDeliverPreviewModels) }
         };
 
     private static IDictionary<string, string> ExpectedDeliveryMappings => new Dictionary<string, string>
@@ -116,38 +115,6 @@ public class ArgHelpersTests
             "-p",
             Guid.NewGuid().ToString(),
             "-e",
-            "true"
-        });
-
-        Assert.Equal(ExpectedExtendedDeliveryMappings, result.Mappings);
-        Assert.Equal(UsedMappingsType.ExtendedDelivery, result.UsedMappingsType);
-    }
-
-    [Fact]
-    public void GetSwitchMappings_ExtendedDeliveryPreviewIsTrue_ReturnsManagementMappings()
-    {
-        var result = ArgHelpers.GetSwitchMappings(new string[]
-        {
-            "-p",
-            Guid.NewGuid().ToString(),
-            "-r",
-            "true"
-        });
-
-        Assert.Equal(ExpectedExtendedDeliveryMappings, result.Mappings);
-        Assert.Equal(UsedMappingsType.ExtendedDelivery, result.UsedMappingsType);
-    }
-
-    [Fact]
-    public void GetSwitchMappings_ExtendedDeliveryAndPreviewIsTrue_ReturnsManagementMappings()
-    {
-        var result = ArgHelpers.GetSwitchMappings(new string[]
-        {
-            "-p",
-            Guid.NewGuid().ToString(),
-            "-e",
-            "true",
-            "-r",
             "true"
         });
 

@@ -29,11 +29,6 @@ public class CodeGeneratorOptions
     public bool ExtendedDeliverModels { get; set; } = DefaultExtendedDeliverModels;
 
     /// <summary>
-    /// Indicates whether the extended preview Delivery models should be generated
-    /// </summary>
-    public bool ExtendedDeliverPreviewModels { get; set; } = DefaultExtendedDeliverPreviewModels;
-
-    /// <summary>
     /// Namespace name of the generated classes
     /// </summary>
     public string Namespace { get; set; }
