@@ -11,7 +11,8 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = true,
-            ExtendedDeliverModels = false
+            ExtendedDeliverModels = false,
+            ExtendedDeliverPreviewModels = false
         };
 
         var result = options.ManagementApi();
@@ -20,14 +21,17 @@ public class CodeGeneratorOptionsExtensionsTests
     }
 
     [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void ManagementApi_NotManagementApi_ReturnsFalse(bool extendedDeliverModels)
+    [InlineData(true, true)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    [InlineData(false, false)]
+    public void ManagementApi_NotManagementApi_ReturnsFalse(bool extendedDeliverModels, bool extendedDeliverPreviewModels)
     {
         var options = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = extendedDeliverModels
+            ExtendedDeliverModels = extendedDeliverModels,
+            ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
         };
 
         var result = options.ManagementApi();
@@ -35,13 +39,17 @@ public class CodeGeneratorOptionsExtensionsTests
         Assert.False(result);
     }
 
-    [Fact]
-    public void ManagementApi_InvalidConfig_ReturnsFalse()
+    [Theory]
+    [InlineData(true, true)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    public void ManagementApi_InvalidConfig_ReturnsFalse(bool extendedDeliverModels, bool extendedDeliverPreviewModels)
     {
         var options = new CodeGeneratorOptions
         {
             ManagementApi = true,
-            ExtendedDeliverModels = true
+            ExtendedDeliverModels = extendedDeliverModels,
+            ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
         };
 
         var result = options.ManagementApi();
