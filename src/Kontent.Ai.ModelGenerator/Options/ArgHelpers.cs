@@ -14,30 +14,9 @@ internal static class ArgHelpers
     private static readonly ProgramOptionsData DeliveryProgramOptionsData = new ProgramOptionsData(typeof(DeliveryOptions), "delivery-sdk-net");
     private static readonly ProgramOptionsData ExtendedDeliveryProgramOptionsData = new ProgramOptionsData(typeof(ManagementOptions), typeof(DeliveryOptions), "delivery-sdk-net");
 
-    public static UsedMappings GetSwitchMappings(string[] args)
-    {
-        var managementDecidingArgs = new DecidingArgs("-m", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ManagementApi)));
-        var extendedDeliverDecidingArgs = new DecidingArgs("-e", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ExtendedDeliverModels)));
-        var extendedDeliverPreviewDecidingArgs = new DecidingArgs("-r", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ExtendedDeliverPreviewModels)));
-
-        for (var i = 0; i < args.Length; i++)
-        {
-            if (i + 1 >= args.Length || args[i + 1] != "true") continue;
-
-            if (args[i] == managementDecidingArgs.ShorthandedArgName || args[i] == managementDecidingArgs.FullArgName)
-            {
-                return new UsedMappings(ArgMappingsRegister.ManagementMappings, DesiredModelsType.Management);
-            }
-
-            if (args[i] == extendedDeliverDecidingArgs.ShorthandedArgName || args[i] == extendedDeliverDecidingArgs.FullArgName ||
-                args[i] == extendedDeliverPreviewDecidingArgs.ShorthandedArgName || args[i] == extendedDeliverPreviewDecidingArgs.FullArgName)
-            {
-                return new UsedMappings(ArgMappingsRegister.ExtendedDeliveryMappings, DesiredModelsType.ExtendedDelivery);
-            }
-        }
-
-        return new UsedMappings(ArgMappingsRegister.DeliveryMappings, DesiredModelsType.Delivery);
-    }
+    public static IDictionary<string, string> GetSwitchMappings(string[] args) => ArgMappingsRegister.GeneralMappings
+        .Union(GetSpecificSwitchMappings(args))
+        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
     public static bool ContainsValidArgs(string[] args)
     {
@@ -72,6 +51,31 @@ internal static class ArgHelpers
         DesiredModelsType.ExtendedDelivery => ExtendedDeliveryProgramOptionsData.UsedSdkInfo,
         _ => throw new ArgumentOutOfRangeException(nameof(desiredModelsType))
     };
+
+    private static IDictionary<string, string> GetSpecificSwitchMappings(string[] args)
+    {
+        var managementDecidingArgs = new DecidingArgs("-m", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ManagementApi)));
+        var extendedDeliverDecidingArgs = new DecidingArgs("-e", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ExtendedDeliverModels)));
+        var extendedDeliverPreviewDecidingArgs = new DecidingArgs("-r", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ExtendedDeliverPreviewModels)));
+
+        for (var i = 0; i < args.Length; i++)
+        {
+            if (i + 1 >= args.Length || args[i + 1] != "true") continue;
+
+            if (args[i] == managementDecidingArgs.ShorthandedArgName || args[i] == managementDecidingArgs.FullArgName)
+            {
+                return ArgMappingsRegister.ManagementMappings;
+            }
+
+            if (args[i] == extendedDeliverDecidingArgs.ShorthandedArgName || args[i] == extendedDeliverDecidingArgs.FullArgName ||
+                args[i] == extendedDeliverPreviewDecidingArgs.ShorthandedArgName || args[i] == extendedDeliverPreviewDecidingArgs.FullArgName)
+            {
+                return ArgMappingsRegister.ExtendedDeliveryMappings;
+            }
+        }
+
+        return ArgMappingsRegister.DeliveryMappings;
+    }
 
     private static bool IsOptionPropertyValid(ProgramOptionsData programOptionsData, string arg) =>
         IsOptionPropertyValid(programOptionsData.OptionProperties.Select(prop => $"{programOptionsData.OptionsName}:{prop.Name}"), arg);

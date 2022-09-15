@@ -74,8 +74,7 @@ public class ArgHelpersTests
                 Guid.NewGuid().ToString()
         });
 
-        Assert.Equal(ExpectedDeliveryMappings, result.Mappings);
-        Assert.Equal(DesiredModelsType.Delivery, result.DesiredModelsType);
+        Assert.Equal(ExpectedDeliveryMappings, result);
     }
 
     [Fact]
@@ -89,8 +88,7 @@ public class ArgHelpersTests
                 "false"
         });
 
-        Assert.Equal(ExpectedDeliveryMappings, result.Mappings);
-        Assert.Equal(DesiredModelsType.Delivery, result.DesiredModelsType);
+        Assert.Equal(ExpectedDeliveryMappings, result);
     }
 
     [Fact]
@@ -104,8 +102,7 @@ public class ArgHelpersTests
                 "true"
         });
 
-        Assert.Equal(ExpectedManagementMappings, result.Mappings);
-        Assert.Equal(DesiredModelsType.Management, result.DesiredModelsType);
+        Assert.Equal(ExpectedManagementMappings, result);
     }
 
     [Fact]
@@ -119,8 +116,7 @@ public class ArgHelpersTests
             "true"
         });
 
-        Assert.Equal(ExpectedExtendedDeliveryMappings, result.Mappings);
-        Assert.Equal(DesiredModelsType.ExtendedDelivery, result.DesiredModelsType);
+        Assert.Equal(ExpectedExtendedDeliveryMappings, result);
     }
 
     [Fact]
@@ -134,8 +130,7 @@ public class ArgHelpersTests
             "true"
         });
 
-        Assert.Equal(ExpectedExtendedDeliveryMappings, result.Mappings);
-        Assert.Equal(DesiredModelsType.ExtendedDelivery, result.DesiredModelsType);
+        Assert.Equal(ExpectedExtendedDeliveryMappings, result);
     }
 
     [Fact]
@@ -151,8 +146,7 @@ public class ArgHelpersTests
             "true"
         });
 
-        Assert.Equal(ExpectedExtendedDeliveryMappings, result.Mappings);
-        Assert.Equal(DesiredModelsType.ExtendedDelivery, result.DesiredModelsType);
+        Assert.Equal(ExpectedExtendedDeliveryMappings, result);
     }
 
     [Fact]
