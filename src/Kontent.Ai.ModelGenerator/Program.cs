@@ -42,6 +42,7 @@ internal class Program
             services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
             services.AddSingleton<ManagementCodeGenerator>();
             services.AddSingleton<DeliveryCodeGenerator>();
+            services.AddSingleton<ExtendedDeliveryCodeGenerator>();
 
             // Build the DI container
             var serviceProvider = services.BuildServiceProvider();
@@ -53,12 +54,13 @@ internal class Program
             PrintSdkVersion(options);
 
             // Code generator entry point
-            if (options.ManagementApi())
+            return options.GetDesiredModelsType() switch
             {
-                return await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync();
-            }
-
-            return await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync();
+                DesiredModelsType.Delivery => await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync(),
+                DesiredModelsType.ExtendedDelivery => await serviceProvider.GetService<ExtendedDeliveryCodeGenerator>().RunAsync(),
+                DesiredModelsType.Management => await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync(),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
         catch (AggregateException aex)
         {

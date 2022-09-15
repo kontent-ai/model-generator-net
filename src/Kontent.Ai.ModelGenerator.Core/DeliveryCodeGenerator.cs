@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace Kontent.Ai.ModelGenerator.Core;
 
-public class DeliveryCodeGenerator : CodeGeneratorBase
+public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
 {
     private readonly IDeliveryClient _deliveryClient;
 
@@ -25,18 +25,6 @@ public class DeliveryCodeGenerator : CodeGeneratorBase
         }
 
         _deliveryClient = deliveryClient;
-    }
-
-    public new async Task<int> RunAsync()
-    {
-        await base.RunAsync();
-
-        if (Options.WithTypeProvider)
-        {
-            await GenerateTypeProvider();
-        }
-
-        return 0;
     }
 
     protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
