@@ -11,56 +11,75 @@ namespace Kontent.Ai.ModelGenerator.Options;
 /// </summary>
 public static class ValidationExtensions
 {
-    private const string DeliveryParamsLink = "http://bit.ly/k-params";
-    private const string ManagementParamsLink = "https://bit.ly/3rSMeDA";
-    private static string SeePart(bool managementApi) => $"See {(managementApi ? ManagementParamsLink : DeliveryParamsLink)} for more details on configuration.";
-
     /// <summary>
     /// Validates that CodeGeneratorOptions are initialized and performs some extra integrity validations.
     /// </summary>
     /// <param name="codeGeneratorOptions">CodeGeneratorOptions object to be validated</param>
     public static void Validate(this CodeGeneratorOptions codeGeneratorOptions)
     {
-        if (codeGeneratorOptions.ManagementApi)
+        var usedMappingsType = codeGeneratorOptions.GetUsedMappingsType();
+        if (usedMappingsType == UsedMappingsType.Delivery)
         {
-            codeGeneratorOptions.ManagementOptions.Validate();
+            codeGeneratorOptions.DeliveryOptionsValidate();
         }
         else
         {
-            codeGeneratorOptions.DeliveryOptions.Validate();
+            codeGeneratorOptions.ManagementOptionsValidate();
         }
     }
 
     /// <summary>
     /// Validates that ManagementOptions are initialized
     /// </summary>
-    /// <param name="managementOptions">ManagementOptions object to be validated</param>
+    /// <param name="codeGeneratorOptions">CodeGeneratorOptions object including ManagementOptions object to be validated</param>
     /// <exception cref="Exception"></exception>
-    private static void Validate(this ManagementOptions managementOptions)
+    private static void ManagementOptionsValidate(this CodeGeneratorOptions codeGeneratorOptions)
     {
-        var seePart = SeePart(true);
-        if (managementOptions?.ProjectId == null)
+        if (codeGeneratorOptions.ManagementOptions?.ProjectId == null)
         {
-            throw new Exception($"You have to provide the '{nameof(ManagementOptions.ProjectId)}' to generate type for Management SDK. {seePart}");
+            throw new Exception(ExceptionMessage(codeGeneratorOptions, nameof(ManagementOptions.ProjectId)));
         }
 
-        if (string.IsNullOrWhiteSpace(managementOptions.ApiKey))
+        if (string.IsNullOrWhiteSpace(codeGeneratorOptions.ManagementOptions.ApiKey))
         {
-            throw new Exception($"You have to provide the '{nameof(ManagementOptions.ApiKey)}' to generate type for Management SDK. {seePart}");
+            throw new Exception(ExceptionMessage(codeGeneratorOptions, nameof(ManagementOptions.ApiKey)));
         }
     }
 
     /// <summary>
     /// Validates that DeliveryOptions are initialized and performs some extra integrity validations.
     /// </summary>
-    /// <param name="deliveryOptions">DeliveryOptions object to be validated</param>
-    private static void Validate(this DeliveryOptions deliveryOptions)
+    /// <param name="codeGeneratorOptions">CodeGeneratorOptions object including DeliveryOptions object to be validated</param>
+    private static void DeliveryOptionsValidate(this CodeGeneratorOptions codeGeneratorOptions)
     {
-        if (deliveryOptions == null)
+        if (codeGeneratorOptions.DeliveryOptions == null)
         {
-            throw new Exception($"You have to provide at least the '{nameof(DeliveryOptions.ProjectId)}' argument. {SeePart(false)}");
+            throw new Exception(ExceptionMessage(codeGeneratorOptions, nameof(DeliveryOptions.ProjectId)));
         }
 
-        DeliveryOptionsValidator.Validate(deliveryOptions);
+        codeGeneratorOptions.DeliveryOptions.Validate();
+    }
+
+    private static string ExceptionMessage(CodeGeneratorOptions options, string argName)
+    {
+        var atLeastPrefix = options.DeliveryApi() ? " at least " : " ";
+        var sdkNameInfo = $"to generate type for {(options.ExtendedDeliveryModels() ? "Delivery" : "Management")} SDK";
+        var argInfo = options.DeliveryApi() ? "argument" : sdkNameInfo;
+        var seePart = SeePart();
+
+        return $"You have to provide{atLeastPrefix}the '{argName}' {argInfo}. {seePart}";
+
+        string SeePart()
+        {
+            var paramsLink = options.GetUsedMappingsType() switch
+            {
+                UsedMappingsType.Management => "https://bit.ly/3rSMeDA",
+                UsedMappingsType.Delivery => "http://bit.ly/k-params",
+                UsedMappingsType.ExtendedDelivery => "https://bit.ly/3rSMeDA",//todo provide proper link to docs
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            return $"See {paramsLink} for more details on configuration.";
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
 
 namespace Kontent.Ai.ModelGenerator.Options;
 
