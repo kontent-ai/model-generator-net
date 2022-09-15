@@ -75,7 +75,7 @@ public class ArgHelpersTests
         });
 
         Assert.Equal(ExpectedDeliveryMappings, result.Mappings);
-        Assert.Equal(UsedMappingsType.Delivery, result.UsedMappingsType);
+        Assert.Equal(DesiredModelsType.Delivery, result.DesiredModelsType);
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class ArgHelpersTests
         });
 
         Assert.Equal(ExpectedDeliveryMappings, result.Mappings);
-        Assert.Equal(UsedMappingsType.Delivery, result.UsedMappingsType);
+        Assert.Equal(DesiredModelsType.Delivery, result.DesiredModelsType);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class ArgHelpersTests
         });
 
         Assert.Equal(ExpectedManagementMappings, result.Mappings);
-        Assert.Equal(UsedMappingsType.Management, result.UsedMappingsType);
+        Assert.Equal(DesiredModelsType.Management, result.DesiredModelsType);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class ArgHelpersTests
         });
 
         Assert.Equal(ExpectedExtendedDeliveryMappings, result.Mappings);
-        Assert.Equal(UsedMappingsType.ExtendedDelivery, result.UsedMappingsType);
+        Assert.Equal(DesiredModelsType.ExtendedDelivery, result.DesiredModelsType);
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class ArgHelpersTests
         });
 
         Assert.Equal(ExpectedExtendedDeliveryMappings, result.Mappings);
-        Assert.Equal(UsedMappingsType.ExtendedDelivery, result.UsedMappingsType);
+        Assert.Equal(DesiredModelsType.ExtendedDelivery, result.DesiredModelsType);
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class ArgHelpersTests
         });
 
         Assert.Equal(ExpectedExtendedDeliveryMappings, result.Mappings);
-        Assert.Equal(UsedMappingsType.ExtendedDelivery, result.UsedMappingsType);
+        Assert.Equal(DesiredModelsType.ExtendedDelivery, result.DesiredModelsType);
     }
 
     [Fact]
@@ -267,7 +267,7 @@ public class ArgHelpersTests
     [Fact]
     public void GetProgramOptionsData_ManagementApi_ReturnsManagementProgramOptionsData()
     {
-        var result = ArgHelpers.GetUsedSdkInfo(UsedMappingsType.Management);
+        var result = ArgHelpers.GetUsedSdkInfo(DesiredModelsType.Management);
 
         Assert.Equal("management-sdk-net", result.Name);
         Assert.Equal(Assembly.GetAssembly(typeof(ManagementOptions)).GetName().Version.ToString(3), result.Version);
@@ -276,7 +276,7 @@ public class ArgHelpersTests
     [Fact]
     public void GetProgramOptionsData_DeliveryApi_ReturnsDeliveryProgramOptionsData()
     {
-        var result = ArgHelpers.GetUsedSdkInfo(UsedMappingsType.Delivery);
+        var result = ArgHelpers.GetUsedSdkInfo(DesiredModelsType.Delivery);
 
         Assert.Equal("delivery-sdk-net", result.Name);
         Assert.Equal(Assembly.GetAssembly(typeof(DeliveryOptions)).GetName().Version.ToString(3), result.Version);
@@ -285,7 +285,7 @@ public class ArgHelpersTests
     [Fact]
     public void GetProgramOptionsData_ExtendedDeliveryApi_ReturnsExtendedDeliveryProgramOptionsData()
     {
-        var result = ArgHelpers.GetUsedSdkInfo(UsedMappingsType.ExtendedDelivery);
+        var result = ArgHelpers.GetUsedSdkInfo(DesiredModelsType.ExtendedDelivery);
 
         Assert.Equal("delivery-sdk-net", result.Name);
         Assert.Equal(Assembly.GetAssembly(typeof(DeliveryOptions)).GetName().Version.ToString(3), result.Version);

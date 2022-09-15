@@ -7,13 +7,13 @@ namespace Kontent.Ai.ModelGenerator.Options;
 internal class UsedMappings
 {
     public IDictionary<string, string> Mappings { get; }
-    public UsedMappingsType UsedMappingsType { get; }
+    public DesiredModelsType DesiredModelsType { get; }
 
-    public UsedMappings(IDictionary<string, string> mappings, UsedMappingsType usedMappingsType)
+    public UsedMappings(IDictionary<string, string> mappings, DesiredModelsType desiredModelsType)
     {
         Mappings = ArgMappingsRegister.GeneralMappings
             .Union(mappings)
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-        UsedMappingsType = usedMappingsType;
+        DesiredModelsType = desiredModelsType;
     }
 }

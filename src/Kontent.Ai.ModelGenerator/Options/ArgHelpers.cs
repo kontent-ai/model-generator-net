@@ -26,17 +26,17 @@ internal static class ArgHelpers
 
             if (args[i] == managementDecidingArgs.ShorthandedArgName || args[i] == managementDecidingArgs.FullArgName)
             {
-                return new UsedMappings(ArgMappingsRegister.ManagementMappings, UsedMappingsType.Management);
+                return new UsedMappings(ArgMappingsRegister.ManagementMappings, DesiredModelsType.Management);
             }
 
             if (args[i] == extendedDeliverDecidingArgs.ShorthandedArgName || args[i] == extendedDeliverDecidingArgs.FullArgName ||
                 args[i] == extendedDeliverPreviewDecidingArgs.ShorthandedArgName || args[i] == extendedDeliverPreviewDecidingArgs.FullArgName)
             {
-                return new UsedMappings(ArgMappingsRegister.ExtendedDeliveryMappings, UsedMappingsType.ExtendedDelivery);
+                return new UsedMappings(ArgMappingsRegister.ExtendedDeliveryMappings, DesiredModelsType.ExtendedDelivery);
             }
         }
 
-        return new UsedMappings(ArgMappingsRegister.DeliveryMappings, UsedMappingsType.Delivery);
+        return new UsedMappings(ArgMappingsRegister.DeliveryMappings, DesiredModelsType.Delivery);
     }
 
     public static bool ContainsValidArgs(string[] args)
@@ -65,12 +65,12 @@ internal static class ArgHelpers
         return containsValidArgs;
     }
 
-    public static UsedSdkInfo GetUsedSdkInfo(UsedMappingsType usedMappingsType) => usedMappingsType switch
+    public static UsedSdkInfo GetUsedSdkInfo(DesiredModelsType desiredModelsType) => desiredModelsType switch
     {
-        UsedMappingsType.Delivery => DeliveryProgramOptionsData.UsedSdkInfo,
-        UsedMappingsType.Management => ManagementProgramOptionsData.UsedSdkInfo,
-        UsedMappingsType.ExtendedDelivery => ExtendedDeliveryProgramOptionsData.UsedSdkInfo,
-        _ => throw new ArgumentOutOfRangeException(nameof(usedMappingsType))
+        DesiredModelsType.Delivery => DeliveryProgramOptionsData.UsedSdkInfo,
+        DesiredModelsType.Management => ManagementProgramOptionsData.UsedSdkInfo,
+        DesiredModelsType.ExtendedDelivery => ExtendedDeliveryProgramOptionsData.UsedSdkInfo,
+        _ => throw new ArgumentOutOfRangeException(nameof(desiredModelsType))
     };
 
     private static bool IsOptionPropertyValid(ProgramOptionsData programOptionsData, string arg) =>

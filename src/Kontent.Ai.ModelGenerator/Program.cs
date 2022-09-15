@@ -82,7 +82,7 @@ internal class Program
 
     private static void PrintSdkVersion(UsedMappings usedMappings)
     {
-        var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(usedMappings.UsedMappingsType);
+        var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(usedMappings.DesiredModelsType);
         Console.WriteLine($"Models were generated for {usedSdkInfo.Name} version {usedSdkInfo.Version}");
     }
 }

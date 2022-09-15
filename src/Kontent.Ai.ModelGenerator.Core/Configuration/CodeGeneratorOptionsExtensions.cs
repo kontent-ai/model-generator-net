@@ -10,13 +10,13 @@ public static class CodeGeneratorOptionsExtensions
 
     public static bool DeliveryApi(this CodeGeneratorOptions options) => !options.ManagementApi() && !options.ExtendedDeliveryModels();
 
-    public static UsedMappingsType GetUsedMappingsType(this CodeGeneratorOptions options)
+    public static DesiredModelsType GetDesiredModelsType(this CodeGeneratorOptions options)
     {
         if (options.ManagementApi())
         {
-            return UsedMappingsType.Management;
+            return DesiredModelsType.Management;
         }
 
-        return options.ExtendedDeliveryModels() ? UsedMappingsType.ExtendedDelivery : UsedMappingsType.Delivery;
+        return options.ExtendedDeliveryModels() ? DesiredModelsType.ExtendedDelivery : DesiredModelsType.Delivery;
     }
 }

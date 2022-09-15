@@ -1,6 +1,6 @@
 ﻿namespace Kontent.Ai.ModelGenerator.Core.Configuration;
 
-public enum UsedMappingsType
+public enum DesiredModelsType
 {
     Delivery,
     Management,

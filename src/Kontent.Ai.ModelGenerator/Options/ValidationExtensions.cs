@@ -17,8 +17,8 @@ public static class ValidationExtensions
     /// <param name="codeGeneratorOptions">CodeGeneratorOptions object to be validated</param>
     public static void Validate(this CodeGeneratorOptions codeGeneratorOptions)
     {
-        var usedMappingsType = codeGeneratorOptions.GetUsedMappingsType();
-        if (usedMappingsType == UsedMappingsType.Delivery)
+        var desiredModelsType = codeGeneratorOptions.GetDesiredModelsType();
+        if (desiredModelsType == DesiredModelsType.Delivery)
         {
             codeGeneratorOptions.DeliveryOptionsValidate();
         }
@@ -71,11 +71,11 @@ public static class ValidationExtensions
 
         string SeePart()
         {
-            var paramsLink = options.GetUsedMappingsType() switch
+            var paramsLink = options.GetDesiredModelsType() switch
             {
-                UsedMappingsType.Management => "https://bit.ly/3rSMeDA",
-                UsedMappingsType.Delivery => "http://bit.ly/k-params",
-                UsedMappingsType.ExtendedDelivery => "https://bit.ly/3rSMeDA",//todo provide proper link to docs
+                DesiredModelsType.Management => "https://bit.ly/3rSMeDA",
+                DesiredModelsType.Delivery => "http://bit.ly/k-params",
+                DesiredModelsType.ExtendedDelivery => "https://bit.ly/3rSMeDA",//todo provide proper link to docs
                 _ => throw new ArgumentOutOfRangeException()
             };
 

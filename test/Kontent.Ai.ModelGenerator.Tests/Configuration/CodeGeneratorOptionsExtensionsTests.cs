@@ -183,7 +183,7 @@ public class CodeGeneratorOptionsExtensionsTests
     }
 
     [Fact]
-    public void GetUsedMappingsType_ManagementApi_ReturnsManagement()
+    public void GetDesiredModelsType_ManagementApi_ReturnsManagement()
     {
         var options = new CodeGeneratorOptions
         {
@@ -192,16 +192,16 @@ public class CodeGeneratorOptionsExtensionsTests
             ExtendedDeliverPreviewModels = false
         };
 
-        var result = options.GetUsedMappingsType();
+        var result = options.GetDesiredModelsType();
 
-        Assert.Equal(UsedMappingsType.Management, result);
+        Assert.Equal(DesiredModelsType.Management, result);
     }
 
     [Theory]
     [InlineData(true, true)]
     [InlineData(true, false)]
     [InlineData(false, true)]
-    public void GetUsedMappingsType_ExtendedDeliveryModels_ReturnsExtendedDelivery(bool extendedDeliverModels, bool extendedDeliverPreviewModels)
+    public void GetDesiredModelsType_ExtendedDeliveryModels_ReturnsExtendedDelivery(bool extendedDeliverModels, bool extendedDeliverPreviewModels)
     {
         var options = new CodeGeneratorOptions
         {
@@ -210,13 +210,13 @@ public class CodeGeneratorOptionsExtensionsTests
             ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
         };
 
-        var result = options.GetUsedMappingsType();
+        var result = options.GetDesiredModelsType();
 
-        Assert.Equal(UsedMappingsType.ExtendedDelivery, result);
+        Assert.Equal(DesiredModelsType.ExtendedDelivery, result);
     }
 
     [Fact]
-    public void GetUsedMappingsType_ManagementApiIsFalse_ExtendedDeliveryOptionsAreFalse_ReturnsDelivery()
+    public void GetDesiredModelsType_ManagementApiIsFalse_ExtendedDeliveryOptionsAreFalse_ReturnsDelivery()
     {
         var options = new CodeGeneratorOptions
         {
@@ -225,18 +225,18 @@ public class CodeGeneratorOptionsExtensionsTests
             ExtendedDeliverPreviewModels = false
         };
 
-        var result = options.GetUsedMappingsType();
+        var result = options.GetDesiredModelsType();
 
-        Assert.Equal(UsedMappingsType.Delivery, result);
+        Assert.Equal(DesiredModelsType.Delivery, result);
     }
 
     [Fact]
-    public void GetUsedMappingsType_DefaultOptions_ReturnsDelivery()
+    public void GetDesiredModelsType_DefaultOptions_ReturnsDelivery()
     {
         var options = new CodeGeneratorOptions();
 
-        var result = options.GetUsedMappingsType();
+        var result = options.GetDesiredModelsType();
 
-        Assert.Equal(UsedMappingsType.Delivery, result);
+        Assert.Equal(DesiredModelsType.Delivery, result);
     }
 }
