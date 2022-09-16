@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Microsoft.CodeAnalysis;
@@ -37,7 +38,16 @@ public abstract class ClassCodeGenerator : GeneralGenerator
 
     protected abstract UsingDirectiveSyntax[] GetApiUsings();
 
-    protected virtual ClassDeclarationSyntax GetClassDeclaration() => SyntaxFactory.ClassDeclaration(ClassDefinition.ClassName)
+    protected virtual MemberDeclarationSyntax[] Properties
+        => ClassDefinition.Properties.OrderBy(p => p.Identifier).Select(element => SyntaxFactory
+            .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
+            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+            .AddAccessorListAccessors(
+                GetAccessorDeclaration(SyntaxKind.GetAccessorDeclaration),
+                GetAccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+            )).ToArray<MemberDeclarationSyntax>();
+
+    protected virtual TypeDeclarationSyntax GetClassDeclaration() => SyntaxFactory.ClassDeclaration(ClassDefinition.ClassName)
         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
         .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
 
@@ -48,7 +58,7 @@ public abstract class ClassCodeGenerator : GeneralGenerator
     protected static AccessorDeclarationSyntax GetAccessorDeclaration(SyntaxKind kind) =>
         SyntaxFactory.AccessorDeclaration(kind).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
-    private CompilationUnitSyntax GetCompilationUnit(ClassDeclarationSyntax classDeclaration, UsingDirectiveSyntax[] usings)
+    private CompilationUnitSyntax GetCompilationUnit(TypeDeclarationSyntax classDeclaration, UsingDirectiveSyntax[] usings)
     {
         var compilationUnit = SyntaxFactory.CompilationUnit()
             .AddUsings(usings)

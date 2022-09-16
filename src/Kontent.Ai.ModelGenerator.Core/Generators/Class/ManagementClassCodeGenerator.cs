@@ -29,7 +29,7 @@ public class ManagementClassCodeGenerator : ClassCodeGenerator
             SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}"))
         };
 
-    protected override ClassDeclarationSyntax GetClassDeclaration()
+    protected override TypeDeclarationSyntax GetClassDeclaration()
     {
         var classDeclaration = base.GetClassDeclaration();
 
