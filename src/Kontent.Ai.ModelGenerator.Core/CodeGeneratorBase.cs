@@ -125,7 +125,7 @@ public abstract class CodeGeneratorBase
             return;
         }
 
-        var baseClassCodeGenerator = new BaseClassCodeGenerator(Options.BaseClass, Options.Namespace);
+        var baseClassCodeGenerator = new BaseClassCodeGenerator(Options);
 
         foreach (var codeGenerator in classCodeGenerators)
         {
