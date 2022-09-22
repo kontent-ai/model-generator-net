@@ -15,4 +15,9 @@ public class TypedExtendedDeliveryClassCodeGenerator : ClassCodeGenerator
     {
         throw new NotImplementedException();
     }
+
+    protected override TypeDeclarationSyntax GetClassDeclaration()
+    {
+        throw new NotImplementedException();
+    }
 }

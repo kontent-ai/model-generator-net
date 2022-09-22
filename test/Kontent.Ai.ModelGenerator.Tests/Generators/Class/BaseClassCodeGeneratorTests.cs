@@ -38,7 +38,7 @@ public class BaseClassCodeGeneratorTests
 
         var executingPath = AppContext.BaseDirectory;
         var expectedBaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
-        expectedBaseClassCode = expectedBaseClassCode.Replace(ClassCodeGenerator.DefaultNamespace, CodeGeneratorOptions.Namespace);
+        expectedBaseClassCode = expectedBaseClassCode.Replace(ClassCodeGenerator.DefaultNamespace, codeGenerationOptions.Namespace);
 
         var actualCompiledBaseClass = codeGenerator.GenerateBaseClassCode();
 
