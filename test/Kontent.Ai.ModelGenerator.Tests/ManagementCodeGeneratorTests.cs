@@ -47,36 +47,6 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     [Fact]
-    public void CreateCodeGeneratorOptions_NoOutputSetInJsonNorInParameters_OutputDirHasDefaultValue()
-    {
-        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
-        var options = new CodeGeneratorOptions
-        {
-            OutputDir = ""
-        };
-        mockOptions.Setup(x => x.Value).Returns(options);
-
-        var outputProvider = new FileSystemOutputProvider(mockOptions.Object);
-        Assert.Empty(options.OutputDir);
-        Assert.NotEmpty(outputProvider.OutputDir);
-    }
-
-    [Fact]
-    public void CreateCodeGeneratorOptions_OutputSetInParameters_OutputDirHasCustomValue()
-    {
-        var expectedOutputDir = Environment.CurrentDirectory;
-        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
-        var options = new CodeGeneratorOptions
-        {
-            OutputDir = ""
-        };
-        mockOptions.Setup(x => x.Value).Returns(options);
-
-        var outputProvider = new FileSystemOutputProvider(mockOptions.Object);
-        Assert.Equal(expectedOutputDir.TrimEnd(Path.DirectorySeparatorChar), outputProvider.OutputDir.TrimEnd(Path.DirectorySeparatorChar));
-    }
-
-    [Fact]
     public void GetClassCodeGenerator_Returns()
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
