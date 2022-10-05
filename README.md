@@ -132,7 +132,7 @@ public partial class Home
 ### Usage
 
 ```sh
-KontentModelGenerator.exe --projectid "<projectid>" --managementapi true --managementapikey "<managementapikey>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
+KontentModelGenerator.exe --projectid "<projectid>" --managementapi true --apikey "<managementapikey>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
 ```
 
 ### Management API parameters
