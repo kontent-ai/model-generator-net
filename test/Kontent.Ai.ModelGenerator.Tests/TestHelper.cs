@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using Kontent.Ai.Management.Models.Shared;
+using System.Linq;
+using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Newtonsoft.Json.Linq;
 
@@ -23,4 +27,14 @@ internal static class TestHelper
             guidelines = "guidelines"
 
         }).ToObject<ElementMetadataBase>();
+
+    public static LinkedItemsElementMetadataModel GenerateLinkedItemsElement(string elementId, string elementCodename, LimitModel limitModel, IEnumerable<Guid> allowedTypesIds)
+    {
+        var element = (LinkedItemsElementMetadataModel)GenerateElementMetadataBase(Guid.Parse(elementId), elementCodename, ElementMetadataType.LinkedItems);
+
+        element.AllowedTypes = allowedTypesIds.Select(Reference.ById);
+        element.ItemCountLimit = limitModel;
+
+        return element;
+    }
 }
