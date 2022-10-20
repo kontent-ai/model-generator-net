@@ -28,8 +28,13 @@ public static class ClassCodeGeneratorFactory
             return new PartialClassCodeGenerator(classDefinition, classFilename, options.Namespace);
         }
 
-        return options.ManagementApi
-            ? new ManagementClassCodeGenerator(classDefinition, classFilename, options.Namespace)
+        if (options.ManagementApi())
+        {
+            return new ManagementClassCodeGenerator(classDefinition, classFilename, options.Namespace);
+        }
+
+        return options.ExtendedDeliveryModels()
+            ? new ExtendedDeliveryClassCodeGenerator(classDefinition, classFilename, options.Namespace)
             : new DeliveryClassCodeGenerator(classDefinition, classFilename, options.Namespace);
     }
 }

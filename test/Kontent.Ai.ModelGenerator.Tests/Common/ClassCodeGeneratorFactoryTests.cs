@@ -62,6 +62,25 @@ public class ClassCodeGeneratorFactoryTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
+    public void CreateClassCodeGenerator_ExtendedDeliveryClassCodeGenerator_NoCustomPartialProperty_Returns(bool extendedDeliverPreviewModels)
+    {
+        var classDefinitionCodename = "codename";
+        var classFileName = "classFileName";
+        var codeGeneratorOptions = new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            ExtendedDeliverModels = true,
+            ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
+        };
+
+        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+
+        AssertClassCodeGenerator<ExtendedDeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
     public void CreateClassCodeGenerator_PartialClassCodeGenerator_Returns(bool managementApi)
     {
         var classDefinitionCodename = "codename";
@@ -108,6 +127,27 @@ public class ClassCodeGeneratorFactoryTests
         var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
 
         AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void CreateClassCodeGenerator_ExtendedDeliveryClassCodeGenerator_CustomNamespace_Returns(bool extendedDeliverPreviewModels)
+    {
+        var classDefinitionCodename = "codename";
+        var classFileName = "classFileName";
+        var customNamespace = "CustomNameSpace";
+        var codeGeneratorOptions = new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            Namespace = customNamespace,
+            ExtendedDeliverModels = true,
+            ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
+        };
+
+        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+
+        AssertClassCodeGenerator<ExtendedDeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
     }
 
     [Fact]
