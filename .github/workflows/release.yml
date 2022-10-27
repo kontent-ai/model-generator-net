@@ -31,7 +31,7 @@ jobs:
         shell: pwsh
         run: ./self-contained.ps1
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: "NuGet packages"
           path: ./artifacts
