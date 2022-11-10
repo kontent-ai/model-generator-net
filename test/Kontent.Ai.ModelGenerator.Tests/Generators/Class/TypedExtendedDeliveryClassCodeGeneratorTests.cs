@@ -2,6 +2,7 @@
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using System;
+using System.Collections;
 using System.IO;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
@@ -20,16 +21,20 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
     {
         // Linked items elements are limited to a single type with at least 1 item.
         var singleAllowedTypeMultiItemsTypeName = "Hero";
+        var singleAllowedTypeMultiItemsTypeCodename = "modular_content_heroes";
         var singleAllowedTypeMultiItems = (LinkedItemsElementMetadataModel)TestDataGenerator.
-            GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee5"), "modular_content_heroes", ElementMetadataType.LinkedItems);
+            GenerateElementMetadataBase(Guid.NewGuid(), singleAllowedTypeMultiItemsTypeCodename, ElementMetadataType.LinkedItems);
         singleAllowedTypeMultiItems.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeMultiItemsTypeName) });
         singleAllowedTypeMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
-        ClassDefinition.AddProperty(Property.FromContentTypeElement(singleAllowedTypeMultiItems, $"IEnumerable<{singleAllowedTypeMultiItemsTypeName}>"));
+        ClassDefinition.AddProperty(Property.FromContentTypeElement(
+            singleAllowedTypeMultiItems,
+            $"{nameof(IEnumerable)}<{singleAllowedTypeMultiItemsTypeName}>",
+            $"{singleAllowedTypeMultiItemsTypeCodename}_{singleAllowedTypeMultiItemsTypeName}"));
 
         // Linked items element limited to a single type with at most or exactly 1 item.
         var singleAllowedTypeExactlySingleItemTypeName = "Article";
         var singleAllowedTypeExactlySingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
-                GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee8"), "modular_content_article", ElementMetadataType.LinkedItems);
+                GenerateElementMetadataBase(Guid.NewGuid(), "modular_content_article", ElementMetadataType.LinkedItems);
         singleAllowedTypeExactlySingleItem.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeExactlySingleItemTypeName) });
         singleAllowedTypeExactlySingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
         ClassDefinition.AddProperty(Property.FromContentTypeElement(singleAllowedTypeExactlySingleItem, singleAllowedTypeExactlySingleItemTypeName));

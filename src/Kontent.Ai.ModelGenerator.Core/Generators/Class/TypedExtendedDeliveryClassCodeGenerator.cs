@@ -73,7 +73,7 @@ public class TypedExtendedDeliveryClassCodeGenerator : ClassCodeGenerator
                             SyntaxFactory.InvocationExpression(
                                 SyntaxFactory.MemberAccessExpression(
                                     SyntaxKind.SimpleMemberAccessExpression,
-                                    SyntaxFactory.IdentifierName(element.Identifier),
+                                    SyntaxFactory.IdentifierName(GetOriginalPropertyName(element.Identifier, typeName)),
                                     SyntaxFactory.GenericName(SyntaxFactory.Identifier(OfTypeName))
                                         .WithTypeArgumentList(SyntaxFactory.TypeArgumentList(
                                             SyntaxFactory.SingletonSeparatedList<TypeSyntax>(SyntaxFactory.IdentifierName(typeName))))))))
@@ -84,4 +84,14 @@ public class TypedExtendedDeliveryClassCodeGenerator : ClassCodeGenerator
     }
 
     private static string GetNonEnumerableTypeName(string typeName) => Regex.Match(typeName, "[^\\>|\\<]\\w+\\b(?<!\\bIEnumerable)").Value;
+
+    private static string GetOriginalPropertyName(string propertyName, string typeName)
+    {
+        if (propertyName == typeName)
+        {
+            return typeName;
+        }
+
+        return propertyName.Substring(0, propertyName.Length - typeName.Length);
+    }
 }
