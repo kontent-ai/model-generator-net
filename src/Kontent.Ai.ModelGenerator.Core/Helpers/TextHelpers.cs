@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Kontent.Ai.ModelGenerator.Core.Common;
@@ -51,5 +52,15 @@ public static class TextHelpers
 //
 {customComment}
 // </auto-generated>{Environment.NewLine}{Environment.NewLine}";
+    }
+
+    public static string GetEnumerableType(string typeName)
+    {
+        if (string.IsNullOrWhiteSpace(typeName))
+        {
+            throw new ArgumentException("", nameof(typeName));
+        }
+
+        return $"{nameof(IEnumerable)}<{typeName}>";
     }
 }

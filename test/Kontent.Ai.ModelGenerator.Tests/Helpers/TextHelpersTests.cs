@@ -62,6 +62,24 @@ public class TextHelpersTests
         var result = TextHelpers.GenerateCommentString(customComment);
 
         Assert.Equal(expectedComment, result);
+    }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void GetEnumerableType_TypeNameIsNullOrWhitespace_Throws(string typeName)
+    {
+        Assert.Throws<ArgumentException>(() => TextHelpers.GetEnumerableType(typeName));
+    }
+
+    [Fact]
+    public void GetEnumerableType_Returns()
+    {
+        var typeName = "Hero";
+
+        var result = TextHelpers.GetEnumerableType(typeName);
+
+        Assert.Equal("IEnumerable<Hero>", result);
     }
 }

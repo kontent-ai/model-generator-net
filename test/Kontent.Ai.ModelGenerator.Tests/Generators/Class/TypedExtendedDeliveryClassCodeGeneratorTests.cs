@@ -2,7 +2,6 @@
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using System;
-using System.Collections;
 using System.IO;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
@@ -11,6 +10,7 @@ using Xunit;
 using Kontent.Ai.Management.Models.Shared;
 using System.Collections.Generic;
 using Kontent.Ai.Management.Models.Types;
+using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Kontent.Ai.ModelGenerator.Tests.TestHelpers;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Generators.Class;
@@ -28,7 +28,7 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
         singleAllowedTypeMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
             singleAllowedTypeMultiItems,
-            $"{nameof(IEnumerable)}<{singleAllowedTypeMultiItemsTypeName}>",
+            TextHelpers.GetEnumerableType(singleAllowedTypeMultiItemsTypeName),
             $"{singleAllowedTypeMultiItemsTypeCodename}_{singleAllowedTypeMultiItemsTypeName}"));
 
         // Linked items element limited to a single type with at most or exactly 1 item.

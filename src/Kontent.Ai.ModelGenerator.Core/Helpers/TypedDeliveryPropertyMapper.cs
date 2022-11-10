@@ -40,7 +40,7 @@ public static class TypedDeliveryPropertyMapper
         if (linkedItemsElement.ItemCountLimit is { Condition: LimitType.Exactly, Value: 1 })
         {
             var singleAllowedContentTypeCodename = options.ExtendedDeliverPreviewModels
-                ? GetEnumerablePropertyTypeName(ContentItemClassCodeGenerator.DefaultContentItemClassName)
+                ? TextHelpers.GetEnumerableType(ContentItemClassCodeGenerator.DefaultContentItemClassName)
                 : allowedContentTypeCodename;
 
             typedProperty = Property.FromContentTypeElement(el, singleAllowedContentTypeCodename);
@@ -90,12 +90,10 @@ public static class TypedDeliveryPropertyMapper
         return allowedType;
     }
 
-    private static string GetEnumerablePropertyTypeName(string typeName) => $"{nameof(IEnumerable)}<{typeName}>";
-
     private static string GetCompoundPropertyName(string codename, string typeName) => $"{codename}_{typeName}";
 
     private static Property CreateProperty(ElementMetadataBase element, string elementType, string propertyName) => Property.FromContentTypeElement(
         element,
-        GetEnumerablePropertyTypeName(elementType),
+        TextHelpers.GetEnumerableType(elementType),
         GetCompoundPropertyName(TextHelpers.GetValidPascalCaseIdentifierName(element.Codename), propertyName));
 }

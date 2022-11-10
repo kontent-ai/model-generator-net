@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Kontent.Ai.Delivery.Abstractions;
@@ -30,11 +29,11 @@ public class Property
         { "rich_text", "string" },
         { "rich_text" + StructuredSuffix, nameof(IRichTextContent)},
         { "number", "decimal?" },
-        { "multiple_choice", $"{nameof(IEnumerable)}<{nameof(IMultipleChoiceOption)}>"},
+        { "multiple_choice", TextHelpers.GetEnumerableType(nameof(IMultipleChoiceOption))},
         { "date_time", "DateTime?" },
-        { "asset", $"{nameof(IEnumerable)}<{nameof(IAsset)}>" },
-        { "modular_content", $"{nameof(IEnumerable)}<{nameof(Object).ToLower(CultureInfo.InvariantCulture)}>" },
-        { "taxonomy", $"{nameof(IEnumerable)}<{nameof(ITaxonomyTerm)}>" },
+        { "asset", TextHelpers.GetEnumerableType(nameof(IAsset)) },
+        { "modular_content", TextHelpers.GetEnumerableType(nameof(Object).ToLower(CultureInfo.InvariantCulture)) },
+        { "taxonomy", TextHelpers.GetEnumerableType(nameof(ITaxonomyTerm)) },
         { "url_slug", "string" },
         { "custom", "string" }
     };
@@ -45,11 +44,11 @@ public class Property
         { ElementMetadataType.RichText.ToString(), "string" },
         { ElementMetadataType.RichText + StructuredSuffix, nameof(IRichTextContent)},
         { ElementMetadataType.Number.ToString(), "decimal?" },
-        { ElementMetadataType.MultipleChoice.ToString(), $"{nameof(IEnumerable)}<{nameof(IMultipleChoiceOption)}>"},
+        { ElementMetadataType.MultipleChoice.ToString(), TextHelpers.GetEnumerableType(nameof(IMultipleChoiceOption))},
         { ElementMetadataType.DateTime.ToString(), "DateTime?" },
-        { ElementMetadataType.Asset.ToString(), $"{nameof(IEnumerable)}<{nameof(IAsset)}>" },
+        { ElementMetadataType.Asset.ToString(), TextHelpers.GetEnumerableType(nameof(IAsset)) },
         { ElementMetadataType.LinkedItems.ToString(), null },
-        { ElementMetadataType.Taxonomy.ToString(), $"{nameof(IEnumerable)}<{nameof(ITaxonomyTerm)}>" },
+        { ElementMetadataType.Taxonomy.ToString(), TextHelpers.GetEnumerableType(nameof(ITaxonomyTerm)) },
         { ElementMetadataType.UrlSlug.ToString(), "string" },
         { ElementMetadataType.Custom.ToString(), "string" }
     };
