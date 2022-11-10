@@ -13,7 +13,11 @@ namespace Kontent.Ai.ModelGenerator.Core.Helpers;
 
 public static class TypedDeliveryPropertyMapper
 {
-    public static ICollection<Property> Map(ElementMetadataBase el, List<ContentTypeModel> contentTypes, CodeGeneratorOptions options)
+    public static bool TryMap(
+        ElementMetadataBase el,
+        List<ContentTypeModel> contentTypes,
+        CodeGeneratorOptions options,
+        out Property typedProperty)
     {
         Validate(contentTypes, options);
 
@@ -26,7 +30,8 @@ public static class TypedDeliveryPropertyMapper
         if (!linkedItemsElement.AllowedTypes.Any() ||
             linkedItemsElement.AllowedTypes.Count() > 1)
         {
-            return new List<Property>();
+            typedProperty = null;
+            return false;
         }
 
         var allowedContentType = GetAllowedContentType(linkedItemsElement.AllowedTypes.First().Id.Value, contentTypes);
@@ -38,14 +43,16 @@ public static class TypedDeliveryPropertyMapper
                 ? GetEnumerablePropertyTypeName(ContentItemClassCodeGenerator.DefaultContentItemClassName)
                 : allowedContentTypeCodename;
 
-            return CreateEnumerableProperties(el, singleAllowedContentTypeCodename);
+            typedProperty = Property.FromContentTypeElement(el, singleAllowedContentTypeCodename);
+            return true;
         }
 
         var multipleAllowedContentTypeCodename = options.ExtendedDeliverPreviewModels
             ? ContentItemClassCodeGenerator.DefaultContentItemClassName
             : allowedContentTypeCodename;
 
-        return CreateEnumerableProperties(el, multipleAllowedContentTypeCodename, allowedContentTypeCodename);
+        typedProperty = CreateProperty(el, multipleAllowedContentTypeCodename, allowedContentTypeCodename);
+        return true;
     }
 
     private static void Validate(List<ContentTypeModel> contentTypes, CodeGeneratorOptions options)
@@ -87,18 +94,8 @@ public static class TypedDeliveryPropertyMapper
 
     private static string GetCompoundPropertyName(string codename, string typeName) => $"{codename}_{typeName}";
 
-    private static List<Property> GetPropertyAsList(Property property) => new List<Property> { property };
-
-    private static List<Property> CreateEnumerableProperties(ElementMetadataBase element, string elementType, string propertyName) => new List<Property>
-    {
-        Property.FromContentTypeElement(
-            element,
-            GetEnumerablePropertyTypeName(elementType),
-            GetCompoundPropertyName(TextHelpers.GetValidPascalCaseIdentifierName(element.Codename), propertyName))
-    };
-
-    private static List<Property> CreateEnumerableProperties(ElementMetadataBase element, string elementType) => new List<Property>
-    {
-        Property.FromContentTypeElement(element, elementType)
-    };
+    private static Property CreateProperty(ElementMetadataBase element, string elementType, string propertyName) => Property.FromContentTypeElement(
+        element,
+        GetEnumerablePropertyTypeName(elementType),
+        GetCompoundPropertyName(TextHelpers.GetValidPascalCaseIdentifierName(element.Codename), propertyName));
 }

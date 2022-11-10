@@ -26,7 +26,7 @@ public class TypedDeliveryPropertyMapperTests
     };
 
     [Fact]
-    public void Map_LinkedItemsElementIsNull_Throws()
+    public void TryMap_LinkedItemsElementIsNull_Throws()
     {
         var contentTypes = new List<ContentTypeModel>
         {
@@ -38,11 +38,11 @@ public class TypedDeliveryPropertyMapperTests
             ExtendedDeliverModels = true
         };
 
-        Assert.Throws<ArgumentNullException>(() => TypedDeliveryPropertyMapper.Map(null, contentTypes, options));
+        Assert.Throws<ArgumentNullException>(() => TypedDeliveryPropertyMapper.TryMap(null, contentTypes, options, out _));
     }
 
     [Fact]
-    public void Map_NotLinkedItemsElement_Throws()
+    public void TryMap_NotLinkedItemsElement_Throws()
     {
         var contentTypes = new List<ContentTypeModel>
         {
@@ -55,11 +55,11 @@ public class TypedDeliveryPropertyMapperTests
             ExtendedDeliverModels = true
         };
 
-        Assert.Throws<ArgumentNullException>(() => TypedDeliveryPropertyMapper.Map(element, contentTypes, options));
+        Assert.Throws<ArgumentNullException>(() => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, options, out _));
     }
 
     [Fact]
-    public void Map_ContentTypesIsNull_Throws()
+    public void TryMap_ContentTypesIsNull_Throws()
     {
         var element = new LinkedItemsElementMetadataModel();
         var options = new CodeGeneratorOptions
@@ -68,11 +68,11 @@ public class TypedDeliveryPropertyMapperTests
             ExtendedDeliverModels = true
         };
 
-        Assert.Throws<ArgumentNullException>(() => TypedDeliveryPropertyMapper.Map(element, null, options));
+        Assert.Throws<ArgumentNullException>(() => TypedDeliveryPropertyMapper.TryMap(element, null, options, out _));
     }
 
     [Fact]
-    public void Map_ContentTypesIsEmpty_Throws()
+    public void TryMap_ContentTypesIsEmpty_Throws()
     {
         var contentTypes = new List<ContentTypeModel>();
         var element = new LinkedItemsElementMetadataModel();
@@ -82,11 +82,11 @@ public class TypedDeliveryPropertyMapperTests
             ExtendedDeliverModels = true
         };
 
-        Assert.Throws<ArgumentException>(() => TypedDeliveryPropertyMapper.Map(element, contentTypes, options));
+        Assert.Throws<ArgumentException>(() => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, options, out _));
     }
 
     [Fact]
-    public void Map_OptionsIsNull_Throws()
+    public void TryMap_OptionsIsNull_Throws()
     {
         var contentTypes = new List<ContentTypeModel>
         {
@@ -94,11 +94,11 @@ public class TypedDeliveryPropertyMapperTests
         };
         var element = new LinkedItemsElementMetadataModel();
 
-        Assert.Throws<ArgumentNullException>(() => TypedDeliveryPropertyMapper.Map(element, contentTypes, null));
+        Assert.Throws<ArgumentNullException>(() => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, null, out _));
     }
 
     [Fact]
-    public void Map_GeneralExtendedDeliveryModelsIsFalse_Throws()
+    public void TryMap_GeneralExtendedDeliveryModelsIsFalse_Throws()
     {
         var contentTypes = new List<ContentTypeModel>
         {
@@ -111,13 +111,13 @@ public class TypedDeliveryPropertyMapperTests
             ExtendedDeliverModels = false
         };
 
-        Assert.Throws<ArgumentException>(() => TypedDeliveryPropertyMapper.Map(element, contentTypes, options));
+        Assert.Throws<ArgumentException>(() => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, options, out _));
     }
 
     #region Live models
 
     [Fact]
-    public void Map_Live_CouldNotFindAllowedType_Throws()
+    public void TryMap_Live_CouldNotFindAllowedType_Throws()
     {
         var limitModel = new LimitModel
         {
@@ -154,11 +154,12 @@ public class TypedDeliveryPropertyMapperTests
             limitModel,
             linkedContentTypeModels.Select(ct => ct.Id));
 
-        Assert.Throws<ArgumentException>(() => TypedDeliveryPropertyMapper.Map(element, allContentTypes, ExtendedDeliverModelsOptions));
+        Assert.Throws<ArgumentException>(() =>
+            TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out _));
     }
 
     [Fact]
-    public void Map_Live_SingleAllowedTypeMultiItems_Returns()
+    public void TryMap_Live_SingleAllowedTypeMultiItems_Returns()
     {
         var limitModel = new LimitModel
         {
@@ -195,17 +196,18 @@ public class TypedDeliveryPropertyMapperTests
             limitModel,
             linkedContentTypeModels.Select(ct => ct.Id));
 
-        var result = TypedDeliveryPropertyMapper.Map(element, allContentTypes, ExtendedDeliverModelsOptions);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
-        Assert.Single(result);
-        Assert.Equal("Articles_Article", result.First().Codename);
-        Assert.Null(result.First().Id);
-        Assert.Equal("ArticlesArticle", result.First().Identifier);
-        Assert.Equal("IEnumerable<Article>", result.First().TypeName);
+        Assert.True(result);
+        Assert.NotNull(typedProperty);
+        Assert.Equal("Articles_Article", typedProperty.Codename);
+        Assert.Null(typedProperty.Id);
+        Assert.Equal("ArticlesArticle", typedProperty.Identifier);
+        Assert.Equal("IEnumerable<Article>", typedProperty.TypeName);
     }
 
     [Fact]
-    public void Map_Live_SingleAllowedTypeExactlySingleItem_Returns()
+    public void TryMap_Live_SingleAllowedTypeExactlySingleItem_Returns()
     {
         var limitModel = new LimitModel
         {
@@ -242,17 +244,17 @@ public class TypedDeliveryPropertyMapperTests
             limitModel,
             linkedContentTypeModels.Select(ct => ct.Id));
 
-        var result = TypedDeliveryPropertyMapper.Map(element, allContentTypes, ExtendedDeliverModelsOptions);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
-        Assert.Single(result);
-        Assert.Equal("article", result.First().Codename);
-        Assert.Null(result.First().Id);
-        Assert.Equal("Article", result.First().Identifier);
-        Assert.Equal("Article", result.First().TypeName);
+        Assert.True(result);
+        Assert.Equal("article", typedProperty.Codename);
+        Assert.Null(typedProperty.Id);
+        Assert.Equal("Article", typedProperty.Identifier);
+        Assert.Equal("Article", typedProperty.TypeName);
     }
 
     [Fact]
-    public void Map_Live_MultiAllowedTypesSingleItem_Returns()
+    public void TryMap_Live_MultiAllowedTypesSingleItem_Returns()
     {
         var limitModel = new LimitModel
         {
@@ -294,13 +296,14 @@ public class TypedDeliveryPropertyMapperTests
             limitModel,
             linkedContentTypeModels.Select(ct => ct.Id));
 
-        var result = TypedDeliveryPropertyMapper.Map(element, allContentTypes, ExtendedDeliverModelsOptions);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
-        Assert.Empty(result);
+        Assert.False(result);
+        Assert.Null(typedProperty);
     }
 
     [Fact]
-    public void Map_Live_MultiAllowedTypesMultiItems_Returns()
+    public void TryMap_Live_MultiAllowedTypesMultiItems_Returns()
     {
         var limitModel = new LimitModel
         {
@@ -342,9 +345,10 @@ public class TypedDeliveryPropertyMapperTests
             limitModel,
             linkedContentTypeModels.Select(ct => ct.Id));
 
-        var result = TypedDeliveryPropertyMapper.Map(element, allContentTypes, ExtendedDeliverModelsOptions);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
-        Assert.Empty(result);
+        Assert.False(result);
+        Assert.Null(typedProperty);
     }
 
     #endregion
@@ -352,7 +356,7 @@ public class TypedDeliveryPropertyMapperTests
     #region Preview models
 
     [Fact]
-    public void Map_Preview_CouldNotFindAllowedType_Throws()
+    public void TryMap_Preview_CouldNotFindAllowedType_Throws()
     {
         var limitModel = new LimitModel
         {
@@ -389,11 +393,12 @@ public class TypedDeliveryPropertyMapperTests
             limitModel,
             linkedContentTypeModels.Select(ct => ct.Id));
 
-        Assert.Throws<ArgumentException>(() => TypedDeliveryPropertyMapper.Map(element, allContentTypes, ExtendedDeliverPreviewModelsOptions));
+        Assert.Throws<ArgumentException>(() =>
+            TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out _));
     }
 
     [Fact]
-    public void Map_Preview_SingleAllowedTypeMultiItems_Returns()
+    public void TryMap_Preview_SingleAllowedTypeMultiItems_Returns()
     {
         var limitModel = new LimitModel
         {
@@ -430,17 +435,17 @@ public class TypedDeliveryPropertyMapperTests
             limitModel,
             linkedContentTypeModels.Select(ct => ct.Id));
 
-        var result = TypedDeliveryPropertyMapper.Map(element, allContentTypes, ExtendedDeliverPreviewModelsOptions);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
 
-        Assert.Single(result);
-        Assert.Equal("Articles_Article", result.First().Codename);
-        Assert.Null(result.First().Id);
-        Assert.Equal("ArticlesArticle", result.First().Identifier);
-        Assert.Equal($"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>", result.First().TypeName);
+        Assert.True(result);
+        Assert.Equal("Articles_Article", typedProperty.Codename);
+        Assert.Null(typedProperty.Id);
+        Assert.Equal("ArticlesArticle", typedProperty.Identifier);
+        Assert.Equal($"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>", typedProperty.TypeName);
     }
 
     [Fact]
-    public void Map_Preview_SingleAllowedTypeExactlySingleItem_Returns()
+    public void TryMap_Preview_SingleAllowedTypeExactlySingleItem_Returns()
     {
         var limitModel = new LimitModel
         {
@@ -477,17 +482,17 @@ public class TypedDeliveryPropertyMapperTests
             limitModel,
             linkedContentTypeModels.Select(ct => ct.Id));
 
-        var result = TypedDeliveryPropertyMapper.Map(element, allContentTypes, ExtendedDeliverPreviewModelsOptions);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
 
-        Assert.Single(result);
-        Assert.Equal("article", result.First().Codename);
-        Assert.Null(result.First().Id);
-        Assert.Equal("Article", result.First().Identifier);
-        Assert.Equal("IEnumerable<IContentItem>", result.First().TypeName);
+        Assert.True(result);
+        Assert.Equal("article", typedProperty.Codename);
+        Assert.Null(typedProperty.Id);
+        Assert.Equal("Article", typedProperty.Identifier);
+        Assert.Equal("IEnumerable<IContentItem>", typedProperty.TypeName);
     }
 
     [Fact]
-    public void Map_Preview_MultiAllowedTypesSingleItem_Returns()
+    public void TryMap_Preview_MultiAllowedTypesSingleItem_Returns()
     {
         var limitModel = new LimitModel
         {
@@ -529,13 +534,14 @@ public class TypedDeliveryPropertyMapperTests
             limitModel,
             linkedContentTypeModels.Select(ct => ct.Id));
 
-        var result = TypedDeliveryPropertyMapper.Map(element, allContentTypes, ExtendedDeliverPreviewModelsOptions);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
 
-        Assert.Empty(result);
+        Assert.False(result);
+        Assert.Null(typedProperty);
     }
 
     [Fact]
-    public void Map_Preview_MultiAllowedTypesMultiItems_Returns()
+    public void TryMap_Preview_MultiAllowedTypesMultiItems_Returns()
     {
         var limitModel = new LimitModel
         {
@@ -577,9 +583,10 @@ public class TypedDeliveryPropertyMapperTests
             limitModel,
             linkedContentTypeModels.Select(ct => ct.Id));
 
-        var result = TypedDeliveryPropertyMapper.Map(element, allContentTypes, ExtendedDeliverPreviewModelsOptions);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
 
-        Assert.Empty(result);
+        Assert.False(result);
+        Assert.Null(typedProperty);
     }
 
     #endregion
