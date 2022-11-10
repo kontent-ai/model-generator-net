@@ -6,9 +6,9 @@ using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Newtonsoft.Json.Linq;
 
-namespace Kontent.Ai.ModelGenerator.Tests;
+namespace Kontent.Ai.ModelGenerator.Tests.TestHelpers;
 
-internal static class TestHelper
+internal static class TestDataGenerator
 {
     public static ElementMetadataBase GenerateElementMetadataBase(Guid elementId, string elementCodename, ElementMetadataType type = ElementMetadataType.Text) =>
         JObject.FromObject(new

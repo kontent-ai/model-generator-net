@@ -7,6 +7,7 @@ using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Xunit;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
+using Kontent.Ai.ModelGenerator.Tests.TestHelpers;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Helpers;
 
@@ -147,7 +148,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         };
 
-        var element = TestHelper.GenerateLinkedItemsElement(
+        var element = TestDataGenerator.GenerateLinkedItemsElement(
             Guid.NewGuid().ToString(),
             "articles",
             limitModel,
@@ -188,7 +189,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var element = TestHelper.GenerateLinkedItemsElement(
+        var element = TestDataGenerator.GenerateLinkedItemsElement(
             Guid.NewGuid().ToString(),
             "articles",
             limitModel,
@@ -235,7 +236,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var element = TestHelper.GenerateLinkedItemsElement(
+        var element = TestDataGenerator.GenerateLinkedItemsElement(
             Guid.NewGuid().ToString(),
             "article",
             limitModel,
@@ -287,7 +288,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var element = TestHelper.GenerateLinkedItemsElement(
+        var element = TestDataGenerator.GenerateLinkedItemsElement(
             Guid.NewGuid().ToString(),
             "article",
             limitModel,
@@ -335,7 +336,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var element = TestHelper.GenerateLinkedItemsElement(
+        var element = TestDataGenerator.GenerateLinkedItemsElement(
             Guid.NewGuid().ToString(),
             "articles",
             limitModel,
@@ -382,7 +383,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         };
 
-        var element = TestHelper.GenerateLinkedItemsElement(
+        var element = TestDataGenerator.GenerateLinkedItemsElement(
             Guid.NewGuid().ToString(),
             "articles",
             limitModel,
@@ -423,7 +424,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var element = TestHelper.GenerateLinkedItemsElement(
+        var element = TestDataGenerator.GenerateLinkedItemsElement(
             Guid.NewGuid().ToString(),
             "articles",
             limitModel,
@@ -470,7 +471,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var element = TestHelper.GenerateLinkedItemsElement(
+        var element = TestDataGenerator.GenerateLinkedItemsElement(
             Guid.NewGuid().ToString(),
             "article",
             limitModel,
@@ -522,7 +523,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var element = TestHelper.GenerateLinkedItemsElement(
+        var element = TestDataGenerator.GenerateLinkedItemsElement(
             Guid.NewGuid().ToString(),
             "article",
             limitModel,
@@ -570,7 +571,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var element = TestHelper.GenerateLinkedItemsElement(
+        var element = TestDataGenerator.GenerateLinkedItemsElement(
             Guid.NewGuid().ToString(),
             "articles",
             limitModel,

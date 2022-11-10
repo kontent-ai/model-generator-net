@@ -4,6 +4,7 @@ using System.Linq;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.Management.Models.TypeSnippets;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
+using Kontent.Ai.ModelGenerator.Tests.TestHelpers;
 using Xunit;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Helpers;
@@ -38,7 +39,7 @@ public class ManagementElementHelperTests
             }
         };
 
-        var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), contentTypeElementCodename, ElementMetadataType.ContentTypeSnippet);
+        var snippetElement = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), contentTypeElementCodename, ElementMetadataType.ContentTypeSnippet);
 
         var result = ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, snippets);
 
@@ -51,7 +52,7 @@ public class ManagementElementHelperTests
     {
         var contentTypeElementCodename = "codename";
 
-        var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), contentTypeElementCodename, ElementMetadataType.ContentTypeSnippet);
+        var snippetElement = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), contentTypeElementCodename, ElementMetadataType.ContentTypeSnippet);
 
         Assert.Throws<ArgumentException>(() => ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, new List<ContentTypeSnippetModel>()));
     }
@@ -62,7 +63,7 @@ public class ManagementElementHelperTests
         var contentTypeElementCodename = "codename";
         var snippetCodename = "other_snippet_codename";
 
-        var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), contentTypeElementCodename, ElementMetadataType.ContentTypeSnippet);
+        var snippetElement = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), contentTypeElementCodename, ElementMetadataType.ContentTypeSnippet);
 
         var snippets = new List<ContentTypeSnippetModel>
         {
@@ -71,8 +72,8 @@ public class ManagementElementHelperTests
                 Codename = snippetCodename,
                 Elements = new List<ElementMetadataBase>
                 {
-                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), $"{snippetCodename}el"),
-                    TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), $"{snippetCodename}el2", ElementMetadataType.Number)
+                    TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), $"{snippetCodename}el"),
+                    TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), $"{snippetCodename}el2", ElementMetadataType.Number)
                 }
             }
         };
@@ -85,7 +86,7 @@ public class ManagementElementHelperTests
     {
         var snippetCodename = "codename";
 
-        var element = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename);
+        var element = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename);
 
         var result = ManagementElementHelper.GetManagementContentTypeSnippetElements(element, new List<ContentTypeSnippetModel>());
 
@@ -99,7 +100,7 @@ public class ManagementElementHelperTests
         var expectedElement2Id = Guid.NewGuid();
         var snippetCodename = "snippet_codename";
 
-        var snippetElement = TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.ContentTypeSnippet);
+        var snippetElement = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.ContentTypeSnippet);
 
         var snippets = new List<ContentTypeSnippetModel>
         {
@@ -108,8 +109,8 @@ public class ManagementElementHelperTests
                 Codename = snippetCodename,
                 Elements = new List<ElementMetadataBase>
                 {
-                    TestHelper.GenerateElementMetadataBase(expectedElementId, $"{snippetCodename}_el"),
-                    TestHelper.GenerateElementMetadataBase(expectedElement2Id, $"{snippetCodename}_el2", ElementMetadataType.Number)
+                    TestDataGenerator.GenerateElementMetadataBase(expectedElementId, $"{snippetCodename}_el"),
+                    TestDataGenerator.GenerateElementMetadataBase(expectedElement2Id, $"{snippetCodename}_el2", ElementMetadataType.Number)
                 }
             }
         };

@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using Xunit;
 using Kontent.Ai.Management.Models.Types;
+using Kontent.Ai.ModelGenerator.Tests.TestHelpers;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Generators.Class;
 
@@ -18,32 +19,32 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
     public ExtendedDeliveryClassCodeGeneratorTests()
     {
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
-            TestHelper.GenerateElementMetadataBase(Guid.Parse("6712e528-8504-4a36-b716-a28327d6205f"), "text"),
+            TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("6712e528-8504-4a36-b716-a28327d6205f"), "text"),
             ElementMetadataType.Text.ToString()));
 
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
-            TestHelper.GenerateElementMetadataBase(Guid.Parse("014d2125-923d-4428-93b4-ad1590274912"), "rich_text", ElementMetadataType.RichText),
+            TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("014d2125-923d-4428-93b4-ad1590274912"), "rich_text", ElementMetadataType.RichText),
             ElementMetadataType.RichText.ToString()));
 
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
-            TestHelper.GenerateElementMetadataBase(Guid.Parse("9d23ff46-117c-432c-8fb2-3273acfbbbf5"), "number", ElementMetadataType.Number),
+            TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("9d23ff46-117c-432c-8fb2-3273acfbbbf5"), "number", ElementMetadataType.Number),
             ElementMetadataType.Number.ToString()));
 
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
-            TestHelper.GenerateElementMetadataBase(Guid.Parse("2115b9ad-5df5-45b8-aa0f-490b5119afa6"), "multiple_choice", ElementMetadataType.MultipleChoice),
+            TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("2115b9ad-5df5-45b8-aa0f-490b5119afa6"), "multiple_choice", ElementMetadataType.MultipleChoice),
             ElementMetadataType.MultipleChoice.ToString()));
 
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
-            TestHelper.GenerateElementMetadataBase(Guid.Parse("66756a72-6af8-44a4-b58c-485425586a90"), "date_time", ElementMetadataType.DateTime),
+            TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("66756a72-6af8-44a4-b58c-485425586a90"), "date_time", ElementMetadataType.DateTime),
             ElementMetadataType.DateTime.ToString()));
 
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
-            TestHelper.GenerateElementMetadataBase(Guid.Parse("af569649-ee18-4d6a-a095-ea6ffa012546"), "asset", ElementMetadataType.Asset),
+            TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("af569649-ee18-4d6a-a095-ea6ffa012546"), "asset", ElementMetadataType.Asset),
             ElementMetadataType.Asset.ToString()));
 
         // Linked items elements are limited to a single type with at least 1 item.
         var singleAllowedTypeMultiItemsTypeName = "Hero";
-        var singleAllowedTypeMultiItems = (LinkedItemsElementMetadataModel)TestHelper.
+        var singleAllowedTypeMultiItems = (LinkedItemsElementMetadataModel)TestDataGenerator.
             GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee5"), "modular_content_heroes", ElementMetadataType.LinkedItems);
         singleAllowedTypeMultiItems.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeMultiItemsTypeName) });
         singleAllowedTypeMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
@@ -51,14 +52,14 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
 
         // Linked items element limited to a single type with at most or exactly 1 item.
         var singleAllowedTypeExactlySingleItemTypeName = "Article";
-        var singleAllowedTypeExactlySingleItem = (LinkedItemsElementMetadataModel)TestHelper.
+        var singleAllowedTypeExactlySingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
                 GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee8"), "modular_content_article", ElementMetadataType.LinkedItems);
         singleAllowedTypeExactlySingleItem.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeExactlySingleItemTypeName) });
         singleAllowedTypeExactlySingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
         ClassDefinition.AddProperty(Property.FromContentTypeElement(singleAllowedTypeExactlySingleItem, $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"));
 
         // Linked items element limited to multiple types with at least 1 at most or exactly 1 item.
-        var multiAllowedTypesSingleItem = (LinkedItemsElementMetadataModel)TestHelper.
+        var multiAllowedTypesSingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
             GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee9"), "modular_content_blog", ElementMetadataType.LinkedItems);
         multiAllowedTypesSingleItem.AllowedTypes = new List<Reference>(new List<Reference>
         {
@@ -69,7 +70,7 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
         ClassDefinition.AddProperty(Property.FromContentTypeElement(multiAllowedTypesSingleItem, $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"));
 
         // Linked items element limited to multiple types with at least 1 item.
-        var multiAllowedTypesMultiItems = (LinkedItemsElementMetadataModel)TestHelper.
+        var multiAllowedTypesMultiItems = (LinkedItemsElementMetadataModel)TestDataGenerator.
             GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee5"), "modular_content_coffees", ElementMetadataType.LinkedItems);
         multiAllowedTypesMultiItems.AllowedTypes = new List<Reference>(new List<Reference>
         {
@@ -80,19 +81,19 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
         ClassDefinition.AddProperty(Property.FromContentTypeElement(multiAllowedTypesMultiItems, $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"));
 
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
-            TestHelper.GenerateElementMetadataBase(Guid.Parse("114d2125-923d-4428-93b4-ad1590274912"), "rich_text_structured", ElementMetadataType.RichText),
+            TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("114d2125-923d-4428-93b4-ad1590274912"), "rich_text_structured", ElementMetadataType.RichText),
             ElementMetadataType.RichText + Property.StructuredSuffix));
 
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
-            TestHelper.GenerateElementMetadataBase(Guid.Parse("83011da2-559d-458c-a4b5-c81a001f4139"), "taxonomy", ElementMetadataType.Taxonomy),
+            TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("83011da2-559d-458c-a4b5-c81a001f4139"), "taxonomy", ElementMetadataType.Taxonomy),
             ElementMetadataType.Taxonomy.ToString()));
 
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
-            TestHelper.GenerateElementMetadataBase(Guid.Parse("14390f27-213e-4f8d-9c31-cbf9a7c0a0d8"), "url_slug", ElementMetadataType.UrlSlug),
+            TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("14390f27-213e-4f8d-9c31-cbf9a7c0a0d8"), "url_slug", ElementMetadataType.UrlSlug),
             ElementMetadataType.UrlSlug.ToString()));
 
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
-            TestHelper.GenerateElementMetadataBase(Guid.Parse("23154ba2-73fc-450c-99d4-c18ba45bb743"), "custom", ElementMetadataType.Custom),
+            TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("23154ba2-73fc-450c-99d4-c18ba45bb743"), "custom", ElementMetadataType.Custom),
             ElementMetadataType.Custom.ToString()));
     }
 

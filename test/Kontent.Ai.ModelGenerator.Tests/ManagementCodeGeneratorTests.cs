@@ -12,6 +12,7 @@ using Kontent.Ai.Management.Models.TypeSnippets;
 using Kontent.Ai.ModelGenerator.Core;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Tests.Fixtures;
+using Kontent.Ai.ModelGenerator.Tests.TestHelpers;
 using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
@@ -65,7 +66,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             Codename = contentTypeCodename,
             Elements = new List<ElementMetadataBase>
             {
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename)
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename)
             }
         };
 

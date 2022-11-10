@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Tests.TestHelpers;
 using Xunit;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Common;
@@ -75,33 +76,33 @@ public class PropertyTests
     public void FromContentTypeElement_ManagementApiModel_GuidelinesElement_Throws()
     {
         Assert.Throws<UnsupportedTypeException>(() =>
-            Property.FromContentTypeElement(TestHelper.GenerateGuidelinesElement(Guid.NewGuid(), "codename")));
+            Property.FromContentTypeElement(TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), "codename")));
     }
 
     public static IEnumerable<object[]> ManagementElements =>
         new List<(string, string, ElementMetadataBase)>
         {
             ("TextElement", "TextElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "text_element")),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "text_element")),
             ("RichTextElement","RichTextElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "rich_text_element", ElementMetadataType.RichText)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "rich_text_element", ElementMetadataType.RichText)),
             ("NumberElement", "NumberElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "number_element", ElementMetadataType.Number)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "number_element", ElementMetadataType.Number)),
             ("MultipleChoiceElement","MultipleChoiceElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "multiple_choice_element", ElementMetadataType.MultipleChoice)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "multiple_choice_element", ElementMetadataType.MultipleChoice)),
             ("DateTimeElement","DateTimeElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "date_time_element", ElementMetadataType.DateTime)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "date_time_element", ElementMetadataType.DateTime)),
             ("AssetElement", "AssetElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "asset_element", ElementMetadataType.Asset)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "asset_element", ElementMetadataType.Asset)),
             ("LinkedItemsElement", "LinkedItemsElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "linked_items_element", ElementMetadataType.LinkedItems)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "linked_items_element", ElementMetadataType.LinkedItems)),
             ("SubpagesElement", "SubpagesElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "subpages_element", ElementMetadataType.Subpages)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "subpages_element", ElementMetadataType.Subpages)),
             ("TaxonomyElement", "TaxonomyElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "taxonomy_element", ElementMetadataType.Taxonomy)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "taxonomy_element", ElementMetadataType.Taxonomy)),
             ("UrlSlugElement", "UrlSlugElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "url_slug_element", ElementMetadataType.UrlSlug)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "url_slug_element", ElementMetadataType.UrlSlug)),
             ("CustomElement", "CustomElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "custom_element", ElementMetadataType.Custom))
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "custom_element", ElementMetadataType.Custom))
         }.Select(triple => new object[] { triple.Item1, triple.Item2, triple.Item3 });
 }

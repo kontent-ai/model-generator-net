@@ -10,6 +10,7 @@ using Xunit;
 using Kontent.Ai.Management.Models.Shared;
 using System.Collections.Generic;
 using Kontent.Ai.Management.Models.Types;
+using Kontent.Ai.ModelGenerator.Tests.TestHelpers;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Generators.Class;
 
@@ -19,7 +20,7 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
     {
         // Linked items elements are limited to a single type with at least 1 item.
         var singleAllowedTypeMultiItemsTypeName = "Hero";
-        var singleAllowedTypeMultiItems = (LinkedItemsElementMetadataModel)TestHelper.
+        var singleAllowedTypeMultiItems = (LinkedItemsElementMetadataModel)TestDataGenerator.
             GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee5"), "modular_content_heroes", ElementMetadataType.LinkedItems);
         singleAllowedTypeMultiItems.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeMultiItemsTypeName) });
         singleAllowedTypeMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
@@ -27,7 +28,7 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
 
         // Linked items element limited to a single type with at most or exactly 1 item.
         var singleAllowedTypeExactlySingleItemTypeName = "Article";
-        var singleAllowedTypeExactlySingleItem = (LinkedItemsElementMetadataModel)TestHelper.
+        var singleAllowedTypeExactlySingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
                 GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee8"), "modular_content_article", ElementMetadataType.LinkedItems);
         singleAllowedTypeExactlySingleItem.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeExactlySingleItemTypeName) });
         singleAllowedTypeExactlySingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
