@@ -16,6 +16,7 @@ public abstract class DeliveryClassCodeGeneratorBase : ClassCodeGenerator
     protected MemberDeclarationSyntax[] Properties
         => ClassDefinition.Properties.OrderBy(p => p.Identifier).Select(element => SyntaxFactory
             .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
+            .EnsureAttributesForDisplayTimezones(element)
             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
             .AddAccessorListAccessors(
                 GetAccessorDeclaration(SyntaxKind.GetAccessorDeclaration),

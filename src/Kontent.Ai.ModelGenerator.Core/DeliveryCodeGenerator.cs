@@ -69,6 +69,16 @@ public class DeliveryCodeGenerator : CodeGeneratorBase
         return codeGenerators;
     }
 
+    protected static new void AddProperty(Property property, ref ClassDefinition classDefinition)
+    {
+        if (property is not DisplayTimezoneProperty)
+        {
+            classDefinition.AddPropertyCodenameConstant(property.Codename);
+        }
+
+        classDefinition.AddProperty(property);
+    }
+
     internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType)
     {
         var classDefinition = new ClassDefinition(contentType.System.Codename);
@@ -80,6 +90,12 @@ public class DeliveryCodeGenerator : CodeGeneratorBase
                 var elementType = DeliveryElementHelper.GetElementType(Options, element.Type);
                 var property = Property.FromContentTypeElement(element.Codename, elementType);
                 AddProperty(property, ref classDefinition);
+
+                if (elementType == "date_time")
+                {
+                    var displayTimezoneProperty = DisplayTimezoneProperty.FromContentTypeElement(element.Codename, elementType);
+                    AddProperty(displayTimezoneProperty, ref classDefinition);
+                }
             }
             catch (Exception e)
             {
