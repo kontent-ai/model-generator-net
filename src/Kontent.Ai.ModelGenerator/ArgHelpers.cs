@@ -33,6 +33,7 @@ internal static class ArgHelpers
         { "-p", $"{ManagementProgramOptionsData.OptionsName}:{nameof(ManagementOptions.ProjectId)}" },
         {"--projectid", $"{ManagementProgramOptionsData.OptionsName}:{nameof(ManagementOptions.ProjectId)}" }, // Backwards compatibility
         { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
+        { "-e", nameof(CodeGeneratorOptions.ElementReference) },
         { "-k", $"{ManagementProgramOptionsData.OptionsName}:{nameof(ManagementOptions.ApiKey)}" },
         { "--apikey", $"{ManagementProgramOptionsData.OptionsName}:{nameof(ManagementOptions.ApiKey)}" } // Backwards compatibility
     };

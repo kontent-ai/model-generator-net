@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Kontent.Ai.Management.Modules.ModelBuilders;
 using Kontent.Ai.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json.Serialization;
@@ -9,6 +12,8 @@ namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
 public class ManagementClassCodeGenerator : ClassCodeGenerator
 {
+    private readonly ElementReferenceType _elementReference;
+
     private static readonly string KontentElementIdAttributeName = new string
     (
         nameof(KontentElementIdAttribute)
@@ -16,9 +21,13 @@ public class ManagementClassCodeGenerator : ClassCodeGenerator
             .ToArray()
     );
 
-    public ManagementClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace)
-        : base(classDefinition, classFilename, @namespace)
+    public ManagementClassCodeGenerator(
+        ClassDefinition classDefinition,
+        string classFilename,
+        ElementReferenceType elementReference,
+        string @namespace = DefaultNamespace) : base(classDefinition, classFilename, @namespace)
     {
+        _elementReference = elementReference;
     }
 
     protected override UsingDirectiveSyntax[] GetApiUsings() =>
@@ -45,10 +54,23 @@ public class ManagementClassCodeGenerator : ClassCodeGenerator
                 .AddAccessorListAccessors(
                     GetAccessorDeclaration(SyntaxKind.GetAccessorDeclaration),
                     GetAccessorDeclaration(SyntaxKind.SetAccessorDeclaration))
-                .AddAttributeLists(
-                    GetAttributeList(nameof(JsonProperty), element.Codename),
-                    GetAttributeList(KontentElementIdAttributeName, element.Id)))
+                .AddAttributeLists(GetAttributeLists(element).ToArray()))
         .ToArray<MemberDeclarationSyntax>();
+
+    private IEnumerable<AttributeListSyntax> GetAttributeLists(Property element)
+    {
+        yield return GetAttributeList(nameof(JsonProperty), element.Codename);
+
+        if (_elementReference.HasFlag(ElementReferenceType.Id))
+        {
+            yield return GetAttributeList(KontentElementIdAttributeName, element.Id);
+        }
+
+        if (_elementReference.HasFlag(ElementReferenceType.ExternalId))
+        {
+            throw new NotImplementedException();
+        }
+    }
 
     private static AttributeListSyntax GetAttributeList(string identifier, string literal) =>
         SyntaxFactory.AttributeList(

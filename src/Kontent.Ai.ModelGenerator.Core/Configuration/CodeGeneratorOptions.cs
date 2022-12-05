@@ -1,4 +1,6 @@
-﻿using Kontent.Ai.Delivery.Abstractions;
+﻿using System;
+using System.Linq;
+using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management.Configuration;
 
 namespace Kontent.Ai.ModelGenerator.Core.Configuration;
@@ -10,6 +12,7 @@ public class CodeGeneratorOptions
     private const bool DefaultStructuredModel = false;
     private const bool DefaultManagementApi = false;
     private const string DefaultFileNameSuffix = "Generated";
+    private static readonly string DefaultElementReference = $"{ElementReferenceType.Codename};{ElementReferenceType.Id}";
 
     /// <summary>
     /// Delivery Client configuration.
@@ -60,4 +63,27 @@ public class CodeGeneratorOptions
     /// Indicates whether a base class should be created and all output classes should derive from it using a partial class
     /// </summary>
     public string BaseClass { get; set; }
+
+    /// <summary>
+    /// Indicates whether the classes should be generated with desired element reference
+    /// </summary>
+    public string ElementReference { private get; set; } = DefaultElementReference;
+
+    internal ElementReferenceType ElementReferenceFlags
+    {
+        get
+        {
+            var splitElementReferences = ElementReference
+                .Split(',');
+
+            return splitElementReferences.Any()
+                ? splitElementReferences
+                    .Select(elementReference =>
+                        Enum.TryParse<ElementReferenceType>(elementReference, true, out var parsed)
+                            ? parsed
+                            : ElementReferenceType.Error)
+                    .Aggregate((result, next) => result | next)
+                : ElementReferenceType.Empty;
+        }
+    }
 }

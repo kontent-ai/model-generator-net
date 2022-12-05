@@ -29,7 +29,7 @@ public static class ClassCodeGeneratorFactory
         }
 
         return options.ManagementApi
-            ? new ManagementClassCodeGenerator(classDefinition, classFilename, options.Namespace)
+            ? new ManagementClassCodeGenerator(classDefinition, classFilename, options.ElementReferenceFlags, options.Namespace)
             : new DeliveryClassCodeGenerator(classDefinition, classFilename, options.Namespace);
     }
 }

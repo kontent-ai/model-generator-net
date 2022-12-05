@@ -30,6 +30,7 @@ public class ArgHelpersTests
             { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
             { "--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
             { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
+            { "-e", nameof(CodeGeneratorOptions.ElementReference) },
             { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
             { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" }
         };
