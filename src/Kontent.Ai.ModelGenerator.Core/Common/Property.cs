@@ -19,6 +19,8 @@ public class Property
 
     public string Id { get; }
 
+    public string ExternalId { get; }
+
     /// <summary>
     /// Returns return type of the property in a string format (e.g.: "string").
     /// </summary>
@@ -54,11 +56,12 @@ public class Property
         { ElementMetadataType.Custom, nameof(CustomElement) }
     };
 
-    public Property(string codename, string typeName, string id = null)
+    public Property(string codename, string typeName, string id = null, string externalId = null)
     {
         Codename = codename;
         TypeName = typeName;
         Id = id;
+        ExternalId = externalId;
     }
 
     public static bool IsContentTypeSupported(string elementType)
@@ -85,7 +88,7 @@ public class Property
     {
         if (IsContentTypeSupported(element.Type))
         {
-            return new Property(element.Codename, ManagementElementTypesDictionary[element.Type], element.Id.ToString());
+            return new Property(element.Codename, ManagementElementTypesDictionary[element.Type], element.Id.ToString(), element.ExternalId);
         }
 
         if (element.Type == ElementMetadataType.Guidelines)
