@@ -95,7 +95,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             Codename = contentTypeCodename,
             Elements = new List<ElementMetadataBase>
             {
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename)
+                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename, elementCodename)
             }
         };
 

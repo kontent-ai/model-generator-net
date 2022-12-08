@@ -30,7 +30,19 @@
     <None Update="Assets\CompleteContentType_CompiledCode_CustomPartial.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Assets\CompleteContentType_CompiledCode_ManagementApi.txt">
+    <None Update="Assets\ManagementApi\CompleteContentType_CompiledCode_CodenameElementReference.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\ManagementApi\CompleteContentType_CompiledCode_ExternalIdElementReference.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\ManagementApi\CompleteContentType_CompiledCode_IdElementReference.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\ManagementApi\CompleteContentType_CompiledCode_AllElementReferences.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\ManagementApi\CompleteContentType_CompiledCode_CodenameAndIdElementReferences.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Assets\CompleteContentType_CompiledCode.txt;Assets\CustomTypeProvider_CompiledCode.txt">

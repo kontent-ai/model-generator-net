@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Kontent.Ai.Management.Modules.ModelBuilders;
 using Kontent.Ai.ModelGenerator.Core.Common;
@@ -20,6 +19,13 @@ public class ManagementClassCodeGenerator : ClassCodeGenerator
             .Substring(0, nameof(KontentElementIdAttribute).Length - "Attribute".Length)
             .ToArray()
     );
+
+    //private static readonly string KontentElementExternalIdAttributeName = new string
+    //(
+    //    nameof(KontentElementExternalIdAttribute)
+    //        .Substring(0, nameof(KontentElementExternalIdAttribute).Length - "Attribute".Length)
+    //        .ToArray()
+    //);
 
     public ManagementClassCodeGenerator(
         ClassDefinition classDefinition,
@@ -59,17 +65,21 @@ public class ManagementClassCodeGenerator : ClassCodeGenerator
 
     private IEnumerable<AttributeListSyntax> GetAttributeLists(Property element)
     {
-        yield return GetAttributeList(nameof(JsonProperty), element.Codename);
+
+        if (_elementReference.HasFlag(ElementReferenceType.Codename))
+        {
+            yield return GetAttributeList(nameof(JsonProperty), element.Codename);
+        }
 
         if (_elementReference.HasFlag(ElementReferenceType.Id))
         {
             yield return GetAttributeList(KontentElementIdAttributeName, element.Id);
         }
 
-        if (_elementReference.HasFlag(ElementReferenceType.ExternalId))
-        {
-            throw new NotImplementedException();
-        }
+        //if (_elementReference.HasFlag(ElementReferenceType.ExternalId) && !string.IsNullOrWhiteSpace(element.ExternalId))
+        //{
+        //    yield return GetAttributeList(KontentElementExternalIdAttributeName, element.ExternalId);
+        //}
     }
 
     private static AttributeListSyntax GetAttributeList(string identifier, string literal) =>
