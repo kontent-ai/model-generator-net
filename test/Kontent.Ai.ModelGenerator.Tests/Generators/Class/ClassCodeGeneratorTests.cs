@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Kontent.Ai.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Xunit;
 
@@ -13,7 +14,7 @@ public class ClassCodeGeneratorTests
     [MemberData(nameof(GetTypes))]
     public void Constructor_ClassDefinitionIsNull_Throws(Type type)
     {
-        var exception = Assert.Throws<TargetInvocationException>(() => Activator.CreateInstance(type, ConstructorParams()));
+        var exception = Assert.Throws<TargetInvocationException>(() => Activator.CreateInstance(type, ConstructorParams(type)));
 
         Assert.NotNull(exception.InnerException);
         Assert.Equal(typeof(ArgumentNullException), exception.InnerException.GetType());
@@ -28,7 +29,7 @@ public class ClassCodeGeneratorTests
 
         var expectedClassFilename = "Classdefinitioncodename";
 
-        var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(classDefinitionCodename, classFilename));
+        var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(type, classDefinitionCodename, classFilename));
 
         Assert.NotNull(classCodeGenerator);
         Assert.Equal(expectedClassFilename, classCodeGenerator.ClassFilename);
@@ -43,7 +44,7 @@ public class ClassCodeGeneratorTests
 
         var expectedClassFilename = "CustomClassFileName";
 
-        var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(classDefinitionCodename, classFilename));
+        var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(type, classDefinitionCodename, classFilename));
 
         Assert.NotNull(classCodeGenerator);
         Assert.Equal(expectedClassFilename, classCodeGenerator.ClassFilename);
@@ -55,7 +56,7 @@ public class ClassCodeGeneratorTests
     {
         var classDefinitionCodename = "classdefinitioncodename";
 
-        var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(classDefinitionCodename, null, @namespace));
+        var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(type, classDefinitionCodename, null, @namespace));
 
         Assert.NotNull(classCodeGenerator);
         Assert.Equal(ClassCodeGenerator.DefaultNamespace, classCodeGenerator.Namespace);
@@ -68,7 +69,7 @@ public class ClassCodeGeneratorTests
         var classDefinitionCodename = "classdefinitioncodename";
         var customNamespace = "CustomNamespace";
 
-        var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(classDefinitionCodename, null, customNamespace));
+        var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(type, classDefinitionCodename, null, customNamespace));
 
         Assert.NotNull(classCodeGenerator);
         Assert.Equal(customNamespace, classCodeGenerator.Namespace);
@@ -88,8 +89,10 @@ public class ClassCodeGeneratorTests
         yield return new object[] { typeof(DeliveryClassCodeGenerator), null };
     }
 
-    private static object[] ConstructorParams(string classDefinitionCodename = null, string classFileName = null, string @namespace = null)
-        => new object[] { GetClassDefinition(classDefinitionCodename), classFileName, @namespace };
+    private static object[] ConstructorParams(Type type, string classDefinitionCodename = null, string classFileName = null, string @namespace = null)
+        => type == typeof(ManagementClassCodeGenerator)
+            ? new object[] { GetClassDefinition(classDefinitionCodename), classFileName, ElementReferenceType.Codename | ElementReferenceType.Id, @namespace }
+            : new object[] { GetClassDefinition(classDefinitionCodename), classFileName, @namespace };
 
     private static ClassDefinition GetClassDefinition(string classDefinitionCodename) => classDefinitionCodename == null
         ? (ClassDefinition)null
