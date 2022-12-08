@@ -79,7 +79,7 @@ public class CodeGeneratorOptions
         {
             if (string.IsNullOrWhiteSpace(ElementReference))
             {
-                return ElementReferenceType.Empty;
+                return ElementReferenceType.NotSet;
             }
 
             var splitElementReferences = ElementReference.Split(ElementReferenceSeparator);
@@ -89,9 +89,9 @@ public class CodeGeneratorOptions
                     .Select(elementReference =>
                         Enum.TryParse<ElementReferenceType>(elementReference, true, out var parsed)
                             ? parsed
-                            : ElementReferenceType.Error)
+                            : ElementReferenceType.ValidationIssue)
                     .Aggregate((result, next) => result | next)
-                : ElementReferenceType.Empty;
+                : ElementReferenceType.NotSet;
         }
     }
 }

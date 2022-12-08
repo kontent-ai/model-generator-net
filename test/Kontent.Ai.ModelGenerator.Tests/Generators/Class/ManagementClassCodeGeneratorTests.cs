@@ -94,10 +94,25 @@ public class ManagementClassCodeGeneratorTests
         var classCodeGenerator = new ManagementClassCodeGenerator(
             classDefinition,
             classDefinition.ClassName,
-            ElementReferenceType.Codename);
+            ElementReferenceType.Codename | ElementReferenceType.ExternalId | ElementReferenceType.Id);
 
         Assert.NotNull(classCodeGenerator);
         Assert.True(classCodeGenerator.OverwriteExisting);
+    }
+
+    [Theory]
+    [InlineData(ElementReferenceType.NotSet)]
+    [InlineData(ElementReferenceType.ValidationIssue)]
+    [InlineData(ElementReferenceType.ValidationIssue | ElementReferenceType.Id)]
+    [InlineData(ElementReferenceType.Id | ElementReferenceType.NotSet)]
+    public void Constructor_ElementReferenceSetToErrorFlags_ThrowsException(ElementReferenceType elementReference)
+    {
+        var classDefinition = new ClassDefinition("Complete content type");
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => new ManagementClassCodeGenerator(
+            classDefinition,
+            classDefinition.ClassName,
+            elementReference));
     }
 
     [Theory]

@@ -3,6 +3,7 @@ using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Delivery.Configuration;
 using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Core.Helpers;
 
 namespace Kontent.Ai.ModelGenerator;
 
@@ -49,8 +50,7 @@ public static class ValidationExtensions
             throw new Exception($"You have to provide the '{nameof(ManagementOptions.ApiKey)}' to generate type for Management SDK. {seePart}");
         }
 
-        if (codeGeneratorOptions.ElementReferenceFlags.HasFlag(ElementReferenceType.Error) ||
-            codeGeneratorOptions.ElementReferenceFlags.HasFlag(ElementReferenceType.Empty))
+        if (codeGeneratorOptions.ElementReferenceFlags.HasErrorFlag())
         {
             throw new Exception($"You have to provide the '{nameof(CodeGeneratorOptions.ElementReference)}' argument to element references for Management SDK. {seePart}");
         }

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Kontent.Ai.Management.Modules.ModelBuilders;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json.Serialization;
@@ -33,7 +35,9 @@ public class ManagementClassCodeGenerator : ClassCodeGenerator
         ElementReferenceType elementReference,
         string @namespace = DefaultNamespace) : base(classDefinition, classFilename, @namespace)
     {
-        _elementReference = elementReference;
+        _elementReference = elementReference.HasErrorFlag()
+            ? throw new ArgumentOutOfRangeException(nameof(elementReference), "ElementReference has to be set to the valid flag.")
+            : elementReference;
     }
 
     protected override UsingDirectiveSyntax[] GetApiUsings() =>

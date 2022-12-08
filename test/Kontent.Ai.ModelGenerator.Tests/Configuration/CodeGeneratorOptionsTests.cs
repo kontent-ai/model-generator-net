@@ -12,8 +12,8 @@ public class CodeGeneratorOptionsTests
     [InlineData(ElementReferenceType.Id |
                 ElementReferenceType.ExternalId |
                 ElementReferenceType.Codename |
-                ElementReferenceType.Empty |
-                ElementReferenceType.Error)]
+                ElementReferenceType.NotSet |
+                ElementReferenceType.ValidationIssue)]
     public void ElementReferenceFlags_CorrectOptions(ElementReferenceType elementReference)
     {
         var stringElementReference = string.Join(',', Enum.GetValues<ElementReferenceType>()
@@ -39,7 +39,7 @@ public class CodeGeneratorOptionsTests
             ElementReference = elementReference
         };
 
-        Assert.Equal(ElementReferenceType.Empty, codeGenerationOptions.ElementReferenceFlags);
+        Assert.Equal(ElementReferenceType.NotSet, codeGenerationOptions.ElementReferenceFlags);
     }
 
     [Theory]
@@ -55,12 +55,12 @@ public class CodeGeneratorOptionsTests
             ElementReference = elementReference
         };
 
-        Assert.Equal(ElementReferenceType.Error, codeGenerationOptions.ElementReferenceFlags);
+        Assert.Equal(ElementReferenceType.ValidationIssue, codeGenerationOptions.ElementReferenceFlags);
     }
 
     [Theory]
-    [InlineData("invalid,Codename", ElementReferenceType.Error | ElementReferenceType.Codename)]
-    [InlineData("Codename,invalid", ElementReferenceType.Codename | ElementReferenceType.Error)]
+    [InlineData("invalid,Codename", ElementReferenceType.ValidationIssue | ElementReferenceType.Codename)]
+    [InlineData("Codename,invalid", ElementReferenceType.Codename | ElementReferenceType.ValidationIssue)]
     public void ElementReferenceFlags_InvalidAndValidValues_ReturnsErrorWithValid(string elementReference, ElementReferenceType result)
     {
         var codeGenerationOptions = new CodeGeneratorOptions
