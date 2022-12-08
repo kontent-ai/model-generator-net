@@ -12,7 +12,8 @@ public class CodeGeneratorOptions
     private const bool DefaultStructuredModel = false;
     private const bool DefaultManagementApi = false;
     private const string DefaultFileNameSuffix = "Generated";
-    private static readonly string DefaultElementReference = $"{ElementReferenceType.Codename};{ElementReferenceType.Id}";
+    private const char ElementReferenceSeparator = ',';
+    private static readonly string DefaultElementReference = $"{ElementReferenceType.Codename}{ElementReferenceSeparator}{ElementReferenceType.Id}";
 
     /// <summary>
     /// Delivery Client configuration.
@@ -69,12 +70,19 @@ public class CodeGeneratorOptions
     /// </summary>
     public string ElementReference { private get; set; } = DefaultElementReference;
 
-    internal ElementReferenceType ElementReferenceFlags
+    /// <summary>
+    /// Indicates selected element references
+    /// </summary>
+    public ElementReferenceType ElementReferenceFlags
     {
         get
         {
-            var splitElementReferences = ElementReference
-                .Split(',');
+            if (string.IsNullOrWhiteSpace(ElementReference))
+            {
+                return ElementReferenceType.Empty;
+            }
+
+            var splitElementReferences = ElementReference.Split(ElementReferenceSeparator);
 
             return splitElementReferences.Any()
                 ? splitElementReferences

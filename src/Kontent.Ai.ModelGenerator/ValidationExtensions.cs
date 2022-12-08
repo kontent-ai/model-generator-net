@@ -23,44 +23,50 @@ public static class ValidationExtensions
     {
         if (codeGeneratorOptions.ManagementApi)
         {
-            codeGeneratorOptions.ManagementOptions.Validate();
+            codeGeneratorOptions.ManagementOptionsValidate();
         }
         else
         {
-            codeGeneratorOptions.DeliveryOptions.Validate();
+            codeGeneratorOptions.DeliveryOptionsValidate();
         }
     }
 
     /// <summary>
     /// Validates that ManagementOptions are initialized
     /// </summary>
-    /// <param name="managementOptions">ManagementOptions object to be validated</param>
+    /// <param name="codeGeneratorOptions">CodeGeneratorOptions including ManagementOptions object to be validated</param>
     /// <exception cref="Exception"></exception>
-    private static void Validate(this ManagementOptions managementOptions)
+    private static void ManagementOptionsValidate(this CodeGeneratorOptions codeGeneratorOptions)
     {
         var seePart = SeePart(true);
-        if (managementOptions?.ProjectId == null)
+        if (codeGeneratorOptions.ManagementOptions?.ProjectId == null)
         {
             throw new Exception($"You have to provide the '{nameof(ManagementOptions.ProjectId)}' to generate type for Management SDK. {seePart}");
         }
 
-        if (string.IsNullOrWhiteSpace(managementOptions.ApiKey))
+        if (string.IsNullOrWhiteSpace(codeGeneratorOptions.ManagementOptions.ApiKey))
         {
             throw new Exception($"You have to provide the '{nameof(ManagementOptions.ApiKey)}' to generate type for Management SDK. {seePart}");
+        }
+
+        if (codeGeneratorOptions.ElementReferenceFlags.HasFlag(ElementReferenceType.Error) ||
+            codeGeneratorOptions.ElementReferenceFlags.HasFlag(ElementReferenceType.Empty))
+        {
+            throw new Exception($"You have to provide the '{nameof(CodeGeneratorOptions.ElementReference)}' argument to element references for Management SDK. {seePart}");
         }
     }
 
     /// <summary>
     /// Validates that DeliveryOptions are initialized and performs some extra integrity validations.
     /// </summary>
-    /// <param name="deliveryOptions">DeliveryOptions object to be validated</param>
-    private static void Validate(this DeliveryOptions deliveryOptions)
+    /// <param name="codeGeneratorOptions">CodeGeneratorOptions including DeliveryOptions object to be validated</param>
+    private static void DeliveryOptionsValidate(this CodeGeneratorOptions codeGeneratorOptions)
     {
-        if (deliveryOptions == null)
+        if (codeGeneratorOptions.DeliveryOptions == null)
         {
             throw new Exception($"You have to provide at least the '{nameof(DeliveryOptions.ProjectId)}' argument. {SeePart(false)}");
         }
 
-        DeliveryOptionsValidator.Validate(deliveryOptions);
+        codeGeneratorOptions.DeliveryOptions.Validate();
     }
 }

@@ -19,7 +19,8 @@ public class ValidationExtensionsTests
             {
                 ProjectId = projectId,
                 ApiKey = "apiKey"
-            }
+            },
+            ElementReference = $"{ElementReferenceType.Codename},{ElementReferenceType.Id},{ElementReferenceType.ExternalId}"
         };
 
         codeGeneratorOptions.Validate();
@@ -130,5 +131,49 @@ public class ValidationExtensionsTests
 
         var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
         Assert.Equal("You have to provide the 'ApiKey' to generate type for Management SDK. See https://bit.ly/3rSMeDA for more details on configuration.", exception.Message);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("  ")]
+    public void Validate_ElementReferenceIsNullOrWhiteSpace_ThrowsException(string elementReference)
+    {
+        var projectId = Guid.NewGuid().ToString();
+        var codeGeneratorOptions = new CodeGeneratorOptions
+        {
+            ManagementApi = true,
+            ManagementOptions = new ManagementOptions
+            {
+                ProjectId = projectId,
+                ApiKey = "apiKey"
+            },
+            ElementReference = elementReference
+        };
+
+        var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
+        Assert.Equal("You have to provide the 'ElementReference' argument to element references for Management SDK. See https://bit.ly/3rSMeDA for more details on configuration.", exception.Message);
+    }
+
+    [Theory]
+    [InlineData("null")]
+    [InlineData("id, null")]
+    [InlineData("empty,error")]
+    public void Validate_ElementReferenceHasInvalidValue_ThrowsException(string elementReference)
+    {
+        var projectId = Guid.NewGuid().ToString();
+        var codeGeneratorOptions = new CodeGeneratorOptions
+        {
+            ManagementApi = true,
+            ManagementOptions = new ManagementOptions
+            {
+                ProjectId = projectId,
+                ApiKey = "apiKey"
+            },
+            ElementReference = elementReference
+        };
+
+        var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
+        Assert.Equal("You have to provide the 'ElementReference' argument to element references for Management SDK. See https://bit.ly/3rSMeDA for more details on configuration.", exception.Message);
     }
 }
