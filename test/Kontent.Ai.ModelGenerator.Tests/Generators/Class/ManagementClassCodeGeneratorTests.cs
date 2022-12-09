@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.ModelGenerator.Core.Common;
@@ -12,13 +11,10 @@ using Xunit;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Generators.Class;
 
-public class ManagementClassCodeGeneratorTests
+public class ManagementClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
 {
-    private ClassDefinition ClassDefinition;
-
     public ManagementClassCodeGeneratorTests()
     {
-        ClassDefinition = new ClassDefinition("Complete content type");
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
             TestHelper.GenerateElementMetadataBase(
                 Guid.Parse("6712e528-8504-4a36-b716-a28327d6205f"),
@@ -89,11 +85,9 @@ public class ManagementClassCodeGeneratorTests
     [Fact]
     public void Constructor_CreatesInstance()
     {
-        var classDefinition = new ClassDefinition("Complete content type");
-
         var classCodeGenerator = new ManagementClassCodeGenerator(
-            classDefinition,
-            classDefinition.ClassName,
+            ClassDefinition,
+            ClassDefinition.ClassName,
             ElementReferenceType.Codename | ElementReferenceType.ExternalId | ElementReferenceType.Id);
 
         Assert.NotNull(classCodeGenerator);
@@ -107,11 +101,9 @@ public class ManagementClassCodeGeneratorTests
     [InlineData(ElementReferenceType.Id | ElementReferenceType.NotSet)]
     public void Constructor_ElementReferenceSetToErrorFlags_ThrowsException(ElementReferenceType elementReference)
     {
-        var classDefinition = new ClassDefinition("Complete content type");
-
         Assert.Throws<ArgumentOutOfRangeException>(() => new ManagementClassCodeGenerator(
-            classDefinition,
-            classDefinition.ClassName,
+            ClassDefinition,
+            ClassDefinition.ClassName,
             elementReference));
     }
 
@@ -168,22 +160,6 @@ public class ManagementClassCodeGeneratorTests
             },
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-        using var ms = new MemoryStream();
-        var result = compilation.Emit(ms);
-        var compilationErrors = "Compilation errors:\n";
-
-        if (!result.Success)
-        {
-            var failures = result.Diagnostics.Where(diagnostic =>
-                diagnostic.IsWarningAsError ||
-                diagnostic.Severity == DiagnosticSeverity.Error);
-
-            foreach (var diagnostic in failures)
-            {
-                compilationErrors += $"{diagnostic.Id}: {diagnostic.GetMessage()}\n";
-            }
-        }
-
-        Assert.True(result.Success, compilationErrors);
+        AssertCompiledCode(compilation);
     }
 }
