@@ -86,7 +86,7 @@ public abstract class CodeGeneratorBase
                 Console.WriteLine($"Warning: Element '{elementCodename}' is already present in Content Type '{className}'.");
                 break;
             case InvalidIdentifierException:
-                Console.WriteLine($"Warning: Can't create valid C# Identifier from '{elementCodename}'. Skipping element.");
+                Console.WriteLine($"Warning: Skipping element. {exception.Message}");
                 break;
             case ArgumentNullException or ArgumentException:
                 Console.WriteLine($"Warning: Skipping unknown Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
@@ -94,12 +94,14 @@ public abstract class CodeGeneratorBase
             case UnsupportedTypeException:
                 Console.WriteLine($"Info: Skipping unsupported Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
                 break;
+            default:
+                throw exception;
         }
     }
 
-    protected static void WriteConsoleErrorMessage(string contentTypeCodename)
+    protected static void WriteConsoleErrorMessage(string contentTypeCodename, string reason)
     {
-        Console.WriteLine($"Warning: Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name.");
+        Console.WriteLine($"Warning: Skipping Content Type '{contentTypeCodename}'. {reason}");
     }
 
     private async Task GenerateContentTypeModels()

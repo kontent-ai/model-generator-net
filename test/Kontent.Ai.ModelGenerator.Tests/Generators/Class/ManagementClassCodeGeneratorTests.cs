@@ -107,6 +107,39 @@ public class ManagementClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
             elementReference));
     }
 
+    [Fact]
+    public void Constructor_ExternalIdOfElementIsNull_ElementReferenceIsExternalId_ThrowsException()
+    {
+        ClassDefinition.AddProperty(Property.FromContentTypeElement(
+            TestHelper.GenerateElementMetadataBase(
+                Guid.Parse("9712e528-8504-4a36-b716-a28327d6205f"),
+                "text_no_external_id",
+                null)));
+
+        Assert.Throws<InvalidExternalIdentifierException>(() =>
+        {
+            new ManagementClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName, ElementReferenceType.ExternalId);
+        });
+    }
+
+    [Fact]
+    public void Constructor_ExternalIdOfElementIsNull_ElementReferenceIsExternalIdAndOtherType_CreatesInstance()
+    {
+        ClassDefinition.AddProperty(Property.FromContentTypeElement(
+            TestHelper.GenerateElementMetadataBase(
+                Guid.Parse("9712e528-8504-4a36-b716-a28327d6205f"),
+                "text_no_external_id",
+                null)));
+
+        var classCodeGenerator = new ManagementClassCodeGenerator(
+            ClassDefinition,
+            ClassDefinition.ClassName,
+            ElementReferenceType.ExternalId | ElementReferenceType.Codename | ElementReferenceType.Id);
+
+        Assert.NotNull(classCodeGenerator);
+        Assert.True(classCodeGenerator.OverwriteExisting);
+    }
+
     [Theory]
     //[InlineData(
     //    ElementReferenceType.Codename | ElementReferenceType.Id | ElementReferenceType.ExternalId,
@@ -131,6 +164,32 @@ public class ManagementClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
 
         var executingPath = AppContext.BaseDirectory;
         var expectedCode = File.ReadAllText($"{executingPath}/Assets/ManagementApi/{fileName}");
+
+        Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
+    }
+
+    [Fact]
+    public void Build_ExternalIdNull_ElementReferenceHasExternalId_CreatesClassWithoutExternalIdElementAttributes()
+    {
+        var classDefinition = new ClassDefinition("External Id Is Null");
+        classDefinition.AddProperty(Property.FromContentTypeElement(
+            TestHelper.GenerateElementMetadataBase(
+                Guid.Parse("6712e528-8504-4a36-b716-a28327d6205f"),
+                "text",
+                null)));
+        classDefinition.AddProperty(Property.FromContentTypeElement(
+            TestHelper.GenerateElementMetadataBase(
+                Guid.Parse("014d2125-923d-4428-93b4-ad1590274912"),
+                "rich_text",
+                null,
+                ElementMetadataType.RichText)));
+
+        var classCodeGenerator = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName, ElementReferenceType.Codename | ElementReferenceType.ExternalId);
+
+        var compiledCode = classCodeGenerator.GenerateCode();
+
+        var executingPath = AppContext.BaseDirectory;
+        var expectedCode = File.ReadAllText($"{executingPath}/Assets/ManagementApi/CompleteContentType_CompiledCode_ExternalIdAndCodenameElementReferences_ExternalIdsAreNull.txt");
 
         Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
     }

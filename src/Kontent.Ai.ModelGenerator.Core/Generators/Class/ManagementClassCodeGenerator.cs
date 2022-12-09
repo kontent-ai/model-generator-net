@@ -22,12 +22,13 @@ public class ManagementClassCodeGenerator : ClassCodeGenerator
             .ToArray()
     );
 
-    //private static readonly string KontentElementExternalIdAttributeName = new string
-    //(
-    //    nameof(KontentElementExternalIdAttribute)
-    //        .Substring(0, nameof(KontentElementExternalIdAttribute).Length - "Attribute".Length)
-    //        .ToArray()
-    //);
+    private static readonly string KontentElementExternalIdAttributeName = new string
+    (
+        "KontentElementExternalIdAttributeName"
+    //nameof(KontentElementExternalIdAttribute)
+    //    .Substring(0, nameof(KontentElementExternalIdAttribute).Length - "Attribute".Length)
+    //    .ToArray()
+    );
 
     public ManagementClassCodeGenerator(
         ClassDefinition classDefinition,
@@ -35,9 +36,8 @@ public class ManagementClassCodeGenerator : ClassCodeGenerator
         ElementReferenceType elementReference,
         string @namespace = DefaultNamespace) : base(classDefinition, classFilename, @namespace)
     {
-        _elementReference = elementReference.HasErrorFlag()
-            ? throw new ArgumentOutOfRangeException(nameof(elementReference), "ElementReference has to be set to the valid flag.")
-            : elementReference;
+        Validate(elementReference);
+        _elementReference = elementReference;
     }
 
     protected override UsingDirectiveSyntax[] GetApiUsings() =>
@@ -55,6 +55,20 @@ public class ManagementClassCodeGenerator : ClassCodeGenerator
         classDeclaration = classDeclaration.AddMembers(Properties);
 
         return classDeclaration;
+    }
+
+    private void Validate(ElementReferenceType elementReference)
+    {
+        if (elementReference.HasErrorFlag())
+        {
+            throw new ArgumentOutOfRangeException(nameof(elementReference), "ElementReference has to be set to the valid flag.");
+        }
+
+        if (elementReference == ElementReferenceType.ExternalId &&
+            ClassDefinition.Properties.Any(p => string.IsNullOrWhiteSpace(p.ExternalId)))
+        {
+            throw new InvalidExternalIdentifierException($"Cannot properly set {nameof(KontentElementExternalIdAttributeName)} because not all external ids are set.");
+        }
     }
 
     private MemberDeclarationSyntax[] Properties => ClassDefinition.Properties.OrderBy(p => p.Identifier).Select(element =>
@@ -80,10 +94,16 @@ public class ManagementClassCodeGenerator : ClassCodeGenerator
             yield return GetAttributeList(KontentElementIdAttributeName, element.Id);
         }
 
-        //if (_elementReference.HasFlag(ElementReferenceType.ExternalId) && !string.IsNullOrWhiteSpace(element.ExternalId))
-        //{
-        //    yield return GetAttributeList(KontentElementExternalIdAttributeName, element.ExternalId);
-        //}
+        if (_elementReference.HasFlag(ElementReferenceType.ExternalId))
+        {
+            if (!string.IsNullOrWhiteSpace(element.ExternalId))
+            {
+                // yield return GetAttributeList(KontentElementExternalIdAttributeName, element.ExternalId);
+                yield break;
+            }
+
+            Console.WriteLine($"Info: Skipping Content Element due to unknown element's externalId. (Content Type: '{ClassDefinition.ClassName}', Element Codename: '{element.Codename}').");
+        }
     }
 
     private static AttributeListSyntax GetAttributeList(string identifier, string literal) =>

@@ -52,9 +52,9 @@ public class ManagementCodeGenerator : CodeGeneratorBase
 
                 codeGenerators.Add(GetClassCodeGenerator(contentType, managementSnippets));
             }
-            catch (InvalidIdentifierException)
+            catch (Exception e) when (e is InvalidIdentifierException or InvalidExternalIdentifierException)
             {
-                WriteConsoleErrorMessage(contentType.Codename);
+                WriteConsoleErrorMessage(contentType.Codename, e.Message);
             }
         }
 

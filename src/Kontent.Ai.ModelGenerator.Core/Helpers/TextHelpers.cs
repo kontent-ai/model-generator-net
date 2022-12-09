@@ -22,7 +22,7 @@ public static class TextHelpers
 
         if (sanitizedName == string.Empty)
         {
-            throw new InvalidIdentifierException($"Unable to create a valid Identifier from '{name}'");
+            throw new InvalidIdentifierException($"Unable to create a valid C# Identifier from its name ('{name}').");
         }
 
         return sanitizedName

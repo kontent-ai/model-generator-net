@@ -30,6 +30,9 @@
     <None Update="Assets\CompleteContentType_CompiledCode_CustomPartial.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Assets\ManagementApi\CompleteContentType_CompiledCode_ExternalIdAndCodenameElementReferences_ExternalIdsAreNull.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Assets\ManagementApi\CompleteContentType_CompiledCode_CodenameElementReference.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

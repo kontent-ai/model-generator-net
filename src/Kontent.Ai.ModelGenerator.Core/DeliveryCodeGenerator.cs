@@ -60,9 +60,9 @@ public class DeliveryCodeGenerator : CodeGeneratorBase
 
                 codeGenerators.Add(GetClassCodeGenerator(contentType));
             }
-            catch (InvalidIdentifierException)
+            catch (InvalidIdentifierException e)
             {
-                WriteConsoleErrorMessage(contentType.System.Codename);
+                WriteConsoleErrorMessage(contentType.System.Codename, e.Message);
             }
         }
 
