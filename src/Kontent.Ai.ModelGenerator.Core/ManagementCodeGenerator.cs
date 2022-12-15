@@ -30,6 +30,18 @@ public class ManagementCodeGenerator : CodeGeneratorBase
         _managementClient = managementClient;
     }
 
+    public new async Task<int> RunAsync()
+    {
+        await base.RunAsync();
+
+        if (Options.ElementReferenceFlags.HasFlag(ElementReferenceType.ExternalId))
+        {
+            Console.WriteLine($"Info: Elements have been generated with the {nameof(KontentElementExternalIdAttribute)}. To enable binding elements you need to provide custom model provider.");
+        }
+
+        return 0;
+    }
+
     protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
     {
         var managementTypes = await _managementClient.ListContentTypesAsync().GetAllAsync();
