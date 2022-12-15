@@ -137,17 +137,27 @@ KontentModelGenerator.exe --projectid "<projectid>" --managementapi true --apike
 
 ### Management API parameters
 
-| Short key |      Long key      | Required |   Default value   |                                                              Description                                                               |
-| --------- | :----------------: | :------: | :---------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
-| `-p`      |   `--projectid`    |   True   |      `null`       |                        A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                         |
-| `-m`      | `--managementapi`  |   True   |      `false`      |        Indicates that models should be generated for [Content Management SDK](https://github.com/kontent-ai/management-sdk-net)        |
-| `-k`      |     `--apikey`     |   True   |      `null`       |                     A api key that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Management API                     |
-| `-n`      |   `--namespace`    |  False   | `KontentAiModels` |                          A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                          |
-| `-o`      |   `--outputdir`    |  False   |       `\.`        |                                                         An output folder path                                                          |
-| `-f`      | `--filenamesuffix` |  False   |      `null`       |                             Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                             |
-| `-b`      |   `--baseclass`    |  False   |      `null`       | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes |
+| Short key |          Long key          | Required |      Default value       |                                                                     Description                                                                                      |
+| --------- | :------------------------: | :------: | :----------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| `-p`      |       `--projectid`        |   True   |         `null`           |                                  A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                                             |
+| `-m`      |     `--managementapi`      |   True   |         `false`          |                        Indicates that models should be generated for [Content Management SDK](https://github.com/kontent-ai/management-sdk-net)                      |
+| `-k`      |         `--apikey`         |   True   |         `null`           |                                     A api key that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Management API                                   |
+| `-n`      |       `--namespace`        |  False   |    `KontentAiModels`     |                                         A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                                         |
+| `-o`      |       `--outputdir`        |  False   |          `\.`            |                                                                     An output folder path                                                                            |
+| `-f`      |     `--filenamesuffix`     |  False   |         `null`           |                                            Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                                            |
+| `-b`      |       `--baseclass`        |  False   |         `null`           |                If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes                |
+| `-e`      |    `--elementreference`    |  False   |      `codename,id`       | If provided, elements will be decorated with with the specified element reference [see details](https://github.com/kontent-ai/model-generator-net#Element reference) |
 
 These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
+
+#### Element reference
+
+Element refernce represents a way how elements can be referenced. You can choose out of 3 options ``codename``, ``id``, ``externalid`` (case insensitive). References can be arbitrary combined using ``,`` as a separator. Default vaule is ``codename,id``.
+
+If you decide to specify element references, you have to provide at least 1 value.
+
+If you decide to use ``externalid`` or ``codename`` without ``id`` as an element reference you will need to provide custom [Management SDK](https://github.com/kontent-ai/management-sdk-net) ModelProvider, thus it binds strongly typed elements using ``id``.
+
 
 ### Management API example output
 
@@ -164,36 +174,47 @@ namespace KontentAiModels
     {
         [JsonProperty("text")]
         [KontentElementId("487f9540-0120-49dc-afb2-ee9bccb0c1d7")]
+        [KontentElementExternalId("text_external_id")]
         public TextElement Text { get; set; }
         [JsonProperty("rich_text")]
         [KontentElementId("4517b6da-ed36-48f2-9c8e-00cd6a4cb0ec")]
+        [KontentElementExternalId("rich_text_external_id")]
         public RichTextElement RichText { get; set; }
         [JsonProperty("number")]
         [KontentElementId("4ea37483-c6b1-4b8a-8452-6046f4140923")]
+        [KontentElementExternalId("number_external_id")]
         public NumberElement Number { get; set; }
         [JsonProperty("multiple_choice")]
         [KontentElementId("8fc9a86f-d256-4786-a8f6-c8c90f6ca4e3")]
+        [KontentElementExternalId("multiple_choice_external_id")]
         public MultipleChoiceElement MultipleChoice { get; set; }
         [JsonProperty("date_time")]
         [KontentElementId("d46fa45c-a1be-4bc7-8b8e-ed3c5521f83c")]
+        [KontentElementExternalId("date_time_external_id")]
         public DateTimeElement DateTime { get; set; }
         [JsonProperty("asset")]
         [KontentElementId("eb1d611d-b145-4ae3-b22e-ef3609572df0")]
+        [KontentElementExternalId("asset_external_id")]
         public AssetElement Asset { get; set; }
         [JsonProperty("modular_content")]
         [KontentElementId("9e520c61-6879-4e83-bcc6-ee6e3e8ce9b4")]
+        [KontentElementExternalId("modular_content_external_id")]
         public LinkedItemsElement ModularContent { get; set; }
         [JsonProperty("subpages")]
         [KontentElementId("fddd89e8-c370-4f9e-9b7d-9daa64d8a252")]
+        [KontentElementExternalId("subpages_external_id")]
         public LinkedItemsElement Subpages { get; set; }
         [JsonProperty("taxonomy")]
         [KontentElementId("a684d81c-68a7-40e1-85f9-2d22a71bebff")]
+        [KontentElementExternalId("taxonomy_external_id")]
         public TaxonomyElement Taxonomy { get; set; }
         [JsonProperty("url_slug")]
         [KontentElementId("1c724f49-b15f-42f5-aab4-4127aa5cf7be")]
+        [KontentElementExternalId("url_slug_external_id")]
         public UrlSlugElement UrlSlug { get; set; }
         [JsonProperty("custom_element")]
         [KontentElementId("cb3b9df0-20df-461c-a0f7-4abb44b83c95")]
+        [KontentElementExternalId("custom_element_external_id")]
         public CustomElement CustomElement { get; set; }
     }
 }
