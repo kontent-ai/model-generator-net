@@ -17,17 +17,12 @@ public class ManagementClassCodeGenerator : ClassCodeGenerator
 
     private static readonly string KontentElementIdAttributeName = new string
     (
-        nameof(KontentElementIdAttribute)
-            .Substring(0, nameof(KontentElementIdAttribute).Length - "Attribute".Length)
-            .ToArray()
+        nameof(KontentElementIdAttribute)[..^"Attribute".Length].ToArray()
     );
 
     private static readonly string KontentElementExternalIdAttributeName = new string
     (
-        "KontentElementExternalIdAttributeName"
-    //nameof(KontentElementExternalIdAttribute)
-    //    .Substring(0, nameof(KontentElementExternalIdAttribute).Length - "Attribute".Length)
-    //    .ToArray()
+        nameof(KontentElementExternalIdAttribute)[..^"Attribute".Length].ToArray()
     );
 
     public ManagementClassCodeGenerator(
@@ -96,13 +91,14 @@ public class ManagementClassCodeGenerator : ClassCodeGenerator
 
         if (_elementReference.HasFlag(ElementReferenceType.ExternalId))
         {
-            if (!string.IsNullOrWhiteSpace(element.ExternalId))
+            if (string.IsNullOrWhiteSpace(element.ExternalId))
             {
-                // yield return GetAttributeList(KontentElementExternalIdAttributeName, element.ExternalId);
-                yield break;
+                Console.WriteLine($"Info: Skipping Content Element due to unknown element's externalId. (Content Type: '{ClassDefinition.ClassName}', Element Codename: '{element.Codename}').");
             }
-
-            Console.WriteLine($"Info: Skipping Content Element due to unknown element's externalId. (Content Type: '{ClassDefinition.ClassName}', Element Codename: '{element.Codename}').");
+            else
+            {
+                yield return GetAttributeList(KontentElementExternalIdAttributeName, element.ExternalId);
+            }
         }
     }
 

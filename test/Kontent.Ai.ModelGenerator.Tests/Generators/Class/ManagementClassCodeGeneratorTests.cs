@@ -141,18 +141,18 @@ public class ManagementClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
     }
 
     [Theory]
-    //[InlineData(
-    //    ElementReferenceType.Codename | ElementReferenceType.Id | ElementReferenceType.ExternalId,
-    //    "CompleteContentType_CompiledCode_AllElementReferences.txt")]
+    [InlineData(
+        ElementReferenceType.Codename | ElementReferenceType.Id | ElementReferenceType.ExternalId,
+        "CompleteContentType_CompiledCode_AllElementReferences.txt")]
     [InlineData(
         ElementReferenceType.Codename | ElementReferenceType.Id,
         "CompleteContentType_CompiledCode_CodenameAndIdElementReferences.txt")]
     [InlineData(
         ElementReferenceType.Codename,
         "CompleteContentType_CompiledCode_CodenameElementReference.txt")]
-    //[InlineData(
-    //    ElementReferenceType.ExternalId,
-    //    "CompleteContentType_CompiledCode_ExternalIdElementReference.txt")]
+    [InlineData(
+        ElementReferenceType.ExternalId,
+        "CompleteContentType_CompiledCode_ExternalIdElementReference.txt")]
     [InlineData(
         ElementReferenceType.Id,
         "CompleteContentType_CompiledCode_IdElementReference.txt")]
@@ -195,10 +195,10 @@ public class ManagementClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
     }
 
     [Theory]
-    //[InlineData(ElementReferenceType.Codename | ElementReferenceType.Id | ElementReferenceType.ExternalId)]
+    [InlineData(ElementReferenceType.Codename | ElementReferenceType.Id | ElementReferenceType.ExternalId)]
     [InlineData(ElementReferenceType.Codename | ElementReferenceType.Id)]
     [InlineData(ElementReferenceType.Codename)]
-    //[InlineData(ElementReferenceType.ExternalId)]
+    [InlineData(ElementReferenceType.ExternalId)]
     [InlineData(ElementReferenceType.Id)]
     public void IntegrationTest_GeneratedCodeCompilesWithoutErrors(ElementReferenceType elementReference)
     {
