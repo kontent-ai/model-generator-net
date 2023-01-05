@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using Xunit;
+using FluentAssertions;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Generators.Class;
 
@@ -29,6 +29,6 @@ public abstract class ClassCodeGeneratorTestsBase
             }
         }
 
-        Assert.True(result.Success, compilationErrors);
+        result.Success.Should().BeTrue(compilationErrors);
     }
 }
