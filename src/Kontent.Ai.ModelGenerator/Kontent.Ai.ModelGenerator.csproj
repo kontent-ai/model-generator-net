@@ -36,14 +36,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kontent.Ai.Delivery" Version="17.0.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <PackageReference Include="Kontent.Ai.Delivery" Version="17.0.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.4.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
 
-    <None Include="../../README.md" Pack="true" PackagePath=""/>
-    <None Include="../../kai-logo-symbol-color-rgb.png" Pack="true" PackagePath=""/>
+    <None Include="../../README.md" Pack="true" PackagePath="" />
+    <None Include="../../kai-logo-symbol-color-rgb.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
