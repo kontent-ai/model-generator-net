@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis;
 using Xunit;
 using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.ModelGenerator.Tests.TestHelpers;
+using FluentAssertions;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Generators.Class;
 
@@ -102,8 +103,8 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
     {
         var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
 
-        Assert.NotNull(classCodeGenerator);
-        Assert.True(classCodeGenerator.OverwriteExisting);
+        classCodeGenerator.Should().NotBeNull();
+        classCodeGenerator.OverwriteExisting.Should().BeTrue();
     }
 
     [Fact]
@@ -116,7 +117,7 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
         var executingPath = AppContext.BaseDirectory;
         var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_ExtendedDeliveryModels.txt");
 
-        Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
+        compiledCode.Should().Be(expectedCode);
     }
 
     [Fact]

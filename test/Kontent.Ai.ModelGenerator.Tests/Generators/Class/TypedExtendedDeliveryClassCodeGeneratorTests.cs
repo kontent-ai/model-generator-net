@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Kontent.Ai.ModelGenerator.Tests.TestHelpers;
+using FluentAssertions;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Generators.Class;
 
@@ -45,8 +46,8 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
     {
         var classCodeGenerator = new TypedExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
 
-        Assert.NotNull(classCodeGenerator);
-        Assert.True(classCodeGenerator.OverwriteExisting);
+        classCodeGenerator.Should().NotBeNull();
+        classCodeGenerator.OverwriteExisting.Should().BeTrue();
     }
 
     [Fact]
@@ -59,7 +60,7 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
         var executingPath = AppContext.BaseDirectory;
         var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_TypedExtendedDeliveryModels.txt");
 
-        Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
+        compiledCode.Should().Be(expectedCode);
     }
 
     [Fact]

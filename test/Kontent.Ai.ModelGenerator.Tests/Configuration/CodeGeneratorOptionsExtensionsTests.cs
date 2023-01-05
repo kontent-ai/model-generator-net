@@ -1,4 +1,5 @@
-﻿using Kontent.Ai.ModelGenerator.Core.Configuration;
+﻿using FluentAssertions;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Xunit;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Configuration;
@@ -17,7 +18,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.ManagementApi();
 
-        Assert.True(result);
+        result.Should().BeTrue();
     }
 
     [Theory]
@@ -36,7 +37,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.ManagementApi();
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Theory]
@@ -54,7 +55,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.ManagementApi();
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Theory]
@@ -73,7 +74,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.ExtendedDeliveryModels();
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -88,7 +89,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.ExtendedDeliveryModels();
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Theory]
@@ -106,7 +107,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.ExtendedDeliveryModels();
 
-        Assert.True(result);
+        result.Should().BeTrue();
     }
 
     [Fact]
@@ -116,7 +117,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.DeliveryApi();
 
-        Assert.True(result);
+        result.Should().BeTrue();
     }
 
     [Fact]
@@ -131,7 +132,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.DeliveryApi();
 
-        Assert.True(result);
+        result.Should().BeTrue();
     }
 
     [Fact]
@@ -146,7 +147,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.DeliveryApi();
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Theory]
@@ -164,7 +165,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.DeliveryApi();
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -179,7 +180,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.DeliveryApi();
 
-        Assert.True(result);
+        result.Should().BeTrue();
     }
 
     [Fact]
@@ -194,7 +195,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.GetDesiredModelsType();
 
-        Assert.Equal(DesiredModelsType.Management, result);
+        result.Should().Be(DesiredModelsType.Management);
     }
 
     [Theory]
@@ -212,7 +213,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.GetDesiredModelsType();
 
-        Assert.Equal(DesiredModelsType.ExtendedDelivery, result);
+        result.Should().Be(DesiredModelsType.ExtendedDelivery);
     }
 
     [Fact]
@@ -227,7 +228,7 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.GetDesiredModelsType();
 
-        Assert.Equal(DesiredModelsType.Delivery, result);
+        result.Should().Be(DesiredModelsType.Delivery);
     }
 
     [Fact]
@@ -237,6 +238,6 @@ public class CodeGeneratorOptionsExtensionsTests
 
         var result = options.GetDesiredModelsType();
 
-        Assert.Equal(DesiredModelsType.Delivery, result);
+        result.Should().Be(DesiredModelsType.Delivery);
     }
 }

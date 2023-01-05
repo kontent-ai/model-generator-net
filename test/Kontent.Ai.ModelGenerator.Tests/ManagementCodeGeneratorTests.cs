@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Kontent.Ai.Management;
 using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.Management.Models.Shared;
@@ -44,7 +45,9 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         var outputProvider = new Mock<IOutputProvider>();
 
-        Assert.Throws<InvalidOperationException>(() => new ManagementCodeGenerator(mockOptions.Object, outputProvider.Object, _managementClient));
+        var call = () => new ManagementCodeGenerator(mockOptions.Object, outputProvider.Object, _managementClient);
+
+        call.Should().ThrowExactly<InvalidOperationException>();
     }
 
     [Fact]
@@ -74,7 +77,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>());
 
-        Assert.Equal($"{contentTypeCodename}.Generated", result.ClassFilename);
+        result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
     }
 
     [Fact]
@@ -94,10 +97,10 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        Assert.Equal(NumberOfContentTypes, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypes);
 
-        Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs"));
-        Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")));
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs").Should().NotBeEmpty();
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")).Should().NotBeEmpty();
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -123,11 +126,11 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        Assert.Equal(NumberOfContentTypes, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypes);
 
         foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir)))
         {
-            Assert.EndsWith($".{transformFilename}.cs", Path.GetFileName(filepath));
+            Path.GetFileName(filepath).Should().EndWith($".{transformFilename}.cs");
         }
 
         // Cleanup
@@ -156,38 +159,17 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         var allFilesCount = Directory.GetFiles(Path.GetFullPath(TempDir), "*.cs").Length;
         var generatedCount = Directory.GetFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs").Length;
-        Assert.Equal(allFilesCount, generatedCount * 2);
+        var resultFileCount = generatedCount * 2;
+
+        resultFileCount.Should().Be(allFilesCount);
 
         foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs"))
         {
             var customFileExists = File.Exists(filepath.Replace($".{transformFilename}", ""));
-            Assert.True(customFileExists);
+            customFileExists.Should().BeTrue();
         }
 
         // Cleanup
         Directory.Delete(TempDir, true);
-    }
-
-    private static IManagementClient CreateManagementClient()
-    {
-        var managementModelsProvider = new ManagementModelsProvider();
-        var managementClientMock = new Mock<IManagementClient>();
-
-        var contentTypeListingResponseModel = new Mock<IListingResponseModel<ContentTypeModel>>();
-        contentTypeListingResponseModel.As<IEnumerable<ContentTypeModel>>()
-            .Setup(c => c.GetEnumerator())
-            .Returns(() => managementModelsProvider.ManagementContentTypeModels);
-
-        var contentTypeSnippetListingResponseModel = new Mock<IListingResponseModel<ContentTypeSnippetModel>>();
-        contentTypeSnippetListingResponseModel.As<IEnumerable<ContentTypeSnippetModel>>()
-            .Setup(c => c.GetEnumerator())
-            .Returns(() => managementModelsProvider.ManagementContentTypeSnippetModels);
-
-        managementClientMock.Setup(client => client.ListContentTypeSnippetsAsync())
-            .Returns(Task.FromResult(contentTypeSnippetListingResponseModel.Object));
-        managementClientMock.Setup(client => client.ListContentTypesAsync())
-            .Returns(Task.FromResult(contentTypeListingResponseModel.Object));
-
-        return managementClientMock.Object;
     }
 }

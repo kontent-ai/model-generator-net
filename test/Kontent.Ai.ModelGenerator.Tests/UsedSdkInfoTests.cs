@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using Kontent.Ai.ModelGenerator.Options;
 using Xunit;
 
@@ -9,15 +10,17 @@ public class UsedSdkInfoTests
     [Fact]
     public void Constructor_TypeIsNull_Throws()
     {
-        var exception = Assert.Throws<ArgumentNullException>(() => new UsedSdkInfo(null, "name"));
-        Assert.Equal("type", exception.ParamName);
+        var call = () => new UsedSdkInfo(null, "name");
+
+        call.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("type");
     }
 
     [Fact]
     public void Constructor_NameIsNull_Throws()
     {
-        var exception = Assert.Throws<ArgumentNullException>(() => new UsedSdkInfo(typeof(string), null));
-        Assert.Equal("name", exception.ParamName);
+        var call = () => new UsedSdkInfo(typeof(string), null);
+
+        call.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("name");
     }
 
     [Fact]
@@ -25,8 +28,7 @@ public class UsedSdkInfoTests
     {
         var result = new UsedSdkInfo(typeof(string), "name");
 
-        Assert.Equal("name", result.Name);
-        Assert.NotNull(result.Version);
-        Assert.NotEmpty(result.Version);
+        result.Name.Should().Be("name");
+        result.Version.Should().NotBeNullOrEmpty();
     }
 }

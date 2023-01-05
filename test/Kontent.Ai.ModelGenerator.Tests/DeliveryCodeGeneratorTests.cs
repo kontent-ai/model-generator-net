@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Kontent.Ai.Delivery;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Delivery.Builders.DeliveryClient;
@@ -35,7 +36,9 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var deliveryClient = new Mock<IDeliveryClient>();
         var outputProvider = new Mock<IOutputProvider>();
 
-        Assert.Throws<InvalidOperationException>(() => new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object));
+        var call = () => new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object);
+
+        call.Should().ThrowExactly<InvalidOperationException>();
     }
 
     [Theory]
@@ -67,7 +70,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = codeGenerator.GetClassCodeGenerator(contentType.Object);
 
-        Assert.Equal($"{contentTypeCodename}.Generated", result.ClassFilename);
+        result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
     }
 
     [Fact]
@@ -96,11 +99,11 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        Assert.Equal(NumberOfContentTypes, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypes);
 
-        Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs"));
-        Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")));
-        Assert.Empty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs"));
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs").Should().NotBeEmpty();
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")).Should().NotBeEmpty();
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().BeEmpty();
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -135,11 +138,11 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        Assert.Equal(NumberOfContentTypes, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypes);
 
         foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir)))
         {
-            Assert.EndsWith($".{transformFilename}.cs", Path.GetFileName(filepath));
+            Path.GetFileName(filepath).Should().EndWith($".{transformFilename}.cs");
         }
 
         // Cleanup
@@ -178,12 +181,14 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var allFilesCount = Directory.GetFiles(Path.GetFullPath(TempDir), "*.cs").Length;
         var generatedCount = Directory.GetFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs").Length;
-        Assert.Equal(allFilesCount, generatedCount * 2);
+
+        var resultGeneratedFilesCount = generatedCount * 2;
+        resultGeneratedFilesCount.Should().Be(allFilesCount);
 
         foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs"))
         {
             var customFileExists = File.Exists(filepath.Replace($".{transformFilename}", ""));
-            Assert.True(customFileExists);
+            customFileExists.Should().BeTrue();
         }
 
         // Cleanup
@@ -216,9 +221,8 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        Assert.Equal(NumberOfContentTypes + 1, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
-
-        Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs"));
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypes + 1);
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().NotBeEmpty();
 
         // Cleanup
         Directory.Delete(TempDir, true);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FluentAssertions;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
@@ -11,7 +12,7 @@ namespace Kontent.Ai.ModelGenerator.Tests;
 public class ValidationExtensionsTests
 {
     [Fact]
-    public void Validate_ManagementOptions_Success()
+    public void Validate_ManagementOptions_DoesNotThrow()
     {
         var projectId = Guid.NewGuid().ToString();
         var codeGeneratorOptions = new CodeGeneratorOptions
@@ -24,11 +25,13 @@ public class ValidationExtensionsTests
             }
         };
 
-        codeGeneratorOptions.Validate();
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().NotThrow();
     }
 
     [Fact]
-    public void Validate_DeliveryOptions_Success()
+    public void Validate_DeliveryOptions_DoesNotThrow()
     {
         var projectId = Guid.NewGuid().ToString();
         var codeGeneratorOptions = new CodeGeneratorOptions
@@ -40,13 +43,15 @@ public class ValidationExtensionsTests
             }
         };
 
-        codeGeneratorOptions.Validate();
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().NotThrow();
     }
 
     [Theory]
     [InlineData(true, false)]
     [InlineData(false, true)]
-    public void Validate_ExtendedDeliveryModels_Success(bool extendedDeliverModels, bool extendedDeliverPreviewModels)
+    public void Validate_ExtendedDeliveryModels_DoesNotThrow(bool extendedDeliverModels, bool extendedDeliverPreviewModels)
     {
         var projectId = Guid.NewGuid().ToString();
         var codeGeneratorOptions = new CodeGeneratorOptions
@@ -61,7 +66,9 @@ public class ValidationExtensionsTests
             }
         };
 
-        codeGeneratorOptions.Validate();
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().NotThrow();
     }
 
     [Fact]
@@ -72,8 +79,10 @@ public class ValidationExtensionsTests
             DeliveryOptions = null
         };
 
-        var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-        Assert.Equal("You have to provide at least the 'ProjectId' argument. See http://bit.ly/k-params for more details on configuration.", exception.Message);
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().ThrowExactly<Exception>()
+            .And.Message.Should().Be("You have to provide at least the 'ProjectId' argument. See http://bit.ly/k-params for more details on configuration.");
     }
 
     [Fact]
@@ -87,7 +96,9 @@ public class ValidationExtensionsTests
             }
         };
 
-        Assert.Throws<ArgumentNullException>(() => codeGeneratorOptions.Validate());
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Theory]
@@ -101,8 +112,10 @@ public class ValidationExtensionsTests
         };
         codeGeneratorOptions.ManagementOptions = null;
 
-        var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-        Assert.Equal($"You have to provide the 'ProjectId' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.", exception.Message);
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().ThrowExactly<Exception>()
+            .And.Message.Should().Be($"You have to provide the 'ProjectId' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.");
     }
 
     [Theory]
@@ -120,8 +133,10 @@ public class ValidationExtensionsTests
             ApiKey = "apiKey"
         };
 
-        var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-        Assert.Equal($"You have to provide the 'ProjectId' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.", exception.Message);
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().ThrowExactly<Exception>()
+            .And.Message.Should().Be($"You have to provide the 'ProjectId' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.");
     }
 
     [Theory]
@@ -143,8 +158,10 @@ public class ValidationExtensionsTests
             ApiKey = apiKey
         };
 
-        var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-        Assert.Equal($"You have to provide the 'ApiKey' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.", exception.Message);
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().ThrowExactly<Exception>()
+            .And.Message.Should().Be($"You have to provide the 'ApiKey' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.");
     }
 
     public static IEnumerable<object[]> OptionsUsingManagementApiOptionsData => new List<object[]>

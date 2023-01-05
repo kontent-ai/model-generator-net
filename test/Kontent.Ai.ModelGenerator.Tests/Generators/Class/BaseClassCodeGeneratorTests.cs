@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using FluentAssertions;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Xunit;
@@ -23,7 +24,7 @@ public class BaseClassCodeGeneratorTests
 
         var actualCompiledBaseClass = codeGenerator.GenerateBaseClassCode();
 
-        Assert.Equal(expectedBaseClassCode, actualCompiledBaseClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        actualCompiledBaseClass.Should().Be(expectedBaseClassCode);
     }
 
     [Fact]
@@ -42,7 +43,7 @@ public class BaseClassCodeGeneratorTests
 
         var actualCompiledBaseClass = codeGenerator.GenerateBaseClassCode();
 
-        Assert.Equal(expectedBaseClassCode, actualCompiledBaseClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        actualCompiledBaseClass.Should().Be(expectedBaseClassCode);
     }
 
     [Fact]
@@ -57,6 +58,6 @@ public class BaseClassCodeGeneratorTests
 
         var actualCompiledExtenderClass = codeGenerator.GenerateExtenderCode();
 
-        Assert.Equal(expectedExtenderCode, actualCompiledExtenderClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        actualCompiledExtenderClass.Should().Be(expectedExtenderCode);
     }
 }

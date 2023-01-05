@@ -16,7 +16,7 @@ public static class TextHelpers
     /// </summary>
     public static string GetValidPascalCaseIdentifierName(string name)
     {
-        string sanitizedName = Regex.Replace(name, "[^a-zA-Z0-9]", WordSeparator, RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        var sanitizedName = Regex.Replace(name, "[^a-zA-Z0-9]", WordSeparator, RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
         // Remove leading numbers and leading whitespace (e.g.: '  123Name123' -> 'Name123'
         sanitizedName = Regex.Replace(sanitizedName, "^(\\s|[0-9])+", "");
@@ -27,16 +27,14 @@ public static class TextHelpers
         }
 
         return sanitizedName
-            .ToLower()
-            .Split(new[] { WordSeparator }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(word => char.ToUpper(word[0]) + word.Substring(1))
-            .Aggregate((previous, current) => previous + current);
+                .ToLower()
+                .Split(new[] { WordSeparator }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(word => char.ToUpper(word[0]) + word.Substring(1))
+                .Aggregate((previous, current) => previous + current);
     }
 
-    public static string NormalizeLineEndings(this string text)
-    {
-        return LineEndings.Replace(text, Environment.NewLine);
-    }
+    public static string NormalizeLineEndings(this string text) =>
+        LineEndings.Replace(text, Environment.NewLine);
 
     public static string GenerateCommentString(string customComment)
     {
@@ -54,13 +52,7 @@ public static class TextHelpers
 // </auto-generated>{Environment.NewLine}{Environment.NewLine}";
     }
 
-    public static string GetEnumerableType(string typeName)
-    {
-        if (string.IsNullOrWhiteSpace(typeName))
-        {
-            throw new ArgumentException("", nameof(typeName));
-        }
-
-        return $"{nameof(IEnumerable)}<{typeName}>";
-    }
+    public static string GetEnumerableType(string typeName) => string.IsNullOrWhiteSpace(typeName)
+        ? throw new ArgumentException("", nameof(typeName))
+        : $"{nameof(IEnumerable)}<{typeName}>";
 }

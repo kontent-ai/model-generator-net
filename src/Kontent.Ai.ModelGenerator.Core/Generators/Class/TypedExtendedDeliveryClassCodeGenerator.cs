@@ -85,13 +85,7 @@ public class TypedExtendedDeliveryClassCodeGenerator : ClassCodeGenerator
 
     private static string GetNonEnumerableTypeName(string typeName) => Regex.Match(typeName, "[^\\>|\\<]\\w+\\b(?<!\\bIEnumerable)").Value;
 
-    private static string GetOriginalPropertyName(string propertyName, string typeName)
-    {
-        if (propertyName == typeName)
-        {
-            return typeName;
-        }
-
-        return propertyName.Substring(0, propertyName.Length - typeName.Length);
-    }
+    private static string GetOriginalPropertyName(string propertyName, string typeName) => propertyName == typeName
+        ? typeName
+        : propertyName.Substring(0, propertyName.Length - typeName.Length);
 }

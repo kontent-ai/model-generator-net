@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using FluentAssertions;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Microsoft.CodeAnalysis;
@@ -33,8 +34,8 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
     {
         var classCodeGenerator = new DeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
 
-        Assert.NotNull(classCodeGenerator);
-        Assert.True(classCodeGenerator.OverwriteExisting);
+        classCodeGenerator.Should().NotBeNull();
+        classCodeGenerator.OverwriteExisting.Should().BeTrue();
     }
 
     [Fact]
@@ -47,7 +48,7 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         var executingPath = AppContext.BaseDirectory;
         var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
 
-        Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
+        compiledCode.Should().Be(expectedCode);
     }
 
     [Fact]

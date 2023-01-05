@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Xunit;
@@ -15,8 +16,8 @@ public class ContentItemClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
     {
         var classCodeGenerator = new ContentItemClassCodeGenerator();
 
-        Assert.NotNull(classCodeGenerator);
-        Assert.True(classCodeGenerator.OverwriteExisting);
+        classCodeGenerator.Should().NotBeNull();
+        classCodeGenerator.OverwriteExisting.Should().BeTrue();
     }
 
     [Fact]
@@ -29,7 +30,7 @@ public class ContentItemClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         var executingPath = AppContext.BaseDirectory;
         var expectedCode = File.ReadAllText(executingPath + "/Assets/IContentItem_CompiledCode.txt");
 
-        Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
+        compiledCode.Should().Be(expectedCode);
     }
 
     [Fact]

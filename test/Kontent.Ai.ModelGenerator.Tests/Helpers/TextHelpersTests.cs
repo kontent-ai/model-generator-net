@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Xunit;
@@ -10,7 +11,9 @@ public class TextHelpersTests
     [Fact]
     public void GetValidPascalCaseIdentifierName_ThrowsAnExceptionForNullValue()
     {
-        Assert.Throws<ArgumentNullException>(() => TextHelpers.GetValidPascalCaseIdentifierName(null));
+        var getValidPascalCaseIdentifierNameCall = () => TextHelpers.GetValidPascalCaseIdentifierName(null);
+
+        getValidPascalCaseIdentifierNameCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Theory]
@@ -20,7 +23,9 @@ public class TextHelpersTests
     [InlineData("$^123")]
     public void GetValidPascalCaseIdentifierName_ThrowsAnExceptionForInvalidInput(string name)
     {
-        Assert.Throws<InvalidIdentifierException>(() => TextHelpers.GetValidPascalCaseIdentifierName(name));
+        var getValidPascalCaseIdentifierNameCall = () => TextHelpers.GetValidPascalCaseIdentifierName(name);
+
+        getValidPascalCaseIdentifierNameCall.Should().ThrowExactly<InvalidIdentifierException>();
     }
 
     [Theory]
@@ -34,7 +39,8 @@ public class TextHelpersTests
     public void GetValidPascalCaseIdentifierName(string name, string expected)
     {
         string result = TextHelpers.GetValidPascalCaseIdentifierName(name);
-        Assert.Equal(expected, result);
+
+        result.Should().Be(expected);
     }
 
     [Theory]
@@ -43,7 +49,9 @@ public class TextHelpersTests
     [InlineData(" ")]
     public void GenerateCommentString_CustomCommentIsNullOrEmptyOrWhiteSpace_Throws(string customComment)
     {
-        Assert.Throws<ArgumentNullException>(() => TextHelpers.GenerateCommentString(customComment));
+        var generateCommentStringCall = () => TextHelpers.GenerateCommentString(customComment);
+
+        generateCommentStringCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
@@ -61,7 +69,7 @@ public class TextHelpersTests
 
         var result = TextHelpers.GenerateCommentString(customComment);
 
-        Assert.Equal(expectedComment, result);
+        result.Should().Be(expectedComment);
     }
 
     [Theory]
@@ -70,7 +78,9 @@ public class TextHelpersTests
     [InlineData(" ")]
     public void GetEnumerableType_TypeNameIsNullOrWhitespace_Throws(string typeName)
     {
-        Assert.Throws<ArgumentException>(() => TextHelpers.GetEnumerableType(typeName));
+        var getEnumerableTypeCall = () => TextHelpers.GetEnumerableType(typeName);
+
+        getEnumerableTypeCall.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
@@ -80,6 +90,6 @@ public class TextHelpersTests
 
         var result = TextHelpers.GetEnumerableType(typeName);
 
-        Assert.Equal("IEnumerable<Hero>", result);
+        result.Should().Be("IEnumerable<Hero>");
     }
 }

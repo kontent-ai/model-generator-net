@@ -11,12 +11,7 @@ public class ContentItemClassCodeGenerator : ClassCodeGenerator
     public const string DefaultContentItemClassName = "IContentItem";
 
     public ContentItemClassCodeGenerator(string @namespace = DefaultNamespace)
-        : this(new ClassDefinition(DefaultContentItemClassName), DefaultContentItemClassName, @namespace)
-    {
-    }
-
-    private ContentItemClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace)
-        : base(classDefinition, classFilename, @namespace)
+        : base(new ClassDefinition(DefaultContentItemClassName), DefaultContentItemClassName, @namespace)
     {
     }
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
@@ -38,7 +39,9 @@ public class TypedDeliveryPropertyMapperTests
             ExtendedDeliverModels = true
         };
 
-        Assert.Throws<ArgumentNullException>(() => TypedDeliveryPropertyMapper.TryMap(null, contentTypes, options, out _));
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(null, contentTypes, options, out _);
+
+        tryMapCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
@@ -55,7 +58,9 @@ public class TypedDeliveryPropertyMapperTests
             ExtendedDeliverModels = true
         };
 
-        Assert.Throws<ArgumentNullException>(() => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, options, out _));
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, options, out _);
+
+        tryMapCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
@@ -68,7 +73,9 @@ public class TypedDeliveryPropertyMapperTests
             ExtendedDeliverModels = true
         };
 
-        Assert.Throws<ArgumentNullException>(() => TypedDeliveryPropertyMapper.TryMap(element, null, options, out _));
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, null, options, out _);
+
+        tryMapCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
@@ -82,7 +89,9 @@ public class TypedDeliveryPropertyMapperTests
             ExtendedDeliverModels = true
         };
 
-        Assert.Throws<ArgumentException>(() => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, options, out _));
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, options, out _);
+
+        tryMapCall.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
@@ -94,7 +103,9 @@ public class TypedDeliveryPropertyMapperTests
         };
         var element = new LinkedItemsElementMetadataModel();
 
-        Assert.Throws<ArgumentNullException>(() => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, null, out _));
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, null, out _);
+
+        tryMapCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
@@ -111,7 +122,9 @@ public class TypedDeliveryPropertyMapperTests
             ExtendedDeliverModels = false
         };
 
-        Assert.Throws<ArgumentException>(() => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, options, out _));
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, options, out _);
+
+        tryMapCall.Should().ThrowExactly<ArgumentException>();
     }
 
     #region Live models
@@ -154,8 +167,9 @@ public class TypedDeliveryPropertyMapperTests
             limitModel,
             linkedContentTypeModels.Select(ct => ct.Id));
 
-        Assert.Throws<ArgumentException>(() =>
-            TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out _));
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out _);
+
+        tryMapCall.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
@@ -198,12 +212,11 @@ public class TypedDeliveryPropertyMapperTests
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
-        Assert.True(result);
-        Assert.NotNull(typedProperty);
-        Assert.Equal("Articles_Article", typedProperty.Codename);
-        Assert.Null(typedProperty.Id);
-        Assert.Equal("ArticlesArticle", typedProperty.Identifier);
-        Assert.Equal("IEnumerable<Article>", typedProperty.TypeName);
+        result.Should().BeTrue();
+        typedProperty.Codename.Should().Be("Articles_Article");
+        typedProperty.Id.Should().BeNull();
+        typedProperty.Identifier.Should().Be("ArticlesArticle");
+        typedProperty.TypeName.Should().Be("IEnumerable<Article>");
     }
 
     [Fact]
@@ -246,11 +259,11 @@ public class TypedDeliveryPropertyMapperTests
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
-        Assert.True(result);
-        Assert.Equal("article", typedProperty.Codename);
-        Assert.Null(typedProperty.Id);
-        Assert.Equal("Article", typedProperty.Identifier);
-        Assert.Equal("Article", typedProperty.TypeName);
+        result.Should().BeTrue();
+        typedProperty.Codename.Should().Be("article");
+        typedProperty.Id.Should().BeNull();
+        typedProperty.Identifier.Should().Be("Article");
+        typedProperty.TypeName.Should().Be("Article");
     }
 
     [Fact]
@@ -298,8 +311,8 @@ public class TypedDeliveryPropertyMapperTests
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
-        Assert.False(result);
-        Assert.Null(typedProperty);
+        result.Should().BeFalse();
+        typedProperty.Should().BeNull();
     }
 
     [Fact]
@@ -347,8 +360,8 @@ public class TypedDeliveryPropertyMapperTests
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
-        Assert.False(result);
-        Assert.Null(typedProperty);
+        result.Should().BeFalse();
+        typedProperty.Should().BeNull();
     }
 
     #endregion
@@ -393,8 +406,9 @@ public class TypedDeliveryPropertyMapperTests
             limitModel,
             linkedContentTypeModels.Select(ct => ct.Id));
 
-        Assert.Throws<ArgumentException>(() =>
-            TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out _));
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out _);
+
+        tryMapCall.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
@@ -437,11 +451,11 @@ public class TypedDeliveryPropertyMapperTests
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
 
-        Assert.True(result);
-        Assert.Equal("Articles_Article", typedProperty.Codename);
-        Assert.Null(typedProperty.Id);
-        Assert.Equal("ArticlesArticle", typedProperty.Identifier);
-        Assert.Equal($"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>", typedProperty.TypeName);
+        result.Should().BeTrue();
+        typedProperty.Codename.Should().Be("Articles_Article");
+        typedProperty.Id.Should().BeNull();
+        typedProperty.Identifier.Should().Be("ArticlesArticle");
+        typedProperty.TypeName.Should().Be($"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>");
     }
 
     [Fact]
@@ -484,11 +498,11 @@ public class TypedDeliveryPropertyMapperTests
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
 
-        Assert.True(result);
-        Assert.Equal("article", typedProperty.Codename);
-        Assert.Null(typedProperty.Id);
-        Assert.Equal("Article", typedProperty.Identifier);
-        Assert.Equal("IEnumerable<IContentItem>", typedProperty.TypeName);
+        result.Should().BeTrue();
+        typedProperty.Codename.Should().Be("article");
+        typedProperty.Id.Should().BeNull();
+        typedProperty.Identifier.Should().Be("Article");
+        typedProperty.TypeName.Should().Be("IEnumerable<IContentItem>");
     }
 
     [Fact]
@@ -536,8 +550,8 @@ public class TypedDeliveryPropertyMapperTests
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
 
-        Assert.False(result);
-        Assert.Null(typedProperty);
+        result.Should().BeFalse();
+        typedProperty.Should().BeNull();
     }
 
     [Fact]
@@ -585,8 +599,8 @@ public class TypedDeliveryPropertyMapperTests
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
 
-        Assert.False(result);
-        Assert.Null(typedProperty);
+        result.Should().BeFalse();
+        typedProperty.Should().BeNull();
     }
 
     #endregion

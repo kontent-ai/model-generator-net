@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using FluentAssertions;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
@@ -74,7 +75,7 @@ public class ArgHelpersTests
                 Guid.NewGuid().ToString()
         });
 
-        Assert.Equal(ExpectedDeliveryMappings, result);
+        result.Should().BeEquivalentTo(ExpectedDeliveryMappings);
     }
 
     [Fact]
@@ -88,7 +89,7 @@ public class ArgHelpersTests
                 "false"
         });
 
-        Assert.Equal(ExpectedDeliveryMappings, result);
+        result.Should().BeEquivalentTo(ExpectedDeliveryMappings);
     }
 
     [Fact]
@@ -102,7 +103,7 @@ public class ArgHelpersTests
                 "true"
         });
 
-        Assert.Equal(ExpectedManagementMappings, result);
+        result.Should().BeEquivalentTo(ExpectedManagementMappings);
     }
 
     [Fact]
@@ -116,7 +117,7 @@ public class ArgHelpersTests
             "true"
         });
 
-        Assert.Equal(ExpectedExtendedDeliveryMappings, result);
+        result.Should().BeEquivalentTo(ExpectedExtendedDeliveryMappings);
     }
 
     [Fact]
@@ -130,7 +131,7 @@ public class ArgHelpersTests
             "true"
         });
 
-        Assert.Equal(ExpectedExtendedDeliveryMappings, result);
+        result.Should().BeEquivalentTo(ExpectedExtendedDeliveryMappings);
     }
 
     [Fact]
@@ -146,7 +147,7 @@ public class ArgHelpersTests
             "true"
         });
 
-        Assert.Equal(ExpectedExtendedDeliveryMappings, result);
+        result.Should().BeEquivalentTo(ExpectedExtendedDeliveryMappings);
     }
 
     [Fact]
@@ -164,7 +165,7 @@ public class ArgHelpersTests
 
         var result = ArgHelpers.ContainsValidArgs(args);
 
-        Assert.True(result);
+        result.Should().BeTrue();
     }
 
     [Theory]
@@ -181,7 +182,7 @@ public class ArgHelpersTests
         };
         var result = ArgHelpers.ContainsValidArgs(args);
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -198,7 +199,7 @@ public class ArgHelpersTests
 
         var result = ArgHelpers.ContainsValidArgs(args);
 
-        Assert.True(result);
+        result.Should().BeTrue();
     }
 
     [Theory]
@@ -216,7 +217,7 @@ public class ArgHelpersTests
         };
         var result = ArgHelpers.ContainsValidArgs(args);
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -234,7 +235,7 @@ public class ArgHelpersTests
 
         var result = ArgHelpers.ContainsValidArgs(args);
 
-        Assert.True(result);
+        result.Should().BeTrue();
     }
 
     [Theory]
@@ -255,7 +256,7 @@ public class ArgHelpersTests
 
         var result = ArgHelpers.ContainsValidArgs(args);
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -263,8 +264,7 @@ public class ArgHelpersTests
     {
         var result = ArgHelpers.GetUsedSdkInfo(DesiredModelsType.Management);
 
-        Assert.Equal("management-sdk-net", result.Name);
-        Assert.Equal(Assembly.GetAssembly(typeof(ManagementOptions)).GetName().Version.ToString(3), result.Version);
+        AssertUsedSdkInfoResult(result, "management-sdk-net", typeof(ManagementOptions));
     }
 
     [Fact]
@@ -272,8 +272,7 @@ public class ArgHelpersTests
     {
         var result = ArgHelpers.GetUsedSdkInfo(DesiredModelsType.Delivery);
 
-        Assert.Equal("delivery-sdk-net", result.Name);
-        Assert.Equal(Assembly.GetAssembly(typeof(DeliveryOptions)).GetName().Version.ToString(3), result.Version);
+        AssertUsedSdkInfoResult(result, "delivery-sdk-net", typeof(DeliveryOptions));
     }
 
     [Fact]
@@ -281,8 +280,7 @@ public class ArgHelpersTests
     {
         var result = ArgHelpers.GetUsedSdkInfo(DesiredModelsType.ExtendedDelivery);
 
-        Assert.Equal("delivery-sdk-net", result.Name);
-        Assert.Equal(Assembly.GetAssembly(typeof(DeliveryOptions)).GetName().Version.ToString(3), result.Version);
+        AssertUsedSdkInfoResult(result, "delivery-sdk-net", typeof(DeliveryOptions));
     }
 
     private static IEnumerable<string> AppendValuesToArgs(IDictionary<string, string> mappings) => AppendValuesToArgs(mappings.Keys);
@@ -301,5 +299,11 @@ public class ArgHelpersTests
             argsWithValue.Add("arg_value");
         }
         return argsWithValue;
+    }
+
+    private static void AssertUsedSdkInfoResult(UsedSdkInfo result, string expectedName, Type expectedType)
+    {
+        result.Name.Should().Be(expectedName);
+        result.Version.Should().Be(Assembly.GetAssembly(expectedType).GetName().Version.ToString(3));
     }
 }

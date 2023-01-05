@@ -4,7 +4,6 @@ using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Kontent.Ai.Management.Extensions;

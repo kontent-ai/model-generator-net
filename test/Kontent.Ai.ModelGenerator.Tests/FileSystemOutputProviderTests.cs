@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using System;
 using System.IO;
+using FluentAssertions;
 using Xunit;
 
 namespace Kontent.Ai.ModelGenerator.Tests;
@@ -20,14 +21,15 @@ public class FileSystemOutputProviderTests
         mockOptions.Setup(x => x.Value).Returns(options);
 
         var outputProvider = new FileSystemOutputProvider(mockOptions.Object);
-        Assert.Empty(options.OutputDir);
-        Assert.NotEmpty(outputProvider.OutputDir);
+
+        options.OutputDir.Should().BeEmpty();
+        outputProvider.OutputDir.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
     public void CreateCodeGeneratorOptions_OutputSetInParameters_OutputDirHasCustomValue()
     {
-        var expectedOutputDir = Environment.CurrentDirectory;
+        var expectedOutputDir = Environment.CurrentDirectory.TrimEnd(Path.DirectorySeparatorChar);
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         var options = new CodeGeneratorOptions
         {
@@ -36,6 +38,9 @@ public class FileSystemOutputProviderTests
         mockOptions.Setup(x => x.Value).Returns(options);
 
         var outputProvider = new FileSystemOutputProvider(mockOptions.Object);
-        Assert.Equal(expectedOutputDir.TrimEnd(Path.DirectorySeparatorChar), outputProvider.OutputDir.TrimEnd(Path.DirectorySeparatorChar));
+
+        var result = outputProvider.OutputDir.TrimEnd(Path.DirectorySeparatorChar);
+
+        result.Should().Be(expectedOutputDir);
     }
 }

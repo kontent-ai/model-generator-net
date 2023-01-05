@@ -75,32 +75,18 @@ public class Property
         Id = id;
     }
 
-    public static bool IsContentTypeSupported(string elementType, bool extendedDeliverModels)
-    {
-        return extendedDeliverModels
-            ? ExtendedDeliverElementTypesDictionary.ContainsKey(elementType)
-            : DeliverElementTypesDictionary.ContainsKey(elementType);
-    }
+    public static bool IsContentTypeSupported(string elementType, bool extendedDeliverModels) => extendedDeliverModels
+        ? ExtendedDeliverElementTypesDictionary.ContainsKey(elementType)
+        : DeliverElementTypesDictionary.ContainsKey(elementType);
 
-    public static bool IsContentTypeSupported(string elementType)
-    {
-        return DeliverElementTypesDictionary.ContainsKey(elementType);
-    }
+    public static bool IsContentTypeSupported(string elementType) => DeliverElementTypesDictionary.ContainsKey(elementType);
 
-    public static bool IsContentTypeSupported(ElementMetadataType elementType)
-    {
-        return ManagementElementTypesDictionary.ContainsKey(elementType);
-    }
+    public static bool IsContentTypeSupported(ElementMetadataType elementType) =>
+        ManagementElementTypesDictionary.ContainsKey(elementType);
 
-    public static Property FromContentTypeElement(string codename, string elementType)
-    {
-        if (IsContentTypeSupported(elementType))
-        {
-            return new Property(codename, DeliverElementTypesDictionary[elementType]);
-        }
-
-        throw new ArgumentException($"Unknown Content Type {elementType}", nameof(elementType));
-    }
+    public static Property FromContentTypeElement(string codename, string elementType) => IsContentTypeSupported(elementType)
+        ? new Property(codename, DeliverElementTypesDictionary[elementType])
+        : throw new ArgumentException($"Unknown Content Type {elementType}", nameof(elementType));
 
     public static Property FromContentTypeElement(ElementMetadataBase element)
     {
@@ -117,10 +103,8 @@ public class Property
         throw new ArgumentException($"Unknown Content Type {element.Type}", nameof(element));
     }
 
-    public static Property FromContentTypeElement(ElementMetadataBase element, string elementType)
-    {
-        return FromContentTypeElement(element, elementType, element.Codename);
-    }
+    public static Property FromContentTypeElement(ElementMetadataBase element, string elementType) =>
+        FromContentTypeElement(element, elementType, element.Codename);
 
     public static Property FromContentTypeElement(ElementMetadataBase element, string elementType, string finalPropertyName)
     {

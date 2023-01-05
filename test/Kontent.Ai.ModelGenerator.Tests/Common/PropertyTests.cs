@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Tests.TestHelpers;
@@ -15,9 +16,9 @@ public class PropertyTests
     {
         var element = new Property("element_codename", "string");
 
-        Assert.Equal("ElementCodename", element.Identifier);
-        Assert.Equal("string", element.TypeName);
-        Assert.Null(element.Id);
+        element.Identifier.Should().Be("ElementCodename");
+        element.TypeName.Should().Be("string");
+        element.Id.Should().BeNull();
     }
 
     [Theory]
@@ -28,9 +29,9 @@ public class PropertyTests
     {
         var element = new Property("element_codename", "string", id);
 
-        Assert.Equal("ElementCodename", element.Identifier);
-        Assert.Equal("string", element.TypeName);
-        Assert.Equal(id, element.Id);
+        element.Identifier.Should().Be("ElementCodename");
+        element.TypeName.Should().Be("string");
+        element.Id.Should().Be(id);
     }
 
     [Theory]
@@ -52,8 +53,8 @@ public class PropertyTests
 
         var element = Property.FromContentTypeElement(codename, contentType);
 
-        Assert.Equal(expectedCodename, element.Identifier);
-        Assert.Equal(expectedTypeName, element.TypeName);
+        element.Identifier.Should().Be(expectedCodename);
+        element.TypeName.Should().Be(expectedTypeName);
     }
 
     [Theory, MemberData(nameof(ManagementElements))]
@@ -61,22 +62,26 @@ public class PropertyTests
     {
         var property = Property.FromContentTypeElement(element);
 
-        Assert.Equal(expectedCodename, property.Identifier);
-        Assert.Equal(expectedTypeName, property.TypeName);
-        Assert.Equal(element.Id.ToString(), property.Id);
+        property.Identifier.Should().Be(expectedCodename);
+        property.TypeName.Should().Be(expectedTypeName);
+        property.Id.Should().Be(element.Id.ToString());
     }
 
     [Fact]
     public void FromContentTypeElement_DeliveryApiModel_InvalidContentTypeElement_Throws()
     {
-        Assert.Throws<ArgumentException>(() => Property.FromContentTypeElement("codename", "unknown content type"));
+        var fromContentTypeElementCall = () => Property.FromContentTypeElement("codename", "unknown content type");
+
+        fromContentTypeElementCall.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
     public void FromContentTypeElement_ManagementApiModel_GuidelinesElement_Throws()
     {
-        Assert.Throws<UnsupportedTypeException>(() =>
-            Property.FromContentTypeElement(TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), "codename")));
+        var fromContentTypeElementCall = () =>
+            Property.FromContentTypeElement(TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), "codename"));
+
+        fromContentTypeElementCall.Should().ThrowExactly<UnsupportedTypeException>();
     }
 
     public static IEnumerable<object[]> ManagementElements =>

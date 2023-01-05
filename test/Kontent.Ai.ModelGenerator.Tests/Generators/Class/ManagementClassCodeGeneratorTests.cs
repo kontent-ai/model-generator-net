@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using FluentAssertions;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
@@ -44,8 +45,8 @@ public class ManagementClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
     {
         var classCodeGenerator = new ManagementClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
 
-        Assert.NotNull(classCodeGenerator);
-        Assert.True(classCodeGenerator.OverwriteExisting);
+        classCodeGenerator.Should().NotBeNull();
+        classCodeGenerator.OverwriteExisting.Should().BeTrue();
     }
 
     [Fact]
@@ -58,7 +59,7 @@ public class ManagementClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         var executingPath = AppContext.BaseDirectory;
         var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_ManagementApi.txt");
 
-        Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
+        compiledCode.Should().Be(expectedCode);
     }
 
     [Fact]

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.Management.Models.TypeSnippets;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
@@ -14,15 +15,19 @@ public class ManagementElementHelperTests
     [Fact]
     public void GetManagementContentTypeSnippetElements_ManagementSnippetsAreNull_ThrowsException()
     {
-        Assert.Throws<ArgumentNullException>(() =>
-            ManagementElementHelper.GetManagementContentTypeSnippetElements(new TextElementMetadataModel(), null));
+        var getManagementContentTypeSnippetElementsCall = () =>
+            ManagementElementHelper.GetManagementContentTypeSnippetElements(new TextElementMetadataModel(), null);
+
+        getManagementContentTypeSnippetElementsCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
     public void GetManagementContentTypeSnippetElements_ManagementContentTypeIsNull_ThrowsException()
     {
-        Assert.Throws<ArgumentNullException>(() =>
-            ManagementElementHelper.GetManagementContentTypeSnippetElements(null, new List<ContentTypeSnippetModel>()));
+        var getManagementContentTypeSnippetElementsCall = () =>
+            ManagementElementHelper.GetManagementContentTypeSnippetElements(null, new List<ContentTypeSnippetModel>());
+
+        getManagementContentTypeSnippetElementsCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
@@ -43,8 +48,8 @@ public class ManagementElementHelperTests
 
         var result = ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, snippets);
 
-        Assert.NotNull(result);
-        Assert.Empty(result);
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
     }
 
     [Fact]
@@ -54,7 +59,10 @@ public class ManagementElementHelperTests
 
         var snippetElement = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), contentTypeElementCodename, ElementMetadataType.ContentTypeSnippet);
 
-        Assert.Throws<ArgumentException>(() => ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, new List<ContentTypeSnippetModel>()));
+        var getManagementContentTypeSnippetElementsCall =
+            () => ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, new List<ContentTypeSnippetModel>());
+
+        getManagementContentTypeSnippetElementsCall.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
@@ -78,7 +86,9 @@ public class ManagementElementHelperTests
             }
         };
 
-        Assert.Throws<ArgumentException>(() => ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, snippets));
+        var getManagementContentTypeSnippetElementsCall = () => ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, snippets);
+
+        getManagementContentTypeSnippetElementsCall.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
@@ -90,7 +100,7 @@ public class ManagementElementHelperTests
 
         var result = ManagementElementHelper.GetManagementContentTypeSnippetElements(element, new List<ContentTypeSnippetModel>());
 
-        Assert.Null(result);
+        result.Should().BeNull();
     }
 
     [Fact]
@@ -117,9 +127,9 @@ public class ManagementElementHelperTests
 
         var result = ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, snippets).ToList();
 
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(result, el => el.Id == expectedElementId);
-        Assert.Contains(result, el => el.Id == expectedElement2Id);
+        result.Should().NotBeNullOrEmpty();
+        result.Count.Should().Be(2);
+        result.Should().ContainSingle(el => el.Id == expectedElementId);
+        result.Should().ContainSingle(el => el.Id == expectedElement2Id);
     }
 }
