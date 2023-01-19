@@ -11,6 +11,8 @@ namespace Kontent.Ai.ModelGenerator.Core.Common;
 
 public class Property
 {
+    private const string RichTextElementType = "rich_text";
+    private const string DateTimeElementType = "date_time";
     public const string StructuredSuffix = "(structured)";
 
     public string Identifier => TextHelpers.GetValidPascalCaseIdentifierName(Codename);
@@ -24,14 +26,15 @@ public class Property
     /// </summary>
     public string TypeName { get; }
 
-    internal static readonly Dictionary<string, string> DeliverElementTypesDictionary = new Dictionary<string, string>
+    private static readonly Dictionary<string, string> DeliverElementTypesDictionary = new Dictionary<string, string>
     {
         { "text", "string" },
-        { "rich_text", "string" },
-        { "rich_text" + StructuredSuffix, nameof(IRichTextContent)},
+        { RichTextElementType, "string" },
+        { $"{RichTextElementType}{StructuredSuffix}", nameof(IRichTextContent)},
         { "number", "decimal?" },
         { "multiple_choice", $"{nameof(IEnumerable)}<{nameof(IMultipleChoiceOption)}>"},
-        { "date_time", "DateTime?" },
+        { DateTimeElementType, "DateTime?" },
+        { $"{DateTimeElementType}{StructuredSuffix}", nameof(IDateTimeContent) },
         { "asset", $"{nameof(IEnumerable)}<{nameof(IAsset)}>" },
         { "modular_content", $"{nameof(IEnumerable)}<{nameof(Object).ToLower(CultureInfo.InvariantCulture)}>" },
         { "taxonomy", $"{nameof(IEnumerable)}<{nameof(ITaxonomyTerm)}>" },
@@ -61,12 +64,16 @@ public class Property
         Id = id;
     }
 
-    public static bool IsContentTypeSupported(string elementType)
+    public static bool IsDateTimeElementType(string elementType) => elementType == DateTimeElementType;
+
+    public static bool IsRichTextElementType(string elementType) => elementType == RichTextElementType;
+
+    private static bool IsContentTypeSupported(string elementType)
     {
         return DeliverElementTypesDictionary.ContainsKey(elementType);
     }
 
-    public static bool IsContentTypeSupported(ElementMetadataType elementType)
+    private static bool IsContentTypeSupported(ElementMetadataType elementType)
     {
         return ManagementElementTypesDictionary.ContainsKey(elementType);
     }
