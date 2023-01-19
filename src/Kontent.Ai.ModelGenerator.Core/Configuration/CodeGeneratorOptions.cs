@@ -1,13 +1,16 @@
-﻿using Kontent.Ai.Delivery.Abstractions;
+﻿using System;
+using System.Linq;
+using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management.Configuration;
 
 namespace Kontent.Ai.ModelGenerator.Core.Configuration;
 
 public class CodeGeneratorOptions
 {
+    private const char StructuredModelSeparator = ',';
     private const bool DefaultGeneratePartials = true;
     private const bool DefaultWithTypeProvider = true;
-    private const bool DefaultStructuredModel = false;
+    private const string DefaultStructuredModel = null;
     private const bool DefaultManagementApi = false;
     private const string DefaultFileNameSuffix = "Generated";
 
@@ -49,8 +52,32 @@ public class CodeGeneratorOptions
     /// <summary>
     /// Indicates whether the classes should be generated with types that represent structured data model
     /// </summary>
-    public bool StructuredModel { get; set; } = DefaultStructuredModel;
+    public string StructuredModel { private get; set; } = DefaultStructuredModel;
 
+    public StructuredModelFlags StructuredModelFlags
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(StructuredModel))
+            {
+                return StructuredModelFlags.NotSet;
+            }
+
+            var splitStructuredModels = StructuredModel.Split(StructuredModelSeparator);
+
+            if (!splitStructuredModels.Any())
+            {
+                return StructuredModelFlags.NotSet;
+            }
+
+            return splitStructuredModels
+                .Select(structuredModel =>
+                    Enum.TryParse<StructuredModelFlags>(structuredModel, true, out var parsed)
+                        ? parsed
+                        : StructuredModelFlags.ValidationIssue)
+                .Aggregate((result, next) => result | next);
+        }
+    }
     /// <summary>
     /// Indicates whether the classes should be generated for CM API SDK
     /// </summary>
