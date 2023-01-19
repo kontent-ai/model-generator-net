@@ -47,16 +47,18 @@ To learn how to generate executables for your favorite target platform, follow t
 
 ### Delivery API parameters
 
-| Short key |       Long key       | Required |   Default value   |                                                                                                                                               Description                                                                                                                                                |
-| --------- | :------------------: | :------: | :---------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| `-p`      |    `--projectid`     |   True   |      `null`       |                                                                                                         A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                                                                                                          |
-| `-n`      |    `--namespace`     |  False   | `KontentAiModels` |                                                                                                           A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                                                                                                           |
-| `-o`      |    `--outputdir`     |  False   |       `\.`        |                                                                                                                                          An output folder path                                                                                                                                           |
-| `-g`      | `--generatepartials` |  False   |      `true`       |                                                                                 Generates partial classes for customization. Partial classes are the best practice for customization so the recommended value is `true`.                                                                                 |
-| `-t`      | `--withtypeprovider` |  False   |      `true`       | Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/strongly-typed-models.md#customizing-the-strong-type-binding-logic) for more info) |
-| `-s`      | `--structuredmodel`  |  False   |      `false`      |              Generates `IRichTextContent` instead of `string` for rich-text elements. This enables utilizing [structured rich-text rendering](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/rich-text/structured-rich-text-rendering.md)               |
-| `-f`      |  `--filenamesuffix`  |  False   |      `null`       |                                                                                                              Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                                                                                                              |
-| `-b`      |    `--baseclass`     |  False   |      `null`       |                                                                                  If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes                                                                                  |
+| Short key |                Long key                 | Required |   Default value   |                                                                                                                                               Description                                                                                                                                                |
+| --------- | :-------------------------------------: | :------: | :---------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| `-p`      |              `--projectid`              |   True   |      `null`       |                                                                                                         A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                                                                                                          |
+| `-n`      |              `--namespace`              |  False   | `KontentAiModels` |                                                                                                           A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                                                                                                           |
+| `-o`      |              `--outputdir`              |  False   |       `\.`        |                                                                                                                                          An output folder path                                                                                                                                           |
+| `-g`      |           `--generatepartials`          |  False   |      `true`       |                                                                                 Generates partial classes for customization. Partial classes are the best practice for customization so the recommended value is `true`.                                                                                 |
+| `-t`      |           `--withtypeprovider`          |  False   |      `true`       | Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/strongly-typed-models.md#customizing-the-strong-type-binding-logic) for more info) |
+| `-s`      |           `--structuredmodel`           |  False   |      `false`      |              Generates `IRichTextContent` instead of `string` for rich-text elements. This enables utilizing [structured rich-text rendering](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/rich-text/structured-rich-text-rendering.md)               |
+| `-f`      |           `--filenamesuffix`            |  False   |      `null`       |                                                                                                              Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                                                                                                              |
+| `-b`      |              `--baseclass`              |  False   |      `null`       |                                                                                  If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes                                                                                  |
+| `-e`      |        `--extendeddelivermodels`        |  False   |     `false`       |                                                                                                                     Indicates whether extended deliver models should be generated                                                                                                                        |
+| `-r`      |    `--extendeddeliverpreviewmodels`     |  False   |     `false`       |                                                                                                                  Indicates whether extended preview deliver models should be generated                                                                                                                   |
 
 ### CLI Syntax
 
@@ -91,6 +93,33 @@ namespace KontentAiModels
         public IEnumerable<MultipleChoiceOption> MultipleChoice { get; set; }
         public DateTime? DateTime { get; set; }
         public IEnumerable<Asset> Asset { get; set; }
+        public IEnumerable<object> ModularContent { get; set; }
+        public IEnumerable<object> Subpages { get; set; }
+        public IEnumerable<TaxonomyTerm> Taxonomy { get; set; }
+        public string UrlSlug { get; set; }
+        public string CustomElement { get; set; }
+        public ContentItemSystemAttributes System { get; set; }
+    }
+}
+```
+
+#### Extended delivery models
+```csharp
+using System;
+using System.Collections.Generic;
+using Kontent.Ai.Delivery.Abstractions;
+
+namespace KontentAiModels
+{
+    public partial class CompleteContentType
+    {
+        public string Text { get; set; }
+        public string RichText { get; set; }
+        public IRichTextContent RichTextStructured { get; set; }
+        public decimal? Number { get; set; }
+        public IEnumerable<MultipleChoiceOption> MultipleChoice { get; set; }
+        public DateTime? DateTime { get; set; }
+        public IEnumerable<IAsset> Asset { get; set; }
         public IEnumerable<object> ModularContent { get; set; }
         public IEnumerable<object> Subpages { get; set; }
         public IEnumerable<TaxonomyTerm> Taxonomy { get; set; }
