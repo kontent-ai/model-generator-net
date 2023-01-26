@@ -19,7 +19,7 @@ public static class DeliveryElementHelper
         {
             elementType += Property.StructuredSuffix;
         }
-        else if (options.StructuredModelFlags.HasFlag(StructuredModelFlags.RichText) && Property.IsRichTextElementType(elementType))
+        else if (options.IsStructuredModelRichText() && Property.IsRichTextElementType(elementType))
         {
             elementType += Property.StructuredSuffix;
         }

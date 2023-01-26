@@ -27,7 +27,7 @@ public static class ValidationExtensions
         }
         else
         {
-            codeGeneratorOptions.DeliveryOptions.Validate();
+            codeGeneratorOptions.DeliveryOptionsValidate();
         }
     }
 
@@ -53,14 +53,19 @@ public static class ValidationExtensions
     /// <summary>
     /// Validates that DeliveryOptions are initialized and performs some extra integrity validations.
     /// </summary>
-    /// <param name="deliveryOptions">DeliveryOptions object to be validated</param>
-    private static void Validate(this DeliveryOptions deliveryOptions)
+    /// <param name="codeGeneratorOptions">CodeGeneratorOptions object containing DeliveryOptions object to be validated</param>
+    private static void DeliveryOptionsValidate(this CodeGeneratorOptions codeGeneratorOptions)
     {
-        if (deliveryOptions == null)
+        if (codeGeneratorOptions.DeliveryOptions == null)
         {
             throw new Exception($"You have to provide at least the '{nameof(DeliveryOptions.ProjectId)}' argument. {SeePart(false)}");
         }
 
-        DeliveryOptionsValidator.Validate(deliveryOptions);
+        if (codeGeneratorOptions.StructuredModelFlags.HasFlag(StructuredModelFlags.ValidationIssue))
+        {
+            throw new Exception($"You have to provide valid '{nameof(CodeGeneratorOptions.StructuredModel)}' argument. {SeePart(false)}");
+        }
+
+        codeGeneratorOptions.DeliveryOptions.Validate();
     }
 }

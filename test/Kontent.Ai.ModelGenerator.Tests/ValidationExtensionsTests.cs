@@ -25,8 +25,13 @@ public class ValidationExtensionsTests
         codeGeneratorOptions.Validate();
     }
 
-    [Fact]
-    public void Validate_DeliveryOptions_Success()
+    [Theory]
+    [InlineData(StructuredModelFlags.NotSet)]
+    [InlineData(StructuredModelFlags.DateTime)]
+    [InlineData(StructuredModelFlags.RichText)]
+    [InlineData(StructuredModelFlags.True)]
+    [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.DateTime | StructuredModelFlags.True)]
+    public void Validate_DeliveryOptions_Success(StructuredModelFlags structuredModel)
     {
         var projectId = Guid.NewGuid().ToString();
         var codeGeneratorOptions = new CodeGeneratorOptions
@@ -35,7 +40,8 @@ public class ValidationExtensionsTests
             DeliveryOptions = new DeliveryOptions
             {
                 ProjectId = projectId
-            }
+            },
+            StructuredModel = structuredModel.ToString()
         };
 
         codeGeneratorOptions.Validate();
@@ -65,6 +71,26 @@ public class ValidationExtensionsTests
         };
 
         Assert.Throws<ArgumentNullException>(() => codeGeneratorOptions.Validate());
+    }
+
+    [Theory]
+    [InlineData(StructuredModelFlags.ValidationIssue)]
+    [InlineData(StructuredModelFlags.ValidationIssue | StructuredModelFlags.DateTime)]
+    [InlineData(StructuredModelFlags.DateTime | StructuredModelFlags.ValidationIssue | StructuredModelFlags.RichText)]
+    public void Validate_DeliveryOptionsStructuredModelFlagsContainValidationIssue_ThrowsException(StructuredModelFlags structuredModel)
+    {
+        var projectId = Guid.NewGuid().ToString();
+        var codeGeneratorOptions = new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            DeliveryOptions = new DeliveryOptions
+            {
+                ProjectId = projectId
+            },
+            StructuredModel = structuredModel.ToString()
+        };
+
+        Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
     }
 
     [Fact]
