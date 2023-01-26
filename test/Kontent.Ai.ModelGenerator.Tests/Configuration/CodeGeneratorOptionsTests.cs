@@ -7,7 +7,7 @@ public class CodeGeneratorOptionsTests
 {
     [Theory]
     [InlineData(StructuredModelFlags.DateTime)]
-    [InlineData(StructuredModelFlags.DateTime | StructuredModelFlags.NotSet | StructuredModelFlags.RichText | StructuredModelFlags.ValidationIssue)]
+    [InlineData(StructuredModelFlags.DateTime | StructuredModelFlags.True | StructuredModelFlags.NotSet | StructuredModelFlags.RichText | StructuredModelFlags.ValidationIssue)]
     public void StructuredModelFlags_CorrectOptions(StructuredModelFlags structuredModel)
     {
         var codeGenerationOptions = new CodeGeneratorOptions

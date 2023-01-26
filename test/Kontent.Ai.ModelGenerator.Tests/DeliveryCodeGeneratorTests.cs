@@ -71,7 +71,8 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     [Theory]
     [InlineData(StructuredModelFlags.DateTime)]
     [InlineData(StructuredModelFlags.RichText)]
-    [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.DateTime)]
+    [InlineData(StructuredModelFlags.True)]
+    [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.DateTime | StructuredModelFlags.True)]
     [InlineData(StructuredModelFlags.NotSet)]
     public void GetClassCodeGenerator_Returns(StructuredModelFlags structuredModel)
     {
