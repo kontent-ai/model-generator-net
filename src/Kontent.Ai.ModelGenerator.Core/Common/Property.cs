@@ -48,6 +48,7 @@ public class Property
         { ElementMetadataType.DateTime.ToString(), "DateTime?" },
         { ElementMetadataType.Asset.ToString(), TextHelpers.GetEnumerableType(nameof(IAsset)) },
         { ElementMetadataType.LinkedItems.ToString(), null },
+        { ElementMetadataType.Subpages.ToString(), null },
         { ElementMetadataType.Taxonomy.ToString(), TextHelpers.GetEnumerableType(nameof(ITaxonomyTerm)) },
         { ElementMetadataType.UrlSlug.ToString(), "string" },
         { ElementMetadataType.Custom.ToString(), "string" }
@@ -110,7 +111,7 @@ public class Property
     {
         if (IsContentTypeSupported(element.Type.ToString(), true))
         {
-            var resultElementType = element.Type == ElementMetadataType.LinkedItems
+            var resultElementType = element.Type is ElementMetadataType.LinkedItems or ElementMetadataType.Subpages
                 ? elementType
                 : ExtendedDeliverElementTypesDictionary[elementType];
 

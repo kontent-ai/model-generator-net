@@ -27,7 +27,7 @@ public class TypedDeliveryPropertyMapperTests
     };
 
     [Fact]
-    public void TryMap_LinkedItemsElementIsNull_Throws()
+    public void TryMap_ElementIsNull_Throws()
     {
         var contentTypes = new List<ContentTypeModel>
         {
@@ -45,7 +45,7 @@ public class TypedDeliveryPropertyMapperTests
     }
 
     [Fact]
-    public void TryMap_NotLinkedItemsElement_Throws()
+    public void TryMap_NotLinkedItemsElementOrSubpages_Throws()
     {
         var contentTypes = new List<ContentTypeModel>
         {
@@ -60,13 +60,13 @@ public class TypedDeliveryPropertyMapperTests
 
         var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, options, out _);
 
-        tryMapCall.Should().ThrowExactly<ArgumentNullException>();
+        tryMapCall.Should().ThrowExactly<ArgumentException>();
     }
 
-    [Fact]
-    public void TryMap_ContentTypesIsNull_Throws()
+    [Theory]
+    [MemberData(nameof(GetBasicAllowedElements))]
+    public void TryMap_ContentTypesIsNull_Throws(ElementMetadataBase element)
     {
-        var element = new LinkedItemsElementMetadataModel();
         var options = new CodeGeneratorOptions
         {
             ExtendedDeliverPreviewModels = false,
@@ -78,11 +78,11 @@ public class TypedDeliveryPropertyMapperTests
         tryMapCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
-    [Fact]
-    public void TryMap_ContentTypesIsEmpty_Throws()
+    [Theory]
+    [MemberData(nameof(GetBasicAllowedElements))]
+    public void TryMap_ContentTypesIsEmpty_Throws(ElementMetadataBase element)
     {
         var contentTypes = new List<ContentTypeModel>();
-        var element = new LinkedItemsElementMetadataModel();
         var options = new CodeGeneratorOptions
         {
             ExtendedDeliverPreviewModels = false,
@@ -94,28 +94,28 @@ public class TypedDeliveryPropertyMapperTests
         tryMapCall.Should().ThrowExactly<ArgumentException>();
     }
 
-    [Fact]
-    public void TryMap_OptionsIsNull_Throws()
+    [Theory]
+    [MemberData(nameof(GetBasicAllowedElements))]
+    public void TryMap_OptionsIsNull_Throws(ElementMetadataBase element)
     {
         var contentTypes = new List<ContentTypeModel>
         {
             new ContentTypeModel()
         };
-        var element = new LinkedItemsElementMetadataModel();
 
         var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, null, out _);
 
         tryMapCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
-    [Fact]
-    public void TryMap_GeneralExtendedDeliveryModelsIsFalse_Throws()
+    [Theory]
+    [MemberData(nameof(GetBasicAllowedElements))]
+    public void TryMap_GeneralExtendedDeliveryModelsIsFalse_Throws(ElementMetadataBase element)
     {
         var contentTypes = new List<ContentTypeModel>
         {
             new ContentTypeModel()
         };
-        var element = new LinkedItemsElementMetadataModel();
         var options = new CodeGeneratorOptions
         {
             ExtendedDeliverPreviewModels = false,
@@ -129,23 +129,10 @@ public class TypedDeliveryPropertyMapperTests
 
     #region Live models
 
-    [Fact]
-    public void TryMap_Live_CouldNotFindAllowedType_Throws()
+    [Theory]
+    [MemberData(nameof(GetNonMatchingAllowedTypesElements))]
+    public void TryMap_Live_CouldNotFindAllowedType_Throws(ElementMetadataBase element)
     {
-        var limitModel = new LimitModel
-        {
-            Condition = LimitType.AtLeast,
-            Value = 1
-        };
-
-        var linkedContentTypeModels = new List<ContentTypeModel>()
-        {
-            new ContentTypeModel
-            {
-                Codename = "article",
-                Id = Guid.NewGuid()
-            }
-        };
 
         var allContentTypes = new List<ContentTypeModel>()
         {
@@ -161,35 +148,15 @@ public class TypedDeliveryPropertyMapperTests
             }
         };
 
-        var element = TestDataGenerator.GenerateLinkedItemsElement(
-            Guid.NewGuid().ToString(),
-            "articles",
-            limitModel,
-            linkedContentTypeModels.Select(ct => ct.Id));
-
         var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out _);
 
         tryMapCall.Should().ThrowExactly<ArgumentException>();
     }
 
-    [Fact]
-    public void TryMap_Live_SingleAllowedTypeMultiItems_Returns()
+    [Theory]
+    [MemberData(nameof(GetSingleAllowedTypeMultiItems))]
+    public void TryMap_Live_SingleAllowedTypeMultiItems_Returns(List<ContentTypeModel> linkedContentTypeModels, ElementMetadataBase element)
     {
-        var limitModel = new LimitModel
-        {
-            Condition = LimitType.AtLeast,
-            Value = 1
-        };
-
-        var linkedContentTypeModels = new List<ContentTypeModel>()
-        {
-            new ContentTypeModel
-            {
-                Codename = "article",
-                Id = Guid.NewGuid()
-            }
-        };
-
         var allContentTypes = new List<ContentTypeModel>()
         {
             new ContentTypeModel
@@ -203,12 +170,6 @@ public class TypedDeliveryPropertyMapperTests
                 Id = Guid.NewGuid()
             }
         }.Union(linkedContentTypeModels).ToList();
-
-        var element = TestDataGenerator.GenerateLinkedItemsElement(
-            Guid.NewGuid().ToString(),
-            "articles",
-            limitModel,
-            linkedContentTypeModels.Select(ct => ct.Id));
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
@@ -219,24 +180,10 @@ public class TypedDeliveryPropertyMapperTests
         typedProperty.TypeName.Should().Be("IEnumerable<Article>");
     }
 
-    [Fact]
-    public void TryMap_Live_SingleAllowedTypeExactlySingleItem_Returns()
+    [Theory]
+    [MemberData(nameof(GetSingleAllowedTypeExactlySingleItem))]
+    public void TryMap_Live_SingleAllowedTypeExactlySingleItem_Returns(List<ContentTypeModel> linkedContentTypeModels, ElementMetadataBase element)
     {
-        var limitModel = new LimitModel
-        {
-            Condition = LimitType.Exactly,
-            Value = 1
-        };
-
-        var linkedContentTypeModels = new List<ContentTypeModel>()
-        {
-            new ContentTypeModel
-            {
-                Codename = "article",
-                Id = Guid.NewGuid()
-            }
-        };
-
         var allContentTypes = new List<ContentTypeModel>()
         {
             new ContentTypeModel
@@ -250,12 +197,6 @@ public class TypedDeliveryPropertyMapperTests
                 Id = Guid.NewGuid()
             }
         }.Union(linkedContentTypeModels).ToList();
-
-        var element = TestDataGenerator.GenerateLinkedItemsElement(
-            Guid.NewGuid().ToString(),
-            "article",
-            limitModel,
-            linkedContentTypeModels.Select(ct => ct.Id));
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
@@ -266,29 +207,10 @@ public class TypedDeliveryPropertyMapperTests
         typedProperty.TypeName.Should().Be("Article");
     }
 
-    [Fact]
-    public void TryMap_Live_MultiAllowedTypesSingleItem_Returns()
+    [Theory]
+    [MemberData(nameof(GetMultiAllowedTypesSingleItem))]
+    public void TryMap_Live_MultiAllowedTypesSingleItem_Returns(List<ContentTypeModel> linkedContentTypeModels, ElementMetadataBase element)
     {
-        var limitModel = new LimitModel
-        {
-            Condition = LimitType.Exactly,
-            Value = 1
-        };
-
-        var linkedContentTypeModels = new List<ContentTypeModel>()
-        {
-            new ContentTypeModel
-            {
-                Codename = "article",
-                Id = Guid.NewGuid()
-            },
-            new ContentTypeModel
-            {
-                Codename = "blog",
-                Id = Guid.NewGuid()
-            }
-        };
-
         var allContentTypes = new List<ContentTypeModel>()
         {
             new ContentTypeModel
@@ -302,12 +224,6 @@ public class TypedDeliveryPropertyMapperTests
                 Id = Guid.NewGuid()
             }
         }.Union(linkedContentTypeModels).ToList();
-
-        var element = TestDataGenerator.GenerateLinkedItemsElement(
-            Guid.NewGuid().ToString(),
-            "article",
-            limitModel,
-            linkedContentTypeModels.Select(ct => ct.Id));
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
@@ -315,29 +231,10 @@ public class TypedDeliveryPropertyMapperTests
         typedProperty.Should().BeNull();
     }
 
-    [Fact]
-    public void TryMap_Live_MultiAllowedTypesMultiItems_Returns()
+    [Theory]
+    [MemberData(nameof(GetMultiAllowedTypesMultiItems))]
+    public void TryMap_Live_MultiAllowedTypesMultiItems_Returns(List<ContentTypeModel> linkedContentTypeModels, ElementMetadataBase element)
     {
-        var limitModel = new LimitModel
-        {
-            Condition = LimitType.AtLeast,
-            Value = 1
-        };
-
-        var linkedContentTypeModels = new List<ContentTypeModel>()
-        {
-            new ContentTypeModel
-            {
-                Codename = "article",
-                Id = Guid.NewGuid()
-            },
-            new ContentTypeModel
-            {
-                Codename = "blog",
-                Id = Guid.NewGuid()
-            }
-        };
-
         var allContentTypes = new List<ContentTypeModel>()
         {
             new ContentTypeModel
@@ -351,12 +248,6 @@ public class TypedDeliveryPropertyMapperTests
                 Id = Guid.NewGuid()
             }
         }.Union(linkedContentTypeModels).ToList();
-
-        var element = TestDataGenerator.GenerateLinkedItemsElement(
-            Guid.NewGuid().ToString(),
-            "articles",
-            limitModel,
-            linkedContentTypeModels.Select(ct => ct.Id));
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
@@ -368,15 +259,10 @@ public class TypedDeliveryPropertyMapperTests
 
     #region Preview models
 
-    [Fact]
-    public void TryMap_Preview_CouldNotFindAllowedType_Throws()
+    [Theory]
+    [MemberData(nameof(GetNonMatchingAllowedTypesElements))]
+    public void TryMap_Preview_CouldNotFindAllowedType_Throws(ElementMetadataBase element)
     {
-        var limitModel = new LimitModel
-        {
-            Condition = LimitType.AtLeast,
-            Value = 1
-        };
-
         var linkedContentTypeModels = new List<ContentTypeModel>()
         {
             new ContentTypeModel
@@ -400,35 +286,15 @@ public class TypedDeliveryPropertyMapperTests
             }
         };
 
-        var element = TestDataGenerator.GenerateLinkedItemsElement(
-            Guid.NewGuid().ToString(),
-            "articles",
-            limitModel,
-            linkedContentTypeModels.Select(ct => ct.Id));
-
         var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out _);
 
         tryMapCall.Should().ThrowExactly<ArgumentException>();
     }
 
-    [Fact]
-    public void TryMap_Preview_SingleAllowedTypeMultiItems_Returns()
+    [Theory]
+    [MemberData(nameof(GetSingleAllowedTypeMultiItems))]
+    public void TryMap_Preview_SingleAllowedTypeMultiItems_Returns(List<ContentTypeModel> linkedContentTypeModels, ElementMetadataBase element)
     {
-        var limitModel = new LimitModel
-        {
-            Condition = LimitType.AtLeast,
-            Value = 1
-        };
-
-        var linkedContentTypeModels = new List<ContentTypeModel>()
-        {
-            new ContentTypeModel
-            {
-                Codename = "article",
-                Id = Guid.NewGuid()
-            }
-        };
-
         var allContentTypes = new List<ContentTypeModel>()
         {
             new ContentTypeModel
@@ -442,12 +308,6 @@ public class TypedDeliveryPropertyMapperTests
                 Id = Guid.NewGuid()
             }
         }.Union(linkedContentTypeModels).ToList();
-
-        var element = TestDataGenerator.GenerateLinkedItemsElement(
-            Guid.NewGuid().ToString(),
-            "articles",
-            limitModel,
-            linkedContentTypeModels.Select(ct => ct.Id));
 
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
 
@@ -458,8 +318,162 @@ public class TypedDeliveryPropertyMapperTests
         typedProperty.TypeName.Should().Be($"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>");
     }
 
-    [Fact]
-    public void TryMap_Preview_SingleAllowedTypeExactlySingleItem_Returns()
+    [Theory]
+    [MemberData(nameof(GetSingleAllowedTypeExactlySingleItem))]
+    public void TryMap_Preview_SingleAllowedTypeExactlySingleItem_Returns(List<ContentTypeModel> linkedContentTypeModels, ElementMetadataBase element)
+    {
+        var allContentTypes = new List<ContentTypeModel>()
+        {
+            new ContentTypeModel
+            {
+                Codename = "grinder",
+                Id = Guid.NewGuid()
+            },
+            new ContentTypeModel
+            {
+                Codename = "coffee",
+                Id = Guid.NewGuid()
+            }
+        }.Union(linkedContentTypeModels).ToList();
+
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
+
+        result.Should().BeTrue();
+        typedProperty.Codename.Should().Be("article");
+        typedProperty.Id.Should().BeNull();
+        typedProperty.Identifier.Should().Be("Article");
+        typedProperty.TypeName.Should().Be("IEnumerable<IContentItem>");
+    }
+
+    [Theory]
+    [MemberData(nameof(GetMultiAllowedTypesSingleItem))]
+    public void TryMap_Preview_MultiAllowedTypesSingleItem_Returns(List<ContentTypeModel> linkedContentTypeModels, ElementMetadataBase element)
+    {
+        var allContentTypes = new List<ContentTypeModel>()
+        {
+            new ContentTypeModel
+            {
+                Codename = "grinder",
+                Id = Guid.NewGuid()
+            },
+            new ContentTypeModel
+            {
+                Codename = "coffee",
+                Id = Guid.NewGuid()
+            }
+        }.Union(linkedContentTypeModels).ToList();
+
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
+
+        result.Should().BeFalse();
+        typedProperty.Should().BeNull();
+    }
+
+    [Theory]
+    [MemberData(nameof(GetMultiAllowedTypesMultiItems))]
+    public void TryMap_Preview_MultiAllowedTypesMultiItems_Returns(List<ContentTypeModel> linkedContentTypeModels, ElementMetadataBase element)
+    {
+        var allContentTypes = new List<ContentTypeModel>()
+        {
+            new ContentTypeModel
+            {
+                Codename = "grinder",
+                Id = Guid.NewGuid()
+            },
+            new ContentTypeModel
+            {
+                Codename = "coffee",
+                Id = Guid.NewGuid()
+            }
+        }.Union(linkedContentTypeModels).ToList();
+
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
+
+        result.Should().BeFalse();
+        typedProperty.Should().BeNull();
+    }
+
+    #endregion
+
+    public static IEnumerable<object[]> GetBasicAllowedElements()
+    {
+        yield return new object[] { new LinkedItemsElementMetadataModel() };
+        yield return new object[] { new SubpagesElementMetadataModel() };
+    }
+
+    public static IEnumerable<object[]> GetNonMatchingAllowedTypesElements()
+    {
+        var limitModel = new LimitModel
+        {
+            Condition = LimitType.AtLeast,
+            Value = 1
+        };
+
+        var linkedContentTypeModels = new List<ContentTypeModel>()
+        {
+            new ContentTypeModel
+            {
+                Codename = "article",
+                Id = Guid.NewGuid()
+            }
+        };
+
+        yield return new object[]
+        {
+            TestDataGenerator.GenerateLinkedItemsElement(
+                Guid.NewGuid().ToString(),
+                "articles",
+                limitModel,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
+        yield return new object[]
+        {
+            TestDataGenerator.GenerateSubpagesElement(
+                Guid.NewGuid().ToString(),
+                "articles",
+                limitModel,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
+    }
+
+    public static IEnumerable<object[]> GetSingleAllowedTypeMultiItems()
+    {
+        var limitModel = new LimitModel
+        {
+            Condition = LimitType.AtLeast,
+            Value = 1
+        };
+
+        var linkedContentTypeModels = new List<ContentTypeModel>()
+        {
+            new ContentTypeModel
+            {
+                Codename = "article",
+                Id = Guid.NewGuid()
+            }
+        };
+
+        yield return new object[]
+        {
+            linkedContentTypeModels,
+            TestDataGenerator.GenerateLinkedItemsElement(
+                Guid.NewGuid().ToString(),
+                "articles",
+                limitModel,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
+        yield return new object[]
+        {
+            linkedContentTypeModels,
+            TestDataGenerator.GenerateSubpagesElement(
+                Guid.NewGuid().ToString(),
+                "articles",
+                limitModel,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
+    }
+
+    public static IEnumerable<object[]> GetSingleAllowedTypeExactlySingleItem()
     {
         var limitModel = new LimitModel
         {
@@ -476,37 +490,27 @@ public class TypedDeliveryPropertyMapperTests
             }
         };
 
-        var allContentTypes = new List<ContentTypeModel>()
+        yield return new object[]
         {
-            new ContentTypeModel
-            {
-                Codename = "grinder",
-                Id = Guid.NewGuid()
-            },
-            new ContentTypeModel
-            {
-                Codename = "coffee",
-                Id = Guid.NewGuid()
-            }
-        }.Union(linkedContentTypeModels).ToList();
-
-        var element = TestDataGenerator.GenerateLinkedItemsElement(
-            Guid.NewGuid().ToString(),
-            "article",
-            limitModel,
-            linkedContentTypeModels.Select(ct => ct.Id));
-
-        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
-
-        result.Should().BeTrue();
-        typedProperty.Codename.Should().Be("article");
-        typedProperty.Id.Should().BeNull();
-        typedProperty.Identifier.Should().Be("Article");
-        typedProperty.TypeName.Should().Be("IEnumerable<IContentItem>");
+            linkedContentTypeModels,
+            TestDataGenerator.GenerateLinkedItemsElement(
+                Guid.NewGuid().ToString(),
+                "article",
+                limitModel,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
+        yield return new object[]
+        {
+            linkedContentTypeModels,
+            TestDataGenerator.GenerateSubpagesElement(
+                Guid.NewGuid().ToString(),
+                "article",
+                limitModel,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
     }
 
-    [Fact]
-    public void TryMap_Preview_MultiAllowedTypesSingleItem_Returns()
+    public static IEnumerable<object[]> GetMultiAllowedTypesSingleItem()
     {
         var limitModel = new LimitModel
         {
@@ -528,34 +532,27 @@ public class TypedDeliveryPropertyMapperTests
             }
         };
 
-        var allContentTypes = new List<ContentTypeModel>()
+        yield return new object[]
         {
-            new ContentTypeModel
-            {
-                Codename = "grinder",
-                Id = Guid.NewGuid()
-            },
-            new ContentTypeModel
-            {
-                Codename = "coffee",
-                Id = Guid.NewGuid()
-            }
-        }.Union(linkedContentTypeModels).ToList();
-
-        var element = TestDataGenerator.GenerateLinkedItemsElement(
-            Guid.NewGuid().ToString(),
-            "article",
-            limitModel,
-            linkedContentTypeModels.Select(ct => ct.Id));
-
-        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
-
-        result.Should().BeFalse();
-        typedProperty.Should().BeNull();
+            linkedContentTypeModels,
+            TestDataGenerator.GenerateLinkedItemsElement(
+                Guid.NewGuid().ToString(),
+                "article",
+                limitModel,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
+        yield return new object[]
+        {
+            linkedContentTypeModels,
+            TestDataGenerator.GenerateSubpagesElement(
+                Guid.NewGuid().ToString(),
+                "article",
+                limitModel,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
     }
 
-    [Fact]
-    public void TryMap_Preview_MultiAllowedTypesMultiItems_Returns()
+    public static IEnumerable<object[]> GetMultiAllowedTypesMultiItems()
     {
         var limitModel = new LimitModel
         {
@@ -577,31 +574,23 @@ public class TypedDeliveryPropertyMapperTests
             }
         };
 
-        var allContentTypes = new List<ContentTypeModel>()
+        yield return new object[]
         {
-            new ContentTypeModel
-            {
-                Codename = "grinder",
-                Id = Guid.NewGuid()
-            },
-            new ContentTypeModel
-            {
-                Codename = "coffee",
-                Id = Guid.NewGuid()
-            }
-        }.Union(linkedContentTypeModels).ToList();
-
-        var element = TestDataGenerator.GenerateLinkedItemsElement(
-            Guid.NewGuid().ToString(),
-            "articles",
-            limitModel,
-            linkedContentTypeModels.Select(ct => ct.Id));
-
-        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverPreviewModelsOptions, out var typedProperty);
-
-        result.Should().BeFalse();
-        typedProperty.Should().BeNull();
+            linkedContentTypeModels,
+            TestDataGenerator.GenerateLinkedItemsElement(
+                Guid.NewGuid().ToString(),
+                "articles",
+                limitModel,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
+        yield return new object[]
+        {
+            linkedContentTypeModels,
+            TestDataGenerator.GenerateSubpagesElement(
+                Guid.NewGuid().ToString(),
+                "articles",
+                limitModel,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
     }
-
-    #endregion
 }

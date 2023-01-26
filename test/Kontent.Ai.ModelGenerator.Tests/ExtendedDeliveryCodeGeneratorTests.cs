@@ -104,11 +104,22 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
                 LinkedItemsContentTypeData.SingleAllowedTypeMultiItems,
                 LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem,
                 LinkedItemsContentTypeData.MultiAllowedTypesSingleItem,
-                LinkedItemsContentTypeData.MultiAllowedTypesMultiItems
+                LinkedItemsContentTypeData.MultiAllowedTypesMultiItems,
+                SubpagesContentTypeData.SingleAllowedTypeMultiItems,
+                SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem,
+                SubpagesContentTypeData.MultiAllowedTypesSingleItem,
+                SubpagesContentTypeData.MultiAllowedTypesMultiItems,
             }
         };
 
-        var contentTypes = new List<ContentTypeModel> { contentType, LinkedItemsContentTypeData.ArticleContentType, LinkedItemsContentTypeData.HeroContentType };
+        var contentTypes = new List<ContentTypeModel>
+        {
+            contentType,
+            LinkedItemsContentTypeData.ArticleContentType,
+            LinkedItemsContentTypeData.HeroContentType,
+            SubpagesContentTypeData.HeroContentType,
+            SubpagesContentTypeData.ArticleContentType
+        };
 
         var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient);
 
@@ -121,12 +132,19 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
                 LinkedItemsContentTypeData.SingleAllowedTypeMultiItems,
                 $"IEnumerable<{LinkedItemsContentTypeData.HeroContentType.Name}>",
                 "ModularContentHeroes_Hero"),
-            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, LinkedItemsContentTypeData.ArticleContentType.Name)
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, LinkedItemsContentTypeData.ArticleContentType.Name),
+            Property.FromContentTypeElement(
+                SubpagesContentTypeData.SingleAllowedTypeMultiItems,
+                $"IEnumerable<{SubpagesContentTypeData.HeroContentType.Name}>",
+                "SubpagesHeroes_Hero"),
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem, SubpagesContentTypeData.ArticleContentType.Name)
         });
         expectedTypedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
         {
             "ModularContentHeroes_Hero",
-            "modular_content_article"
+            "modular_content_article",
+            "SubpagesHeroes_Hero",
+            "subpages_article"
         });
 
         var expectedExtendedDeliveryClassDefinition = new ClassDefinition(contentType.Codename);
@@ -135,14 +153,22 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType),
             Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType),
             Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesSingleItem, DefaultLinkedItemsType),
-            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType)
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType),
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType),
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType),
+            Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesSingleItem, DefaultLinkedItemsType),
+            Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType)
         });
         expectedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
         {
             "modular_content_heroes",
             "modular_content_article",
             "modular_content_blog",
-            "modular_content_coffees"
+            "modular_content_coffees",
+            "subpages_heroes",
+            "subpages_article",
+            "subpages_blog",
+            "subpages_coffees"
         });
 
         var expected = new List<ClassCodeGenerator>

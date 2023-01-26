@@ -37,4 +37,14 @@ internal static class TestDataGenerator
 
         return element;
     }
+
+    public static SubpagesElementMetadataModel GenerateSubpagesElement(string elementId, string elementCodename, LimitModel limitModel, IEnumerable<Guid> allowedTypesIds)
+    {
+        var element = (SubpagesElementMetadataModel)GenerateElementMetadataBase(Guid.Parse(elementId), elementCodename, ElementMetadataType.Subpages);
+
+        element.AllowedContentTypes = allowedTypesIds.Select(Reference.ById);
+        element.ItemCountLimit = limitModel;
+
+        return element;
+    }
 }

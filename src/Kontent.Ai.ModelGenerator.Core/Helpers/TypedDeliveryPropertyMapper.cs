@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kontent.Ai.Management.Extensions;
+using Kontent.Ai.Management.Models.Shared;
 
 namespace Kontent.Ai.ModelGenerator.Core.Helpers;
 
@@ -18,25 +19,21 @@ public static class TypedDeliveryPropertyMapper
         CodeGeneratorOptions options,
         out Property typedProperty)
     {
-        Validate(contentTypes, options);
+        Validate(contentTypes, el, options);
 
-        var linkedItemsElement = el.ToElement<LinkedItemsElementMetadataModel>();
-        if (linkedItemsElement == null)
-        {
-            throw new ArgumentNullException();
-        }
+        var elementOptions = GetElementOptions(el);
 
-        if (!linkedItemsElement.AllowedTypes.Any() ||
-            linkedItemsElement.AllowedTypes.Count() > 1)
+        if (!elementOptions.AllowedTypes.Any() ||
+            elementOptions.AllowedTypes.Count() > 1)
         {
             typedProperty = null;
             return false;
         }
 
-        var allowedContentType = GetAllowedContentType(linkedItemsElement.AllowedTypes.First().Id.Value, contentTypes);
+        var allowedContentType = GetAllowedContentType(elementOptions.AllowedTypes.First().Id.Value, contentTypes);
         var allowedContentTypeCodename = TextHelpers.GetValidPascalCaseIdentifierName(allowedContentType.Codename);
 
-        if (linkedItemsElement.ItemCountLimit is { Condition: LimitType.Exactly, Value: 1 })
+        if (elementOptions.ItemCountLimit is { Condition: LimitType.Exactly, Value: 1 })
         {
             var singleAllowedContentTypeCodename = options.ExtendedDeliverPreviewModels
                 ? TextHelpers.GetEnumerableType(ContentItemClassCodeGenerator.DefaultContentItemClassName)
@@ -54,7 +51,7 @@ public static class TypedDeliveryPropertyMapper
         return true;
     }
 
-    private static void Validate(List<ContentTypeModel> contentTypes, CodeGeneratorOptions options)
+    private static void Validate(List<ContentTypeModel> contentTypes, ElementMetadataBase element, CodeGeneratorOptions options)
     {
         if (contentTypes == null)
         {
@@ -64,6 +61,11 @@ public static class TypedDeliveryPropertyMapper
         if (!contentTypes.Any())
         {
             throw new ArgumentException($"{nameof(contentTypes)} cannot be empty");
+        }
+
+        if (element == null)
+        {
+            throw new ArgumentNullException(nameof(element));
         }
 
         if (options == null)
@@ -95,4 +97,33 @@ public static class TypedDeliveryPropertyMapper
         element,
         TextHelpers.GetEnumerableType(elementType),
         GetCompoundPropertyName(TextHelpers.GetValidPascalCaseIdentifierName(element.Codename), propertyName));
+
+    private static (IEnumerable<Reference> AllowedTypes, LimitModel ItemCountLimit) GetElementOptions(ElementMetadataBase el)
+    {
+        if (el.Type == ElementMetadataType.LinkedItems)
+        {
+            var linkedItemsElement = el.ToElement<LinkedItemsElementMetadataModel>();
+            ValidateTypedElement(linkedItemsElement);
+
+            return (linkedItemsElement.AllowedTypes, linkedItemsElement.ItemCountLimit);
+        }
+
+        if (el.Type == ElementMetadataType.Subpages)
+        {
+            var subpagesElement = el.ToElement<SubpagesElementMetadataModel>();
+            ValidateTypedElement(subpagesElement);
+
+            return (subpagesElement.AllowedContentTypes, subpagesElement.ItemCountLimit);
+        }
+
+        throw new ArgumentException();
+
+        static void ValidateTypedElement(ElementMetadataBase element)
+        {
+            if (element == null)
+            {
+                throw new ArgumentNullException();
+            }
+        }
+    }
 }

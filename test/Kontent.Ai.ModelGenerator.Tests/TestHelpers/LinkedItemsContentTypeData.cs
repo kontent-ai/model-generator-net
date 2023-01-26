@@ -79,7 +79,7 @@ public static class LinkedItemsContentTypeData
     private static LinkedItemsElementMetadataModel GenerateMultiAllowedTypesMultiItems()
     {
         var multiAllowedTypesMultiItems = (LinkedItemsElementMetadataModel)TestDataGenerator.
-            GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee5"), "modular_content_coffees", ElementMetadataType.LinkedItems);
+            GenerateElementMetadataBase(Guid.Parse("9fa6bad6-d984-45e8-8ebb-f6be25626ee5"), "modular_content_coffees", ElementMetadataType.LinkedItems);
         multiAllowedTypesMultiItems.AllowedTypes = new List<Reference>(new List<Reference>
         {
             Reference.ById(HeroContentType.Id),

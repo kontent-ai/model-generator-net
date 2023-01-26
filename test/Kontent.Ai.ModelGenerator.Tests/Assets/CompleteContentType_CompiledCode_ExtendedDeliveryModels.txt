@@ -27,6 +27,10 @@ namespace KontentAiModels
         public decimal? Number { get; set; }
         public string RichText { get; set; }
         public IRichTextContent RichTextStructured { get; set; }
+        public IEnumerable<IContentItem> SubpagesArticle { get; set; }
+        public IEnumerable<IContentItem> SubpagesBlog { get; set; }
+        public IEnumerable<IContentItem> SubpagesCoffees { get; set; }
+        public IEnumerable<IContentItem> SubpagesHeroes { get; set; }
         public IContentItemSystemAttributes System { get; set; }
         public IEnumerable<ITaxonomyTerm> Taxonomy { get; set; }
         public string Text { get; set; }
