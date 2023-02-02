@@ -44,6 +44,22 @@ public class CodeGeneratorOptionsTests
     }
 
     [Theory]
+    [InlineData("")]
+    [InlineData("  ")]
+    [InlineData("asdasd")]
+    [InlineData("true")]
+    [InlineData(null)]
+    public void StructuredModel_Get_ReturnsNull(string structuredModel)
+    {
+        var codeGenerationOptions = new CodeGeneratorOptions
+        {
+            StructuredModel = structuredModel
+        };
+
+        Assert.Null(codeGenerationOptions.StructuredModel);
+    }
+
+    [Theory]
     [InlineData("invalid")]
     [InlineData("invalid,invalid")]
     [InlineData("invalid,")]

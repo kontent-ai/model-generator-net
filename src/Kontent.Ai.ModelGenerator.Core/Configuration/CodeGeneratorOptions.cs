@@ -10,9 +10,9 @@ public class CodeGeneratorOptions
     private const char StructuredModelSeparator = ',';
     private const bool DefaultGeneratePartials = true;
     private const bool DefaultWithTypeProvider = true;
-    private const string DefaultStructuredModel = null;
     private const bool DefaultManagementApi = false;
     private const string DefaultFileNameSuffix = "Generated";
+    private const StructuredModelFlags DefaultStructuredModelFlags = StructuredModelFlags.NotSet;
 
     /// <summary>
     /// Delivery Client configuration.
@@ -52,25 +52,26 @@ public class CodeGeneratorOptions
     /// <summary>
     /// Indicates whether the classes should be generated with types that represent structured data model
     /// </summary>
-    public string StructuredModel { private get; set; } = DefaultStructuredModel;
-
-    public StructuredModelFlags StructuredModelFlags
+    public string StructuredModel
     {
-        get
+        get => null;
+        set
         {
-            if (string.IsNullOrWhiteSpace(StructuredModel))
+            if (string.IsNullOrWhiteSpace(value))
             {
-                return StructuredModelFlags.NotSet;
+                StructuredModelFlags = StructuredModelFlags.NotSet;
+                return;
             }
 
-            var splitStructuredModels = StructuredModel.Split(StructuredModelSeparator);
+            var splitStructuredModels = value.Split(StructuredModelSeparator);
 
             if (!splitStructuredModels.Any())
             {
-                return StructuredModelFlags.NotSet;
+                StructuredModelFlags = StructuredModelFlags.NotSet;
+                return;
             }
 
-            return splitStructuredModels
+            StructuredModelFlags = splitStructuredModels
                 .Select(structuredModel =>
                     Enum.TryParse<StructuredModelFlags>(structuredModel, true, out var parsed)
                         ? parsed
@@ -78,6 +79,9 @@ public class CodeGeneratorOptions
                 .Aggregate((result, next) => result | next);
         }
     }
+
+    public StructuredModelFlags StructuredModelFlags { get; private set; } = DefaultStructuredModelFlags;
+
     /// <summary>
     /// Indicates whether the classes should be generated for CM API SDK
     /// </summary>
