@@ -18,6 +18,17 @@ public class CodeGeneratorOptionsTests
         Assert.Equal(structuredModel, codeGenerationOptions.StructuredModelFlags);
     }
 
+    [Fact]
+    public void StructuredModelFlags_ObsoleteOption_CorrectOptions()
+    {
+        var codeGenerationOptions = new CodeGeneratorOptions
+        {
+            StructuredModel = "true"
+        };
+
+        Assert.Equal(StructuredModelFlags.True, codeGenerationOptions.StructuredModelFlags);
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("  ")]
