@@ -2,7 +2,6 @@
 using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
-using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,19 +34,11 @@ public static class TypedDeliveryPropertyMapper
 
         if (elementOptions.ItemCountLimit is { Condition: LimitType.Exactly, Value: 1 })
         {
-            var singleAllowedContentTypeCodename = options.ExtendedDeliverPreviewModels
-                ? TextHelpers.GetEnumerableType(ContentItemClassCodeGenerator.DefaultContentItemClassName)
-                : allowedContentTypeCodename;
-
-            typedProperty = Property.FromContentTypeElement(el, singleAllowedContentTypeCodename);
+            typedProperty = Property.FromContentTypeElement(el, allowedContentTypeCodename);
             return true;
         }
 
-        var multipleAllowedContentTypeCodename = options.ExtendedDeliverPreviewModels
-            ? ContentItemClassCodeGenerator.DefaultContentItemClassName
-            : allowedContentTypeCodename;
-
-        typedProperty = CreateProperty(el, multipleAllowedContentTypeCodename, allowedContentTypeCodename);
+        typedProperty = CreateProperty(el, allowedContentTypeCodename);
         return true;
     }
 
@@ -93,9 +84,9 @@ public static class TypedDeliveryPropertyMapper
 
     private static string GetCompoundPropertyName(string codename, string typeName) => $"{codename}_{typeName}";
 
-    private static Property CreateProperty(ElementMetadataBase element, string elementType, string propertyName) => Property.FromContentTypeElement(
+    private static Property CreateProperty(ElementMetadataBase element, string propertyName) => Property.FromContentTypeElement(
         element,
-        TextHelpers.GetEnumerableType(elementType),
+        TextHelpers.GetEnumerableType(propertyName),
         GetCompoundPropertyName(TextHelpers.GetValidPascalCaseIdentifierName(element.Codename), propertyName));
 
     private static (IEnumerable<Reference> AllowedTypes, LimitModel ItemCountLimit) GetElementOptions(ElementMetadataBase el)

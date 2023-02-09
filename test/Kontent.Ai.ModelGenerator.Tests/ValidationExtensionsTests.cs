@@ -48,17 +48,14 @@ public class ValidationExtensionsTests
         validateCall.Should().NotThrow();
     }
 
-    [Theory]
-    [InlineData(true, false)]
-    [InlineData(false, true)]
-    public void Validate_ExtendedDeliveryModels_DoesNotThrow(bool extendedDeliverModels, bool extendedDeliverPreviewModels)
+    [Fact]
+    public void Validate_ExtendedDeliveryModels_DoesNotThrow()
     {
         var projectId = Guid.NewGuid().ToString();
         var codeGeneratorOptions = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = extendedDeliverModels,
-            ExtendedDeliverPreviewModels = extendedDeliverPreviewModels,
+            ExtendedDeliverModels = true,
             ManagementOptions = new ManagementOptions
             {
                 ProjectId = projectId,
@@ -171,8 +168,7 @@ public class ValidationExtensionsTests
             new CodeGeneratorOptions
             {
                 ManagementApi = true,
-                ExtendedDeliverModels = false,
-                ExtendedDeliverPreviewModels = false
+                ExtendedDeliverModels = false
             },
             "Management",
             "https://bit.ly/3rSMeDA"
@@ -182,23 +178,10 @@ public class ValidationExtensionsTests
             new CodeGeneratorOptions
             {
                 ManagementApi = false,
-                ExtendedDeliverModels = true,
-                ExtendedDeliverPreviewModels = false
+                ExtendedDeliverModels = true
             },
             "Delivery",
             "https://bit.ly/3rSMeDA"
-        },
-        new object[]
-        {
-            new CodeGeneratorOptions
-            {
-                ManagementApi = false,
-                ExtendedDeliverModels = false,
-                ExtendedDeliverPreviewModels = true
-            },
-            "Delivery",
-            "https://bit.ly/3rSMeDA"
-
         }
     };
 
@@ -209,8 +192,7 @@ public class ValidationExtensionsTests
             new CodeGeneratorOptions
             {
                 ManagementApi = true,
-                ExtendedDeliverModels = false,
-                ExtendedDeliverPreviewModels = false
+                ExtendedDeliverModels = false
             },
             null,
             "Management",
@@ -221,25 +203,11 @@ public class ValidationExtensionsTests
             new CodeGeneratorOptions
             {
                 ManagementApi = false,
-                ExtendedDeliverModels = true,
-                ExtendedDeliverPreviewModels = false
+                ExtendedDeliverModels = true
             },
             "",
             "Delivery",
             "https://bit.ly/3rSMeDA"
-        },
-        new object[]
-        {
-            new CodeGeneratorOptions
-            {
-                ManagementApi = false,
-                ExtendedDeliverModels = false,
-                ExtendedDeliverPreviewModels = true
-            },
-            "    ",
-            "Delivery",
-            "https://bit.ly/3rSMeDA"
-
         }
     };
 }

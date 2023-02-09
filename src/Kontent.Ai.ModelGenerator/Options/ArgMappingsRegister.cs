@@ -33,8 +33,7 @@ internal class ArgMappingsRegister
         { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
         { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
         { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
-        { "-e", nameof(CodeGeneratorOptions.ExtendedDeliverModels) },
-        { "-r", nameof(CodeGeneratorOptions.ExtendedDeliverPreviewModels) }
+        { "-e", nameof(CodeGeneratorOptions.ExtendedDeliverModels) }
     };
 
     public static readonly IDictionary<string, string> ManagementMappings = new Dictionary<string, string>

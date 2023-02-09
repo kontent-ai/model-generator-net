@@ -59,25 +59,20 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = false,
-            ExtendedDeliverPreviewModels = false
+            ExtendedDeliverModels = false
         });
 
         Creator(mockOptions.Object).Should().Throw<InvalidOperationException>();
     }
 
-    [Theory]
-    [InlineData(true, false)]
-    [InlineData(false, true)]
-    [InlineData(true, true)]
-    public void Constructor_CreatesInstance(bool extendedDeliverModels, bool extendedDeliverPreviewModels)
+    [Fact]
+    public void Constructor_CreatesInstance()
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = extendedDeliverModels,
-            ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
+            ExtendedDeliverModels = true
         });
 
         var extendedDeliveryCodeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient);
@@ -92,8 +87,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = true,
-            ExtendedDeliverPreviewModels = false
+            ExtendedDeliverModels = true
         });
 
         var contentType = new ContentTypeModel
@@ -181,81 +175,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     [Fact]
-    public void GetClassCodeGenerators_ExtendedDeliverPreviewModelsIsTrue_Returns()
-    {
-        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
-        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
-        {
-            ManagementApi = false,
-            ExtendedDeliverModels = false,
-            ExtendedDeliverPreviewModels = true
-        });
-
-        var contentType = new ContentTypeModel
-        {
-            Codename = "content_type",
-            Elements = new List<ElementMetadataBase>
-            {
-                LinkedItemsContentTypeData.SingleAllowedTypeMultiItems,
-                LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem,
-                LinkedItemsContentTypeData.MultiAllowedTypesSingleItem,
-                LinkedItemsContentTypeData.MultiAllowedTypesMultiItems
-            }
-        };
-
-        var contentTypes = new List<ContentTypeModel> { contentType, LinkedItemsContentTypeData.ArticleContentType, LinkedItemsContentTypeData.HeroContentType };
-
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient);
-
-        var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
-
-        var expectedTypedExtendedDeliveryClassDefinition = new ClassDefinition(contentType.Codename);
-        expectedTypedExtendedDeliveryClassDefinition.Properties.AddRange(new List<Property>
-        {
-            Property.FromContentTypeElement(
-                LinkedItemsContentTypeData.SingleAllowedTypeMultiItems,
-                $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>",
-                "ModularContentHeroes_Hero"),
-            Property.FromContentTypeElement(
-                LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem,
-                $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>",
-                "modular_content_article")
-        });
-        expectedTypedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
-        {
-            "ModularContentHeroes_Hero",
-            "modular_content_article"
-        });
-
-        var expectedExtendedDeliveryClassDefinition = new ClassDefinition(contentType.Codename);
-        expectedExtendedDeliveryClassDefinition.Properties.AddRange(new List<Property>
-        {
-            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType),
-            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType),
-            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesSingleItem, DefaultLinkedItemsType),
-            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType)
-        });
-        expectedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
-        {
-            "modular_content_heroes",
-            "modular_content_article",
-            "modular_content_blog",
-            "modular_content_coffees"
-        });
-
-        var expected = new List<ClassCodeGenerator>
-        {
-            new TypedExtendedDeliveryClassCodeGenerator(expectedTypedExtendedDeliveryClassDefinition, "ContentType.Typed.Generated"),
-            new ExtendedDeliveryClassCodeGenerator(expectedExtendedDeliveryClassDefinition, "ContentType.Generated")
-        };
-
-        result.Should().BeEquivalentTo(expected);
-    }
-
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task IntegrationTest_RunAsync_CorrectFiles(bool extendedDeliverPreviewModels)
+    public async Task IntegrationTest_RunAsync_CorrectFiles()
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
@@ -267,8 +187,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             GeneratePartials = false,
             WithTypeProvider = false,
             StructuredModel = false,
-            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
-            ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
         });
 
         var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
@@ -284,10 +203,8 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.Delete(TempDir, true);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles(bool extendedDeliverPreviewModels)
+    [Fact]
+    public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles()
     {
         const string transformFilename = "CustomSuffix";
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -301,8 +218,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             WithTypeProvider = false,
             StructuredModel = false,
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
-            FileNameSuffix = transformFilename,
-            ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
+            FileNameSuffix = transformFilename
         });
 
         var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
@@ -320,10 +236,8 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.Delete(TempDir, true);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles(bool extendedDeliverPreviewModels)
+    [Fact]
+    public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles()
     {
         const string transformFilename = "Generated";
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -337,8 +251,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             WithTypeProvider = false,
             StructuredModel = false,
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
-            FileNameSuffix = transformFilename,
-            ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
+            FileNameSuffix = transformFilename
         });
 
         var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
@@ -372,10 +285,8 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.Delete(TempDir, true);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task IntegrationTest_RunAsync_TypeProvider_CorrectFiles(bool extendedDeliverPreviewModels)
+    [Fact]
+    public async Task IntegrationTest_RunAsync_TypeProvider_CorrectFiles()
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
@@ -388,7 +299,6 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             WithTypeProvider = true,
             StructuredModel = false,
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
-            ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
         });
 
         var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);

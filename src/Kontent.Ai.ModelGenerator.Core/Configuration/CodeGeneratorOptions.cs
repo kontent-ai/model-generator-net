@@ -6,7 +6,6 @@ namespace Kontent.Ai.ModelGenerator.Core.Configuration;
 public class CodeGeneratorOptions
 {
     private const bool DefaultExtendedDeliverModels = false;
-    private const bool DefaultExtendedDeliverPreviewModels = false;
     private const bool DefaultGeneratePartials = true;
     private const bool DefaultWithTypeProvider = true;
     private const bool DefaultStructuredModel = false;
@@ -27,11 +26,6 @@ public class CodeGeneratorOptions
     /// Indicates whether the extended Delivery models should be generated
     /// </summary>
     public bool ExtendedDeliverModels { get; set; } = DefaultExtendedDeliverModels;
-
-    /// <summary>
-    /// Indicates whether the extended preview Delivery models should be generated
-    /// </summary>
-    public bool ExtendedDeliverPreviewModels { get; set; } = DefaultExtendedDeliverPreviewModels;
 
     /// <summary>
     /// Namespace name of the generated classes

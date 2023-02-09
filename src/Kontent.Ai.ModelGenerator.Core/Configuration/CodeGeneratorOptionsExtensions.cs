@@ -3,10 +3,10 @@
 public static class CodeGeneratorOptionsExtensions
 {
     public static bool ManagementApi(this CodeGeneratorOptions options) =>
-        options.ManagementApi && !options.ExtendedDeliverModels && !options.ExtendedDeliverPreviewModels;
+        options.ManagementApi && !options.ExtendedDeliverModels;
 
     public static bool ExtendedDeliveryModels(this CodeGeneratorOptions options) =>
-        !options.ManagementApi && (options.ExtendedDeliverModels || options.ExtendedDeliverPreviewModels);
+        !options.ManagementApi && options.ExtendedDeliverModels;
 
     public static bool DeliveryApi(this CodeGeneratorOptions options) => !options.ManagementApi() && !options.ExtendedDeliveryModels();
 

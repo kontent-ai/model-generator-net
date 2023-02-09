@@ -56,7 +56,6 @@ internal static class ArgHelpers
     {
         var managementDecidingArgs = new DecidingArgs("-m", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ManagementApi)));
         var extendedDeliverDecidingArgs = new DecidingArgs("-e", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ExtendedDeliverModels)));
-        var extendedDeliverPreviewDecidingArgs = new DecidingArgs("-r", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ExtendedDeliverPreviewModels)));
 
         for (var i = 0; i < args.Length; i++)
         {
@@ -67,8 +66,7 @@ internal static class ArgHelpers
                 return ArgMappingsRegister.ManagementMappings;
             }
 
-            if (args[i] == extendedDeliverDecidingArgs.ShorthandedArgName || args[i] == extendedDeliverDecidingArgs.FullArgName ||
-                args[i] == extendedDeliverPreviewDecidingArgs.ShorthandedArgName || args[i] == extendedDeliverPreviewDecidingArgs.FullArgName)
+            if (args[i] == extendedDeliverDecidingArgs.ShorthandedArgName || args[i] == extendedDeliverDecidingArgs.FullArgName)
             {
                 return ArgMappingsRegister.ExtendedDeliveryMappings;
             }

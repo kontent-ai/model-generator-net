@@ -66,18 +66,15 @@ public class ClassCodeGeneratorFactoryTests
         AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
     }
 
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void CreateClassCodeGenerator_ExtendedDeliveryClassCodeGenerator_NoCustomPartialProperty_Returns(bool extendedDeliverPreviewModels)
+    [Fact]
+    public void CreateClassCodeGenerator_ExtendedDeliveryClassCodeGenerator_NoCustomPartialProperty_Returns()
     {
         var classDefinitionCodename = "codename";
         var classFileName = "classFileName";
         var codeGeneratorOptions = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = true,
-            ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
+            ExtendedDeliverModels = true
         };
 
         var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
@@ -136,10 +133,8 @@ public class ClassCodeGeneratorFactoryTests
         AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
     }
 
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void CreateClassCodeGenerator_ExtendedDeliveryClassCodeGenerator_CustomNamespace_Returns(bool extendedDeliverPreviewModels)
+    [Fact]
+    public void CreateClassCodeGenerator_ExtendedDeliveryClassCodeGenerator_CustomNamespace_Returns()
     {
         var classDefinitionCodename = "codename";
         var classFileName = "classFileName";
@@ -148,8 +143,7 @@ public class ClassCodeGeneratorFactoryTests
         {
             ManagementApi = false,
             Namespace = customNamespace,
-            ExtendedDeliverModels = true,
-            ExtendedDeliverPreviewModels = extendedDeliverPreviewModels
+            ExtendedDeliverModels = true
         };
 
         var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
