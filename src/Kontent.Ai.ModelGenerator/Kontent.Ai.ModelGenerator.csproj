@@ -36,7 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kontent.Ai.Delivery" Version="17.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.4.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
