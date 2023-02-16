@@ -131,6 +131,10 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
             ElementMetadataType.RichText + Property.StructuredSuffix));
 
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
+            TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("66756a72-6af8-44a4-b58c-485425586a91"), "date_time_structured", ElementMetadataType.DateTime),
+            ElementMetadataType.DateTime + Property.StructuredSuffix));
+
+        ClassDefinition.AddProperty(Property.FromContentTypeElement(
             TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("83011da2-559d-458c-a4b5-c81a001f4139"), "taxonomy", ElementMetadataType.Taxonomy),
             ElementMetadataType.Taxonomy.ToString()));
 

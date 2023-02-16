@@ -19,6 +19,7 @@ namespace KontentAiModels
         public IEnumerable<IAsset> Asset { get; set; }
         public string Custom { get; set; }
         public DateTime? DateTime { get; set; }
+        public IDateTimeContent DateTimeStructured { get; set; }
         public IEnumerable<IContentItem> ModularContentArticle { get; set; }
         public IEnumerable<IContentItem> ModularContentBlog { get; set; }
         public IEnumerable<IContentItem> ModularContentCoffees { get; set; }
