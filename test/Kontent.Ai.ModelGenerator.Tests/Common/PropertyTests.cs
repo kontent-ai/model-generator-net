@@ -100,7 +100,8 @@ public class PropertyTests
         Assert.False(result);
     }
 
-    public void IsDateTimeElementType_ReturnsTrue(string elementType)
+    [Fact]
+    public void IsDateTimeElementType_ReturnsTrue()
     {
         var result = Property.IsDateTimeElementType("date_time");
 
@@ -128,7 +129,8 @@ public class PropertyTests
         Assert.False(result);
     }
 
-    public void IsRichTextElementType_ReturnsTrue(string elementType)
+    [Fact]
+    public void IsRichTextElementType_ReturnsTrue()
     {
         var result = Property.IsRichTextElementType("rich_text");
 
