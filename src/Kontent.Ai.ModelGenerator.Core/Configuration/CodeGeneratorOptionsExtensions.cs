@@ -19,4 +19,12 @@ public static class CodeGeneratorOptionsExtensions
 
         return options.ExtendedDeliveryModels() ? DesiredModelsType.ExtendedDelivery : DesiredModelsType.Delivery;
     }
+    public static bool IsStructuredModelEnabled(this CodeGeneratorOptions options) =>
+        options.StructuredModelFlags.HasFlag(StructuredModelFlags.RichText) ||
+        options.StructuredModelFlags.HasFlag(StructuredModelFlags.True) ||
+        options.StructuredModelFlags.HasFlag(StructuredModelFlags.DateTime);
+
+    public static bool IsStructuredModelRichText(this CodeGeneratorOptions options) =>
+        options.StructuredModelFlags.HasFlag(StructuredModelFlags.RichText) ||
+        options.StructuredModelFlags.HasFlag(StructuredModelFlags.True);
 }

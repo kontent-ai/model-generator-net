@@ -57,6 +57,11 @@ public static class ValidationExtensions
             throw new Exception(ExceptionMessage(codeGeneratorOptions, nameof(DeliveryOptions.ProjectId)));
         }
 
+        if (codeGeneratorOptions.StructuredModelFlags.HasFlag(StructuredModelFlags.ValidationIssue))
+        {
+            throw new Exception(ExceptionMessage(codeGeneratorOptions, nameof(CodeGeneratorOptions.StructuredModel)));
+        }
+
         codeGeneratorOptions.DeliveryOptions.Validate();
     }
 

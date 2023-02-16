@@ -10,7 +10,16 @@ public static class DeliveryElementHelper
     {
         Validate(options, elementType);
 
-        if (options.StructuredModel && Property.IsContentTypeSupported(elementType + Property.StructuredSuffix))
+        if (!options.IsStructuredModelEnabled())
+        {
+            return elementType;
+        }
+
+        if (options.StructuredModelFlags.HasFlag(StructuredModelFlags.DateTime) && Property.IsDateTimeElementType(elementType))
+        {
+            elementType += Property.StructuredSuffix;
+        }
+        else if (options.IsStructuredModelRichText() && Property.IsRichTextElementType(elementType))
         {
             elementType += Property.StructuredSuffix;
         }

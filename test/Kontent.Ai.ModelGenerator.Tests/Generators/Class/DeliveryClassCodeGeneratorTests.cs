@@ -20,6 +20,7 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         ClassDefinition.AddProperty(Property.FromContentTypeElement("number", "number"));
         ClassDefinition.AddProperty(Property.FromContentTypeElement("multiple_choice", "multiple_choice"));
         ClassDefinition.AddProperty(Property.FromContentTypeElement("date_time", "date_time"));
+        ClassDefinition.AddProperty(Property.FromContentTypeElement("date_time_structured", "date_time(structured)"));
         ClassDefinition.AddProperty(Property.FromContentTypeElement("asset", "asset"));
         ClassDefinition.AddProperty(Property.FromContentTypeElement("modular_content", "modular_content"));
         ClassDefinition.AddProperty(Property.FromContentTypeElement("taxonomy", "taxonomy"));

@@ -186,7 +186,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = false,
-            StructuredModel = false,
+            StructuredModel = StructuredModelFlags.NotSet.ToString(),
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
         });
 
@@ -216,7 +216,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = false,
-            StructuredModel = false,
+            StructuredModel = StructuredModelFlags.NotSet.ToString(),
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
             FileNameSuffix = transformFilename
         });
@@ -249,7 +249,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = true,
             WithTypeProvider = false,
-            StructuredModel = false,
+            StructuredModel = StructuredModelFlags.NotSet.ToString(),
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
             FileNameSuffix = transformFilename
         });
@@ -297,7 +297,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = true,
-            StructuredModel = false,
+            StructuredModel = StructuredModelFlags.NotSet.ToString(),
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
         });
 

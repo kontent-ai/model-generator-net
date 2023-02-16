@@ -1,16 +1,19 @@
-﻿using Kontent.Ai.Delivery.Abstractions;
+﻿using System;
+using System.Linq;
+using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management.Configuration;
 
 namespace Kontent.Ai.ModelGenerator.Core.Configuration;
 
 public class CodeGeneratorOptions
 {
+    private const char StructuredModelSeparator = ',';
     private const bool DefaultExtendedDeliverModels = false;
     private const bool DefaultGeneratePartials = true;
     private const bool DefaultWithTypeProvider = true;
-    private const bool DefaultStructuredModel = false;
     private const bool DefaultManagementApi = false;
     private const string DefaultFileNameSuffix = "Generated";
+    private const StructuredModelFlags DefaultStructuredModelFlags = StructuredModelFlags.NotSet;
 
     /// <summary>
     /// Delivery Client configuration.
@@ -55,7 +58,35 @@ public class CodeGeneratorOptions
     /// <summary>
     /// Indicates whether the classes should be generated with types that represent structured data model
     /// </summary>
-    public bool StructuredModel { get; set; } = DefaultStructuredModel;
+    public string StructuredModel
+    {
+        get => null;
+        set
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                StructuredModelFlags = StructuredModelFlags.NotSet;
+                return;
+            }
+
+            var splitStructuredModels = value.Split(StructuredModelSeparator);
+
+            if (!splitStructuredModels.Any())
+            {
+                StructuredModelFlags = StructuredModelFlags.NotSet;
+                return;
+            }
+
+            StructuredModelFlags = splitStructuredModels
+                .Select(structuredModel =>
+                    Enum.TryParse<StructuredModelFlags>(structuredModel, true, out var parsed)
+                        ? parsed
+                        : StructuredModelFlags.ValidationIssue)
+                .Aggregate((result, next) => result | next);
+        }
+    }
+
+    public StructuredModelFlags StructuredModelFlags { get; private set; } = DefaultStructuredModelFlags;
 
     /// <summary>
     /// Indicates whether the classes should be generated for CM API SDK

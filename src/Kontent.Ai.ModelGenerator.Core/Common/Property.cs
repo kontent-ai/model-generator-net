@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management.Models.LanguageVariants.Elements;
@@ -10,6 +11,8 @@ namespace Kontent.Ai.ModelGenerator.Core.Common;
 
 public class Property
 {
+    private const string RichTextElementType = "rich_text";
+    private const string DateTimeElementType = "date_time";
     public const string StructuredSuffix = "(structured)";
 
     public string Identifier => TextHelpers.GetValidPascalCaseIdentifierName(Codename);
@@ -23,38 +26,40 @@ public class Property
     /// </summary>
     public string TypeName { get; }
 
-    internal static readonly Dictionary<string, string> DeliverElementTypesDictionary = new Dictionary<string, string>
+    private static readonly IImmutableDictionary<string, string> DeliverElementTypesDictionary = new Dictionary<string, string>
     {
         { "text", "string" },
-        { "rich_text", "string" },
-        { "rich_text" + StructuredSuffix, nameof(IRichTextContent)},
+        { RichTextElementType, "string" },
+        { $"{RichTextElementType}{StructuredSuffix}", nameof(IRichTextContent)},
         { "number", "decimal?" },
+        { DateTimeElementType, "DateTime?" },
+        { $"{DateTimeElementType}{StructuredSuffix}", nameof(IDateTimeContent) },
         { "multiple_choice", TextHelpers.GetEnumerableType(nameof(IMultipleChoiceOption))},
-        { "date_time", "DateTime?" },
         { "asset", TextHelpers.GetEnumerableType(nameof(IAsset)) },
         { "modular_content", TextHelpers.GetEnumerableType(nameof(Object).ToLower(CultureInfo.InvariantCulture)) },
         { "taxonomy", TextHelpers.GetEnumerableType(nameof(ITaxonomyTerm)) },
         { "url_slug", "string" },
         { "custom", "string" }
-    };
+    }.ToImmutableDictionary();
 
-    internal static readonly Dictionary<string, string> ExtendedDeliverElementTypesDictionary = new Dictionary<string, string>
+    internal static readonly IImmutableDictionary<string, string> ExtendedDeliverElementTypesDictionary = new Dictionary<string, string>
     {
         { ElementMetadataType.Text.ToString(), "string" },
         { ElementMetadataType.RichText.ToString(), "string" },
-        { ElementMetadataType.RichText + StructuredSuffix, nameof(IRichTextContent)},
+        { $"{ElementMetadataType.RichText}{StructuredSuffix}", nameof(IRichTextContent)},
         { ElementMetadataType.Number.ToString(), "decimal?" },
         { ElementMetadataType.MultipleChoice.ToString(), TextHelpers.GetEnumerableType(nameof(IMultipleChoiceOption))},
         { ElementMetadataType.DateTime.ToString(), "DateTime?" },
+        { $"{ElementMetadataType.DateTime}{StructuredSuffix}", nameof(IDateTimeContent) },
         { ElementMetadataType.Asset.ToString(), TextHelpers.GetEnumerableType(nameof(IAsset)) },
         { ElementMetadataType.LinkedItems.ToString(), null },
         { ElementMetadataType.Subpages.ToString(), null },
         { ElementMetadataType.Taxonomy.ToString(), TextHelpers.GetEnumerableType(nameof(ITaxonomyTerm)) },
         { ElementMetadataType.UrlSlug.ToString(), "string" },
         { ElementMetadataType.Custom.ToString(), "string" }
-    };
+    }.ToImmutableDictionary();
 
-    private static readonly Dictionary<ElementMetadataType, string> ManagementElementTypesDictionary = new Dictionary<ElementMetadataType, string>
+    private static readonly IImmutableDictionary<ElementMetadataType, string> ManagementElementTypesDictionary = new Dictionary<ElementMetadataType, string>
     {
         { ElementMetadataType.Text, nameof(TextElement) },
         { ElementMetadataType.RichText, nameof(RichTextElement) },
@@ -67,7 +72,7 @@ public class Property
         { ElementMetadataType.Taxonomy, nameof(TaxonomyElement) },
         { ElementMetadataType.UrlSlug,nameof(UrlSlugElement) },
         { ElementMetadataType.Custom, nameof(CustomElement) }
-    };
+    }.ToImmutableDictionary();
 
     public Property(string codename, string typeName, string id = null)
     {
@@ -75,6 +80,10 @@ public class Property
         TypeName = typeName;
         Id = id;
     }
+
+    public static bool IsDateTimeElementType(string elementType) => elementType == DateTimeElementType;
+
+    public static bool IsRichTextElementType(string elementType) => elementType == RichTextElementType;
 
     public static bool IsContentTypeSupported(string elementType, bool extendedDeliverModels) => extendedDeliverModels
         ? ExtendedDeliverElementTypesDictionary.ContainsKey(elementType)

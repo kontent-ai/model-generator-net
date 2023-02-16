@@ -30,8 +30,13 @@ public class ValidationExtensionsTests
         validateCall.Should().NotThrow();
     }
 
-    [Fact]
-    public void Validate_DeliveryOptions_DoesNotThrow()
+    [Theory]
+    [InlineData(StructuredModelFlags.NotSet)]
+    [InlineData(StructuredModelFlags.DateTime)]
+    [InlineData(StructuredModelFlags.RichText)]
+    [InlineData(StructuredModelFlags.True)]
+    [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.DateTime | StructuredModelFlags.True)]
+    public void Validate_DeliveryOptions_DoesNotThrow(StructuredModelFlags structuredModel)
     {
         var projectId = Guid.NewGuid().ToString();
         var codeGeneratorOptions = new CodeGeneratorOptions
@@ -40,7 +45,8 @@ public class ValidationExtensionsTests
             DeliveryOptions = new DeliveryOptions
             {
                 ProjectId = projectId
-            }
+            },
+            StructuredModel = structuredModel.ToString()
         };
 
         var validateCall = () => codeGeneratorOptions.Validate();
@@ -96,6 +102,28 @@ public class ValidationExtensionsTests
         var validateCall = () => codeGeneratorOptions.Validate();
 
         validateCall.Should().ThrowExactly<ArgumentNullException>();
+    }
+
+    [Theory]
+    [InlineData(StructuredModelFlags.ValidationIssue)]
+    [InlineData(StructuredModelFlags.ValidationIssue | StructuredModelFlags.DateTime)]
+    [InlineData(StructuredModelFlags.DateTime | StructuredModelFlags.ValidationIssue | StructuredModelFlags.RichText)]
+    public void Validate_DeliveryOptionsStructuredModelFlagsContainValidationIssue_ThrowsException(StructuredModelFlags structuredModel)
+    {
+        var projectId = Guid.NewGuid().ToString();
+        var codeGeneratorOptions = new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            DeliveryOptions = new DeliveryOptions
+            {
+                ProjectId = projectId
+            },
+            StructuredModel = structuredModel.ToString()
+        };
+
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().ThrowExactly<Exception>();
     }
 
     [Theory]

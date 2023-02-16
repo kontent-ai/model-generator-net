@@ -42,15 +42,18 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void GetClassCodeGenerator_Returns(bool structuredModel)
+    [InlineData(StructuredModelFlags.DateTime)]
+    [InlineData(StructuredModelFlags.RichText)]
+    [InlineData(StructuredModelFlags.True)]
+    [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.DateTime | StructuredModelFlags.True)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public void GetClassCodeGenerator_Returns(StructuredModelFlags structuredModel)
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
-            StructuredModel = structuredModel
+            StructuredModel = structuredModel.ToString()
         });
 
         var deliveryClient = new Mock<IDeliveryClient>();
@@ -90,7 +93,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = false,
-            StructuredModel = false
+            StructuredModel = null
         });
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
@@ -126,7 +129,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             GeneratePartials = false,
-            StructuredModel = false,
+            StructuredModel = null,
             WithTypeProvider = false,
             FileNameSuffix = transformFilename,
             ManagementApi = false
@@ -168,7 +171,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             FileNameSuffix = transformFilename,
             GeneratePartials = true,
             WithTypeProvider = false,
-            StructuredModel = false,
+            StructuredModel = null,
             ManagementApi = false
         });
 
@@ -212,7 +215,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = true,
-            StructuredModel = false
+            StructuredModel = null
         });
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();

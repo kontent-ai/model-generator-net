@@ -37,10 +37,11 @@ public class PropertyTests
     [Theory]
     [InlineData("text", "string")]
     [InlineData("rich_text", "string")]
-    [InlineData("rich_text" + Property.StructuredSuffix, "IRichTextContent")]
+    [InlineData($"rich_text{Property.StructuredSuffix}", "IRichTextContent")]
     [InlineData("number", "decimal?")]
     [InlineData("multiple_choice", "IEnumerable<IMultipleChoiceOption>")]
     [InlineData("date_time", "DateTime?")]
+    [InlineData($"date_time{Property.StructuredSuffix}", "IDateTimeContent")]
     [InlineData("asset", "IEnumerable<IAsset>")]
     [InlineData("modular_content", "IEnumerable<object>")]
     [InlineData("taxonomy", "IEnumerable<ITaxonomyTerm>")]
@@ -82,6 +83,64 @@ public class PropertyTests
             Property.FromContentTypeElement(TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), "codename"));
 
         fromContentTypeElementCall.Should().ThrowExactly<UnsupportedTypeException>();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(null)]
+    public void IsDateTimeElementType_NullOrWhiteSpace_ReturnsFalse(string elementType)
+    {
+        var result = Property.IsDateTimeElementType(elementType);
+
+        result.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("text")]
+    [InlineData("date_time(structured)")]
+    public void IsDateTimeElementType_NotDateTimeElementType_ReturnsFalse(string elementType)
+    {
+        var result = Property.IsDateTimeElementType(elementType);
+
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsDateTimeElementType_ReturnsTrue()
+    {
+        var result = Property.IsDateTimeElementType("date_time");
+
+        result.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(null)]
+    public void IsRichTextElementType_NullOrWhiteSpace_ReturnsFalse(string elementType)
+    {
+        var result = Property.IsRichTextElementType(elementType);
+
+        result.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("text")]
+    [InlineData("rich_text(structured)")]
+    public void IsRichTextElementType_NotDateTimeElementType_ReturnsFalse(string elementType)
+    {
+        var result = Property.IsRichTextElementType(elementType);
+
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsRichTextElementType_ReturnsTrue()
+    {
+        var result = Property.IsRichTextElementType("rich_text");
+
+        result.Should().BeTrue();
     }
 
     public static IEnumerable<object[]> ManagementElements =>
