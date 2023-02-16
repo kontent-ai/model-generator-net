@@ -102,56 +102,50 @@ namespace KontentAiModels
 }
 ```
 
-#### Extended delivery models
-```csharp
-using System;
-using System.Collections.Generic;
-using Kontent.Ai.Delivery.Abstractions;
+### Customizing models - Extended delivery models
+Provides support to customize generated models based on content linked/subpages element constraints. This feature uses [Management SDK](https://github.com/kontent-ai/management-sdk-net) thus you'll need to provide api key as well. 
 
-namespace KontentAiModels
+Be aware that the generated models will be implementing the newly generated `IContentItem` interface.
+```csharp
+public interface IContentItem
 {
-    public partial class CompleteContentType
-    {
-        public string Text { get; set; }
-        public string RichText { get; set; }
-        public IRichTextContent RichTextStructured { get; set; }
-        public decimal? Number { get; set; }
-        public IEnumerable<MultipleChoiceOption> MultipleChoice { get; set; }
-        public DateTime? DateTime { get; set; }
-        public IEnumerable<IAsset> Asset { get; set; }
-        public IEnumerable<object> ModularContent { get; set; }
-        public IEnumerable<object> Subpages { get; set; }
-        public IEnumerable<TaxonomyTerm> Taxonomy { get; set; }
-        public string UrlSlug { get; set; }
-        public string CustomElement { get; set; }
-        public ContentItemSystemAttributes System { get; set; }
-    }
+    public IContentItemSystemAttributes System { get; set; }
 }
 ```
 
-### Customizing models - Handling content element constraints
-
-Currently, the generator is built on top of the Delivery API which doesn't provide information about content element constraints such as "Allowed Content Types" or "Limit number of items". In case you want your models to be more specific, this is the best practice on how to extend them:
-
+#### Extended delivery models example output
 Model.Generated.cs
 
 ```csharp
-public partial class Home
+public partial class Home : IContentItem
 {
-    public IEnumerable<object> LinkedContentItems { get; set; }
+    public const string SingleAllowedTypeSingleLinkedContentItemCodename = "single_allowed_type_single_linked_content_item";
+    public const string SingleAllowedTypeMultiLinkedContentItemsCodename = "single_allowed_type_multi_linked_content_items";
+    public const string MultiAllowedTypesSingleLinkedContentItemCodename = "multi_allowed_types_single_linked_content_item";
+    public const string MultiAllowedTypesMultiLinkedContentItemsCodename = "multi_allowed_types_multi_linked_content_items";
+
+    // Allowed Content Types == "Article" && Limit number of items == 1
+    public IEnumerable<IContentItem> SingleAllowedTypeSingleLinkedContentItem { get; set; }
+    
+    // Allowed Content Types == "Article" && Limit number of items > 1
+    public IEnumerable<IContentItem> SingleAllowedTypeMultiLinkedContentItems { get; set; }
+
+    // Allowed Content Types number > 1 && Limit number of items == 1
+    public IEnumerable<IContentItem> MultiAllowedTypesSingleLinkedContentItem { get; set; }
+
+    // Allowed Content Types number > 1 && Limit number of items > 1
+    public IEnumerable<IContentItem> MultiAllowedTypesMultiLinkedContentItems { get; set; }
 }
 ```
 
-Model.cs
+Model.Typed.Generated.cs
 
 ```csharp
 public partial class Home
 {
-    // Allowed Content Types == "Article"
-    public IEnumerable<Article> Articles => LinkedContentItems.OfType<Article>();
-
-    // Allowed Content Types == "Article" && Limit number of items == 1
-    public Article Article => LinkedContentItems.OfType<Article>().FirstOrDefault();
+    public Article SingleAllowedTypeSingleLinkedContentItemSingle => SingleAllowedTypeSingleLinkedContentItem.OfType<Article>().FirstOrDefault();
+    
+    public IEnumerable<Article> SingleAllowedTypeMultiLinkedContentItemsArticleTyped => SingleAllowedTypeMultiLinkedContentItems.OfType<Article>();
 }
 ```
 
