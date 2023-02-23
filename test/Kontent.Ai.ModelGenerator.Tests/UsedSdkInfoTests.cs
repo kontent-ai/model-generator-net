@@ -1,7 +1,4 @@
-﻿using System;
-using FluentAssertions;
-using Kontent.Ai.ModelGenerator.Options;
-using Xunit;
+﻿using Kontent.Ai.ModelGenerator.Options;
 
 namespace Kontent.Ai.ModelGenerator.Tests;
 
