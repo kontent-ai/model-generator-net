@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Xunit;
@@ -10,19 +11,25 @@ public class DeliveryElementHelperTests
     [Fact]
     public void GetElementType_OptionsIsNull_ThrowsException()
     {
-        Assert.Throws<ArgumentNullException>(() => DeliveryElementHelper.GetElementType(null, "type"));
+        var call = () => DeliveryElementHelper.GetElementType(null, "type");
+
+        call.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
     public void GetElementType_ElementTypeIsNull_ThrowsException()
     {
-        Assert.Throws<ArgumentNullException>(() => DeliveryElementHelper.GetElementType(new CodeGeneratorOptions { ManagementApi = false }, null));
+        var call = () => DeliveryElementHelper.GetElementType(new CodeGeneratorOptions { ManagementApi = false }, null);
+
+        call.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
     public void GetElementType_ManagementApiIsTrue_ThrowsException()
     {
-        Assert.Throws<InvalidOperationException>(() => DeliveryElementHelper.GetElementType(new CodeGeneratorOptions { ManagementApi = true }, "type"));
+        var call = () => DeliveryElementHelper.GetElementType(new CodeGeneratorOptions { ManagementApi = true }, "type");
+
+        call.Should().ThrowExactly<InvalidOperationException>();
     }
 
     [Theory]
@@ -41,7 +48,7 @@ public class DeliveryElementHelperTests
             StructuredModel = structuredModel.ToString()
         }, elementType);
 
-        Assert.Equal(expected, result);
+        result.Should().Be(expected);
     }
 
     [Theory]
@@ -57,7 +64,7 @@ public class DeliveryElementHelperTests
             StructuredModel = structuredModel.ToString()
         }, elementType);
 
-        Assert.Equal(expected, result);
+        result.Should().Be(expected);
     }
 
     [Theory]
@@ -77,6 +84,6 @@ public class DeliveryElementHelperTests
             StructuredModel = structuredModel.ToString()
         }, elementType);
 
-        Assert.Equal(expected, result);
+        result.Should().Be(expected);
     }
 }

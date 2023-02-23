@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using FluentAssertions;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Xunit;
@@ -13,11 +14,11 @@ public class ClassCodeGeneratorTests
     [MemberData(nameof(GetTypes))]
     public void Constructor_ClassDefinitionIsNull_Throws(Type type)
     {
-        var exception = Assert.Throws<TargetInvocationException>(() => Activator.CreateInstance(type, ConstructorParams()));
+        var call = () => Activator.CreateInstance(type, ConstructorParams());
 
-        Assert.NotNull(exception.InnerException);
-        Assert.Equal(typeof(ArgumentNullException), exception.InnerException.GetType());
-        Assert.Contains("classDefinition", exception.InnerException.Message);
+
+        call.Should().ThrowExactly<TargetInvocationException>()
+            .And.InnerException.Message.Should().Contain("classDefinition");
     }
 
     [Theory]
@@ -30,8 +31,8 @@ public class ClassCodeGeneratorTests
 
         var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(classDefinitionCodename, classFilename));
 
-        Assert.NotNull(classCodeGenerator);
-        Assert.Equal(expectedClassFilename, classCodeGenerator.ClassFilename);
+        classCodeGenerator.Should().NotBeNull();
+        classCodeGenerator.ClassFilename.Should().Be(expectedClassFilename);
     }
 
     [Theory]
@@ -45,8 +46,8 @@ public class ClassCodeGeneratorTests
 
         var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(classDefinitionCodename, classFilename));
 
-        Assert.NotNull(classCodeGenerator);
-        Assert.Equal(expectedClassFilename, classCodeGenerator.ClassFilename);
+        classCodeGenerator.Should().NotBeNull();
+        classCodeGenerator.ClassFilename.Should().Be(expectedClassFilename);
     }
 
     [Theory]
@@ -57,8 +58,8 @@ public class ClassCodeGeneratorTests
 
         var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(classDefinitionCodename, null, @namespace));
 
-        Assert.NotNull(classCodeGenerator);
-        Assert.Equal(ClassCodeGenerator.DefaultNamespace, classCodeGenerator.Namespace);
+        classCodeGenerator.Should().NotBeNull();
+        classCodeGenerator.Namespace.Should().Be(ClassCodeGenerator.DefaultNamespace);
     }
 
     [Theory]
@@ -70,8 +71,9 @@ public class ClassCodeGeneratorTests
 
         var classCodeGenerator = (ClassCodeGenerator)Activator.CreateInstance(type, ConstructorParams(classDefinitionCodename, null, customNamespace));
 
-        Assert.NotNull(classCodeGenerator);
-        Assert.Equal(customNamespace, classCodeGenerator.Namespace);
+
+        classCodeGenerator.Should().NotBeNull();
+        classCodeGenerator.Namespace.Should().Be(customNamespace);
     }
 
     public static IEnumerable<object[]> GetTypes()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using FluentAssertions;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Xunit;
@@ -15,8 +16,8 @@ public class PartialClassCodeGeneratorTests
 
         var classCodeGenerator = new PartialClassCodeGenerator(classDefinition, classDefinition.ClassName);
 
-        Assert.NotNull(classCodeGenerator);
-        Assert.False(classCodeGenerator.OverwriteExisting);
+        classCodeGenerator.Should().NotBeNull();
+        classCodeGenerator.OverwriteExisting.Should().BeFalse();
     }
 
     [Fact]
@@ -31,6 +32,6 @@ public class PartialClassCodeGeneratorTests
         var executingPath = AppContext.BaseDirectory;
         var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_CustomPartial.txt");
 
-        Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
+        compiledCode.Should().Be(expectedCode);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using FluentAssertions;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Xunit;
 
@@ -12,7 +13,7 @@ public class ClassDefinitionTests
     {
         var definition = new ClassDefinition("Article type");
 
-        Assert.Equal("ArticleType", definition.ClassName);
+        definition.ClassName.Should().Be("ArticleType");
     }
 
     [Theory]
@@ -21,7 +22,9 @@ public class ClassDefinitionTests
     [InlineData("  ")]
     public void Constructor_CodenameIsNullEmptyOrWhiteSpace_Throws(string codename)
     {
-        Assert.Throws<ArgumentException>(() => new ClassDefinition(codename));
+        var call = () => new ClassDefinition(codename);
+
+        call.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
@@ -31,7 +34,7 @@ public class ClassDefinitionTests
         var classDefinition = new ClassDefinition("Class name");
         classDefinition.AddProperty(Property.FromContentTypeElement(propertyCodename, "text"));
 
-        Assert.Single(classDefinition.Properties, property => property.Codename == propertyCodename);
+        classDefinition.Properties.Should().ContainSingle(property => property.Codename == propertyCodename);
     }
 
     [Fact]
@@ -42,7 +45,7 @@ public class ClassDefinitionTests
         var userDefinedSystemProperty = Property.FromContentTypeElement("system", "text");
         classDefinition.AddProperty(userDefinedSystemProperty);
 
-        Assert.Equal(userDefinedSystemProperty, classDefinition.Properties.First());
+        classDefinition.Properties.First().Should().Be(userDefinedSystemProperty);
     }
 
     [Fact]
@@ -51,7 +54,7 @@ public class ClassDefinitionTests
         var classDefinition = new ClassDefinition("Class name");
         classDefinition.AddSystemProperty();
 
-        Assert.Single(classDefinition.Properties, property => property.Codename == "system");
+        classDefinition.Properties.Should().ContainSingle(property => property.Codename == "system");
     }
 
     [Fact]
@@ -62,7 +65,7 @@ public class ClassDefinitionTests
         var classDefinition = new ClassDefinition("Class name");
         classDefinition.AddPropertyCodenameConstant(elementCodename);
 
-        Assert.Single(classDefinition.PropertyCodenameConstants, property => property == elementCodename);
+        classDefinition.PropertyCodenameConstants.Should().ContainSingle(property => property == elementCodename);
     }
 
     [Fact]
@@ -73,8 +76,10 @@ public class ClassDefinitionTests
         var classDefinition = new ClassDefinition("Class name");
         classDefinition.AddPropertyCodenameConstant(elementCodename);
 
-        Assert.Throws<InvalidOperationException>(() => classDefinition.AddPropertyCodenameConstant(elementCodename));
-        Assert.Single(classDefinition.PropertyCodenameConstants, property => property == elementCodename);
+        var call = () => classDefinition.AddPropertyCodenameConstant(elementCodename);
+
+        call.Should().ThrowExactly<InvalidOperationException>();
+        classDefinition.PropertyCodenameConstants.Should().ContainSingle(property => property == elementCodename);
     }
 
     [Fact]
@@ -83,7 +88,9 @@ public class ClassDefinitionTests
         var classDefinition = new ClassDefinition("Class name");
         classDefinition.AddProperty(Property.FromContentTypeElement("element", "text"));
 
-        Assert.Throws<InvalidOperationException>(() => classDefinition.AddProperty(Property.FromContentTypeElement("element", "text")));
-        Assert.Single(classDefinition.Properties);
+        var call = () => classDefinition.AddProperty(Property.FromContentTypeElement("element", "text"));
+
+        call.Should().ThrowExactly<InvalidOperationException>();
+        classDefinition.Properties.Should().ContainSingle();
     }
 }
