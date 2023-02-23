@@ -11,7 +11,7 @@
     <PackageTags>tool;kontent-ai;generator</PackageTags>
     <Description>This utility generates strongly-typed models based on content-types in a Kontent.ai project. The models are supposed to be used together with the Kontent.ai Delivery SDK for .NET or Kontent.ai Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageIcon>kai-logo-symbol-color-rgb.png</PackageIcon>
+    <PackageIcon>kai-logo-symbol-color-rgb.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -25,8 +25,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Kontent.Ai.Delivery" Version="17.2.0" />
     <PackageReference Include="Kontent.Ai.Management" Version="4.4.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
