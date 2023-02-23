@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using FluentAssertions;
 using Kontent.Ai.ModelGenerator.Core.Generators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -24,7 +25,7 @@ public class TypeProviderCodeGeneratorTests
 
         var compiledCode = codeGenerator.GenerateCode();
 
-        Assert.Equal(expectedCode, compiledCode, ignoreWhiteSpaceDifferences: true, ignoreLineEndingDifferences: true);
+        compiledCode.Should().Be(expectedCode);
     }
 
     [Fact]
@@ -71,6 +72,6 @@ public class TypeProviderCodeGeneratorTests
             }
         }
 
-        Assert.True(result.Success, compilationErrors);
+        result.Success.Should().BeTrue(compilationErrors);
     }
 }

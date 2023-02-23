@@ -13,22 +13,22 @@ using Kontent.Ai.Delivery.Abstractions;
 
 namespace KontentAiModels
 {
-	public class CustomTypeProvider : ITypeProvider
-	{
-		protected static readonly Dictionary<Type, string> Codenames = new Dictionary<Type, string>
-		{
-			{typeof(Article), "article"},
-			{typeof(Office), "office"}
-		};
+    public class CustomTypeProvider : ITypeProvider
+    {
+        protected static readonly Dictionary<Type, string> Codenames = new Dictionary<Type, string>
+        {
+            {typeof(Article), "article"},
+            {typeof(Office), "office"}
+        };
 
-		public virtual Type GetType(string contentType)
-		{
-			return Codenames.Keys.FirstOrDefault(type => GetCodename(type).Equals(contentType));
-		}
+        public virtual Type GetType(string contentType)
+        {
+            return Codenames.Keys.FirstOrDefault(type => GetCodename(type).Equals(contentType));
+        }
 
-		public virtual string GetCodename(Type contentType)
-		{
-			return Codenames.TryGetValue(contentType, out var codename) ? codename : null;
-		}
-	}
+        public virtual string GetCodename(Type contentType)
+        {
+            return Codenames.TryGetValue(contentType, out var codename) ? codename : null;
+        }
+    }
 }

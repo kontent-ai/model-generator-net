@@ -1,4 +1,5 @@
-﻿using Kontent.Ai.ModelGenerator.Core.Configuration;
+﻿using FluentAssertions;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Xunit;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Configuration;
@@ -15,7 +16,7 @@ public class CodeGeneratorOptionsTests
             StructuredModel = structuredModel.ToString()
         };
 
-        Assert.Equal(structuredModel, codeGenerationOptions.StructuredModelFlags);
+        codeGenerationOptions.StructuredModelFlags.Should().Be(structuredModel);
     }
 
     [Fact]
@@ -26,7 +27,7 @@ public class CodeGeneratorOptionsTests
             StructuredModel = "true"
         };
 
-        Assert.Equal(StructuredModelFlags.True, codeGenerationOptions.StructuredModelFlags);
+        codeGenerationOptions.StructuredModelFlags.Should().Be(StructuredModelFlags.True);
     }
 
     [Theory]
@@ -40,7 +41,7 @@ public class CodeGeneratorOptionsTests
             StructuredModel = structuredModel
         };
 
-        Assert.Equal(StructuredModelFlags.NotSet, codeGenerationOptions.StructuredModelFlags);
+        codeGenerationOptions.StructuredModelFlags.Should().Be(StructuredModelFlags.NotSet);
     }
 
     [Theory]
@@ -56,7 +57,7 @@ public class CodeGeneratorOptionsTests
             StructuredModel = structuredModel
         };
 
-        Assert.Null(codeGenerationOptions.StructuredModel);
+        codeGenerationOptions.StructuredModel.Should().BeNull();
     }
 
     [Theory]
@@ -72,7 +73,7 @@ public class CodeGeneratorOptionsTests
             StructuredModel = structuredModel
         };
 
-        Assert.Equal(StructuredModelFlags.ValidationIssue, codeGenerationOptions.StructuredModelFlags);
+        codeGenerationOptions.StructuredModelFlags.Should().Be(StructuredModelFlags.ValidationIssue);
     }
 
     [Theory]
@@ -85,6 +86,6 @@ public class CodeGeneratorOptionsTests
             StructuredModel = structuredModel
         };
 
-        Assert.Equal(expected, codeGenerationOptions.StructuredModelFlags);
+        codeGenerationOptions.StructuredModelFlags.Should().Be(expected);
     }
 }
