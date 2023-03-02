@@ -143,9 +143,9 @@ public class TypedDeliveryPropertyMapperTests
         var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
 
         result.Should().BeTrue();
-        typedProperty.Codename.Should().Be("Articles_Article");
+        typedProperty.Codename.Should().Be("Just_Articles_Article");
         typedProperty.Id.Should().BeNull();
-        typedProperty.Identifier.Should().Be("ArticlesArticle");
+        typedProperty.Identifier.Should().Be("JustArticlesArticle");
         typedProperty.TypeName.Should().Be("IEnumerable<Article>");
     }
 
@@ -287,7 +287,7 @@ public class TypedDeliveryPropertyMapperTests
             linkedContentTypeModels,
             TestDataGenerator.GenerateLinkedItemsElement(
                 Guid.NewGuid().ToString(),
-                "articles",
+                "just_articles",
                 limitModel,
                 linkedContentTypeModels.Select(ct => ct.Id))
         };
@@ -296,7 +296,7 @@ public class TypedDeliveryPropertyMapperTests
             linkedContentTypeModels,
             TestDataGenerator.GenerateSubpagesElement(
                 Guid.NewGuid().ToString(),
-                "articles",
+                "just_articles",
                 limitModel,
                 linkedContentTypeModels.Select(ct => ct.Id))
         };

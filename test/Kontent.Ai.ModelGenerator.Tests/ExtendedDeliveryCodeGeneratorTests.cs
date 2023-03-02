@@ -127,19 +127,19 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             Property.FromContentTypeElement(
                 LinkedItemsContentTypeData.SingleAllowedTypeMultiItems,
                 $"IEnumerable<{LinkedItemsContentTypeData.HeroContentType.Name}>",
-                "ModularContentHeroes_Hero"),
+                "Modular_Content_Heroes_Hero"),
             Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, LinkedItemsContentTypeData.ArticleContentType.Name),
             Property.FromContentTypeElement(
                 SubpagesContentTypeData.SingleAllowedTypeMultiItems,
                 $"IEnumerable<{SubpagesContentTypeData.HeroContentType.Name}>",
-                "SubpagesHeroes_Hero"),
+                "Subpages_Heroes_Hero"),
             Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem, SubpagesContentTypeData.ArticleContentType.Name)
         });
         expectedTypedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
         {
-            "ModularContentHeroes_Hero",
+            "Modular_Content_Heroes_Hero",
             "modular_content_article",
-            "SubpagesHeroes_Hero",
+            "Subpages_Heroes_Hero",
             "subpages_article"
         });
 

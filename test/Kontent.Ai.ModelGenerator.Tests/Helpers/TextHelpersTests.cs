@@ -9,6 +9,41 @@ namespace Kontent.Ai.ModelGenerator.Tests.Helpers;
 public class TextHelpersTests
 {
     [Fact]
+    public void GetUpperSnakeCasedIdentifierName_ThrowsAnExceptionForNullValue()
+    {
+        var getUpperSnakeCasedIdentifierNameCall = () => TextHelpers.GetUpperSnakeCasedIdentifierName(null);
+
+        getUpperSnakeCasedIdentifierNameCall.Should().ThrowExactly<ArgumentNullException>();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("  ")]
+    [InlineData("-")]
+    [InlineData("$^123")]
+    public void GetUpperSnakeCasedIdentifierName_ThrowsAnExceptionForInvalidInput(string name)
+    {
+        var getUpperSnakeCasedIdentifierNameCall = () => TextHelpers.GetUpperSnakeCasedIdentifierName(name);
+
+        getUpperSnakeCasedIdentifierNameCall.Should().ThrowExactly<InvalidIdentifierException>();
+    }
+
+    [Theory]
+    [InlineData("Simple name", "Simple_Name")]
+    [InlineData("Name with special chars & multiple    spaces.", "Name_With_Special_Chars_Multiple_Spaces")]
+    [InlineData("EVERYTHING_IS_ -UPPERCASE", "Everything_Is_Uppercase")]
+    [InlineData("date___time_field", "Date_Time_Field")]
+    [InlineData("Multiline\r\nstring", "Multiline_String")]
+    [InlineData(" 1 2 3 Starts with space and numbers", "Starts_With_Space_And_Numbers")]
+    [InlineData("ends with numbers 1 2 3", "Ends_With_Numbers_1_2_3")]
+    public void GetUpperSnakeCasedIdentifierName_Returns(string name, string expected)
+    {
+        var result = TextHelpers.GetUpperSnakeCasedIdentifierName(name);
+
+        result.Should().Be(expected);
+    }
+
+    [Fact]
     public void GetValidPascalCaseIdentifierName_ThrowsAnExceptionForNullValue()
     {
         var getValidPascalCaseIdentifierNameCall = () => TextHelpers.GetValidPascalCaseIdentifierName(null);
@@ -36,9 +71,9 @@ public class TextHelpersTests
     [InlineData("Multiline\r\nstring", "MultilineString")]
     [InlineData(" 1 2 3 Starts with space and numbers", "StartsWithSpaceAndNumbers")]
     [InlineData("ends with numbers 1 2 3", "EndsWithNumbers123")]
-    public void GetValidPascalCaseIdentifierName(string name, string expected)
+    public void GetValidPascalCaseIdentifierName_Returns(string name, string expected)
     {
-        string result = TextHelpers.GetValidPascalCaseIdentifierName(name);
+        var result = TextHelpers.GetValidPascalCaseIdentifierName(name);
 
         result.Should().Be(expected);
     }

@@ -87,7 +87,7 @@ public static class TypedDeliveryPropertyMapper
     private static Property CreateProperty(ElementMetadataBase element, string typeName) => Property.FromContentTypeElement(
         element,
         TextHelpers.GetEnumerableType(typeName),
-        GetCompoundPropertyName(TextHelpers.GetValidPascalCaseIdentifierName(element.Codename), typeName));
+        GetCompoundPropertyName(TextHelpers.GetUpperSnakeCasedIdentifierName(element.Codename), typeName));
 
     private static (IEnumerable<Reference> AllowedTypes, LimitModel ItemCountLimit) GetElementOptions(ElementMetadataBase el)
     {

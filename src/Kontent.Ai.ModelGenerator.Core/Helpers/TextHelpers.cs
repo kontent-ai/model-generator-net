@@ -14,24 +14,24 @@ public static class TextHelpers
     /// <summary>
     /// Returns a valid CSharp Identifier in a Pascal Case format for given string.
     /// </summary>
-    public static string GetValidPascalCaseIdentifierName(string name)
-    {
-        var sanitizedName = Regex.Replace(name, "[^a-zA-Z0-9]", WordSeparator, RegexOptions.IgnoreCase | RegexOptions.Multiline);
+    /// <param name="name">name to be transformed</param>
+    /// <returns></returns>
+    public static string GetValidPascalCaseIdentifierName(string name) => SplitName(name)
+        .Select(word => char.ToUpper(word[0]) + word.Substring(1))
+        .Aggregate((previous, current) => previous + current);
 
-        // Remove leading numbers and leading whitespace (e.g.: '  123Name123' -> 'Name123'
-        sanitizedName = Regex.Replace(sanitizedName, "^(\\s|[0-9])+", "");
-
-        if (sanitizedName == string.Empty)
-        {
-            throw new InvalidIdentifierException($"Unable to create a valid Identifier from '{name}'");
-        }
-
-        return sanitizedName
-                .ToLower()
-                .Split(new[] { WordSeparator }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(word => char.ToUpper(word[0]) + word.Substring(1))
-                .Aggregate((previous, current) => previous + current);
-    }
+    /// <summary>
+    /// Returns a Snake Case format for given string.
+    /// </summary>
+    /// <param name="name">name to be transformed</param>
+    /// <returns></returns>
+    public static string GetUpperSnakeCasedIdentifierName(string name) => new string(
+        SplitName(name)
+            .Select(word => char.ToUpper(word[0]) + word.Substring(1) + "_")
+            .Aggregate((previous, current) => previous + current)
+            .SkipLast(1)
+            .ToArray()
+        );
 
     public static string NormalizeLineEndings(this string text) =>
         LineEndings.Replace(text, Environment.NewLine);
@@ -55,4 +55,21 @@ public static class TextHelpers
     public static string GetEnumerableType(string typeName) => string.IsNullOrWhiteSpace(typeName)
         ? throw new ArgumentException("", nameof(typeName))
         : $"{nameof(IEnumerable)}<{typeName}>";
+
+    private static string[] SplitName(string name)
+    {
+        var sanitizedName = Regex.Replace(name, "[^a-zA-Z0-9]", WordSeparator, RegexOptions.IgnoreCase | RegexOptions.Multiline);
+
+        // Remove leading numbers and leading whitespace (e.g.: '  123Name123' -> 'Name123'
+        sanitizedName = Regex.Replace(sanitizedName, "^(\\s|[0-9])+", "");
+
+        if (sanitizedName == string.Empty)
+        {
+            throw new InvalidIdentifierException($"Unable to create a valid Identifier from '{name}'");
+        }
+
+        return sanitizedName
+            .ToLower()
+            .Split(new[] { WordSeparator }, StringSplitOptions.RemoveEmptyEntries);
+    }
 }
