@@ -19,9 +19,19 @@ public static class CodeGeneratorOptionsExtensions
 
         return options.ExtendedDeliveryModels() ? DesiredModelsType.ExtendedDelivery : DesiredModelsType.Delivery;
     }
+
+    public static string GetProjectId(this CodeGeneratorOptions options) =>
+        options.ManagementApi || options.ExtendedDeliverModels
+            ? options.ManagementOptions.ProjectId
+            : options.DeliveryOptions.ProjectId;
+
+    public static bool IsStructuredModelModularContent(this CodeGeneratorOptions options) =>
+        options.StructuredModelFlags.HasFlag(StructuredModelFlags.ModularContent);
+
     public static bool IsStructuredModelEnabled(this CodeGeneratorOptions options) =>
         options.StructuredModelFlags.HasFlag(StructuredModelFlags.RichText) ||
         options.StructuredModelFlags.HasFlag(StructuredModelFlags.True) ||
+        options.StructuredModelFlags.HasFlag(StructuredModelFlags.ModularContent) ||
         options.StructuredModelFlags.HasFlag(StructuredModelFlags.DateTime);
 
     public static bool IsStructuredModelRichText(this CodeGeneratorOptions options) =>

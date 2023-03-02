@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
+using Kontent.Ai.Delivery.Abstractions;
+using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Xunit;
 
@@ -7,13 +10,15 @@ namespace Kontent.Ai.ModelGenerator.Tests.Configuration;
 public class CodeGeneratorOptionsExtensionsTests
 {
     [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
     [InlineData(StructuredModelFlags.DateTime)]
     [InlineData(StructuredModelFlags.RichText)]
     [InlineData(StructuredModelFlags.True)]
     [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.DateTime)]
     [InlineData(StructuredModelFlags.True | StructuredModelFlags.DateTime)]
     [InlineData(StructuredModelFlags.True | StructuredModelFlags.RichText)]
-    [InlineData(StructuredModelFlags.True | StructuredModelFlags.RichText | StructuredModelFlags.DateTime)]
+    [InlineData(StructuredModelFlags.True | StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.True | StructuredModelFlags.RichText | StructuredModelFlags.DateTime | StructuredModelFlags.ModularContent)]
     public void IsStructuredModelEnabled_Enabled_ReturnsTrue(StructuredModelFlags structuredModel)
     {
         var options = new CodeGeneratorOptions
@@ -54,6 +59,37 @@ public class CodeGeneratorOptionsExtensionsTests
         result.Should().BeFalse();
     }
 
+
+    [Fact]
+    public void IsStructuredModelModularContent_Enabled_ReturnsTrue()
+    {
+        var options = new CodeGeneratorOptions
+        {
+            StructuredModel = StructuredModelFlags.ModularContent.ToString()
+        };
+
+        var result = options.IsStructuredModelModularContent();
+
+        result.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData(StructuredModelFlags.DateTime)]
+    [InlineData(StructuredModelFlags.ValidationIssue)]
+    [InlineData(StructuredModelFlags.RichText)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public void IsStructuredModelModularContent_Disabled_ReturnsFalse(StructuredModelFlags structuredModel)
+    {
+        var options = new CodeGeneratorOptions
+        {
+            StructuredModel = structuredModel.ToString()
+        };
+
+        var result = options.IsStructuredModelModularContent();
+
+        result.Should().BeFalse();
+    }
+
     [Theory]
     [InlineData(StructuredModelFlags.True)]
     [InlineData(StructuredModelFlags.RichText)]
@@ -71,10 +107,11 @@ public class CodeGeneratorOptionsExtensionsTests
     }
 
     [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
     [InlineData(StructuredModelFlags.DateTime)]
     [InlineData(StructuredModelFlags.ValidationIssue)]
     [InlineData(StructuredModelFlags.NotSet)]
-    public void IsStructuredModelRichText_Disabled_ReturnsTrue(StructuredModelFlags structuredModel)
+    public void IsStructuredModelRichText_Disabled_ReturnsFalse(StructuredModelFlags structuredModel)
     {
         var options = new CodeGeneratorOptions
         {
@@ -305,5 +342,65 @@ public class CodeGeneratorOptionsExtensionsTests
         var result = options.GetDesiredModelsType();
 
         result.Should().Be(DesiredModelsType.Delivery);
+    }
+
+    [Fact]
+    public void GetProjectId_DeliveryApi_Returns()
+    {
+        var projectId = Guid.NewGuid().ToString();
+
+        var options = new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            ExtendedDeliverModels = false,
+            DeliveryOptions = new DeliveryOptions
+            {
+                ProjectId = projectId
+            }
+        };
+
+        var result = options.GetProjectId();
+
+        result.Should().Be(projectId);
+    }
+
+    [Fact]
+    public void GetProjectId_ManagementApi_Returns()
+    {
+        var projectId = Guid.NewGuid().ToString();
+
+        var options = new CodeGeneratorOptions
+        {
+            ManagementApi = true,
+            ExtendedDeliverModels = false,
+            ManagementOptions = new ManagementOptions
+            {
+                ProjectId = projectId
+            }
+        };
+
+        var result = options.GetProjectId();
+
+        result.Should().Be(projectId);
+    }
+
+    [Fact]
+    public void GetProjectId_ExtendedDeliveryModels_Returns()
+    {
+        var projectId = Guid.NewGuid().ToString();
+
+        var options = new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            ExtendedDeliverModels = true,
+            ManagementOptions = new ManagementOptions
+            {
+                ProjectId = projectId
+            }
+        };
+
+        var result = options.GetProjectId();
+
+        result.Should().Be(projectId);
     }
 }

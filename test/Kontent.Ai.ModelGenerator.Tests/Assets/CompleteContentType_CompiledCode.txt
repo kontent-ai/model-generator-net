@@ -21,6 +21,7 @@ namespace KontentAiModels
         public DateTime? DateTime { get; set; }
         public IDateTimeContent DateTimeStructured { get; set; }
         public IEnumerable<object> ModularContent { get; set; }
+        public IEnumerable<IContentItem> ModularContentStructured { get; set; }
         public IEnumerable<IMultipleChoiceOption> MultipleChoice { get; set; }
         public decimal? Number { get; set; }
         public string RichText { get; set; }

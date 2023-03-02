@@ -12,7 +12,7 @@ using Kontent.Ai.Delivery.Abstractions;
 
 namespace KontentAiModels
 {
-    public partial class CompleteContentType
+    public partial class CompleteContentType : IContentItem
     {
         public const string Codename = "Complete content type";
 
@@ -20,18 +20,18 @@ namespace KontentAiModels
         public string Custom { get; set; }
         public DateTime? DateTime { get; set; }
         public IDateTimeContent DateTimeStructured { get; set; }
-        public IEnumerable<object> ModularContentArticle { get; set; }
-        public IEnumerable<object> ModularContentBlog { get; set; }
-        public IEnumerable<object> ModularContentCoffees { get; set; }
-        public IEnumerable<object> ModularContentHeroes { get; set; }
+        public IEnumerable<IContentItem> ModularContentArticle { get; set; }
+        public IEnumerable<IContentItem> ModularContentBlog { get; set; }
+        public IEnumerable<IContentItem> ModularContentCoffees { get; set; }
+        public IEnumerable<IContentItem> ModularContentHeroes { get; set; }
         public IEnumerable<IMultipleChoiceOption> MultipleChoice { get; set; }
         public decimal? Number { get; set; }
         public string RichText { get; set; }
         public IRichTextContent RichTextStructured { get; set; }
-        public IEnumerable<object> SubpagesArticle { get; set; }
-        public IEnumerable<object> SubpagesBlog { get; set; }
-        public IEnumerable<object> SubpagesCoffees { get; set; }
-        public IEnumerable<object> SubpagesHeroes { get; set; }
+        public IEnumerable<IContentItem> SubpagesArticle { get; set; }
+        public IEnumerable<IContentItem> SubpagesBlog { get; set; }
+        public IEnumerable<IContentItem> SubpagesCoffees { get; set; }
+        public IEnumerable<IContentItem> SubpagesHeroes { get; set; }
         public IContentItemSystemAttributes System { get; set; }
         public IEnumerable<ITaxonomyTerm> Taxonomy { get; set; }
         public string Text { get; set; }

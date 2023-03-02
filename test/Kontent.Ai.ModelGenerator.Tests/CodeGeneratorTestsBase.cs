@@ -6,7 +6,6 @@ using Kontent.Ai.ModelGenerator.Tests.Fixtures;
 using Moq;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace Kontent.Ai.ModelGenerator.Tests;
 
@@ -33,17 +32,17 @@ public abstract class CodeGeneratorTestsBase
         var contentTypeListingResponseModel = new Mock<IListingResponseModel<ContentTypeModel>>();
         contentTypeListingResponseModel.As<IEnumerable<ContentTypeModel>>()
             .Setup(c => c.GetEnumerator())
-            .Returns(() => managementModelsProvider.ManagementContentTypeModels);
+            .Returns(managementModelsProvider.ManagementContentTypeModels.GetEnumerator);
 
         var contentTypeSnippetListingResponseModel = new Mock<IListingResponseModel<ContentTypeSnippetModel>>();
         contentTypeSnippetListingResponseModel.As<IEnumerable<ContentTypeSnippetModel>>()
             .Setup(c => c.GetEnumerator())
-            .Returns(() => managementModelsProvider.ManagementContentTypeSnippetModels);
+            .Returns(managementModelsProvider.ManagementContentTypeSnippetModels.GetEnumerator);
 
         managementClientMock.Setup(client => client.ListContentTypeSnippetsAsync())
-            .Returns(Task.FromResult(contentTypeSnippetListingResponseModel.Object));
+            .ReturnsAsync(() => contentTypeSnippetListingResponseModel.Object);
         managementClientMock.Setup(client => client.ListContentTypesAsync())
-            .Returns(Task.FromResult(contentTypeListingResponseModel.Object));
+            .ReturnsAsync(() => contentTypeListingResponseModel.Object);
 
         return managementClientMock.Object;
     }

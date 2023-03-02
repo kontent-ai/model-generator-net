@@ -43,89 +43,6 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
             TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("af569649-ee18-4d6a-a095-ea6ffa012546"), "asset", ElementMetadataType.Asset),
             ElementMetadataType.Asset.ToString()));
 
-        var singleAllowedTypeMultiItemsTypeName = "Hero";
-        var singleAllowedTypeExactlySingleItemTypeName = "Article";
-
-        #region LinkedItems
-
-        // Linked items elements are limited to a single type with at least 1 item.
-        var singleAllowedTypeMultiItems = (LinkedItemsElementMetadataModel)TestDataGenerator.
-            GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee5"), "modular_content_heroes", ElementMetadataType.LinkedItems);
-        singleAllowedTypeMultiItems.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeMultiItemsTypeName) });
-        singleAllowedTypeMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
-        ClassDefinition.AddProperty(Property.FromContentTypeElement(singleAllowedTypeMultiItems, $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"));
-
-        // Linked items element limited to a single type with at most or exactly 1 item.
-        var singleAllowedTypeExactlySingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
-            GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee8"), "modular_content_article", ElementMetadataType.LinkedItems);
-        singleAllowedTypeExactlySingleItem.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeExactlySingleItemTypeName) });
-        singleAllowedTypeExactlySingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
-        ClassDefinition.AddProperty(Property.FromContentTypeElement(singleAllowedTypeExactlySingleItem, $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"));
-
-        // Linked items element limited to multiple types with at least 1 at most or exactly 1 item.
-        var multiAllowedTypesSingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
-            GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee9"), "modular_content_blog", ElementMetadataType.LinkedItems);
-        multiAllowedTypesSingleItem.AllowedTypes = new List<Reference>(new List<Reference>
-        {
-            Reference.ByCodename("Hero"),
-            Reference.ByCodename("Article")
-        });
-        multiAllowedTypesSingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
-        ClassDefinition.AddProperty(Property.FromContentTypeElement(multiAllowedTypesSingleItem, $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"));
-
-        // Linked items element limited to multiple types with at least 1 item.
-        var multiAllowedTypesMultiItems = (LinkedItemsElementMetadataModel)TestDataGenerator.
-            GenerateElementMetadataBase(Guid.Parse("9fa6bad6-d984-45e8-8ebb-f6be25626ee5"), "modular_content_coffees", ElementMetadataType.LinkedItems);
-        multiAllowedTypesMultiItems.AllowedTypes = new List<Reference>(new List<Reference>
-        {
-            Reference.ByCodename("Hero"),
-            Reference.ByCodename("Article")
-        });
-        multiAllowedTypesMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
-        ClassDefinition.AddProperty(Property.FromContentTypeElement(multiAllowedTypesMultiItems, $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"));
-
-        #endregion
-
-        #region Subpages
-
-        // Linked items elements are limited to a single type with at least 1 item.
-        var subpagesSingleAllowedTypeMultiItems = (SubpagesElementMetadataModel)TestDataGenerator.
-            GenerateElementMetadataBase(Guid.Parse("8fa6bad6-d984-45e8-8ebb-f6be25626ee5"), "subpages_heroes", ElementMetadataType.Subpages);
-        subpagesSingleAllowedTypeMultiItems.AllowedContentTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeMultiItemsTypeName) });
-        subpagesSingleAllowedTypeMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
-        ClassDefinition.AddProperty(Property.FromContentTypeElement(subpagesSingleAllowedTypeMultiItems, $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"));
-
-        // Linked items element limited to a single type with at most or exactly 1 item.
-        var subpagesSingleAllowedTypeExactlySingleItem = (SubpagesElementMetadataModel)TestDataGenerator.
-            GenerateElementMetadataBase(Guid.Parse("8fa6bad6-d984-45e8-8ebb-f6be25626ee8"), "subpages_article", ElementMetadataType.Subpages);
-        subpagesSingleAllowedTypeExactlySingleItem.AllowedContentTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeExactlySingleItemTypeName) });
-        singleAllowedTypeExactlySingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
-        ClassDefinition.AddProperty(Property.FromContentTypeElement(subpagesSingleAllowedTypeExactlySingleItem, $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"));
-
-        // Linked items element limited to multiple types with at least 1 at most or exactly 1 item.
-        var subpagesMultiAllowedTypesSingleItem = (SubpagesElementMetadataModel)TestDataGenerator.
-            GenerateElementMetadataBase(Guid.Parse("8fa6bad6-d984-45e8-8ebb-f6be25626ee9"), "subpages_blog", ElementMetadataType.Subpages);
-        subpagesMultiAllowedTypesSingleItem.AllowedContentTypes = new List<Reference>(new List<Reference>
-        {
-            Reference.ByCodename("Hero"),
-            Reference.ByCodename("Article")
-        });
-        subpagesMultiAllowedTypesSingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
-        ClassDefinition.AddProperty(Property.FromContentTypeElement(subpagesMultiAllowedTypesSingleItem, $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"));
-
-        // Linked items element limited to multiple types with at least 1 item.
-        var subpagesMultiAllowedTypesMultiItems = (SubpagesElementMetadataModel)TestDataGenerator.
-            GenerateElementMetadataBase(Guid.Parse("8fa6bad6-d984-45e8-8ebb-f6be25626ee6"), "subpages_coffees", ElementMetadataType.Subpages);
-        subpagesMultiAllowedTypesMultiItems.AllowedContentTypes = new List<Reference>(new List<Reference>
-        {
-            Reference.ByCodename("Hero"),
-            Reference.ByCodename("Article")
-        });
-        subpagesMultiAllowedTypesMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
-        ClassDefinition.AddProperty(Property.FromContentTypeElement(subpagesMultiAllowedTypesMultiItems, $"IEnumerable<{ContentItemClassCodeGenerator.DefaultContentItemClassName}>"));
-
-        #endregion
-
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
             TestDataGenerator.GenerateElementMetadataBase(Guid.Parse("114d2125-923d-4428-93b4-ad1590274912"), "rich_text_structured", ElementMetadataType.RichText),
             ElementMetadataType.RichText + Property.StructuredSuffix));
@@ -147,36 +64,48 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
             ElementMetadataType.Custom.ToString()));
     }
 
-    [Fact]
-    public void Constructor_CreatesInstance()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Constructor_CreatesInstance(bool generateStructuredModularContent)
     {
-        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
+        AddModularContent(generateStructuredModularContent);
+
+        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName, generateStructuredModularContent);
 
         classCodeGenerator.Should().NotBeNull();
         classCodeGenerator.OverwriteExisting.Should().BeTrue();
     }
 
-    [Fact]
-    public void Build_CreatesClassWithCompleteContentType()
+    [Theory]
+    [InlineData("CompleteContentType_CompiledCode_StructuredModularContent_ExtendedDeliveryModels", true)]
+    [InlineData("CompleteContentType_CompiledCode_ExtendedDeliveryModels", false)]
+    public void Build_CreatesClassWithCompleteContentType(string fileName, bool generateStructuredModularContent)
     {
-        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
+        AddModularContent(generateStructuredModularContent);
+
+        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName, generateStructuredModularContent);
 
         var compiledCode = classCodeGenerator.GenerateCode();
 
         var executingPath = AppContext.BaseDirectory;
-        var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_ExtendedDeliveryModels.txt");
+        var expectedCode = File.ReadAllText($"{executingPath}/Assets/{fileName}.txt");
 
         compiledCode.Should().Be(expectedCode);
     }
 
-    [Fact]
-    public void IntegrationTest_GeneratedCodeCompilesWithoutErrors()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void IntegrationTest_GeneratedCodeCompilesWithoutErrors(bool generateStructuredModularContent)
     {
-        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
+        AddModularContent(generateStructuredModularContent);
+
+        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName, generateStructuredModularContent);
         var compiledCode = classCodeGenerator.GenerateCode();
 
         var heroClassDefinition = new ClassDefinition("Hero");
-        var heroClassCodeGenerator = new ExtendedDeliveryClassCodeGenerator(heroClassDefinition, heroClassDefinition.ClassName);
+        var heroClassCodeGenerator = new ExtendedDeliveryClassCodeGenerator(heroClassDefinition, heroClassDefinition.ClassName, generateStructuredModularContent);
         var compiledHeroCode = heroClassCodeGenerator.GenerateCode();
 
         var articleClassDefinition = new ClassDefinition("Article");
@@ -203,5 +132,94 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         AssertCompiledCode(compilation);
+    }
+
+    private void AddModularContent(bool generateStructuredModularContent)
+    {
+        var singleAllowedTypeMultiItemsTypeName = "Hero";
+        var singleAllowedTypeExactlySingleItemTypeName = "Article";
+        var modularContentType = generateStructuredModularContent
+            ? ContentItemClassCodeGenerator.DefaultContentItemClassName
+            : Property.ObjectType;
+
+        #region LinkedItems
+
+        // Linked items elements are limited to a single type with at least 1 item.
+        var singleAllowedTypeMultiItems = (LinkedItemsElementMetadataModel)TestDataGenerator.
+            GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee5"), "modular_content_heroes", ElementMetadataType.LinkedItems);
+        singleAllowedTypeMultiItems.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeMultiItemsTypeName) });
+        singleAllowedTypeMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
+        ClassDefinition.AddProperty(Property.FromContentTypeElement(singleAllowedTypeMultiItems, $"IEnumerable<{modularContentType}>"));
+
+        // Linked items element limited to a single type with at most or exactly 1 item.
+        var singleAllowedTypeExactlySingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
+            GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee8"), "modular_content_article", ElementMetadataType.LinkedItems);
+        singleAllowedTypeExactlySingleItem.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeExactlySingleItemTypeName) });
+        singleAllowedTypeExactlySingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
+        ClassDefinition.AddProperty(Property.FromContentTypeElement(singleAllowedTypeExactlySingleItem, $"IEnumerable<{modularContentType}>"));
+
+        // Linked items element limited to multiple types with at least 1 at most or exactly 1 item.
+        var multiAllowedTypesSingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
+            GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee9"), "modular_content_blog", ElementMetadataType.LinkedItems);
+        multiAllowedTypesSingleItem.AllowedTypes = new List<Reference>(new List<Reference>
+        {
+            Reference.ByCodename("Hero"),
+            Reference.ByCodename("Article")
+        });
+        multiAllowedTypesSingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
+        ClassDefinition.AddProperty(Property.FromContentTypeElement(multiAllowedTypesSingleItem, $"IEnumerable<{modularContentType}>"));
+
+        // Linked items element limited to multiple types with at least 1 item.
+        var multiAllowedTypesMultiItems = (LinkedItemsElementMetadataModel)TestDataGenerator.
+            GenerateElementMetadataBase(Guid.Parse("9fa6bad6-d984-45e8-8ebb-f6be25626ee5"), "modular_content_coffees", ElementMetadataType.LinkedItems);
+        multiAllowedTypesMultiItems.AllowedTypes = new List<Reference>(new List<Reference>
+        {
+            Reference.ByCodename("Hero"),
+            Reference.ByCodename("Article")
+        });
+        multiAllowedTypesMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
+        ClassDefinition.AddProperty(Property.FromContentTypeElement(multiAllowedTypesMultiItems, $"IEnumerable<{modularContentType}>"));
+
+        #endregion
+
+        #region Subpages
+
+        // Linked items elements are limited to a single type with at least 1 item.
+        var subpagesSingleAllowedTypeMultiItems = (SubpagesElementMetadataModel)TestDataGenerator.
+            GenerateElementMetadataBase(Guid.Parse("8fa6bad6-d984-45e8-8ebb-f6be25626ee5"), "subpages_heroes", ElementMetadataType.Subpages);
+        subpagesSingleAllowedTypeMultiItems.AllowedContentTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeMultiItemsTypeName) });
+        subpagesSingleAllowedTypeMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
+        ClassDefinition.AddProperty(Property.FromContentTypeElement(subpagesSingleAllowedTypeMultiItems, $"IEnumerable<{modularContentType}>"));
+
+        // Linked items element limited to a single type with at most or exactly 1 item.
+        var subpagesSingleAllowedTypeExactlySingleItem = (SubpagesElementMetadataModel)TestDataGenerator.
+            GenerateElementMetadataBase(Guid.Parse("8fa6bad6-d984-45e8-8ebb-f6be25626ee8"), "subpages_article", ElementMetadataType.Subpages);
+        subpagesSingleAllowedTypeExactlySingleItem.AllowedContentTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeExactlySingleItemTypeName) });
+        singleAllowedTypeExactlySingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
+        ClassDefinition.AddProperty(Property.FromContentTypeElement(subpagesSingleAllowedTypeExactlySingleItem, $"IEnumerable<{modularContentType}>"));
+
+        // Linked items element limited to multiple types with at least 1 at most or exactly 1 item.
+        var subpagesMultiAllowedTypesSingleItem = (SubpagesElementMetadataModel)TestDataGenerator.
+            GenerateElementMetadataBase(Guid.Parse("8fa6bad6-d984-45e8-8ebb-f6be25626ee9"), "subpages_blog", ElementMetadataType.Subpages);
+        subpagesMultiAllowedTypesSingleItem.AllowedContentTypes = new List<Reference>(new List<Reference>
+        {
+            Reference.ByCodename("Hero"),
+            Reference.ByCodename("Article")
+        });
+        subpagesMultiAllowedTypesSingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
+        ClassDefinition.AddProperty(Property.FromContentTypeElement(subpagesMultiAllowedTypesSingleItem, $"IEnumerable<{modularContentType}>"));
+
+        // Linked items element limited to multiple types with at least 1 item.
+        var subpagesMultiAllowedTypesMultiItems = (SubpagesElementMetadataModel)TestDataGenerator.
+            GenerateElementMetadataBase(Guid.Parse("8fa6bad6-d984-45e8-8ebb-f6be25626ee6"), "subpages_coffees", ElementMetadataType.Subpages);
+        subpagesMultiAllowedTypesMultiItems.AllowedContentTypes = new List<Reference>(new List<Reference>
+        {
+            Reference.ByCodename("Hero"),
+            Reference.ByCodename("Article")
+        });
+        subpagesMultiAllowedTypesMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
+        ClassDefinition.AddProperty(Property.FromContentTypeElement(subpagesMultiAllowedTypesMultiItems, $"IEnumerable<{modularContentType}>"));
+
+        #endregion
     }
 }

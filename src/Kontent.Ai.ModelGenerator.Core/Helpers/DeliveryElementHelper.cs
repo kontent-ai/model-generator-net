@@ -23,6 +23,10 @@ public static class DeliveryElementHelper
         {
             elementType += Property.StructuredSuffix;
         }
+        else if (!options.ExtendedDeliverModels && options.IsStructuredModelModularContent() && Property.IsModularContentElementType(elementType))
+        {
+            elementType += Property.StructuredSuffix;
+        }
 
         return elementType;
     }

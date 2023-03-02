@@ -44,6 +44,7 @@ public class PropertyTests
     [InlineData($"date_time{Property.StructuredSuffix}", "IDateTimeContent")]
     [InlineData("asset", "IEnumerable<IAsset>")]
     [InlineData("modular_content", "IEnumerable<object>")]
+    [InlineData($"modular_content{Property.StructuredSuffix}", "IEnumerable<IContentItem>")]
     [InlineData("taxonomy", "IEnumerable<ITaxonomyTerm>")]
     [InlineData("url_slug", "string")]
     [InlineData("custom", "string")]
@@ -139,6 +140,24 @@ public class PropertyTests
     public void IsRichTextElementType_ReturnsTrue()
     {
         var result = Property.IsRichTextElementType("rich_text");
+
+        result.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("text")]
+    [InlineData("modular_content(structured)")]
+    public void IsModularContentElementType_NotModularContentElementType_ReturnsFalse(string elementType)
+    {
+        var result = Property.IsModularContentElementType(elementType);
+
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsModularContentElementType_ReturnsTrue()
+    {
+        var result = Property.IsModularContentElementType("modular_content");
 
         result.Should().BeTrue();
     }

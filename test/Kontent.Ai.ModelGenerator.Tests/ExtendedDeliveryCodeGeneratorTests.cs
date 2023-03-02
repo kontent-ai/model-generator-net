@@ -28,7 +28,6 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     /// </summary>
     private const int NumberOfContentTypesWithDefaultContentItem = (14 * 2) + 1;
 
-    private readonly string DefaultLinkedItemsType = TextHelpers.GetEnumerableType(ContentItemClassCodeGenerator.DefaultContentItemClassName);
     private readonly IManagementClient _managementClient;
     private readonly IOutputProvider _outputProvider;
     protected override string TempDir => Path.Combine(Path.GetTempPath(), "ExtendedDeliveryCodeGeneratorIntegrationTests");
@@ -80,14 +79,17 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         extendedDeliveryCodeGenerator.Should().NotBeNull();
     }
 
-    [Fact]
-    public void GetClassCodeGenerators_ExtendedDeliverPreviewModelsIsFalse_Returns()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent, true)]
+    [InlineData(StructuredModelFlags.NotSet, false)]
+    public void GetClassCodeGenerators_ExtendedDeliverPreviewModelsIsFalse_Returns(StructuredModelFlags structuredModel, bool generateStructuredModularContent)
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = true
+            ExtendedDeliverModels = true,
+            StructuredModel = structuredModel.ToString()
         });
 
         var contentType = new ContentTypeModel
@@ -144,14 +146,14 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var expectedExtendedDeliveryClassDefinition = new ClassDefinition(contentType.Codename);
         expectedExtendedDeliveryClassDefinition.Properties.AddRange(new List<Property>
         {
-            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType),
-            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType),
-            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesSingleItem, DefaultLinkedItemsType),
-            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType),
-            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType),
-            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType),
-            Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesSingleItem, DefaultLinkedItemsType),
-            Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType)
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesSingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesSingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType(structuredModel))
         });
         expectedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
         {
@@ -168,14 +170,16 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var expected = new List<ClassCodeGenerator>
         {
             new TypedExtendedDeliveryClassCodeGenerator(expectedTypedExtendedDeliveryClassDefinition, "ContentType.Typed.Generated"),
-            new ExtendedDeliveryClassCodeGenerator(expectedExtendedDeliveryClassDefinition, "ContentType.Generated")
+            new ExtendedDeliveryClassCodeGenerator(expectedExtendedDeliveryClassDefinition, "ContentType.Generated", generateStructuredModularContent)
         };
 
         result.Should().BeEquivalentTo(expected);
     }
 
-    [Fact]
-    public async Task IntegrationTest_RunAsync_CorrectFiles()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent, NumberOfContentTypesWithDefaultContentItem)]
+    [InlineData(StructuredModelFlags.NotSet, NumberOfContentTypesWithDefaultContentItem - 1)]
+    public async Task IntegrationTest_RunAsync_CorrectFiles(StructuredModelFlags structuredModel, int expectedNumberOfFiles)
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
@@ -186,7 +190,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = false,
-            StructuredModel = StructuredModelFlags.NotSet.ToString(),
+            StructuredModel = structuredModel.ToString(),
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
         });
 
@@ -194,7 +198,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypesWithDefaultContentItem);
+        AssertPresenceOfIContentItemFile(structuredModel);
+
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(expectedNumberOfFiles);
 
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs").Should().NotBeEmpty();
         Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")).Should().NotBeEmpty();
@@ -203,8 +209,10 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.Delete(TempDir, true);
     }
 
-    [Fact]
-    public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent, NumberOfContentTypesWithDefaultContentItem)]
+    [InlineData(StructuredModelFlags.NotSet, NumberOfContentTypesWithDefaultContentItem - 1)]
+    public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles(StructuredModelFlags structuredModel, int expectedNumberOfFiles)
     {
         const string transformFilename = "CustomSuffix";
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -216,7 +224,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = false,
-            StructuredModel = StructuredModelFlags.NotSet.ToString(),
+            StructuredModel = structuredModel.ToString(),
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
             FileNameSuffix = transformFilename
         });
@@ -225,7 +233,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypesWithDefaultContentItem);
+        AssertPresenceOfIContentItemFile(structuredModel);
+
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(expectedNumberOfFiles);
 
         foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(f => !f.Contains($"{ContentItemClassCodeGenerator.DefaultContentItemClassName}.cs")))
         {
@@ -236,8 +246,10 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.Delete(TempDir, true);
     }
 
-    [Fact]
-    public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent, 1)]
+    [InlineData(StructuredModelFlags.NotSet, 0)]
+    public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles(StructuredModelFlags structuredModel, int numberOfExtraGeneratedFiles)
     {
         const string transformFilename = "Generated";
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -249,7 +261,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = true,
             WithTypeProvider = false,
-            StructuredModel = StructuredModelFlags.NotSet.ToString(),
+            StructuredModel = structuredModel.ToString(),
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
             FileNameSuffix = transformFilename
         });
@@ -260,13 +272,11 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var allFilesCount = Directory.GetFiles(Path.GetFullPath(TempDir), "*.cs").Length;
         var generatedCount = Directory.GetFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs").Length;
-        var result = generatedCount + (generatedCount / 2) + 1;
+        var result = generatedCount + (generatedCount / 2) + numberOfExtraGeneratedFiles;
 
         result.Should().Be(allFilesCount);
 
-        var defaultContentItemClassCodeGeneratorExists = File.Exists(Path.GetFullPath($"{TempDir}//{ContentItemClassCodeGenerator.DefaultContentItemClassName}.cs"));
-        defaultContentItemClassCodeGeneratorExists.Should().BeTrue();
-
+        AssertPresenceOfIContentItemFile(structuredModel);
 
         foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir))
             .Where(f =>
@@ -285,8 +295,10 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.Delete(TempDir, true);
     }
 
-    [Fact]
-    public async Task IntegrationTest_RunAsync_TypeProvider_CorrectFiles()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent, NumberOfContentTypesWithDefaultContentItem + 1)]
+    [InlineData(StructuredModelFlags.NotSet, NumberOfContentTypesWithDefaultContentItem)]
+    public async Task IntegrationTest_RunAsync_TypeProvider_CorrectFiles(StructuredModelFlags structuredModel, int expectedNumberOfFiles)
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
@@ -297,7 +309,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = true,
-            StructuredModel = StructuredModelFlags.NotSet.ToString(),
+            StructuredModel = structuredModel.ToString(),
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
         });
 
@@ -305,7 +317,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypesWithDefaultContentItem + 1);
+        AssertPresenceOfIContentItemFile(structuredModel);
+
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(expectedNumberOfFiles);
 
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().NotBeEmpty();
 
@@ -315,4 +329,17 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
     private Func<ExtendedDeliveryCodeGenerator> Creator(IOptions<CodeGeneratorOptions> options) =>
         () => new ExtendedDeliveryCodeGenerator(options, _outputProvider, _managementClient);
+
+    private string DefaultLinkedItemsType(StructuredModelFlags structuredModel) =>
+        TextHelpers.GetEnumerableType(
+            structuredModel.HasFlag(StructuredModelFlags.ModularContent)
+                ? ContentItemClassCodeGenerator.DefaultContentItemClassName
+                : Property.ObjectType
+        );
+
+    private void AssertPresenceOfIContentItemFile(StructuredModelFlags structuredModel)
+    {
+        var defaultContentItemClassCodeGeneratorExists = File.Exists(Path.GetFullPath($"{TempDir}//{ContentItemClassCodeGenerator.DefaultContentItemClassName}.cs"));
+        defaultContentItemClassCodeGeneratorExists.Should().Be(structuredModel is StructuredModelFlags.ModularContent);
+    }
 }

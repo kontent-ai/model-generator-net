@@ -90,10 +90,12 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
         compiledCode.Should().Be(expectedCode);
     }
 
-    [Fact]
-    public void IntegrationTest_GeneratedCodeCompilesWithoutErrors()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void IntegrationTest_GeneratedCodeCompilesWithoutErrors(bool generateStructuredModularContent)
     {
-        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
+        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName, generateStructuredModularContent);
         var compiledCode = classCodeGenerator.GenerateCode();
 
         var heroClassDefinition = new ClassDefinition("Hero");

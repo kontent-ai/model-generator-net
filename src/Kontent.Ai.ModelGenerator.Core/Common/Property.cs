@@ -5,6 +5,7 @@ using System.Globalization;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management.Models.LanguageVariants.Elements;
 using Kontent.Ai.Management.Models.Types.Elements;
+using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
 
 namespace Kontent.Ai.ModelGenerator.Core.Common;
@@ -13,7 +14,11 @@ public class Property
 {
     private const string RichTextElementType = "rich_text";
     private const string DateTimeElementType = "date_time";
+    private const string ModularContentElementType = "modular_content";
+
     public const string StructuredSuffix = "(structured)";
+
+    public static string ObjectType => nameof(Object).ToLower(CultureInfo.InvariantCulture);
 
     public string Identifier => TextHelpers.GetValidPascalCaseIdentifierName(Codename);
 
@@ -36,7 +41,8 @@ public class Property
         { $"{DateTimeElementType}{StructuredSuffix}", nameof(IDateTimeContent) },
         { "multiple_choice", TextHelpers.GetEnumerableType(nameof(IMultipleChoiceOption))},
         { "asset", TextHelpers.GetEnumerableType(nameof(IAsset)) },
-        { "modular_content", TextHelpers.GetEnumerableType(nameof(Object).ToLower(CultureInfo.InvariantCulture)) },
+        { ModularContentElementType, TextHelpers.GetEnumerableType(ObjectType) },
+        { $"{ModularContentElementType}{StructuredSuffix}", TextHelpers.GetEnumerableType(ContentItemClassCodeGenerator.DefaultContentItemClassName) },
         { "taxonomy", TextHelpers.GetEnumerableType(nameof(ITaxonomyTerm)) },
         { "url_slug", "string" },
         { "custom", "string" }
@@ -84,6 +90,8 @@ public class Property
     public static bool IsDateTimeElementType(string elementType) => elementType == DateTimeElementType;
 
     public static bool IsRichTextElementType(string elementType) => elementType == RichTextElementType;
+
+    public static bool IsModularContentElementType(string elementType) => elementType == ModularContentElementType;
 
     public static bool IsContentTypeSupported(string elementType, bool extendedDeliverModels) => extendedDeliverModels
         ? ExtendedDeliverElementTypesDictionary.ContainsKey(elementType)

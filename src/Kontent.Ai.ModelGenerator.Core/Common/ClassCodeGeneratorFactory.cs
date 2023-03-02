@@ -34,7 +34,7 @@ public static class ClassCodeGeneratorFactory
         }
 
         return options.ExtendedDeliveryModels()
-            ? new ExtendedDeliveryClassCodeGenerator(classDefinition, classFilename, options.Namespace)
+            ? new ExtendedDeliveryClassCodeGenerator(classDefinition, classFilename, options.IsStructuredModelModularContent(), options.Namespace)
             : new DeliveryClassCodeGenerator(classDefinition, classFilename, options.Namespace);
     }
 }

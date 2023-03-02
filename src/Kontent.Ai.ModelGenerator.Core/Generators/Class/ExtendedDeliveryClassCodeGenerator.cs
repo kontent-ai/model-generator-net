@@ -6,9 +6,12 @@ namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
 public class ExtendedDeliveryClassCodeGenerator : DeliveryClassCodeGenerator
 {
-    public ExtendedDeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace)
+    private readonly bool _generateStructuredModularContent;
+
+    public ExtendedDeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, bool generateStructuredModularContent, string @namespace = DefaultNamespace)
         : base(classDefinition, classFilename, @namespace)
     {
+        _generateStructuredModularContent = generateStructuredModularContent;
     }
 
     protected override TypeDeclarationSyntax GetClassDeclaration()
@@ -17,8 +20,11 @@ public class ExtendedDeliveryClassCodeGenerator : DeliveryClassCodeGenerator
 
         var classDeclaration = base.GetClassDeclaration();
 
-        var baseType = SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(ContentItemClassCodeGenerator.DefaultContentItemClassName));
-        classDeclaration = (TypeDeclarationSyntax)classDeclaration.AddBaseListTypes(baseType);
+        if (_generateStructuredModularContent)
+        {
+            var baseType = SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(ContentItemClassCodeGenerator.DefaultContentItemClassName));
+            classDeclaration = (TypeDeclarationSyntax)classDeclaration.AddBaseListTypes(baseType);
+        }
 
         return classDeclaration;
     }

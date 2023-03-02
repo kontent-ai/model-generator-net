@@ -45,7 +45,10 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
             return codeGenerators;
         }
 
-        codeGenerators.Add(new ContentItemClassCodeGenerator(Options.Namespace));
+        if (Options.IsStructuredModelModularContent())
+        {
+            codeGenerators.Add(new ContentItemClassCodeGenerator(Options.Namespace));
+        }
 
         foreach (var contentType in deliveryTypes)
         {
@@ -112,7 +115,11 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
                 AddProperty(typedProperty, ref typedClassDefinition);
             }
 
-            elementType = TextHelpers.GetEnumerableType(ContentItemClassCodeGenerator.DefaultContentItemClassName);
+            var linkedObjectType = Options.IsStructuredModelModularContent()
+                ? ContentItemClassCodeGenerator.DefaultContentItemClassName
+                : Property.ObjectType;
+
+            elementType = TextHelpers.GetEnumerableType(linkedObjectType);
         }
 
         var property = Property.FromContentTypeElement(el, elementType!);

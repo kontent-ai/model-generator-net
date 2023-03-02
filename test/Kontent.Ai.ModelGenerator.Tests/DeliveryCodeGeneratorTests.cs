@@ -45,7 +45,8 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     [InlineData(StructuredModelFlags.DateTime)]
     [InlineData(StructuredModelFlags.RichText)]
     [InlineData(StructuredModelFlags.True)]
-    [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.DateTime | StructuredModelFlags.True)]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.DateTime | StructuredModelFlags.True | StructuredModelFlags.ModularContent)]
     [InlineData(StructuredModelFlags.NotSet)]
     public void GetClassCodeGenerator_Returns(StructuredModelFlags structuredModel)
     {
@@ -76,8 +77,10 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
     }
 
-    [Fact]
-    public async Task IntegrationTest_RunAsync_CorrectFiles()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_CorrectFiles(StructuredModelFlags structuredModel)
     {
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When("https://deliver.kontent.ai/*")
@@ -93,7 +96,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = false,
-            StructuredModel = null
+            StructuredModel = structuredModel.ToString()
         });
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
@@ -112,8 +115,10 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.Delete(TempDir, true);
     }
 
-    [Fact]
-    public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles(StructuredModelFlags structuredModel)
     {
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When("https://deliver.kontent.ai/*")
@@ -129,7 +134,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             GeneratePartials = false,
-            StructuredModel = null,
+            StructuredModel = structuredModel.ToString(),
             WithTypeProvider = false,
             FileNameSuffix = transformFilename,
             ManagementApi = false
@@ -152,8 +157,10 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.Delete(TempDir, true);
     }
 
-    [Fact]
-    public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles(StructuredModelFlags structuredModel)
     {
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When("https://deliver.kontent.ai/*")
@@ -171,7 +178,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             FileNameSuffix = transformFilename,
             GeneratePartials = true,
             WithTypeProvider = false,
-            StructuredModel = null,
+            StructuredModel = structuredModel.ToString(),
             ManagementApi = false
         });
 
@@ -198,8 +205,10 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.Delete(TempDir, true);
     }
 
-    [Fact]
-    public async Task IntegrationTest_RunAsync_TypeProvider_CorrectFiles()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_TypeProvider_CorrectFiles(StructuredModelFlags structuredModel)
     {
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When("https://deliver.kontent.ai/*")
@@ -215,7 +224,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = true,
-            StructuredModel = null
+            StructuredModel = structuredModel.ToString()
         });
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();

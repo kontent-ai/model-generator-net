@@ -23,6 +23,7 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         ClassDefinition.AddProperty(Property.FromContentTypeElement("date_time_structured", "date_time(structured)"));
         ClassDefinition.AddProperty(Property.FromContentTypeElement("asset", "asset"));
         ClassDefinition.AddProperty(Property.FromContentTypeElement("modular_content", "modular_content"));
+        ClassDefinition.AddProperty(Property.FromContentTypeElement("modular_content_structured", "modular_content(structured)"));
         ClassDefinition.AddProperty(Property.FromContentTypeElement("taxonomy", "taxonomy"));
         ClassDefinition.AddProperty(Property.FromContentTypeElement("url_slug", "url_slug"));
         ClassDefinition.AddProperty(Property.FromContentTypeElement("custom", "custom"));
@@ -58,9 +59,16 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         var classCodeGenerator = new DeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
         var compiledCode = classCodeGenerator.GenerateCode();
 
+        var contentItemCodeGenerator = new ContentItemClassCodeGenerator();
+        var compiledContentItemCode = contentItemCodeGenerator.GenerateCode();
+
         var compilation = CSharpCompilation.Create(
             assemblyName: Path.GetRandomFileName(),
-            syntaxTrees: new[] { CSharpSyntaxTree.ParseText(compiledCode) },
+            syntaxTrees: new[]
+            {
+                CSharpSyntaxTree.ParseText(compiledContentItemCode),
+                CSharpSyntaxTree.ParseText(compiledCode)
+            },
             references: new[] {
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.IApiResponse).GetTypeInfo().Assembly.Location)
