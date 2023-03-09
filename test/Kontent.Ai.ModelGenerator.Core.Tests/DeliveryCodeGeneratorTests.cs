@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using Kontent.Ai.Delivery;
+﻿using Kontent.Ai.Delivery;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Delivery.Builders.DeliveryClient;
 using Kontent.Ai.ModelGenerator.Core.Configuration;

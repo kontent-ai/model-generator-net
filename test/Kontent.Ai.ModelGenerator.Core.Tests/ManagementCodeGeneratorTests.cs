@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using Kontent.Ai.Management;
+﻿using Kontent.Ai.Management;
 using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.Management.Models.Types.Elements;
