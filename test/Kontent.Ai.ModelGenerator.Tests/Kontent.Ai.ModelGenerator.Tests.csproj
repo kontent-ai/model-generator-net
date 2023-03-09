@@ -13,52 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\BaseClassExtender_CompiledCode.txt" />
-    <None Remove="Assets\BaseClass_CompiledCode.txt" />
-    <None Remove="Assets\CompleteContentType_CompiledCode_ExtendedDeliveryModels.txt" />
-    <None Remove="Assets\CompleteContentType_CompiledCode_StructuredModularContent_ExtendedDeliveryModels.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Assets\BaseClassExtender_CompiledCode.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CompleteContentType_CompiledCode_StructuredModularContent_ExtendedDeliveryModels.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CompleteContentType_CompiledCode_ExtendedDeliveryModels.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\CompleteContentType_CompiledCode_TypedExtendedDeliveryModels.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\BaseClass_CompiledCode.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Assets\CompleteContentType_CompiledCode_CustomPartial.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\CompleteContentType_CompiledCode_ManagementApi.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\CompleteContentType_CompiledCode.txt;Assets\CustomTypeProvider_CompiledCode.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Fixtures\management_types.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Fixtures\management_snippets.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Fixtures\delivery_types.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="6.10.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageReference Include="Moq" Version="4.18.4" />
