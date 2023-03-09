@@ -61,7 +61,7 @@ To learn how to generate executables for your favorite target platform, follow t
 
 #### Structured model
 
-Generates `IRichTextContent` instead of `string` for rich-text elements or `IDateTimeContent` instead of `DateTime?` for date-time elements. This enables utilizing [structured rich-text rendering](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/structured-models/structured-models-rendering.md) [structured date-time rendering](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/structured-models/structured-models-rendering.md). For *modular content elements* and *subpages* generates `IContentItem` instead of `object`, the model also implements the interface `IContentItem`.  Allowed values [`RichText`, `DateTime`, `True`, `ModularContent`], as a separator you should use `,`. ⚠️ `True` parameter is **obsolete** and interprets the same value as `RichText`.
+Generates `IRichTextContent` instead of `string` for rich-text elements or `IDateTimeContent` instead of `DateTime?` for date-time elements. This enables utilizing [structured rich-text rendering](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/structured-models/structured-models-rendering.md) [structured date-time rendering](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/structured-models/structured-models-rendering.md). For *modular content elements* and *subpages* generates [`IContentItem`](https://github.com/kontent-ai/delivery-sdk-net/blob/master/Kontent.Ai.Delivery.Abstractions/ContentItems/IContentItem.cs) instead of `object`, the model also implements the interface `IContentItem`.  Allowed values [`RichText`, `DateTime`, `True`, `ModularContent`], as a separator you should use `,`. ⚠️ `True` parameter is **obsolete** and interprets the same value as `RichText`.
 
 ### CLI Syntax
 
@@ -111,15 +111,8 @@ Provides support to customize generated models based on content linked/subpages 
 
 `KontentModelGenerator --projectid "<projectid>" -e true -k "<apikey>"`
 
-Be aware that the generated models will be implementing the newly generated `IContentItem` interface.
-```csharp
-public interface IContentItem
-{
-    public IContentItemSystemAttributes System { get; set; }
-}
-```
-
 #### Extended delivery models example output
+Model is generated using structured model option ModularContent.
 Model.Generated.cs
 
 ```csharp
