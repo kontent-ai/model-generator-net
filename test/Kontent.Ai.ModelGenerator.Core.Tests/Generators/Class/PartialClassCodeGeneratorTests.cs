@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using Kontent.Ai.ModelGenerator.Core.Common;
+﻿using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
 namespace Kontent.Ai.ModelGenerator.Core.Tests.Generators.Class;

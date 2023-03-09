@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using FluentAssertions;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management.Models.Shared;
 using Kontent.Ai.Management.Models.Types;

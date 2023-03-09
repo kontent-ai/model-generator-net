@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using FluentAssertions;
 using Kontent.Ai.ModelGenerator.Core.Generators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
