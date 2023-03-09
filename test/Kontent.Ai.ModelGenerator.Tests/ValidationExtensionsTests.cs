@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentAssertions;
-using Kontent.Ai.Delivery.Abstractions;
+﻿using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Options;
-using Xunit;
 
 namespace Kontent.Ai.ModelGenerator.Tests;
 
