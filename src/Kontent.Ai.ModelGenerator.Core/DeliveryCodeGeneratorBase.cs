@@ -40,8 +40,7 @@ public abstract class DeliveryCodeGeneratorBase : CodeGeneratorBase
 
         foreach (var codeGenerator in classCodeGenerators)
         {
-            var className = codeGenerator is ContentItemClassCodeGenerator ? codeGenerator.ClassDefinition.Codename : codeGenerator.ClassDefinition.ClassName;
-            typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, className);
+            typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
         }
 
         var typeProviderCode = typeProviderCodeGenerator.GenerateCode();

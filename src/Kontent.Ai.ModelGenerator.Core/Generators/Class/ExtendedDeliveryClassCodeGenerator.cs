@@ -1,4 +1,5 @@
-﻿using Kontent.Ai.ModelGenerator.Core.Common;
+﻿using Kontent.Ai.Delivery.Abstractions;
+using Kontent.Ai.ModelGenerator.Core.Common;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -22,7 +23,7 @@ public class ExtendedDeliveryClassCodeGenerator : DeliveryClassCodeGenerator
 
         if (_generateStructuredModularContent)
         {
-            var baseType = SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(ContentItemClassCodeGenerator.DefaultContentItemClassName));
+            var baseType = SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName(nameof(IContentItem)));
             classDeclaration = (TypeDeclarationSyntax)classDeclaration.AddBaseListTypes(baseType);
         }
 

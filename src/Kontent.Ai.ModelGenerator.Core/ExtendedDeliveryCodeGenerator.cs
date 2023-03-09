@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management;
 using Kontent.Ai.Management.Extensions;
 using Kontent.Ai.Management.Models.Types;
@@ -43,11 +44,6 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
         if (deliveryTypes == null)
         {
             return codeGenerators;
-        }
-
-        if (Options.IsStructuredModelModularContent())
-        {
-            codeGenerators.Add(new ContentItemClassCodeGenerator(Options.Namespace));
         }
 
         foreach (var contentType in deliveryTypes)
@@ -116,7 +112,7 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
             }
 
             var linkedObjectType = Options.IsStructuredModelModularContent()
-                ? ContentItemClassCodeGenerator.DefaultContentItemClassName
+                ? nameof(IContentItem)
                 : Property.ObjectType;
 
             elementType = TextHelpers.GetEnumerableType(linkedObjectType);

@@ -106,14 +106,10 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
         var articleClassCodeGenerator = new TypedExtendedDeliveryClassCodeGenerator(articleClassDefinition, articleClassDefinition.ClassName);
         var compiledArticleCode = articleClassCodeGenerator.GenerateCode();
 
-        var contentItemCodeGenerator = new ContentItemClassCodeGenerator();
-        var compiledContentItemCode = contentItemCodeGenerator.GenerateCode();
-
         var compilation = CSharpCompilation.Create(
             assemblyName: Path.GetRandomFileName(),
             syntaxTrees: new[]
             {
-                CSharpSyntaxTree.ParseText(compiledContentItemCode),
                 CSharpSyntaxTree.ParseText(compiledHeroCode),
                 CSharpSyntaxTree.ParseText(compiledArticleCode),
                 CSharpSyntaxTree.ParseText(compiledCode),

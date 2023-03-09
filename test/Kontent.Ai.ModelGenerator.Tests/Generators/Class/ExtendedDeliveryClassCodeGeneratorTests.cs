@@ -12,6 +12,7 @@ using Xunit;
 using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.ModelGenerator.Tests.TestHelpers;
 using FluentAssertions;
+using Kontent.Ai.Delivery.Abstractions;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Generators.Class;
 
@@ -112,14 +113,10 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
         var articleClassCodeGenerator = new TypedExtendedDeliveryClassCodeGenerator(articleClassDefinition, articleClassDefinition.ClassName);
         var compiledArticleCode = articleClassCodeGenerator.GenerateCode();
 
-        var contentItemCodeGenerator = new ContentItemClassCodeGenerator();
-        var compiledContentItemCode = contentItemCodeGenerator.GenerateCode();
-
         var compilation = CSharpCompilation.Create(
             assemblyName: Path.GetRandomFileName(),
             syntaxTrees: new[]
             {
-                    CSharpSyntaxTree.ParseText(compiledContentItemCode),
                     CSharpSyntaxTree.ParseText(compiledHeroCode),
                     CSharpSyntaxTree.ParseText(compiledArticleCode),
                     CSharpSyntaxTree.ParseText(compiledCode),
@@ -139,7 +136,7 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
         var singleAllowedTypeMultiItemsTypeName = "Hero";
         var singleAllowedTypeExactlySingleItemTypeName = "Article";
         var modularContentType = generateStructuredModularContent
-            ? ContentItemClassCodeGenerator.DefaultContentItemClassName
+            ? nameof(IContentItem)
             : Property.ObjectType;
 
         #region LinkedItems

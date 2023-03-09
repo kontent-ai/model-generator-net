@@ -59,14 +59,10 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         var classCodeGenerator = new DeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
         var compiledCode = classCodeGenerator.GenerateCode();
 
-        var contentItemCodeGenerator = new ContentItemClassCodeGenerator();
-        var compiledContentItemCode = contentItemCodeGenerator.GenerateCode();
-
         var compilation = CSharpCompilation.Create(
             assemblyName: Path.GetRandomFileName(),
             syntaxTrees: new[]
             {
-                CSharpSyntaxTree.ParseText(compiledContentItemCode),
                 CSharpSyntaxTree.ParseText(compiledCode)
             },
             references: new[] {

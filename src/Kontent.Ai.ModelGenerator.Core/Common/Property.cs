@@ -42,7 +42,7 @@ public class Property
         { "multiple_choice", TextHelpers.GetEnumerableType(nameof(IMultipleChoiceOption))},
         { "asset", TextHelpers.GetEnumerableType(nameof(IAsset)) },
         { ModularContentElementType, TextHelpers.GetEnumerableType(ObjectType) },
-        { $"{ModularContentElementType}{StructuredSuffix}", TextHelpers.GetEnumerableType(ContentItemClassCodeGenerator.DefaultContentItemClassName) },
+        { $"{ModularContentElementType}{StructuredSuffix}", TextHelpers.GetEnumerableType(nameof(IContentItem)) },
         { "taxonomy", TextHelpers.GetEnumerableType(nameof(ITaxonomyTerm)) },
         { "url_slug", "string" },
         { "custom", "string" }

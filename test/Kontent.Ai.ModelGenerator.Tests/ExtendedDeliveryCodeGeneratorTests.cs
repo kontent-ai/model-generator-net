@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management;
 using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.Management.Models.Types;
@@ -26,7 +27,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     /// <summary>
     /// represents count of elements in 'management_types.json'
     /// </summary>
-    private const int NumberOfContentTypesWithDefaultContentItem = (14 * 2) + 1;
+    private const int NumberOfContentTypesWithDefaultContentItem = (14 * 2);
 
     private readonly IManagementClient _managementClient;
     private readonly IOutputProvider _outputProvider;
@@ -177,9 +178,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     [Theory]
-    [InlineData(StructuredModelFlags.ModularContent, NumberOfContentTypesWithDefaultContentItem)]
-    [InlineData(StructuredModelFlags.NotSet, NumberOfContentTypesWithDefaultContentItem - 1)]
-    public async Task IntegrationTest_RunAsync_CorrectFiles(StructuredModelFlags structuredModel, int expectedNumberOfFiles)
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_CorrectFiles(StructuredModelFlags structuredModel)
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
@@ -198,9 +199,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        AssertPresenceOfIContentItemFile(structuredModel);
-
-        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(expectedNumberOfFiles);
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypesWithDefaultContentItem);
 
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs").Should().NotBeEmpty();
         Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")).Should().NotBeEmpty();
@@ -210,9 +209,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     [Theory]
-    [InlineData(StructuredModelFlags.ModularContent, NumberOfContentTypesWithDefaultContentItem)]
-    [InlineData(StructuredModelFlags.NotSet, NumberOfContentTypesWithDefaultContentItem - 1)]
-    public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles(StructuredModelFlags structuredModel, int expectedNumberOfFiles)
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles(StructuredModelFlags structuredModel)
     {
         const string transformFilename = "CustomSuffix";
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -233,11 +232,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        AssertPresenceOfIContentItemFile(structuredModel);
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypesWithDefaultContentItem);
 
-        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(expectedNumberOfFiles);
-
-        foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(f => !f.Contains($"{ContentItemClassCodeGenerator.DefaultContentItemClassName}.cs")))
+        foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir)))
         {
             Path.GetFileName(filepath).Should().EndWith($".{transformFilename}.cs");
         }
@@ -247,9 +244,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     [Theory]
-    [InlineData(StructuredModelFlags.ModularContent, 1)]
-    [InlineData(StructuredModelFlags.NotSet, 0)]
-    public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles(StructuredModelFlags structuredModel, int numberOfExtraGeneratedFiles)
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles(StructuredModelFlags structuredModel)
     {
         const string transformFilename = "Generated";
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -272,15 +269,12 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var allFilesCount = Directory.GetFiles(Path.GetFullPath(TempDir), "*.cs").Length;
         var generatedCount = Directory.GetFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs").Length;
-        var result = generatedCount + (generatedCount / 2) + numberOfExtraGeneratedFiles;
+        var result = generatedCount + (generatedCount / 2);
 
         result.Should().Be(allFilesCount);
 
-        AssertPresenceOfIContentItemFile(structuredModel);
-
         foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir))
             .Where(f =>
-                !f.Contains($"{ContentItemClassCodeGenerator.DefaultContentItemClassName}.cs") &&
                 !f.Contains($".{transformFilename}.cs") &&
                 !f.Contains($"{ExtendedDeliveryCodeGenerator.TypedSuffixFileName}.{transformFilename}.cs")))
         {
@@ -296,9 +290,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     [Theory]
-    [InlineData(StructuredModelFlags.ModularContent, NumberOfContentTypesWithDefaultContentItem + 1)]
-    [InlineData(StructuredModelFlags.NotSet, NumberOfContentTypesWithDefaultContentItem)]
-    public async Task IntegrationTest_RunAsync_TypeProvider_CorrectFiles(StructuredModelFlags structuredModel, int expectedNumberOfFiles)
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_TypeProvider_CorrectFiles(StructuredModelFlags structuredModel)
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
@@ -317,9 +311,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        AssertPresenceOfIContentItemFile(structuredModel);
+        var generatedFilesWithoutTypeProvider = Directory.GetFiles(Path.GetFullPath(TempDir)).Where(f => !f.EndsWith("TypeProvider.cs")).ToList();
 
-        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(expectedNumberOfFiles);
+        generatedFilesWithoutTypeProvider.Count.Should().Be(NumberOfContentTypesWithDefaultContentItem);
 
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().NotBeEmpty();
 
@@ -333,13 +327,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     private string DefaultLinkedItemsType(StructuredModelFlags structuredModel) =>
         TextHelpers.GetEnumerableType(
             structuredModel.HasFlag(StructuredModelFlags.ModularContent)
-                ? ContentItemClassCodeGenerator.DefaultContentItemClassName
+                ? nameof(IContentItem)
                 : Property.ObjectType
         );
-
-    private void AssertPresenceOfIContentItemFile(StructuredModelFlags structuredModel)
-    {
-        var defaultContentItemClassCodeGeneratorExists = File.Exists(Path.GetFullPath($"{TempDir}//{ContentItemClassCodeGenerator.DefaultContentItemClassName}.cs"));
-        defaultContentItemClassCodeGeneratorExists.Should().Be(structuredModel is StructuredModelFlags.ModularContent);
-    }
 }
