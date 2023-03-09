@@ -1,10 +1,6 @@
 ﻿using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Microsoft.Extensions.Options;
 using Moq;
-using System;
-using System.IO;
-using FluentAssertions;
-using Xunit;
 
 namespace Kontent.Ai.ModelGenerator.Tests;
 

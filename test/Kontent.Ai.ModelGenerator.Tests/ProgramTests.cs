@@ -1,9 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using FluentAssertions;
-using Xunit;
-
-namespace Kontent.Ai.ModelGenerator.Tests;
+﻿namespace Kontent.Ai.ModelGenerator.Tests;
 
 public class ProgramTests
 {
