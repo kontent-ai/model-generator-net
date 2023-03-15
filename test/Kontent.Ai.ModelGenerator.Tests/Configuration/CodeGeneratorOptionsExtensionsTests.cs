@@ -173,7 +173,7 @@ public class CodeGeneratorOptionsExtensionsTests
     {
         var options = new CodeGeneratorOptions
         {
-            ManagementApi = true,
+            ManagementApi = managementApi,
             ExtendedDeliverModels = true
         };
 
