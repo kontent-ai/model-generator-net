@@ -55,7 +55,7 @@ internal static class ArgHelpers
     private static IDictionary<string, string> GetSpecificSwitchMappings(string[] args)
     {
         var managementDecidingArgs = new DecidingArgs("-m", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ManagementApi)));
-        var extendedDeliverDecidingArgs = new DecidingArgs("-e", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ExtendedDeliverModels)));
+        var extendedDeliverDecidingArgs = new DecidingArgs("-e", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ExtendedDeliveryModels)));
 
         for (var i = 0; i < args.Length; i++)
         {

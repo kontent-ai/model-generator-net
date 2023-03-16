@@ -46,20 +46,20 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = true,
-            ExtendedDeliverModels = true
+            ExtendedDeliveryModels = true
         });
 
         Creator(mockOptions.Object).Should().Throw<InvalidOperationException>();
     }
 
     [Fact]
-    public void Constructor_ExtendedDeliverModelsIsFalse_Throws()
+    public void Constructor_ExtendedDeliveryModelsIsFalse_Throws()
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = false
+            ExtendedDeliveryModels = false
         });
 
         Creator(mockOptions.Object).Should().Throw<InvalidOperationException>();
@@ -72,7 +72,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = true
+            ExtendedDeliveryModels = true
         });
 
         var extendedDeliveryCodeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient);
@@ -89,7 +89,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = true,
+            ExtendedDeliveryModels = true,
             StructuredModel = structuredModel.ToString()
         });
 
@@ -201,7 +201,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
-            ExtendedDeliverModels = true,
+            ExtendedDeliveryModels = true,
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             ManagementApi = false,
@@ -233,7 +233,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
-            ExtendedDeliverModels = true,
+            ExtendedDeliveryModels = true,
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             ManagementApi = false,
@@ -268,7 +268,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
-            ExtendedDeliverModels = true,
+            ExtendedDeliveryModels = true,
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             ManagementApi = false,
@@ -313,7 +313,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
-            ExtendedDeliverModels = true,
+            ExtendedDeliveryModels = true,
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             ManagementApi = false,

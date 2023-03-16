@@ -142,7 +142,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = true,
-            ExtendedDeliverModels = false
+            ExtendedDeliveryModels = false
         };
 
         var result = options.ManagementApi();
@@ -153,12 +153,12 @@ public class CodeGeneratorOptionsExtensionsTests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void ManagementApi_NotManagementApi_ReturnsFalse(bool extendedDeliverModels)
+    public void ManagementApi_NotManagementApi_ReturnsFalse(bool extendedDeliveryModels)
     {
         var options = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = extendedDeliverModels
+            ExtendedDeliveryModels = extendedDeliveryModels
         };
 
         var result = options.ManagementApi();
@@ -174,7 +174,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = managementApi,
-            ExtendedDeliverModels = true
+            ExtendedDeliveryModels = true
         };
 
         var result = options.ManagementApi();
@@ -185,12 +185,12 @@ public class CodeGeneratorOptionsExtensionsTests
     [Theory]
     [InlineData(true)]
     [InlineData(false)]
-    public void ExtendedDeliveryModels_ManagementApiIsTrue_ReturnsFalse(bool extendedDeliverModels)
+    public void ExtendedDeliveryModels_ManagementApiIsTrue_ReturnsFalse(bool extendedDeliveryModels)
     {
         var options = new CodeGeneratorOptions
         {
             ManagementApi = true,
-            ExtendedDeliverModels = extendedDeliverModels
+            ExtendedDeliveryModels = extendedDeliveryModels
         };
 
         var result = options.ExtendedDeliveryModels();
@@ -204,7 +204,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = false
+            ExtendedDeliveryModels = false
         };
 
         var result = options.ExtendedDeliveryModels();
@@ -218,7 +218,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = true
+            ExtendedDeliveryModels = true
         };
 
         var result = options.ExtendedDeliveryModels();
@@ -242,7 +242,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = false
+            ExtendedDeliveryModels = false
         };
 
         var result = options.DeliveryApi();
@@ -256,7 +256,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = true,
-            ExtendedDeliverModels = false
+            ExtendedDeliveryModels = false
         };
 
         var result = options.DeliveryApi();
@@ -270,7 +270,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = true
+            ExtendedDeliveryModels = true
         };
 
         var result = options.DeliveryApi();
@@ -284,7 +284,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = true,
-            ExtendedDeliverModels = true
+            ExtendedDeliveryModels = true
         };
 
         var result = options.DeliveryApi();
@@ -298,7 +298,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = true,
-            ExtendedDeliverModels = false
+            ExtendedDeliveryModels = false
         };
 
         var result = options.GetDesiredModelsType();
@@ -312,7 +312,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = true
+            ExtendedDeliveryModels = true
         };
 
         var result = options.GetDesiredModelsType();
@@ -326,7 +326,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = false
+            ExtendedDeliveryModels = false
         };
 
         var result = options.GetDesiredModelsType();
@@ -352,7 +352,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = false,
+            ExtendedDeliveryModels = false,
             DeliveryOptions = new DeliveryOptions
             {
                 ProjectId = projectId
@@ -372,7 +372,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = true,
-            ExtendedDeliverModels = false,
+            ExtendedDeliveryModels = false,
             ManagementOptions = new ManagementOptions
             {
                 ProjectId = projectId
@@ -392,7 +392,7 @@ public class CodeGeneratorOptionsExtensionsTests
         var options = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = true,
+            ExtendedDeliveryModels = true,
             ManagementOptions = new ManagementOptions
             {
                 ProjectId = projectId

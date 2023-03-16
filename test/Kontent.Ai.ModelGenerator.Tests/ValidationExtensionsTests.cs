@@ -61,7 +61,7 @@ public class ValidationExtensionsTests
         var codeGeneratorOptions = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = true,
+            ExtendedDeliveryModels = true,
             ManagementOptions = new ManagementOptions
             {
                 ProjectId = projectId,
@@ -196,7 +196,7 @@ public class ValidationExtensionsTests
             new CodeGeneratorOptions
             {
                 ManagementApi = true,
-                ExtendedDeliverModels = false
+                ExtendedDeliveryModels = false
             },
             "Management",
             "https://bit.ly/3rSMeDA"
@@ -206,7 +206,7 @@ public class ValidationExtensionsTests
             new CodeGeneratorOptions
             {
                 ManagementApi = false,
-                ExtendedDeliverModels = true
+                ExtendedDeliveryModels = true
             },
             "Delivery",
             "https://bit.ly/3rSMeDA"
@@ -220,7 +220,7 @@ public class ValidationExtensionsTests
             new CodeGeneratorOptions
             {
                 ManagementApi = true,
-                ExtendedDeliverModels = false
+                ExtendedDeliveryModels = false
             },
             null,
             "Management",
@@ -231,7 +231,7 @@ public class ValidationExtensionsTests
             new CodeGeneratorOptions
             {
                 ManagementApi = false,
-                ExtendedDeliverModels = true
+                ExtendedDeliveryModels = true
             },
             "",
             "Delivery",

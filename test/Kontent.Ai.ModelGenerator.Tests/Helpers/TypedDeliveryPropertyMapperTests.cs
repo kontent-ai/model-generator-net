@@ -14,9 +14,9 @@ namespace Kontent.Ai.ModelGenerator.Tests.Helpers;
 
 public class TypedDeliveryPropertyMapperTests
 {
-    private static readonly CodeGeneratorOptions ExtendedDeliverModelsOptions = new CodeGeneratorOptions
+    private static readonly CodeGeneratorOptions ExtendedDeliveryModelsOptions = new CodeGeneratorOptions
     {
-        ExtendedDeliverModels = true
+        ExtendedDeliveryModels = true
     };
 
     [Fact]
@@ -27,7 +27,7 @@ public class TypedDeliveryPropertyMapperTests
             new ContentTypeModel()
         };
 
-        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(null, contentTypes, ExtendedDeliverModelsOptions, out _);
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(null, contentTypes, ExtendedDeliveryModelsOptions, out _);
 
         tryMapCall.Should().ThrowExactly<ArgumentNullException>();
     }
@@ -41,7 +41,7 @@ public class TypedDeliveryPropertyMapperTests
         };
         var element = new AssetElementMetadataModel();
 
-        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, ExtendedDeliverModelsOptions, out _);
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, ExtendedDeliveryModelsOptions, out _);
 
         tryMapCall.Should().ThrowExactly<ArgumentException>();
     }
@@ -50,7 +50,7 @@ public class TypedDeliveryPropertyMapperTests
     [MemberData(nameof(GetBasicAllowedElements))]
     public void TryMap_ContentTypesIsNull_Throws(ElementMetadataBase element)
     {
-        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, null, ExtendedDeliverModelsOptions, out _);
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, null, ExtendedDeliveryModelsOptions, out _);
 
         tryMapCall.Should().ThrowExactly<ArgumentNullException>();
     }
@@ -61,7 +61,7 @@ public class TypedDeliveryPropertyMapperTests
     {
         var contentTypes = new List<ContentTypeModel>();
 
-        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, ExtendedDeliverModelsOptions, out _);
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, ExtendedDeliveryModelsOptions, out _);
 
         tryMapCall.Should().ThrowExactly<ArgumentException>();
     }
@@ -90,7 +90,7 @@ public class TypedDeliveryPropertyMapperTests
         };
         var options = new CodeGeneratorOptions
         {
-            ExtendedDeliverModels = false
+            ExtendedDeliveryModels = false
         };
 
         var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, options, out _);
@@ -117,7 +117,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         };
 
-        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out _);
+        var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliveryModelsOptions, out _);
 
         tryMapCall.Should().ThrowExactly<ArgumentException>();
     }
@@ -140,7 +140,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliveryModelsOptions, out var typedProperty);
 
         result.Should().BeTrue();
         typedProperty.Codename.Should().Be("Just_Articles_Article");
@@ -167,7 +167,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliveryModelsOptions, out var typedProperty);
 
         result.Should().BeTrue();
         typedProperty.Codename.Should().Be("article");
@@ -194,7 +194,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliveryModelsOptions, out var typedProperty);
 
         result.Should().BeTrue();
         typedProperty.Codename.Should().Be("article");
@@ -221,7 +221,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliveryModelsOptions, out var typedProperty);
 
         result.Should().BeFalse();
         typedProperty.Should().BeNull();
@@ -245,7 +245,7 @@ public class TypedDeliveryPropertyMapperTests
             }
         }.Union(linkedContentTypeModels).ToList();
 
-        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliveryModelsOptions, out var typedProperty);
 
         result.Should().BeFalse();
         typedProperty.Should().BeNull();

@@ -49,7 +49,7 @@ public class ArgHelpersTests
             { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
             { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
             { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
-            { "-e", nameof(CodeGeneratorOptions.ExtendedDeliverModels) }
+            { "-e", nameof(CodeGeneratorOptions.ExtendedDeliveryModels) }
         };
 
     private static IDictionary<string, string> ExpectedDeliveryMappings => new Dictionary<string, string>

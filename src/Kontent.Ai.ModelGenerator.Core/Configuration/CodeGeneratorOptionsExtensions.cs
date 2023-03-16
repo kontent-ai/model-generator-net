@@ -3,10 +3,10 @@
 public static class CodeGeneratorOptionsExtensions
 {
     public static bool ManagementApi(this CodeGeneratorOptions options) =>
-        options.ManagementApi && !options.ExtendedDeliverModels;
+        options.ManagementApi && !options.ExtendedDeliveryModels;
 
     public static bool ExtendedDeliveryModels(this CodeGeneratorOptions options) =>
-        !options.ManagementApi && options.ExtendedDeliverModels;
+        !options.ManagementApi && options.ExtendedDeliveryModels;
 
     public static bool DeliveryApi(this CodeGeneratorOptions options) => !options.ManagementApi() && !options.ExtendedDeliveryModels();
 
@@ -21,7 +21,7 @@ public static class CodeGeneratorOptionsExtensions
     }
 
     public static string GetProjectId(this CodeGeneratorOptions options) =>
-        options.ManagementApi || options.ExtendedDeliverModels
+        options.ManagementApi || options.ExtendedDeliveryModels
             ? options.ManagementOptions.ProjectId
             : options.DeliveryOptions.ProjectId;
 

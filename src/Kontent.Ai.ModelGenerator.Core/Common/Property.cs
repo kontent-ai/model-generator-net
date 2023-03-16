@@ -93,7 +93,7 @@ public class Property
 
     public static bool IsModularContentElementType(string elementType) => elementType == ModularContentElementType;
 
-    public static bool IsContentTypeSupported(string elementType, bool extendedDeliverModels) => extendedDeliverModels
+    public static bool IsContentTypeSupported(string elementType, bool extendedDeliveryModels) => extendedDeliveryModels
         ? ExtendedDeliverElementTypesDictionary.ContainsKey(elementType)
         : DeliverElementTypesDictionary.ContainsKey(elementType);
 

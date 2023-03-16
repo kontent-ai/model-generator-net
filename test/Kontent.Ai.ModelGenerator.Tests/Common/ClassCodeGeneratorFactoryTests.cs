@@ -74,7 +74,7 @@ public class ClassCodeGeneratorFactoryTests
         var codeGeneratorOptions = new CodeGeneratorOptions
         {
             ManagementApi = false,
-            ExtendedDeliverModels = true
+            ExtendedDeliveryModels = true
         };
 
         var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
@@ -143,7 +143,7 @@ public class ClassCodeGeneratorFactoryTests
         {
             ManagementApi = false,
             Namespace = customNamespace,
-            ExtendedDeliverModels = true
+            ExtendedDeliveryModels = true
         };
 
         var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
