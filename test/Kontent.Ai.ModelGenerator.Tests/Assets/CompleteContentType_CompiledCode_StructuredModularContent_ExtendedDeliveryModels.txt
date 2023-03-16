@@ -22,7 +22,9 @@ namespace KontentAiModels
         public IDateTimeContent DateTimeStructured { get; set; }
         public IEnumerable<IContentItem> ModularContentArticle { get; set; }
         public IEnumerable<IContentItem> ModularContentBlog { get; set; }
+        public IEnumerable<IContentItem> ModularContentCoffee { get; set; }
         public IEnumerable<IContentItem> ModularContentCoffees { get; set; }
+        public IEnumerable<IContentItem> ModularContentHero { get; set; }
         public IEnumerable<IContentItem> ModularContentHeroes { get; set; }
         public IEnumerable<IMultipleChoiceOption> MultipleChoice { get; set; }
         public decimal? Number { get; set; }
@@ -30,7 +32,9 @@ namespace KontentAiModels
         public IRichTextContent RichTextStructured { get; set; }
         public IEnumerable<IContentItem> SubpagesArticle { get; set; }
         public IEnumerable<IContentItem> SubpagesBlog { get; set; }
+        public IEnumerable<IContentItem> SubpagesCoffee { get; set; }
         public IEnumerable<IContentItem> SubpagesCoffees { get; set; }
+        public IEnumerable<IContentItem> SubpagesHero { get; set; }
         public IEnumerable<IContentItem> SubpagesHeroes { get; set; }
         public IContentItemSystemAttributes System { get; set; }
         public IEnumerable<ITaxonomyTerm> Taxonomy { get; set; }

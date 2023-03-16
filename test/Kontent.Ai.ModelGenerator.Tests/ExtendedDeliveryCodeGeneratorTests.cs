@@ -100,11 +100,15 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             {
                 LinkedItemsContentTypeData.SingleAllowedTypeMultiItems,
                 LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem,
-                LinkedItemsContentTypeData.MultiAllowedTypesSingleItem,
+                LinkedItemsContentTypeData.SingleAllowedTypeAtMostSingleItem,
+                LinkedItemsContentTypeData.MultiAllowedTypesExactlySingleItem,
+                LinkedItemsContentTypeData.MultiAllowedTypesAtMostSingleItem,
                 LinkedItemsContentTypeData.MultiAllowedTypesMultiItems,
                 SubpagesContentTypeData.SingleAllowedTypeMultiItems,
                 SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem,
-                SubpagesContentTypeData.MultiAllowedTypesSingleItem,
+                SubpagesContentTypeData.SingleAllowedTypeAtMostSingleItem,
+                SubpagesContentTypeData.MultiAllowedTypesExactlySingleItem,
+                SubpagesContentTypeData.MultiAllowedTypesAtMostSingleItem,
                 SubpagesContentTypeData.MultiAllowedTypesMultiItems,
             }
         };
@@ -130,18 +134,22 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
                 $"IEnumerable<{LinkedItemsContentTypeData.HeroContentType.Name}>",
                 "Modular_Content_Heroes_Hero"),
             Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, LinkedItemsContentTypeData.ArticleContentType.Name),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeAtMostSingleItem, LinkedItemsContentTypeData.HeroContentType.Name),
             Property.FromContentTypeElement(
                 SubpagesContentTypeData.SingleAllowedTypeMultiItems,
                 $"IEnumerable<{SubpagesContentTypeData.HeroContentType.Name}>",
                 "Subpages_Heroes_Hero"),
-            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem, SubpagesContentTypeData.ArticleContentType.Name)
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem, SubpagesContentTypeData.ArticleContentType.Name),
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeAtMostSingleItem, SubpagesContentTypeData.HeroContentType.Name)
         });
         expectedTypedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
         {
             "Modular_Content_Heroes_Hero",
             "modular_content_article",
+            "modular_content_hero",
             "Subpages_Heroes_Hero",
-            "subpages_article"
+            "subpages_article",
+            "subpages_hero"
         });
 
         var expectedExtendedDeliveryClassDefinition = new ClassDefinition(contentType.Codename);
@@ -149,22 +157,30 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         {
             Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
-            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesSingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeAtMostSingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesAtMostSingleItem, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
-            Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesSingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeAtMostSingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesAtMostSingleItem, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType(structuredModel))
         });
         expectedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
         {
             "modular_content_heroes",
             "modular_content_article",
+            "modular_content_hero",
             "modular_content_blog",
+            "modular_content_coffee",
             "modular_content_coffees",
             "subpages_heroes",
             "subpages_article",
+            "subpages_hero",
             "subpages_blog",
+            "subpages_coffee",
             "subpages_coffees"
         });
 

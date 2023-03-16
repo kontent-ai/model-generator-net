@@ -28,14 +28,24 @@ public static class SubpagesContentTypeData
     public static SubpagesElementMetadataModel SingleAllowedTypeMultiItems = GenerateSingleAllowedTypeMultiItems();
 
     /// <summary>
-    /// Represents linked items element limited to a single type with at most or exactly 1 item
+    /// Represents linked items element limited to a single type with exactly 1 item
     /// </summary>
     public static SubpagesElementMetadataModel SingleAllowedTypeExactlySingleItem = GenerateSingleAllowedTypeExactlySingleItem();
 
     /// <summary>
-    /// Represents linked items element limited to multiple types with at least 1 at most or exactly 1 item
+    /// Represents linked items element limited to a single type with at most 1 item
     /// </summary>
-    public static SubpagesElementMetadataModel MultiAllowedTypesSingleItem = GenerateMultiAllowedTypesSingleItem();
+    public static SubpagesElementMetadataModel SingleAllowedTypeAtMostSingleItem = GenerateSingleAllowedTypeAtMostSingleItem();
+
+    /// <summary>
+    /// Represents linked items element limited to multiple types with exactly 1 item
+    /// </summary>
+    public static SubpagesElementMetadataModel MultiAllowedTypesExactlySingleItem = GenerateMultiAllowedTypesExactlySingleItem();
+
+    /// <summary>
+    /// Represents linked items element limited to multiple types with at most 1 item
+    /// </summary>
+    public static SubpagesElementMetadataModel MultiAllowedTypesAtMostSingleItem = GenerateMultiAllowedTypesAtMostSingleItem();
 
     /// <summary>
     /// Represents linked items element limited to multiple types with at least 1 item
@@ -62,7 +72,17 @@ public static class SubpagesContentTypeData
         return singleAllowedTypeExactlySingleItem;
     }
 
-    private static SubpagesElementMetadataModel GenerateMultiAllowedTypesSingleItem()
+    private static SubpagesElementMetadataModel GenerateSingleAllowedTypeAtMostSingleItem()
+    {
+        var singleAllowedTypeAtMostSingleItem = (SubpagesElementMetadataModel)TestDataGenerator.
+            GenerateElementMetadataBase(Guid.Parse("8fa6bad6-2284-45e8-8ebb-f6be25626ee8"), "subpages_hero", ElementMetadataType.Subpages);
+        singleAllowedTypeAtMostSingleItem.AllowedContentTypes = new List<Reference>(new List<Reference> { Reference.ById(HeroContentType.Id) });
+        singleAllowedTypeAtMostSingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
+
+        return singleAllowedTypeAtMostSingleItem;
+    }
+
+    private static SubpagesElementMetadataModel GenerateMultiAllowedTypesExactlySingleItem()
     {
         var multiAllowedTypesSingleItem = (SubpagesElementMetadataModel)TestDataGenerator.
             GenerateElementMetadataBase(Guid.Parse("8fa6bad6-d984-45e8-8ebb-f6be25626ee9"), "subpages_blog", ElementMetadataType.Subpages);
@@ -72,6 +92,20 @@ public static class SubpagesContentTypeData
             Reference.ById(ArticleContentType.Id)
         });
         multiAllowedTypesSingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
+
+        return multiAllowedTypesSingleItem;
+    }
+
+    private static SubpagesElementMetadataModel GenerateMultiAllowedTypesAtMostSingleItem()
+    {
+        var multiAllowedTypesSingleItem = (SubpagesElementMetadataModel)TestDataGenerator.
+            GenerateElementMetadataBase(Guid.Parse("8fa6ccd6-d984-45e8-cccc-f6be25626ee9"), "subpages_coffee", ElementMetadataType.Subpages);
+        multiAllowedTypesSingleItem.AllowedContentTypes = new List<Reference>(new List<Reference>
+        {
+            Reference.ById(HeroContentType.Id),
+            Reference.ById(ArticleContentType.Id)
+        });
+        multiAllowedTypesSingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.AtMost, Value = 1 };
 
         return multiAllowedTypesSingleItem;
     }

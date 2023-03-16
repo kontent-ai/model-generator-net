@@ -28,14 +28,24 @@ public static class LinkedItemsContentTypeData
     public static LinkedItemsElementMetadataModel SingleAllowedTypeMultiItems = GenerateSingleAllowedTypeMultiItems();
 
     /// <summary>
-    /// Represents linked items element limited to a single type with at most or exactly 1 item
+    /// Represents linked items element limited to a single type with exactly 1 item
     /// </summary>
     public static LinkedItemsElementMetadataModel SingleAllowedTypeExactlySingleItem = GenerateSingleAllowedTypeExactlySingleItem();
 
     /// <summary>
-    /// Represents linked items element limited to multiple types with at least 1 at most or exactly 1 item
+    /// Represents linked items element limited to a single type with at most 1 item
     /// </summary>
-    public static LinkedItemsElementMetadataModel MultiAllowedTypesSingleItem = GenerateMultiAllowedTypesSingleItem();
+    public static LinkedItemsElementMetadataModel SingleAllowedTypeAtMostSingleItem = GenerateSingleAllowedTypeAtMostSingleItem();
+
+    /// <summary>
+    /// Represents linked items element limited to multiple types with exactly 1 item
+    /// </summary>
+    public static LinkedItemsElementMetadataModel MultiAllowedTypesExactlySingleItem = GenerateMultiAllowedTypesExactlySingleItem();
+
+    /// <summary>
+    /// Represents linked items element limited to multiple types with at most 1 item
+    /// </summary>
+    public static LinkedItemsElementMetadataModel MultiAllowedTypesAtMostSingleItem = GenerateMultiAllowedTypesAtMostSingleItem();
 
     /// <summary>
     /// Represents linked items element limited to multiple types with at least 1 item
@@ -62,7 +72,17 @@ public static class LinkedItemsContentTypeData
         return singleAllowedTypeExactlySingleItem;
     }
 
-    private static LinkedItemsElementMetadataModel GenerateMultiAllowedTypesSingleItem()
+    private static LinkedItemsElementMetadataModel GenerateSingleAllowedTypeAtMostSingleItem()
+    {
+        var singleAllowedTypeExactlySingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
+            GenerateElementMetadataBase(Guid.Parse("4fa6cccc-d984-45e8-8ebb-f6be25626ee8"), "modular_content_hero", ElementMetadataType.LinkedItems);
+        singleAllowedTypeExactlySingleItem.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ById(HeroContentType.Id) });
+        singleAllowedTypeExactlySingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.AtMost, Value = 1 };
+
+        return singleAllowedTypeExactlySingleItem;
+    }
+
+    private static LinkedItemsElementMetadataModel GenerateMultiAllowedTypesExactlySingleItem()
     {
         var multiAllowedTypesSingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
             GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45e8-8ebb-f6be25626ee9"), "modular_content_blog", ElementMetadataType.LinkedItems);
@@ -72,6 +92,20 @@ public static class LinkedItemsContentTypeData
             Reference.ById(ArticleContentType.Id)
         });
         multiAllowedTypesSingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
+
+        return multiAllowedTypesSingleItem;
+    }
+
+    private static LinkedItemsElementMetadataModel GenerateMultiAllowedTypesAtMostSingleItem()
+    {
+        var multiAllowedTypesSingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
+            GenerateElementMetadataBase(Guid.Parse("4fa6bad6-d984-45cc-8ebb-f6be25626ee9"), "modular_content_coffee", ElementMetadataType.LinkedItems);
+        multiAllowedTypesSingleItem.AllowedTypes = new List<Reference>(new List<Reference>
+        {
+            Reference.ById(HeroContentType.Id),
+            Reference.ById(ArticleContentType.Id)
+        });
+        multiAllowedTypesSingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.AtMost, Value = 1 };
 
         return multiAllowedTypesSingleItem;
     }

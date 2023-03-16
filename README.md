@@ -118,11 +118,15 @@ Model.Generated.cs
 ```csharp
 public partial class Home : IContentItem
 {
+    public const string SingleAllowedTypeAtMostOneLinkedContentItemCodename = "single_allowed_type_at_most_one_linked_content_item";
     public const string SingleAllowedTypeSingleLinkedContentItemCodename = "single_allowed_type_single_linked_content_item";
     public const string SingleAllowedTypeMultiLinkedContentItemsCodename = "single_allowed_type_multi_linked_content_items";
     public const string MultiAllowedTypesSingleLinkedContentItemCodename = "multi_allowed_types_single_linked_content_item";
     public const string MultiAllowedTypesMultiLinkedContentItemsCodename = "multi_allowed_types_multi_linked_content_items";
 
+    // Allowed Content Types == "Article" && Limit number of items <= 1
+    public IEnumerable<IContentItem> SingleAllowedTypeAtMostOneLinkedContentItem { get; set; }
+    
     // Allowed Content Types == "Article" && Limit number of items == 1
     public IEnumerable<IContentItem> SingleAllowedTypeSingleLinkedContentItem { get; set; }
     
@@ -142,6 +146,8 @@ Model.Typed.Generated.cs
 ```csharp
 public partial class Home
 {
+    public Article SingleAllowedTypeAtMostOneLinkedContentItemSingle => SingleAllowedTypeAtMostOneLinkedContentItem.OfType<Article>().FirstOrDefault();
+    
     public Article SingleAllowedTypeSingleLinkedContentItemSingle => SingleAllowedTypeSingleLinkedContentItem.OfType<Article>().FirstOrDefault();
     
     public IEnumerable<Article> SingleAllowedTypeMultiLinkedContentItemsArticleTyped => SingleAllowedTypeMultiLinkedContentItems.OfType<Article>();

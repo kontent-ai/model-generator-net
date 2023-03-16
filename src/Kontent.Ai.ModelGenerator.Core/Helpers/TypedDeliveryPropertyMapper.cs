@@ -32,7 +32,8 @@ public static class TypedDeliveryPropertyMapper
         var allowedContentType = GetAllowedContentType(elementOptions.AllowedTypes.First().Id.Value, contentTypes);
         var allowedContentTypeCodename = TextHelpers.GetValidPascalCaseIdentifierName(allowedContentType.Codename);
 
-        if (elementOptions.ItemCountLimit is { Condition: LimitType.Exactly, Value: 1 })
+        if (elementOptions.ItemCountLimit.Value == 1 &&
+            (elementOptions.ItemCountLimit.Condition is LimitType.Exactly or LimitType.AtMost))
         {
             typedProperty = Property.FromContentTypeElement(el, allowedContentTypeCodename);
             return true;

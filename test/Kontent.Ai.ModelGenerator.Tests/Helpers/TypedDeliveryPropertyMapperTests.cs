@@ -177,6 +177,33 @@ public class TypedDeliveryPropertyMapperTests
     }
 
     [Theory]
+    [MemberData(nameof(GetSingleAllowedTypeAtMostSingleItem))]
+    public void TryMap_Live_SingleAllowedTypeAtMostSingleItem_Returns(List<ContentTypeModel> linkedContentTypeModels, ElementMetadataBase element)
+    {
+        var allContentTypes = new List<ContentTypeModel>()
+        {
+            new ContentTypeModel
+            {
+                Codename = "grinder",
+                Id = Guid.NewGuid()
+            },
+            new ContentTypeModel
+            {
+                Codename = "coffee",
+                Id = Guid.NewGuid()
+            }
+        }.Union(linkedContentTypeModels).ToList();
+
+        var result = TypedDeliveryPropertyMapper.TryMap(element, allContentTypes, ExtendedDeliverModelsOptions, out var typedProperty);
+
+        result.Should().BeTrue();
+        typedProperty.Codename.Should().Be("article");
+        typedProperty.Id.Should().BeNull();
+        typedProperty.Identifier.Should().Be("Article");
+        typedProperty.TypeName.Should().Be("Article");
+    }
+
+    [Theory]
     [MemberData(nameof(GetMultiAllowedTypesSingleItem))]
     public void TryMap_Live_MultiAllowedTypesSingleItem_Returns(List<ContentTypeModel> linkedContentTypeModels, ElementMetadataBase element)
     {
@@ -307,6 +334,43 @@ public class TypedDeliveryPropertyMapperTests
         var limitModel = new LimitModel
         {
             Condition = LimitType.Exactly,
+            Value = 1
+        };
+
+        var linkedContentTypeModels = new List<ContentTypeModel>()
+        {
+            new ContentTypeModel
+            {
+                Codename = "article",
+                Id = Guid.NewGuid()
+            }
+        };
+
+        yield return new object[]
+        {
+            linkedContentTypeModels,
+            TestDataGenerator.GenerateLinkedItemsElement(
+                Guid.NewGuid().ToString(),
+                "article",
+                limitModel,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
+        yield return new object[]
+        {
+            linkedContentTypeModels,
+            TestDataGenerator.GenerateSubpagesElement(
+                Guid.NewGuid().ToString(),
+                "article",
+                limitModel,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
+    }
+
+    public static IEnumerable<object[]> GetSingleAllowedTypeAtMostSingleItem()
+    {
+        var limitModel = new LimitModel
+        {
+            Condition = LimitType.AtMost,
             Value = 1
         };
 

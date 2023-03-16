@@ -17,7 +17,11 @@ namespace KontentAiModels
     {
         public Article ModularContentArticleSingle => ModularContentArticle.OfType<Article>().FirstOrDefault();
 
+        public Nemesis ModularContentNemesisSingle => ModularContentNemesis.OfType<Nemesis>().FirstOrDefault();
+
         public Article SubpagesArticleSingle => SubpagesArticle.OfType<Article>().FirstOrDefault();
+
+        public Nemesis SubpagesNemesisSingle => SubpagesNemesis.OfType<Nemesis>().FirstOrDefault();
 
         public IEnumerable<Hero> ModularContentHeroesHeroTyped => ModularContentHeroes.OfType<Hero>();
 
