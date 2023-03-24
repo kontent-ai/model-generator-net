@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Kontent.Ai.Delivery.Abstractions;
@@ -10,9 +11,14 @@ namespace Kontent.Ai.ModelGenerator.Options;
 
 internal static class ArgHelpers
 {
-    private static readonly ProgramOptionsData ManagementProgramOptionsData = new ProgramOptionsData(typeof(ManagementOptions), "management-sdk-net");
-    private static readonly ProgramOptionsData DeliveryProgramOptionsData = new ProgramOptionsData(typeof(DeliveryOptions), "delivery-sdk-net");
-    private static readonly ProgramOptionsData ExtendedDeliveryProgramOptionsData = new ProgramOptionsData(typeof(ManagementOptions), typeof(DeliveryOptions), "delivery-sdk-net");
+    private static readonly ProgramOptionsData<ManagementOptions> ManagementProgramOptionsData =
+        new ProgramOptionsData<ManagementOptions>(typeof(ManagementOptions), "management-sdk-net");
+
+    private static readonly ProgramOptionsData<DeliveryOptions> DeliveryProgramOptionsData =
+        new ProgramOptionsData<DeliveryOptions>(typeof(DeliveryOptions), "delivery-sdk-net");
+
+    private static readonly ProgramOptionsData<ManagementOptions> ExtendedDeliveryProgramOptionsData =
+        new ProgramOptionsData<ManagementOptions>(typeof(ManagementOptions), typeof(DeliveryOptions), "delivery-sdk-net");
 
     public static IDictionary<string, string> GetSwitchMappings(string[] args) => ArgMappingsRegister.GeneralMappings
         .Union(GetSpecificSwitchMappings(args))
@@ -75,22 +81,26 @@ internal static class ArgHelpers
         return ArgMappingsRegister.DeliveryMappings;
     }
 
-    private static bool IsOptionPropertyValid(ProgramOptionsData programOptionsData, string arg) =>
-        IsOptionPropertyValid(programOptionsData.OptionProperties.Select(prop => $"{programOptionsData.OptionsName}:{prop.Name}"), arg);
+    private static bool IsOptionPropertyValid<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>
+        (ProgramOptionsData<T> programOptionsData, string arg) =>
+            IsOptionPropertyValid(programOptionsData.OptionProperties.Select(prop => $"{programOptionsData.OptionsName}:{prop.Name}"), arg);
 
     private static bool IsOptionPropertyValid(IEnumerable<string> optionProperties, string arg) =>
         optionProperties.Any(prop => GetPrefixedMappingName(prop, false) == arg);
 
     private static string GetPrefixedMappingName(string mappingName, bool toLower = true) => $"--{(toLower ? mappingName.ToLower() : mappingName)}";
 
-    private class ProgramOptionsData
+    private class ProgramOptionsData<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>
     {
         public IEnumerable<PropertyInfo> OptionProperties { get; }
         public string OptionsName { get; }
         public UsedSdkInfo UsedSdkInfo { get; set; }
         public Type Type { get; }
 
-        public ProgramOptionsData(Type type, string sdkName)
+        public ProgramOptionsData(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
+            Type type,
+            string sdkName)
         {
             UsedSdkInfo = new UsedSdkInfo(type, sdkName);
             Type = type;
@@ -98,7 +108,11 @@ internal static class ArgHelpers
             OptionsName = type.Name;
         }
 
-        public ProgramOptionsData(Type optionsType, Type sdkType, string sdkName)
+        public ProgramOptionsData(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)]
+            Type optionsType,
+            Type sdkType,
+            string sdkName)
         {
             UsedSdkInfo = new UsedSdkInfo(sdkType, sdkName);
             Type = optionsType;
