@@ -327,6 +327,15 @@ public class TypedDeliveryPropertyMapperTests
                 limitModel,
                 linkedContentTypeModels.Select(ct => ct.Id))
         };
+        yield return new object[]
+        {
+            linkedContentTypeModels,
+            TestDataGenerator.GenerateSubpagesElement(
+                Guid.NewGuid().ToString(),
+                "just_articles",
+                null,
+                linkedContentTypeModels.Select(ct => ct.Id))
+        };
     }
 
     public static IEnumerable<object[]> GetSingleAllowedTypeExactlySingleItem()

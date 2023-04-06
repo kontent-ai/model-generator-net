@@ -22,8 +22,7 @@ public static class TypedDeliveryPropertyMapper
 
         var elementOptions = GetElementOptions(el);
 
-        if (!elementOptions.AllowedTypes.Any() ||
-            elementOptions.AllowedTypes.Count() > 1)
+        if (!IsAllowedContentTypesOptionSupported(elementOptions.AllowedTypes))
         {
             typedProperty = null;
             return false;
@@ -32,8 +31,7 @@ public static class TypedDeliveryPropertyMapper
         var allowedContentType = GetAllowedContentType(elementOptions.AllowedTypes.First().Id.Value, contentTypes);
         var allowedContentTypeCodename = TextHelpers.GetValidPascalCaseIdentifierName(allowedContentType.Codename);
 
-        if (elementOptions.ItemCountLimit.Value == 1 &&
-            (elementOptions.ItemCountLimit.Condition is LimitType.Exactly or LimitType.AtMost))
+        if (IsItemCountLimitOptionSupported(elementOptions.ItemCountLimit))
         {
             typedProperty = Property.FromContentTypeElement(el, allowedContentTypeCodename);
             return true;
@@ -70,6 +68,15 @@ public static class TypedDeliveryPropertyMapper
             throw new ArgumentException("Can be used only for extended delivery models.");
         }
     }
+
+    private static bool IsAllowedContentTypesOptionSupported(IEnumerable<Reference> allowedTypes) =>
+        allowedTypes != null && allowedTypes.Count() == 1;
+
+    private static bool IsItemCountLimitOptionSupported(LimitModel itemCountLimit) => itemCountLimit is
+    {
+        Value: 1,
+        Condition: LimitType.Exactly or LimitType.AtMost
+    };
 
     private static ContentTypeModel GetAllowedContentType(Guid allowedTypeId, List<ContentTypeModel> contentTypes)
     {
