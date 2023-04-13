@@ -65,89 +65,37 @@ public class ArgHelpersTests
         { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
     };
 
-    [Fact]
-    public void GetSwitchMappings_MissingMapiSwitch_ReturnsDeliveryMappings()
+    [Theory]
+    [MemberData(nameof(DeliveryApiSwitchOptions))]
+    public void GetSwitchMappings_DeliveryApiSwitchOptions_ReturnsDeliveryMappings(string[] args)
     {
-        var result = ArgHelpers.GetSwitchMappings(new string[]
-        {
-                "-p",
-                Guid.NewGuid().ToString()
-        });
+        var result = ArgHelpers.GetSwitchMappings(args);
 
         result.Should().BeEquivalentTo(ExpectedDeliveryMappings);
     }
 
-    [Fact]
-    public void GetSwitchMappings_MapiSwitchIsFalse_ReturnsDeliveryMappings()
+    [Theory]
+    [MemberData(nameof(MapiSwitchOptions))]
+    public void GetSwitchMappings_MapiSwitchOptions_ReturnsManagementMappings(string[] args)
     {
-        var result = ArgHelpers.GetSwitchMappings(new string[]
-        {
-                "-p",
-                Guid.NewGuid().ToString(),
-                "-m",
-                "false"
-        });
-
-        result.Should().BeEquivalentTo(ExpectedDeliveryMappings);
-    }
-
-    [Fact]
-    public void GetSwitchMappings_MapiSwitchIsTrue_ReturnsManagementMappings()
-    {
-        var result = ArgHelpers.GetSwitchMappings(new string[]
-        {
-                "-p",
-                Guid.NewGuid().ToString(),
-                "-m",
-                "true"
-        });
+        var result = ArgHelpers.GetSwitchMappings(args);
 
         result.Should().BeEquivalentTo(ExpectedManagementMappings);
     }
 
-    [Fact]
-    public void GetSwitchMappings_ExtendedDeliveryIsTrue_ReturnsManagementMappings()
+    [Theory]
+    [MemberData(nameof(ExtendedDeliveryApiSwitchOptions))]
+    public void GetSwitchMappings_ExtendedDeliveryApiSwitchOptions_ReturnsManagementMappings(string[] args)
     {
-        var result = ArgHelpers.GetSwitchMappings(new string[]
-        {
-            "-p",
-            Guid.NewGuid().ToString(),
-            "-e",
-            "true"
-        });
+        var result = ArgHelpers.GetSwitchMappings(args);
 
         result.Should().BeEquivalentTo(ExpectedExtendedDeliveryMappings);
     }
 
-    [Fact]
-    public void GetSwitchMappings_ExtendedDeliveryAndPreviewIsTrue_ReturnsManagementMappings()
+    [Theory]
+    [MemberData(nameof(SupportedDeliveryOptions))]
+    public void ContainsContainsValidArgs_SupportedDeliveryOptions_ReturnsTrue(string[] args)
     {
-        var result = ArgHelpers.GetSwitchMappings(new string[]
-        {
-            "-p",
-            Guid.NewGuid().ToString(),
-            "-e",
-            "true",
-            "-r",
-            "true"
-        });
-
-        result.Should().BeEquivalentTo(ExpectedExtendedDeliveryMappings);
-    }
-
-    [Fact]
-    public void ContainsContainsValidArgs_SupportedDeliveryOptions_ReturnsTrue()
-    {
-        var args = AppendValuesToArgs(ExpectedDeliveryMappings)
-            .Concat(AppendValuesToArgs(ToLower(new List<string>
-            {
-                    nameof(CodeGeneratorOptions.StructuredModel),
-                    nameof(CodeGeneratorOptions.WithTypeProvider)
-            })))
-            .Concat(AppendValuesToArgs(GeneralOptionArgs))
-            .Concat(AppendValuesToArgs(typeof(DeliveryOptions)))
-            .ToArray();
-
         var result = ArgHelpers.ContainsValidArgs(args);
 
         result.Should().BeTrue();
@@ -170,18 +118,10 @@ public class ArgHelpersTests
         result.Should().BeFalse();
     }
 
-    [Fact]
-    public void ContainsContainsValidArgs_SupportedManagementOptions_ReturnsTrue()
+    [Theory]
+    [MemberData(nameof(SupportedManagementOptions))]
+    public void ContainsContainsValidArgs_SupportedManagementOptions_ReturnsTrue(string[] args)
     {
-        var args = AppendValuesToArgs(ExpectedManagementMappings)
-            .Concat(AppendValuesToArgs(ToLower(new List<string>
-            {
-                nameof(CodeGeneratorOptions.ManagementApi)
-            })))
-            .Concat(AppendValuesToArgs(GeneralOptionArgs))
-            .Concat(AppendValuesToArgs(typeof(ManagementOptions)))
-            .ToArray();
-
         var result = ArgHelpers.ContainsValidArgs(args);
 
         result.Should().BeTrue();
@@ -205,19 +145,10 @@ public class ArgHelpersTests
         result.Should().BeFalse();
     }
 
-    [Fact]
-    public void ContainsContainsValidArgs_SupportedExtendedDeliveryOptions_ReturnsTrue()
+    [Theory]
+    [MemberData(nameof(SupportedExtendedDeliveryOptions))]
+    public void ContainsContainsValidArgs_SupportedExtendedDeliveryOptions_ReturnsTrue(string[] args)
     {
-        var args = AppendValuesToArgs(ExpectedExtendedDeliveryMappings)
-            .Concat(AppendValuesToArgs(ToLower(new List<string>
-            {
-                nameof(CodeGeneratorOptions.StructuredModel),
-                nameof(CodeGeneratorOptions.WithTypeProvider)
-            })))
-            .Concat(AppendValuesToArgs(GeneralOptionArgs))
-            .Concat(AppendValuesToArgs(typeof(ManagementOptions)))
-            .ToArray();
-
         var result = ArgHelpers.ContainsValidArgs(args);
 
         result.Should().BeTrue();
@@ -268,22 +199,107 @@ public class ArgHelpersTests
         AssertUsedSdkInfoResult(result, "delivery-sdk-net", typeof(DeliveryOptions));
     }
 
-    private static IEnumerable<string> AppendValuesToArgs(IDictionary<string, string> mappings) => AppendValuesToArgs(mappings.Keys);
+    public static IEnumerable<object[]> DeliveryApiSwitchOptions()
+    {
+        var projectId = Guid.NewGuid().ToString();
 
-    private static IEnumerable<string> AppendValuesToArgs(Type type) =>
+        yield return new object[] { new string[] { "-p", projectId, "-m", "False" } };
+        yield return new object[] { new string[] { "-p", projectId, "-m", "false" } };
+        yield return new object[] { new string[] { "-p", projectId, "-m=false" } };
+        yield return new object[] { new string[] { "-p", projectId, "-m=False" } };
+        yield return new object[] { new string[] { "-p", projectId } };
+    }
+
+    public static IEnumerable<object[]> MapiSwitchOptions()
+    {
+        var projectId = Guid.NewGuid().ToString();
+
+        yield return new object[] { new string[] { "-p", projectId, "-m", "True" } };
+        yield return new object[] { new string[] { "-p", projectId, "-m", "true" } };
+        yield return new object[] { new string[] { "-p", projectId, "-m=true" } };
+        yield return new object[] { new string[] { "-p", projectId, "-m=True" } };
+    }
+
+    public static IEnumerable<object[]> ExtendedDeliveryApiSwitchOptions()
+    {
+        var projectId = Guid.NewGuid().ToString();
+
+        yield return new object[] { new string[] { "-p", projectId, "-e", "True" } };
+        yield return new object[] { new string[] { "-p", projectId, "-e", "true" } };
+        yield return new object[] { new string[] { "-p", projectId, "-e=true" } };
+        yield return new object[] { new string[] { "-p", projectId, "-e=True" } };
+    }
+
+    public static IEnumerable<object[]> SupportedManagementOptions()
+    {
+        var args = AppendValuesToArgs(ExpectedManagementMappings)
+            .Concat(AppendValuesToArgs(ToLower(new List<string>
+            {
+                nameof(CodeGeneratorOptions.ManagementApi)
+            })))
+            .Concat(AppendValuesToArgs(GeneralOptionArgs))
+            .Concat(AppendValuesToArgs(typeof(ManagementOptions)))
+            .ToArray();
+
+        foreach (var arg in args)
+        {
+            yield return new object[] { arg };
+        }
+    }
+
+    public static IEnumerable<object[]> SupportedDeliveryOptions()
+    {
+        var args = AppendValuesToArgs(ExpectedDeliveryMappings)
+            .Concat(AppendValuesToArgs(ToLower(new List<string>
+            {
+                nameof(CodeGeneratorOptions.StructuredModel),
+                nameof(CodeGeneratorOptions.WithTypeProvider)
+            })))
+            .Concat(AppendValuesToArgs(GeneralOptionArgs))
+            .Concat(AppendValuesToArgs(typeof(DeliveryOptions)))
+            .ToArray();
+
+        foreach (var arg in args)
+        {
+            yield return new object[] { arg };
+        }
+    }
+
+    public static IEnumerable<object[]> SupportedExtendedDeliveryOptions()
+    {
+        var args = AppendValuesToArgs(ExpectedExtendedDeliveryMappings)
+            .Concat(AppendValuesToArgs(ToLower(new List<string>
+            {
+                nameof(CodeGeneratorOptions.StructuredModel),
+                nameof(CodeGeneratorOptions.WithTypeProvider)
+            })))
+            .Concat(AppendValuesToArgs(GeneralOptionArgs))
+            .Concat(AppendValuesToArgs(typeof(ManagementOptions)))
+            .ToArray();
+
+        foreach (var arg in args)
+        {
+            yield return new object[] { arg };
+        }
+    }
+
+    private static IEnumerable<IEnumerable<string>> AppendValuesToArgs(IDictionary<string, string> mappings) => AppendValuesToArgs(mappings.Keys);
+
+    private static IEnumerable<IEnumerable<string>> AppendValuesToArgs(Type type) =>
         AppendValuesToArgs(type.GetProperties().Select(p => $"{type.Name}:{p.Name}"));
 
     private static IEnumerable<string> ToLower(IEnumerable<string> args) => args.Select(a => a.ToLower());
 
-    private static IEnumerable<string> AppendValuesToArgs(IEnumerable<string> args)
+    private static IEnumerable<IEnumerable<string>> AppendValuesToArgs(IEnumerable<string> args)
     {
-        var argsWithValue = new List<string>();
+        var argValue = "arg_value";
         foreach (var arg in args)
         {
-            argsWithValue.Add(arg.StartsWith('-') ? arg : $"--{arg}");
-            argsWithValue.Add("arg_value");
+            var argName = arg.StartsWith('-') ? arg : $"--{arg}";
+
+            yield return new List<string> { argName, argValue };
+            yield return new List<string> { $"{argName}={argValue}" };
         }
-        return argsWithValue;
     }
 
     private static void AssertUsedSdkInfoResult(UsedSdkInfo result, string expectedName, Type expectedType)
