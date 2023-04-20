@@ -72,7 +72,7 @@ There are two ways of configuring advanced Delivery SDK options (such as secure 
 
 1. Command-line arguments `--DeliveryOptions:UseSecureAccess true --DeliveryOptions:SecureAccessApiKey <SecuredApiKey>` ([syntax](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.commandlineconfigurationextensions.addcommandline))
 
-2. [`appSettings.json`](./src/Kontent.AI.ModelGenerator/appSettings.json) - suitable for the standalone app release
+2. [`appSettings.json`](./src/Kontent.Ai.ModelGenerator/appSettings.json) - suitable for the standalone app release
 
 ### Delivery API example output
 
