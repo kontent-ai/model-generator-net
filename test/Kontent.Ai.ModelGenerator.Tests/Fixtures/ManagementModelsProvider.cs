@@ -10,8 +10,8 @@ namespace Kontent.Ai.ModelGenerator.Tests.Fixtures;
 
 internal class ManagementModelsProvider
 {
-    public IEnumerator<ContentTypeModel> ManagementContentTypeModels { get; }
-    public IEnumerator<ContentTypeSnippetModel> ManagementContentTypeSnippetModels { get; }
+    public IEnumerable<ContentTypeModel> ManagementContentTypeModels { get; }
+    public IEnumerable<ContentTypeSnippetModel> ManagementContentTypeSnippetModels { get; }
 
     public ManagementModelsProvider()
     {
@@ -19,7 +19,7 @@ internal class ManagementModelsProvider
         ManagementContentTypeSnippetModels = GetModels<ContentTypeSnippetModel>("Fixtures/management_snippets.json");
     }
 
-    private static IEnumerator<T> GetModels<T>(string filePath)
+    private static IEnumerable<T> GetModels<T>(string filePath)
     {
         var stringServerResponse = File.ReadAllText(Path.Combine(AppContext.BaseDirectory, filePath));
         var jTokenServerResponse = JToken.ReadFrom(new JsonTextReader(new StringReader(stringServerResponse)));
@@ -31,8 +31,6 @@ internal class ManagementModelsProvider
             _ => throw new NotSupportedException()
         };
 
-        return jTokenServerResponse[objectTypesProperty]
-            .ToObject<IEnumerable<T>>()
-            .GetEnumerator();
+        return jTokenServerResponse[objectTypesProperty].ToObject<IEnumerable<T>>();
     }
 }

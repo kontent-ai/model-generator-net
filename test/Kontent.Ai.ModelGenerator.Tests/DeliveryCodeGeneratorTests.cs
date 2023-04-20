@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Kontent.Ai.Delivery;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Delivery.Builders.DeliveryClient;
@@ -35,44 +36,17 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var deliveryClient = new Mock<IDeliveryClient>();
         var outputProvider = new Mock<IOutputProvider>();
 
-        Assert.Throws<InvalidOperationException>(() => new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object));
-    }
+        var call = () => new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object);
 
-    [Fact]
-    public void CreateCodeGeneratorOptions_NoOutputSetInJsonNorInParameters_OutputDirHasDefaultValue()
-    {
-        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
-        var options = new CodeGeneratorOptions
-        {
-            OutputDir = ""
-        };
-        mockOptions.Setup(x => x.Value).Returns(options);
-
-        var outputProvider = new FileSystemOutputProvider(mockOptions.Object);
-        Assert.Empty(options.OutputDir);
-        Assert.NotEmpty(outputProvider.OutputDir);
-    }
-
-    [Fact]
-    public void CreateCodeGeneratorOptions_OutputSetInParameters_OutputDirHasCustomValue()
-    {
-        var expectedOutputDir = Environment.CurrentDirectory;
-        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
-        var options = new CodeGeneratorOptions
-        {
-            OutputDir = ""
-        };
-        mockOptions.Setup(x => x.Value).Returns(options);
-
-        var outputProvider = new FileSystemOutputProvider(mockOptions.Object);
-        Assert.Equal(expectedOutputDir.TrimEnd(Path.DirectorySeparatorChar), outputProvider.OutputDir.TrimEnd(Path.DirectorySeparatorChar));
+        call.Should().ThrowExactly<InvalidOperationException>();
     }
 
     [Theory]
     [InlineData(StructuredModelFlags.DateTime)]
     [InlineData(StructuredModelFlags.RichText)]
     [InlineData(StructuredModelFlags.True)]
-    [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.DateTime | StructuredModelFlags.True)]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.DateTime | StructuredModelFlags.True | StructuredModelFlags.ModularContent)]
     [InlineData(StructuredModelFlags.NotSet)]
     public void GetClassCodeGenerator_Returns(StructuredModelFlags structuredModel)
     {
@@ -100,11 +74,13 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = codeGenerator.GetClassCodeGenerator(contentType.Object);
 
-        Assert.Equal($"{contentTypeCodename}.Generated", result.ClassFilename);
+        result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
     }
 
-    [Fact]
-    public async Task IntegrationTest_RunAsync_CorrectFiles()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_CorrectFiles(StructuredModelFlags structuredModel)
     {
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When("https://deliver.kontent.ai/*")
@@ -120,7 +96,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = false,
-            StructuredModel = null
+            StructuredModel = structuredModel.ToString()
         });
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
@@ -129,18 +105,20 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        Assert.Equal(NumberOfContentTypes, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypes);
 
-        Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs"));
-        Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")));
-        Assert.Empty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs"));
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs").Should().NotBeEmpty();
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")).Should().NotBeEmpty();
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().BeEmpty();
 
         // Cleanup
         Directory.Delete(TempDir, true);
     }
 
-    [Fact]
-    public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles(StructuredModelFlags structuredModel)
     {
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When("https://deliver.kontent.ai/*")
@@ -156,7 +134,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             GeneratePartials = false,
-            StructuredModel = null,
+            StructuredModel = structuredModel.ToString(),
             WithTypeProvider = false,
             FileNameSuffix = transformFilename,
             ManagementApi = false
@@ -168,19 +146,21 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        Assert.Equal(NumberOfContentTypes, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypes);
 
         foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir)))
         {
-            Assert.EndsWith($".{transformFilename}.cs", Path.GetFileName(filepath));
+            Path.GetFileName(filepath).Should().EndWith($".{transformFilename}.cs");
         }
 
         // Cleanup
         Directory.Delete(TempDir, true);
     }
 
-    [Fact]
-    public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles(StructuredModelFlags structuredModel)
     {
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When("https://deliver.kontent.ai/*")
@@ -198,7 +178,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             FileNameSuffix = transformFilename,
             GeneratePartials = true,
             WithTypeProvider = false,
-            StructuredModel = null,
+            StructuredModel = structuredModel.ToString(),
             ManagementApi = false
         });
 
@@ -211,20 +191,24 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var allFilesCount = Directory.GetFiles(Path.GetFullPath(TempDir), "*.cs").Length;
         var generatedCount = Directory.GetFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs").Length;
-        Assert.Equal(allFilesCount, generatedCount * 2);
+
+        var resultGeneratedFilesCount = generatedCount * 2;
+        resultGeneratedFilesCount.Should().Be(allFilesCount);
 
         foreach (var filepath in Directory.EnumerateFiles(Path.GetFullPath(TempDir), $"*.{transformFilename}.cs"))
         {
             var customFileExists = File.Exists(filepath.Replace($".{transformFilename}", ""));
-            Assert.True(customFileExists);
+            customFileExists.Should().BeTrue();
         }
 
         // Cleanup
         Directory.Delete(TempDir, true);
     }
 
-    [Fact]
-    public async Task IntegrationTest_RunAsync_TypeProvider_CorrectFiles()
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_TypeProvider_CorrectFiles(StructuredModelFlags structuredModel)
     {
         var mockHttp = new MockHttpMessageHandler();
         mockHttp.When("https://deliver.kontent.ai/*")
@@ -240,7 +224,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = true,
-            StructuredModel = null
+            StructuredModel = structuredModel.ToString()
         });
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
@@ -249,9 +233,8 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         await codeGenerator.RunAsync();
 
-        Assert.Equal(NumberOfContentTypes + 1, Directory.GetFiles(Path.GetFullPath(TempDir)).Length);
-
-        Assert.NotEmpty(Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs"));
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypes + 1);
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().NotBeEmpty();
 
         // Cleanup
         Directory.Delete(TempDir, true);

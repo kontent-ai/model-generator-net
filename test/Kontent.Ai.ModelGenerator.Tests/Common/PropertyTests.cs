@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Tests.TestHelpers;
 using Xunit;
 
 namespace Kontent.Ai.ModelGenerator.Tests.Common;
@@ -14,9 +16,9 @@ public class PropertyTests
     {
         var element = new Property("element_codename", "string");
 
-        Assert.Equal("ElementCodename", element.Identifier);
-        Assert.Equal("string", element.TypeName);
-        Assert.Null(element.Id);
+        element.Identifier.Should().Be("ElementCodename");
+        element.TypeName.Should().Be("string");
+        element.Id.Should().BeNull();
     }
 
     [Theory]
@@ -27,9 +29,9 @@ public class PropertyTests
     {
         var element = new Property("element_codename", "string", id);
 
-        Assert.Equal("ElementCodename", element.Identifier);
-        Assert.Equal("string", element.TypeName);
-        Assert.Equal(id, element.Id);
+        element.Identifier.Should().Be("ElementCodename");
+        element.TypeName.Should().Be("string");
+        element.Id.Should().Be(id);
     }
 
     [Theory]
@@ -42,6 +44,7 @@ public class PropertyTests
     [InlineData($"date_time{Property.StructuredSuffix}", "IDateTimeContent")]
     [InlineData("asset", "IEnumerable<IAsset>")]
     [InlineData("modular_content", "IEnumerable<object>")]
+    [InlineData($"modular_content{Property.StructuredSuffix}", "IEnumerable<IContentItem>")]
     [InlineData("taxonomy", "IEnumerable<ITaxonomyTerm>")]
     [InlineData("url_slug", "string")]
     [InlineData("custom", "string")]
@@ -52,8 +55,8 @@ public class PropertyTests
 
         var element = Property.FromContentTypeElement(codename, contentType);
 
-        Assert.Equal(expectedCodename, element.Identifier);
-        Assert.Equal(expectedTypeName, element.TypeName);
+        element.Identifier.Should().Be(expectedCodename);
+        element.TypeName.Should().Be(expectedTypeName);
     }
 
     [Theory, MemberData(nameof(ManagementElements))]
@@ -61,22 +64,26 @@ public class PropertyTests
     {
         var property = Property.FromContentTypeElement(element);
 
-        Assert.Equal(expectedCodename, property.Identifier);
-        Assert.Equal(expectedTypeName, property.TypeName);
-        Assert.Equal(element.Id.ToString(), property.Id);
+        property.Identifier.Should().Be(expectedCodename);
+        property.TypeName.Should().Be(expectedTypeName);
+        property.Id.Should().Be(element.Id.ToString());
     }
 
     [Fact]
     public void FromContentTypeElement_DeliveryApiModel_InvalidContentTypeElement_Throws()
     {
-        Assert.Throws<ArgumentException>(() => Property.FromContentTypeElement("codename", "unknown content type"));
+        var fromContentTypeElementCall = () => Property.FromContentTypeElement("codename", "unknown content type");
+
+        fromContentTypeElementCall.Should().ThrowExactly<ArgumentException>();
     }
 
     [Fact]
     public void FromContentTypeElement_ManagementApiModel_GuidelinesElement_Throws()
     {
-        Assert.Throws<UnsupportedTypeException>(() =>
-            Property.FromContentTypeElement(TestHelper.GenerateGuidelinesElement(Guid.NewGuid(), "codename")));
+        var fromContentTypeElementCall = () =>
+            Property.FromContentTypeElement(TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), "codename"));
+
+        fromContentTypeElementCall.Should().ThrowExactly<UnsupportedTypeException>();
     }
 
     [Theory]
@@ -87,7 +94,7 @@ public class PropertyTests
     {
         var result = Property.IsDateTimeElementType(elementType);
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Theory]
@@ -97,7 +104,7 @@ public class PropertyTests
     {
         var result = Property.IsDateTimeElementType(elementType);
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -105,7 +112,7 @@ public class PropertyTests
     {
         var result = Property.IsDateTimeElementType("date_time");
 
-        Assert.True(result);
+        result.Should().BeTrue();
     }
 
     [Theory]
@@ -116,7 +123,7 @@ public class PropertyTests
     {
         var result = Property.IsRichTextElementType(elementType);
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Theory]
@@ -126,7 +133,7 @@ public class PropertyTests
     {
         var result = Property.IsRichTextElementType(elementType);
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -134,33 +141,51 @@ public class PropertyTests
     {
         var result = Property.IsRichTextElementType("rich_text");
 
-        Assert.True(result);
+        result.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("text")]
+    [InlineData("modular_content(structured)")]
+    public void IsModularContentElementType_NotModularContentElementType_ReturnsFalse(string elementType)
+    {
+        var result = Property.IsModularContentElementType(elementType);
+
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsModularContentElementType_ReturnsTrue()
+    {
+        var result = Property.IsModularContentElementType("modular_content");
+
+        result.Should().BeTrue();
     }
 
     public static IEnumerable<object[]> ManagementElements =>
         new List<(string, string, ElementMetadataBase)>
         {
             ("TextElement", "TextElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "text_element")),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "text_element")),
             ("RichTextElement","RichTextElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "rich_text_element", ElementMetadataType.RichText)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "rich_text_element", ElementMetadataType.RichText)),
             ("NumberElement", "NumberElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "number_element", ElementMetadataType.Number)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "number_element", ElementMetadataType.Number)),
             ("MultipleChoiceElement","MultipleChoiceElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "multiple_choice_element", ElementMetadataType.MultipleChoice)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "multiple_choice_element", ElementMetadataType.MultipleChoice)),
             ("DateTimeElement","DateTimeElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "date_time_element", ElementMetadataType.DateTime)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "date_time_element", ElementMetadataType.DateTime)),
             ("AssetElement", "AssetElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "asset_element", ElementMetadataType.Asset)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "asset_element", ElementMetadataType.Asset)),
             ("LinkedItemsElement", "LinkedItemsElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "linked_items_element", ElementMetadataType.LinkedItems)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "linked_items_element", ElementMetadataType.LinkedItems)),
             ("SubpagesElement", "SubpagesElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "subpages_element", ElementMetadataType.Subpages)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "subpages_element", ElementMetadataType.Subpages)),
             ("TaxonomyElement", "TaxonomyElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "taxonomy_element", ElementMetadataType.Taxonomy)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "taxonomy_element", ElementMetadataType.Taxonomy)),
             ("UrlSlugElement", "UrlSlugElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "url_slug_element", ElementMetadataType.UrlSlug)),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "url_slug_element", ElementMetadataType.UrlSlug)),
             ("CustomElement", "CustomElement",
-                TestHelper.GenerateElementMetadataBase(Guid.NewGuid(), "custom_element", ElementMetadataType.Custom))
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "custom_element", ElementMetadataType.Custom))
         }.Select(triple => new object[] { triple.Item1, triple.Item2, triple.Item3 });
 }

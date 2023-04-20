@@ -8,6 +8,7 @@ namespace Kontent.Ai.ModelGenerator.Core.Configuration;
 public class CodeGeneratorOptions
 {
     private const char StructuredModelSeparator = ',';
+    private const bool DefaultExtendedDeliveryModels = false;
     private const bool DefaultGeneratePartials = true;
     private const bool DefaultWithTypeProvider = true;
     private const bool DefaultManagementApi = false;
@@ -23,6 +24,11 @@ public class CodeGeneratorOptions
     /// Management Client configuration.
     /// </summary>
     public ManagementOptions ManagementOptions { get; set; }
+
+    /// <summary>
+    /// Indicates whether the extended Delivery models should be generated
+    /// </summary>
+    public bool ExtendedDeliveryModels { get; set; } = DefaultExtendedDeliveryModels;
 
     /// <summary>
     /// Namespace name of the generated classes

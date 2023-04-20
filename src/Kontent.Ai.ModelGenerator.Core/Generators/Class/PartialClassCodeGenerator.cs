@@ -13,7 +13,7 @@ public class PartialClassCodeGenerator : DeliveryClassCodeGeneratorBase
     {
     }
 
-    protected override ClassDeclarationSyntax GetClassDeclaration()
+    protected override TypeDeclarationSyntax GetClassDeclaration()
     {
         var classDeclaration = base.GetClassDeclaration();
 

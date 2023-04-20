@@ -20,12 +20,22 @@ namespace KontentAiModels
         public string Custom { get; set; }
         public DateTime? DateTime { get; set; }
         public IDateTimeContent DateTimeStructured { get; set; }
-        public IEnumerable<object> ModularContent { get; set; }
-        public IEnumerable<IContentItem> ModularContentStructured { get; set; }
+        public IEnumerable<object> ModularContentArticle { get; set; }
+        public IEnumerable<object> ModularContentBlog { get; set; }
+        public IEnumerable<object> ModularContentCoffee { get; set; }
+        public IEnumerable<object> ModularContentCoffees { get; set; }
+        public IEnumerable<object> ModularContentHero { get; set; }
+        public IEnumerable<object> ModularContentHeroes { get; set; }
         public IEnumerable<IMultipleChoiceOption> MultipleChoice { get; set; }
         public decimal? Number { get; set; }
         public string RichText { get; set; }
         public IRichTextContent RichTextStructured { get; set; }
+        public IEnumerable<object> SubpagesArticle { get; set; }
+        public IEnumerable<object> SubpagesBlog { get; set; }
+        public IEnumerable<object> SubpagesCoffee { get; set; }
+        public IEnumerable<object> SubpagesCoffees { get; set; }
+        public IEnumerable<object> SubpagesHero { get; set; }
+        public IEnumerable<object> SubpagesHeroes { get; set; }
         public IContentItemSystemAttributes System { get; set; }
         public IEnumerable<ITaxonomyTerm> Taxonomy { get; set; }
         public string Text { get; set; }

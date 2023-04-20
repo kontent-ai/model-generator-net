@@ -11,7 +11,7 @@ public class DeliveryClassCodeGenerator : DeliveryClassCodeGeneratorBase
     {
     }
 
-    protected override ClassDeclarationSyntax GetClassDeclaration()
+    protected override TypeDeclarationSyntax GetClassDeclaration()
     {
         var classDeclaration = base.GetClassDeclaration();
 

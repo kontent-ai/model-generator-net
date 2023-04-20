@@ -47,16 +47,20 @@ To learn how to generate executables for your favorite target platform, follow t
 
 ### Delivery API parameters
 
-| Short key |       Long key       | Required |   Default value   |                                                                                                                                                                                                                                                                                                                                            Description                                                                                                                                                                                                                                                                                                                                                |
-| --------- | :------------------: | :------: | :---------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| `-p`      |    `--projectid`     |   True   |      `null`       |                                                                                                                                                                                                                                                                                                       A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                                                                                                                                                                                                                                                                                                         |
-| `-n`      |    `--namespace`     |  False   | `KontentAiModels` |                                                                                                                                                                                                                                                                                                        A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                                                                                                                                                                                                                                                                                                           |
-| `-o`      |    `--outputdir`     |  False   |       `\.`        |                                                                                                                                                                                                                                                                                                                                       An output folder path                                                                                                                                                                                                                                                                                                                                           |
-| `-g`      | `--generatepartials` |  False   |      `true`       |                                                                                                                                                                                                                                                                              Generates partial classes for customization. Partial classes are the best practice for customization so the recommended value is `true`.                                                                                                                                                                                                                                                                                 |
-| `-t`      | `--withtypeprovider` |  False   |      `true`       |                                                                                                                                                                                              Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/strongly-typed-models.md#customizing-the-strong-type-binding-logic) for more info)                                                                                                                                                                                                 |
-| `-s`      | `--structuredmodel`  |  False   |      `null`       | Generates `IRichTextContent` instead of `string` for rich-text elements or `IDateTimeContent` instead of `DateTime?` for date-time elements. This enables utilizing [structured rich-text rendering](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/structured-models/structured-models-rendering.md) [structured date-time rendering](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/structured-models/structured-models-rendering.md). Allowed values [`RichText`, `DateTime`, `True`], as a separator you should use `,`. ⚠️ `True` parameter is **obsolete** and interprets the same value as `RichText`. |
-| `-f`      |  `--filenamesuffix`  |  False   |      `null`       |                                                                                                                                                                                                                                                                                                           Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                                                                                                                                                                                                                                                                                                              |
-| `-b`      |    `--baseclass`     |  False   |      `null`       |                                                                                                                                                                                                                                                                               If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes                                                                                                                                                                                                                                                                                  |
+| Short key |                Long key                  | Required |   Default value   | Description |
+| --------- | :--------------------------------------: | :------: | :---------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| `-p`      |              `--projectid`               |   True   |      `null`       |                                                                                                                                                  A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                                                                                                                                                       |
+| `-n`      |              `--namespace`               |  False   | `KontentAiModels` |                                                                                                                                                    A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                                                                                                                                                        |
+| `-o`      |              `--outputdir`               |  False   |       `\.`        |                                                                                                                                                                                    An output folder path                                                                                                                                                                                       |
+| `-g`      |           `--generatepartials`           |  False   |      `true`       |                                                                                                                          Generates partial classes for customization. Partial classes are the best practice for customization so the recommended value is `true`.                                                                                                                              |
+| `-t`      |           `--withtypeprovider`           |  False   |      `true`       |                                          Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/strongly-typed-models.md#customizing-the-strong-type-binding-logic) for more info)                                              |
+| `-s`      |           `--structuredmodel`            |  False   |      `null`       | Allowed values [`RichText`, `DateTime`, `True`, `ModularContent`], as a separator you should use `,`. ⚠️ `True` parameter is **obsolete** and interprets the same value as `RichText`. For further details see [structured models rendering](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/structured-models/structured-models-rendering.md) |
+| `-f`      |           `--filenamesuffix`             |  False   |      `null`       |                                                                                                                                                        Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                                                                                                                                                          |
+| `-b`      |              `--baseclass`               |  False   |      `null`       |                                                                                                                            If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes                                                                                                                              |
+| `-e`      |        `--extendeddeliverymodels`        |  False   |     `false`       |                                                                                                                                                                 Indicates whether extended deliver models should be generated                                                                                                                                                                  |
+| `-k`      |                 `--apikey`               |   True   |      `null`       |                                                                                                                                           Can be used with the extended delivery models. For details please see [Management API parameters section](#management-api-parameters)                                                                                                               |
+
+For advanced configuration please see [Advanced configuration (Preview API, Secure API)](#advanced-configuration-preview-api-secure-api)
 
 ### CLI Syntax
 
@@ -72,7 +76,7 @@ There are two ways of configuring advanced Delivery SDK options (such as secure 
 
 1. Command-line arguments `--DeliveryOptions:UseSecureAccess true --DeliveryOptions:SecureAccessApiKey <SecuredApiKey>` ([syntax](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.commandlineconfigurationextensions.addcommandline))
 
-2. [`appSettings.json`](./src/Kontent.AI.ModelGenerator/appSettings.json) - suitable for the standalone app release
+2. [`appSettings.json`](./src/Kontent.Ai.ModelGenerator/appSettings.json) - suitable for the standalone app release
 
 ### Delivery API example output
 
@@ -101,29 +105,55 @@ namespace KontentAiModels
 }
 ```
 
-### Customizing models - Handling content element constraints
+### Customizing models - Extended delivery models
+Provides support to customize generated models based on content linked/subpages element constraints. This feature uses [Management SDK](https://github.com/kontent-ai/management-sdk-net) thus you'll need to provide api key as well.
 
-Currently, the generator is built on top of the Delivery API which doesn't provide information about content element constraints such as "Allowed Content Types" or "Limit number of items". In case you want your models to be more specific, this is the best practice on how to extend them:
+`KontentModelGenerator --projectid "<projectid>" -e true -k "<apikey>"`
 
+#### Extended delivery models example output
+Model is generated using structured model option ModularContent.
 Model.Generated.cs
 
 ```csharp
-public partial class Home
+public partial class Home : IContentItem
 {
-    public IEnumerable<object> LinkedContentItems { get; set; }
+    public const string SingleAllowedTypeAtMostOneLinkedContentItemCodename = "single_allowed_type_at_most_one_linked_content_item";
+    public const string SingleAllowedTypeSingleLinkedContentItemCodename = "single_allowed_type_single_linked_content_item";
+    public const string SingleAllowedTypeMultiLinkedContentItemsCodename = "single_allowed_type_multi_linked_content_items";
+    public const string MultiAllowedTypesSingleLinkedContentItemCodename = "multi_allowed_types_single_linked_content_item";
+    public const string MultiAllowedTypesAtMostSingleLinkedContentItemCodename = "multi_allowed_types_at-most_single_linked_content_item";
+    public const string MultiAllowedTypesMultiLinkedContentItemsCodename = "multi_allowed_types_multi_linked_content_items";
+
+    // Allowed Content Types == "Article" && Limit number of items <= 1
+    public IEnumerable<IContentItem> SingleAllowedTypeAtMostOneLinkedContentItem { get; set; }
+    
+    // Allowed Content Types == "Article" && Limit number of items == 1
+    public IEnumerable<IContentItem> SingleAllowedTypeSingleLinkedContentItem { get; set; }
+    
+    // Allowed Content Types == "Article" && Limit number of items > 1
+    public IEnumerable<IContentItem> SingleAllowedTypeMultiLinkedContentItems { get; set; }
+
+    // Allowed Content Types number > 1 && Limit number of items == 1
+    public IEnumerable<IContentItem> MultiAllowedTypesExactlySingleLinkedContentItem { get; set; }
+
+    // Allowed Content Types number > 1 && Limit number of items <= 1
+    public IEnumerable<IContentItem> MultiAllowedTypesAtMostSingleLinkedContentItem { get; set; }
+
+    // Allowed Content Types number > 1 && Limit number of items > 1
+    public IEnumerable<IContentItem> MultiAllowedTypesMultiLinkedContentItems { get; set; }
 }
 ```
 
-Model.cs
+Model.Typed.Generated.cs
 
 ```csharp
 public partial class Home
 {
-    // Allowed Content Types == "Article"
-    public IEnumerable<Article> Articles => LinkedContentItems.OfType<Article>();
-
-    // Allowed Content Types == "Article" && Limit number of items == 1
-    public Article Article => LinkedContentItems.OfType<Article>().FirstOrDefault();
+    public Article SingleAllowedTypeAtMostOneLinkedContentItemSingle => SingleAllowedTypeAtMostOneLinkedContentItem.OfType<Article>().FirstOrDefault();
+    
+    public Article SingleAllowedTypeSingleLinkedContentItemSingle => SingleAllowedTypeSingleLinkedContentItem.OfType<Article>().FirstOrDefault();
+    
+    public IEnumerable<Article> SingleAllowedTypeMultiLinkedContentItemsArticleTyped => SingleAllowedTypeMultiLinkedContentItems.OfType<Article>();
 }
 ```
 

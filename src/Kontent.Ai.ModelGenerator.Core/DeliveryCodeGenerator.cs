@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
-using Kontent.Ai.ModelGenerator.Core.Generators;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Microsoft.Extensions.Options;
 
 namespace Kontent.Ai.ModelGenerator.Core;
 
-public class DeliveryCodeGenerator : CodeGeneratorBase
+public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
 {
     private readonly IDeliveryClient _deliveryClient;
 
@@ -25,18 +23,6 @@ public class DeliveryCodeGenerator : CodeGeneratorBase
         }
 
         _deliveryClient = deliveryClient;
-    }
-
-    public new async Task<int> RunAsync()
-    {
-        await base.RunAsync();
-
-        if (Options.WithTypeProvider)
-        {
-            await GenerateTypeProvider();
-        }
-
-        return 0;
     }
 
     protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
@@ -92,27 +78,6 @@ public class DeliveryCodeGenerator : CodeGeneratorBase
         var classFilename = GetFileClassName(classDefinition.ClassName);
 
         return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
-    }
-
-    private async Task GenerateTypeProvider()
-    {
-        var classCodeGenerators = await GetClassCodeGenerators();
-
-        if (!classCodeGenerators.Any())
-        {
-            Console.WriteLine(NoContentTypeAvailableMessage);
-            return;
-        }
-
-        var typeProviderCodeGenerator = new TypeProviderCodeGenerator(Options.Namespace);
-
-        foreach (var codeGenerator in classCodeGenerators)
-        {
-            typeProviderCodeGenerator.AddContentType(codeGenerator.ClassDefinition.Codename, codeGenerator.ClassDefinition.ClassName);
-        }
-
-        var typeProviderCode = typeProviderCodeGenerator.GenerateCode();
-        WriteToOutputProvider(typeProviderCode, TypeProviderCodeGenerator.ClassName, true);
     }
 
     private static void TryAddSystemProperty(ClassDefinition classDefinition)

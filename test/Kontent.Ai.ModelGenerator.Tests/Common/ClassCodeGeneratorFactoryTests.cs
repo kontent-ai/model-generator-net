@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
@@ -11,22 +12,28 @@ public class ClassCodeGeneratorFactoryTests
     [Fact]
     public void CreateClassCodeGenerator_CodeGeneratorOptionsIsNull_ThrowsException()
     {
-        Assert.Throws<ArgumentNullException>(() =>
-            ClassCodeGeneratorFactory.CreateClassCodeGenerator(null, new ClassDefinition("codename"), "classFileName"));
+        var createClassCodeGeneratorCall = () =>
+            ClassCodeGeneratorFactory.CreateClassCodeGenerator(null, new ClassDefinition("codename"), "classFileName");
+
+        createClassCodeGeneratorCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
     public void CreateClassCodeGenerator_ClassDefinitionIsNull_ThrowsException()
     {
-        Assert.Throws<ArgumentNullException>(() =>
-            ClassCodeGeneratorFactory.CreateClassCodeGenerator(new CodeGeneratorOptions(), null, "classFileName"));
+        var createClassCodeGeneratorCall = () =>
+            ClassCodeGeneratorFactory.CreateClassCodeGenerator(new CodeGeneratorOptions(), null, "classFileName");
+
+        createClassCodeGeneratorCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
     public void CreateClassCodeGenerator_ClassFilenameIsNull_ThrowsException()
     {
-        Assert.Throws<ArgumentNullException>(() =>
-            ClassCodeGeneratorFactory.CreateClassCodeGenerator(new CodeGeneratorOptions(), new ClassDefinition("codename"), null));
+        var createClassCodeGeneratorCall = () =>
+            ClassCodeGeneratorFactory.CreateClassCodeGenerator(new CodeGeneratorOptions(), new ClassDefinition("codename"), null);
+
+        createClassCodeGeneratorCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
@@ -57,6 +64,22 @@ public class ClassCodeGeneratorFactoryTests
         var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
 
         AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
+    }
+
+    [Fact]
+    public void CreateClassCodeGenerator_ExtendedDeliveryClassCodeGenerator_NoCustomPartialProperty_Returns()
+    {
+        var classDefinitionCodename = "codename";
+        var classFileName = "classFileName";
+        var codeGeneratorOptions = new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            ExtendedDeliveryModels = true
+        };
+
+        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+
+        AssertClassCodeGenerator<ExtendedDeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
     }
 
     [Theory]
@@ -111,6 +134,24 @@ public class ClassCodeGeneratorFactoryTests
     }
 
     [Fact]
+    public void CreateClassCodeGenerator_ExtendedDeliveryClassCodeGenerator_CustomNamespace_Returns()
+    {
+        var classDefinitionCodename = "codename";
+        var classFileName = "classFileName";
+        var customNamespace = "CustomNameSpace";
+        var codeGeneratorOptions = new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            Namespace = customNamespace,
+            ExtendedDeliveryModels = true
+        };
+
+        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+
+        AssertClassCodeGenerator<ExtendedDeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
+    }
+
+    [Fact]
     public void CreateClassCodeGenerator_ManagementClassCodeGenerator_NoCustomPartialProperty_Returns()
     {
         var classDefinitionCodename = "codename";
@@ -144,9 +185,9 @@ public class ClassCodeGeneratorFactoryTests
 
     private static void AssertClassCodeGenerator<T>(ClassCodeGenerator result, string classDefinitionCodename, string classFileName, string @namespace)
     {
-        Assert.IsType<T>(result);
-        Assert.Equal(classDefinitionCodename, result.ClassDefinition.Codename);
-        Assert.Equal(classFileName, result.ClassFilename);
-        Assert.Equal(@namespace, result.Namespace);
+        result.Should().BeOfType<T>();
+        result.ClassDefinition.Codename.Should().Be(classDefinitionCodename);
+        result.ClassFilename.Should().Be(classFileName);
+        result.Namespace.Should().Be(@namespace, result.Namespace);
     }
 }

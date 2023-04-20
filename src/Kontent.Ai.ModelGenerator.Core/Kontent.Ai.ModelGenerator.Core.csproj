@@ -25,15 +25,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kontent.Ai.Delivery" Version="17.2.0" />
-    <PackageReference Include="Kontent.Ai.Management" Version="4.4.0" />
+    <PackageReference Include="Kontent.Ai.Delivery" Version="17.5.0" />
+    <PackageReference Include="Kontent.Ai.Management" Version="4.5.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kontent.Ai.Delivery.Abstractions" Version="17.2.0" />
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.4.0" />
+    <PackageReference Include="Kontent.Ai.Delivery.Abstractions" Version="17.5.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.5.0" />
     <None Include="../../README.md" Pack="true" PackagePath="" />
     <None Include="../../kai-logo-symbol-color-rgb.png" Pack="true" PackagePath="" />
   </ItemGroup>

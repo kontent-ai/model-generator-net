@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using FluentAssertions;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Options;
 using Xunit;
 
 namespace Kontent.Ai.ModelGenerator.Tests;
@@ -9,7 +12,7 @@ namespace Kontent.Ai.ModelGenerator.Tests;
 public class ValidationExtensionsTests
 {
     [Fact]
-    public void Validate_ManagementOptions_Success()
+    public void Validate_ManagementOptions_DoesNotThrow()
     {
         var projectId = Guid.NewGuid().ToString();
         var codeGeneratorOptions = new CodeGeneratorOptions
@@ -22,7 +25,9 @@ public class ValidationExtensionsTests
             }
         };
 
-        codeGeneratorOptions.Validate();
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().NotThrow();
     }
 
     [Theory]
@@ -31,7 +36,7 @@ public class ValidationExtensionsTests
     [InlineData(StructuredModelFlags.RichText)]
     [InlineData(StructuredModelFlags.True)]
     [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.DateTime | StructuredModelFlags.True)]
-    public void Validate_DeliveryOptions_Success(StructuredModelFlags structuredModel)
+    public void Validate_DeliveryOptions_DoesNotThrow(StructuredModelFlags structuredModel)
     {
         var projectId = Guid.NewGuid().ToString();
         var codeGeneratorOptions = new CodeGeneratorOptions
@@ -44,7 +49,29 @@ public class ValidationExtensionsTests
             StructuredModel = structuredModel.ToString()
         };
 
-        codeGeneratorOptions.Validate();
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().NotThrow();
+    }
+
+    [Fact]
+    public void Validate_ExtendedDeliveryModels_DoesNotThrow()
+    {
+        var projectId = Guid.NewGuid().ToString();
+        var codeGeneratorOptions = new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            ExtendedDeliveryModels = true,
+            ManagementOptions = new ManagementOptions
+            {
+                ProjectId = projectId,
+                ApiKey = "apiKey"
+            }
+        };
+
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().NotThrow();
     }
 
     [Fact]
@@ -55,8 +82,10 @@ public class ValidationExtensionsTests
             DeliveryOptions = null
         };
 
-        var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-        Assert.Equal("You have to provide at least the 'ProjectId' argument. See http://bit.ly/k-params for more details on configuration.", exception.Message);
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().ThrowExactly<Exception>()
+            .And.Message.Should().Be("You have to provide at least the 'ProjectId' argument. See http://bit.ly/k-params for more details on configuration.");
     }
 
     [Fact]
@@ -70,7 +99,9 @@ public class ValidationExtensionsTests
             }
         };
 
-        Assert.Throws<ArgumentNullException>(() => codeGeneratorOptions.Validate());
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Theory]
@@ -90,71 +121,121 @@ public class ValidationExtensionsTests
             StructuredModel = structuredModel.ToString()
         };
 
-        Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-    }
+        var validateCall = () => codeGeneratorOptions.Validate();
 
-    [Fact]
-    public void Validate_ManagementOptionsIsNull_ThrowsException()
-    {
-        var projectId = Guid.NewGuid().ToString();
-        var codeGeneratorOptions = new CodeGeneratorOptions
-        {
-            ManagementApi = true,
-            DeliveryOptions = new DeliveryOptions
-            {
-                ProjectId = projectId
-            },
-            ManagementOptions = null
-        };
-
-        var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-        Assert.Equal("You have to provide the 'ProjectId' to generate type for Management SDK. See https://bit.ly/3rSMeDA for more details on configuration.", exception.Message);
-    }
-
-    [Fact]
-    public void Validate_ManagementOptionsProjectIdIsNull_ThrowsException()
-    {
-        var projectId = Guid.NewGuid().ToString();
-        var codeGeneratorOptions = new CodeGeneratorOptions
-        {
-            ManagementApi = true,
-            DeliveryOptions = new DeliveryOptions
-            {
-                ProjectId = projectId
-            },
-            ManagementOptions = new ManagementOptions
-            {
-                ProjectId = null,
-                ApiKey = "apiKey"
-            }
-        };
-
-        var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-        Assert.Equal("You have to provide the 'ProjectId' to generate type for Management SDK. See https://bit.ly/3rSMeDA for more details on configuration.", exception.Message);
+        validateCall.Should().ThrowExactly<Exception>();
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("  ")]
-    public void Validate_ApiKeyIsNullOrWhiteSpace_ThrowsException(string apiKey)
+    [MemberData(nameof(OptionsUsingManagementApiOptionsData))]
+    public void Validate_ManagementOptionsIsNull_ThrowsException(CodeGeneratorOptions codeGeneratorOptions, string expectedSdkName, string expectedUrl)
     {
         var projectId = Guid.NewGuid().ToString();
-        var codeGeneratorOptions = new CodeGeneratorOptions
+        codeGeneratorOptions.DeliveryOptions = new DeliveryOptions
         {
-            ManagementApi = true,
-            DeliveryOptions = new DeliveryOptions
-            {
-                ProjectId = projectId
-            },
-            ManagementOptions = new ManagementOptions
-            {
-                ProjectId = projectId,
-                ApiKey = apiKey
-            }
+            ProjectId = projectId
+        };
+        codeGeneratorOptions.ManagementOptions = null;
+
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().ThrowExactly<Exception>()
+            .And.Message.Should().Be($"You have to provide the 'ProjectId' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.");
+    }
+
+    [Theory]
+    [MemberData(nameof(OptionsUsingManagementApiOptionsData))]
+    public void Validate_ManagementOptionsProjectIdIsNull_ThrowsException(CodeGeneratorOptions codeGeneratorOptions, string expectedSdkName, string expectedUrl)
+    {
+        var projectId = Guid.NewGuid().ToString();
+        codeGeneratorOptions.DeliveryOptions = new DeliveryOptions
+        {
+            ProjectId = projectId
+        };
+        codeGeneratorOptions.ManagementOptions = new ManagementOptions
+        {
+            ProjectId = null,
+            ApiKey = "apiKey"
         };
 
-        var exception = Assert.Throws<Exception>(() => codeGeneratorOptions.Validate());
-        Assert.Equal("You have to provide the 'ApiKey' to generate type for Management SDK. See https://bit.ly/3rSMeDA for more details on configuration.", exception.Message);
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().ThrowExactly<Exception>()
+            .And.Message.Should().Be($"You have to provide the 'ProjectId' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.");
     }
+
+    [Theory]
+    [MemberData(nameof(OptionsUsingManagementApiOptionsApiKeyIsNullOrWhiteSpaceData))]
+    public void Validate_ApiKeyIsNullOrWhiteSpace_ThrowsException(
+        CodeGeneratorOptions codeGeneratorOptions,
+        string apiKey,
+        string expectedSdkName,
+        string expectedUrl)
+    {
+        var projectId = Guid.NewGuid().ToString();
+        codeGeneratorOptions.DeliveryOptions = new DeliveryOptions
+        {
+            ProjectId = projectId
+        };
+        codeGeneratorOptions.ManagementOptions = new ManagementOptions
+        {
+            ProjectId = projectId,
+            ApiKey = apiKey
+        };
+
+        var validateCall = () => codeGeneratorOptions.Validate();
+
+        validateCall.Should().ThrowExactly<Exception>()
+            .And.Message.Should().Be($"You have to provide the 'ApiKey' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.");
+    }
+
+    public static IEnumerable<object[]> OptionsUsingManagementApiOptionsData => new List<object[]>
+    {
+        new object[]
+        {
+            new CodeGeneratorOptions
+            {
+                ManagementApi = true,
+                ExtendedDeliveryModels = false
+            },
+            "Management",
+            "https://bit.ly/3rSMeDA"
+        },
+        new object[]
+        {
+            new CodeGeneratorOptions
+            {
+                ManagementApi = false,
+                ExtendedDeliveryModels = true
+            },
+            "Delivery",
+            "https://bit.ly/3rSMeDA"
+        }
+    };
+
+    public static IEnumerable<object[]> OptionsUsingManagementApiOptionsApiKeyIsNullOrWhiteSpaceData => new List<object[]>
+    {
+        new object[]
+        {
+            new CodeGeneratorOptions
+            {
+                ManagementApi = true,
+                ExtendedDeliveryModels = false
+            },
+            null,
+            "Management",
+            "https://bit.ly/3rSMeDA"
+        },
+        new object[]
+        {
+            new CodeGeneratorOptions
+            {
+                ManagementApi = false,
+                ExtendedDeliveryModels = true
+            },
+            "",
+            "Delivery",
+            "https://bit.ly/3rSMeDA"
+        }
+    };
 }

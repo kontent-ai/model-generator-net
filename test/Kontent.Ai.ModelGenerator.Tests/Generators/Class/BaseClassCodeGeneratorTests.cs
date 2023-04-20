@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using FluentAssertions;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Xunit;
 
@@ -7,40 +9,47 @@ namespace Kontent.Ai.ModelGenerator.Tests.Generators.Class;
 
 public class BaseClassCodeGeneratorTests
 {
-    private const string BaseClassName = "ContentBase";
+    private readonly CodeGeneratorOptions CodeGeneratorOptions = new CodeGeneratorOptions
+    {
+        BaseClass = "ContentBase"
+    };
 
     [Fact]
     public void GenerateBaseClassCodeWithDefaultNamespace()
     {
-        var codeGenerator = new BaseClassCodeGenerator(BaseClassName);
+        var codeGenerator = new BaseClassCodeGenerator(CodeGeneratorOptions);
 
         var executingPath = AppContext.BaseDirectory;
         var expectedBaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
 
         var actualCompiledBaseClass = codeGenerator.GenerateBaseClassCode();
 
-        Assert.Equal(expectedBaseClassCode, actualCompiledBaseClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        actualCompiledBaseClass.Should().Be(expectedBaseClassCode);
     }
 
     [Fact]
     public void GenerateBaseClassCodeWithCustomNamespace()
     {
-        var customNamespace = "CustomNamespace";
-        var codeGenerator = new BaseClassCodeGenerator(BaseClassName, customNamespace);
+        var codeGenerationOptions = new CodeGeneratorOptions
+        {
+            BaseClass = CodeGeneratorOptions.BaseClass,
+            Namespace = "CustomNamespace"
+        };
+        var codeGenerator = new BaseClassCodeGenerator(codeGenerationOptions);
 
         var executingPath = AppContext.BaseDirectory;
         var expectedBaseClassCode = File.ReadAllText(executingPath + "/Assets/BaseClass_CompiledCode.txt");
-        expectedBaseClassCode = expectedBaseClassCode.Replace(ClassCodeGenerator.DefaultNamespace, customNamespace);
+        expectedBaseClassCode = expectedBaseClassCode.Replace(ClassCodeGenerator.DefaultNamespace, codeGenerationOptions.Namespace);
 
         var actualCompiledBaseClass = codeGenerator.GenerateBaseClassCode();
 
-        Assert.Equal(expectedBaseClassCode, actualCompiledBaseClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        actualCompiledBaseClass.Should().Be(expectedBaseClassCode);
     }
 
     [Fact]
     public void GenerateExtenderClassCode()
     {
-        var codeGenerator = new BaseClassCodeGenerator(BaseClassName);
+        var codeGenerator = new BaseClassCodeGenerator(CodeGeneratorOptions);
         codeGenerator.AddClassNameToExtend("Article");
         codeGenerator.AddClassNameToExtend("Office");
 
@@ -49,6 +58,6 @@ public class BaseClassCodeGeneratorTests
 
         var actualCompiledExtenderClass = codeGenerator.GenerateExtenderCode();
 
-        Assert.Equal(expectedExtenderCode, actualCompiledExtenderClass, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+        actualCompiledExtenderClass.Should().Be(expectedExtenderCode);
     }
 }

@@ -8,6 +8,7 @@ using Kontent.Ai.Delivery;
 using Kontent.Ai.Delivery.Extensions;
 using Kontent.Ai.ModelGenerator.Core;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Options;
 
 namespace Kontent.Ai.ModelGenerator;
 
@@ -41,6 +42,7 @@ internal class Program
             services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
             services.AddSingleton<ManagementCodeGenerator>();
             services.AddSingleton<DeliveryCodeGenerator>();
+            services.AddSingleton<ExtendedDeliveryCodeGenerator>();
 
             // Build the DI container
             var serviceProvider = services.BuildServiceProvider();
@@ -52,9 +54,13 @@ internal class Program
             PrintSdkVersion(options);
 
             // Code generator entry point
-            return options.ManagementApi
-                ? await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync()
-                : await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync();
+            return options.GetDesiredModelsType() switch
+            {
+                DesiredModelsType.Delivery => await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync(),
+                DesiredModelsType.ExtendedDelivery => await serviceProvider.GetService<ExtendedDeliveryCodeGenerator>().RunAsync(),
+                DesiredModelsType.Management => await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync(),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
         catch (AggregateException aex)
         {
@@ -74,9 +80,9 @@ internal class Program
 
     private static async Task WriteErrorMessageAsync(string message) => await Console.Error.WriteLineAsync(message);
 
-    private static void PrintSdkVersion(CodeGeneratorOptions options)
+    private static void PrintSdkVersion(CodeGeneratorOptions codeGeneratorOptions)
     {
-        var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(options.ManagementApi);
+        var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(codeGeneratorOptions.GetDesiredModelsType());
         Console.WriteLine($"Models were generated for {usedSdkInfo.Name} version {usedSdkInfo.Version}");
     }
 }

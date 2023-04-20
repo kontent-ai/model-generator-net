@@ -9,5 +9,6 @@ public enum StructuredModelFlags
     RichText = 2,
     DateTime = 4,
     ValidationIssue = 8,
-    True = 16
+    True = 16,
+    ModularContent = 32
 }
