@@ -1,7 +1,8 @@
-﻿using Kontent.Ai.ModelGenerator.Core.Configuration;
+﻿using Kontent.Ai.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
-namespace Kontent.Ai.ModelGenerator.Core.Common;
+namespace Kontent.Ai.ModelGenerator.Core.Contract;
 
 public interface IClassCodeGeneratorFactory
 {

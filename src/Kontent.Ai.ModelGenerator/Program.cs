@@ -10,6 +10,7 @@ using Kontent.Ai.ModelGenerator.Core;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Options;
+using Kontent.Ai.ModelGenerator.Core.Contract;
 
 namespace Kontent.Ai.ModelGenerator;
 

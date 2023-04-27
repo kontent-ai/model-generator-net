@@ -4,7 +4,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Kontent.Ai.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Core.Contract;
 
 namespace Kontent.Ai.ModelGenerator.Core;
 

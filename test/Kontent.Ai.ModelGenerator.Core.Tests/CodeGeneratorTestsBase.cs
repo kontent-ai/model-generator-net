@@ -5,6 +5,7 @@ using Kontent.Ai.Management;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Moq;
 using Kontent.Ai.ModelGenerator.Core.Tests.Fixtures;
+using Kontent.Ai.ModelGenerator.Core.Contract;
 
 namespace Kontent.Ai.ModelGenerator.Core.Tests;
 

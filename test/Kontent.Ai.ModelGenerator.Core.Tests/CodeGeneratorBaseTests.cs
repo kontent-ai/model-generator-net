@@ -1,6 +1,7 @@
 ﻿using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Core.Contract;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Microsoft.Extensions.Options;
 using Moq;
