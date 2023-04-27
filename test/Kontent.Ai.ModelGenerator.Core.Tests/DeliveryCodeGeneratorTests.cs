@@ -1,6 +1,7 @@
 ﻿using Kontent.Ai.Delivery;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Delivery.Builders.DeliveryClient;
+using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -28,7 +29,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var deliveryClient = new Mock<IDeliveryClient>();
         var outputProvider = new Mock<IOutputProvider>();
 
-        var call = () => new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object);
+        var call = () => new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object, ClassCodeGeneratorFactory);
 
         call.Should().ThrowExactly<InvalidOperationException>();
     }
@@ -62,7 +63,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         contentType.SetupGet(type => type.System.Codename).Returns(contentTypeCodename);
         contentType.SetupGet(type => type.Elements).Returns(new Dictionary<string, IContentElement> { { elementCodename, contentElement.Object } });
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object);
+        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object, ClassCodeGeneratorFactory);
 
         var result = codeGenerator.GetClassCodeGenerator(contentType.Object);
 
@@ -93,7 +94,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient);
+        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory);
 
         await codeGenerator.RunAsync();
 
@@ -134,7 +135,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient);
+        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory);
 
         await codeGenerator.RunAsync();
 
@@ -177,7 +178,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId)
             .WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient);
+        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory);
 
         await codeGenerator.RunAsync();
 
@@ -221,7 +222,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient);
+        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory);
 
         await codeGenerator.RunAsync();
 

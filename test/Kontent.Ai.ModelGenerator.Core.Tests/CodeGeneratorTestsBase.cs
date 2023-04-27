@@ -2,6 +2,7 @@
 using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.Management.Models.TypeSnippets;
 using Kontent.Ai.Management;
+using Kontent.Ai.ModelGenerator.Core.Common;
 using Moq;
 using Kontent.Ai.ModelGenerator.Core.Tests.Fixtures;
 
@@ -11,9 +12,11 @@ public abstract class CodeGeneratorTestsBase
 {
     protected abstract string TempDir { get; }
     protected const string ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3";
+    protected readonly IClassCodeGeneratorFactory ClassCodeGeneratorFactory;
 
     protected CodeGeneratorTestsBase()
     {
+        ClassCodeGeneratorFactory = new ClassCodeGeneratorFactory();
         // Cleanup
         if (Directory.Exists(TempDir))
         {

@@ -4,9 +4,9 @@ using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
 namespace Kontent.Ai.ModelGenerator.Core.Common;
 
-public static class ClassCodeGeneratorFactory
+public class ClassCodeGeneratorFactory : IClassCodeGeneratorFactory
 {
-    public static ClassCodeGenerator CreateClassCodeGenerator(CodeGeneratorOptions options, ClassDefinition classDefinition, string classFilename, bool customPartial = false)
+    public ClassCodeGenerator CreateClassCodeGenerator(CodeGeneratorOptions options, ClassDefinition classDefinition, string classFilename, bool customPartial = false)
     {
         if (options == null)
         {

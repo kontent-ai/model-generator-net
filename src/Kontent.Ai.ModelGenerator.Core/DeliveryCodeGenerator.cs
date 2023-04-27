@@ -14,8 +14,12 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
 {
     private readonly IDeliveryClient _deliveryClient;
 
-    public DeliveryCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IDeliveryClient deliveryClient)
-        : base(options, outputProvider)
+    public DeliveryCodeGenerator(
+        IOptions<CodeGeneratorOptions> options,
+        IOutputProvider outputProvider,
+        IDeliveryClient deliveryClient,
+        IClassCodeGeneratorFactory classCodeGeneratorFactory)
+        : base(options, outputProvider, classCodeGeneratorFactory)
     {
         if (options.Value.ManagementApi)
         {

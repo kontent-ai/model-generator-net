@@ -6,6 +6,13 @@ namespace Kontent.Ai.ModelGenerator.Core.Tests.Common;
 
 public class ClassCodeGeneratorFactoryTests
 {
+    private readonly IClassCodeGeneratorFactory ClassCodeGeneratorFactory;
+
+    public ClassCodeGeneratorFactoryTests()
+    {
+        ClassCodeGeneratorFactory = new ClassCodeGeneratorFactory();
+    }
+
     [Fact]
     public void CreateClassCodeGenerator_CodeGeneratorOptionsIsNull_ThrowsException()
     {

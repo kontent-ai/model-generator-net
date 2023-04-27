@@ -20,7 +20,12 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
     public const string TypedSuffixFileName = ".Typed";
     private readonly IManagementClient _managementClient;
 
-    public ExtendedDeliveryCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IManagementClient managementClient) : base(options, outputProvider)
+    public ExtendedDeliveryCodeGenerator(
+        IOptions<CodeGeneratorOptions> options,
+        IOutputProvider outputProvider,
+        IManagementClient managementClient,
+        IClassCodeGeneratorFactory classCodeGeneratorFactory)
+        : base(options, outputProvider, classCodeGeneratorFactory)
     {
         if (options.Value.ManagementApi())
         {

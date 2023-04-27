@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Kontent.Ai.Delivery;
 using Kontent.Ai.Delivery.Extensions;
 using Kontent.Ai.ModelGenerator.Core;
+using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Options;
 
@@ -40,6 +41,7 @@ internal class Program
             services.AddDeliveryClient(configuration);
             services.AddTransient<HttpClient>();
             services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
+            services.AddSingleton<IClassCodeGeneratorFactory, ClassCodeGeneratorFactory>();
             services.AddSingleton<ManagementCodeGenerator>();
             services.AddSingleton<DeliveryCodeGenerator>();
             services.AddSingleton<ExtendedDeliveryCodeGenerator>();

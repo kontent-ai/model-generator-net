@@ -67,7 +67,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ExtendedDeliveryModels = true
         });
 
-        var extendedDeliveryCodeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient);
+        var extendedDeliveryCodeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient, ClassCodeGeneratorFactory);
 
         extendedDeliveryCodeGenerator.Should().NotBeNull();
     }
@@ -114,7 +114,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             SubpagesContentTypeData.ArticleContentType
         };
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient, ClassCodeGeneratorFactory);
 
         var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
 
@@ -203,7 +203,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
 
         await codeGenerator.RunAsync();
 
@@ -236,7 +236,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             FileNameSuffix = transformFilename
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
 
         await codeGenerator.RunAsync();
 
@@ -271,7 +271,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             FileNameSuffix = transformFilename
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
 
         await codeGenerator.RunAsync();
 
@@ -315,7 +315,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
 
         await codeGenerator.RunAsync();
 
@@ -330,7 +330,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     private Func<ExtendedDeliveryCodeGenerator> Creator(IOptions<CodeGeneratorOptions> options) =>
-        () => new ExtendedDeliveryCodeGenerator(options, _outputProvider, _managementClient);
+        () => new ExtendedDeliveryCodeGenerator(options, _outputProvider, _managementClient, ClassCodeGeneratorFactory);
 
     private string DefaultLinkedItemsType(StructuredModelFlags structuredModel) =>
         TextHelpers.GetEnumerableType(

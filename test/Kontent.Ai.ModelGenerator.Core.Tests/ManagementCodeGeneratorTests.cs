@@ -35,7 +35,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         var outputProvider = new Mock<IOutputProvider>();
 
-        var call = () => new ManagementCodeGenerator(mockOptions.Object, outputProvider.Object, _managementClient);
+        var call = () => new ManagementCodeGenerator(mockOptions.Object, outputProvider.Object, _managementClient, ClassCodeGeneratorFactory);
 
         call.Should().ThrowExactly<InvalidOperationException>();
     }
@@ -63,7 +63,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             }
         };
 
-        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, outputProvider.Object, managementClient.Object);
+        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, outputProvider.Object, managementClient.Object, ClassCodeGeneratorFactory);
 
         var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>());
 
@@ -83,7 +83,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
         });
 
-        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
+        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
 
         await codeGenerator.RunAsync();
 
@@ -112,7 +112,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = true
         });
 
-        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
+        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
 
         await codeGenerator.RunAsync();
 
@@ -143,7 +143,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
         });
 
-        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
+        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
 
         await codeGenerator.RunAsync();
 

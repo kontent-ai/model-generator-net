@@ -1,16 +1,20 @@
 ﻿using Kontent.Ai.ModelGenerator.Core.Configuration;
-using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Kontent.Ai.ModelGenerator.Core.Generators;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Kontent.Ai.ModelGenerator.Core.Common;
 
 namespace Kontent.Ai.ModelGenerator.Core;
 
 public abstract class DeliveryCodeGeneratorBase : CodeGeneratorBase
 {
-    protected DeliveryCodeGeneratorBase(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider) : base(options, outputProvider)
+    protected DeliveryCodeGeneratorBase(
+        IOptions<CodeGeneratorOptions> options,
+        IOutputProvider outputProvider,
+        IClassCodeGeneratorFactory classCodeGeneratorFactory)
+        : base(options, outputProvider, classCodeGeneratorFactory)
     {
     }
 

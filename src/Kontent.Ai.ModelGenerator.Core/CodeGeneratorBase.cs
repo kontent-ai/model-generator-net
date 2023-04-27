@@ -11,6 +11,7 @@ namespace Kontent.Ai.ModelGenerator.Core;
 
 public abstract class CodeGeneratorBase
 {
+    protected readonly IClassCodeGeneratorFactory ClassCodeGeneratorFactory;
     protected readonly CodeGeneratorOptions Options;
     protected readonly IOutputProvider OutputProvider;
 
@@ -18,8 +19,9 @@ public abstract class CodeGeneratorBase
     protected string NoContentTypeAvailableMessage =>
         $@"No content type available for the project ({Options.GetProjectId()}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.";
 
-    protected CodeGeneratorBase(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider)
+    protected CodeGeneratorBase(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IClassCodeGeneratorFactory classCodeGeneratorFactory)
     {
+        ClassCodeGeneratorFactory = classCodeGeneratorFactory;
         Options = options.Value;
         OutputProvider = outputProvider;
     }
@@ -40,7 +42,7 @@ public abstract class CodeGeneratorBase
 
     protected void WriteToOutputProvider(string content, string fileName, bool overwriteExisting)
     {
-        if (string.IsNullOrEmpty(content))
+        if (string.IsNullOrWhiteSpace(content))
         {
             return;
         }

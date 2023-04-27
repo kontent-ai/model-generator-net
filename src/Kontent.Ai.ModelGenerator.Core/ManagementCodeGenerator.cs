@@ -19,8 +19,12 @@ public class ManagementCodeGenerator : CodeGeneratorBase
 {
     private readonly IManagementClient _managementClient;
 
-    public ManagementCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IManagementClient managementClient)
-        : base(options, outputProvider)
+    public ManagementCodeGenerator(
+        IOptions<CodeGeneratorOptions> options,
+        IOutputProvider outputProvider,
+        IManagementClient managementClient,
+        IClassCodeGeneratorFactory classCodeGeneratorFactory)
+        : base(options, outputProvider, classCodeGeneratorFactory)
     {
         if (!options.Value.ManagementApi)
         {
