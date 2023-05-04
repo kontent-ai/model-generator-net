@@ -14,40 +14,29 @@ internal class ArgMappingsRegister
         { "-o", nameof(CodeGeneratorOptions.OutputDir) },
         { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
         { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
-        { "-b", nameof(CodeGeneratorOptions.BaseClass) }
-    };
-
-    public static readonly IDictionary<string, string> DeliveryMappings = new Dictionary<string, string>
-    {
-        { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-        {"--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" }, // Backwards compatibility
-        { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
-        { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
-    };
-
-    public static readonly IDictionary<string, string> ExtendedDeliveryMappings = new Dictionary<string, string>
-    {
-        { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
-        {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" }, // Backwards compatibility
+        { "-b", nameof(CodeGeneratorOptions.BaseClass) },
+        { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
+        { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" }, // Backwards compatibility
+        { "-e", nameof(CodeGeneratorOptions.ExtendedDeliveryModels) },
         { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
         { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
-        { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
-        { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
-        { "-e", nameof(CodeGeneratorOptions.ExtendedDeliveryModels) }
+        { "-m", nameof(CodeGeneratorOptions.ManagementApi) }
     };
 
-    public static readonly IDictionary<string, string> ManagementMappings = new Dictionary<string, string>
+    public static readonly IDictionary<string, string> DeliveryProjectIdMappings = new Dictionary<string, string>
+    {
+        { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
+        {"--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" } // Backwards compatibility
+    };
+
+    public static readonly IDictionary<string, string> ManagementProjectIdMappings = new Dictionary<string, string>
     {
         { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
-        {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" }, // Backwards compatibility
-        { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
-        { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
-        { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" } // Backwards compatibility
+        {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" } // Backwards compatibility
     };
 
     public static readonly IEnumerable<string> AllMappingsKeys =
         GeneralMappings.Keys
-            .Union(DeliveryMappings.Keys)
-            .Union(ManagementMappings.Keys)
-            .Union(ExtendedDeliveryMappings.Keys);
+            .Union(DeliveryProjectIdMappings.Keys)
+            .Union(ManagementProjectIdMappings.Keys);
 }

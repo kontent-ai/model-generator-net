@@ -93,18 +93,16 @@ internal static class ArgHelpers
             if (!bool.TrueString.Equals(argValue, StringComparison.OrdinalIgnoreCase))
                 continue;
 
-            if (argName == managementDecidingArgs.ShorthandedArgName || argName == managementDecidingArgs.FullArgName)
+            if (argName == managementDecidingArgs.ShorthandedArgName ||
+                argName == managementDecidingArgs.FullArgName ||
+                argName == extendedDeliverDecidingArgs.ShorthandedArgName ||
+                argName == extendedDeliverDecidingArgs.FullArgName)
             {
-                return ArgMappingsRegister.ManagementMappings;
-            }
-
-            if (argName == extendedDeliverDecidingArgs.ShorthandedArgName || argName == extendedDeliverDecidingArgs.FullArgName)
-            {
-                return ArgMappingsRegister.ExtendedDeliveryMappings;
+                return ArgMappingsRegister.ManagementProjectIdMappings;
             }
         }
 
-        return ArgMappingsRegister.DeliveryMappings;
+        return ArgMappingsRegister.DeliveryProjectIdMappings;
     }
 
     private static bool IsOptionPropertyValid<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>
