@@ -24,28 +24,15 @@ public class ArgHelpersTests
             { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
             { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
             { "-b", nameof(CodeGeneratorOptions.BaseClass) },
-            { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
-            { "--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
-            { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
             { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
-            { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" }
-        };
-
-    private static IDictionary<string, string> ExpectedExtendedDeliveryMappings => new Dictionary<string, string>
-        {
-            { "-n", nameof(CodeGeneratorOptions.Namespace) },
-            { "-o", nameof(CodeGeneratorOptions.OutputDir) },
-            { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
-            { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
+            { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" }, // Backwards compatibility
+            { "-e", nameof(CodeGeneratorOptions.ExtendedDeliveryModels) },
             { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
-            { "-b", nameof(CodeGeneratorOptions.BaseClass) },
-            { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
-            {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
             { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
-            { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
-            { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
-            { "-e", nameof(CodeGeneratorOptions.ExtendedDeliveryModels) }
-        };
+            { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
+            { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
+            { "--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" }
+};
 
     private static IDictionary<string, string> ExpectedDeliveryMappings => new Dictionary<string, string>
     {
@@ -53,11 +40,15 @@ public class ArgHelpersTests
         { "-o", nameof(CodeGeneratorOptions.OutputDir) },
         { "-f", nameof(CodeGeneratorOptions.FileNameSuffix) },
         { "-g", nameof(CodeGeneratorOptions.GeneratePartials) },
-        { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
         { "-b", nameof(CodeGeneratorOptions.BaseClass) },
+        { "-k", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" },
+        { "--apikey", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ApiKey)}" }, // Backwards compatibility
+        { "-e", nameof(CodeGeneratorOptions.ExtendedDeliveryModels) },
+        { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
+        { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
+        { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
         { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-        { "--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-        { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
+        { "--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" }
     };
 
     [Theory]
@@ -84,7 +75,7 @@ public class ArgHelpersTests
     {
         var result = ArgHelpers.GetSwitchMappings(args);
 
-        result.Should().BeEquivalentTo(ExpectedExtendedDeliveryMappings);
+        result.Should().BeEquivalentTo(ExpectedManagementMappings);
     }
 
     [Theory]
@@ -262,7 +253,7 @@ public class ArgHelpersTests
 
     public static IEnumerable<object[]> SupportedExtendedDeliveryOptions()
     {
-        var args = AppendValuesToArgs(ExpectedExtendedDeliveryMappings)
+        var args = AppendValuesToArgs(ExpectedManagementMappings)
             .Concat(AppendValuesToArgs(ToLower(new List<string>
             {
                 nameof(CodeGeneratorOptions.StructuredModel),
