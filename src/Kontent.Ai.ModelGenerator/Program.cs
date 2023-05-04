@@ -42,6 +42,7 @@ internal class Program
             services.AddDeliveryClient(configuration);
             services.AddTransient<HttpClient>();
             services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
+            services.AddSingleton<IUserMessageLogger, UserMessageLogger>();
             services.AddSingleton<IClassCodeGeneratorFactory, ClassCodeGeneratorFactory>();
             services.AddSingleton<ManagementCodeGenerator>();
             services.AddSingleton<DeliveryCodeGenerator>();
