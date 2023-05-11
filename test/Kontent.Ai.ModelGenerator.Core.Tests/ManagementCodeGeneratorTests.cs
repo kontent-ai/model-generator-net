@@ -36,8 +36,9 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         var outputProvider = new Mock<IOutputProvider>();
 
-        var call = () => new ManagementCodeGenerator(mockOptions.Object, outputProvider.Object, _managementClient, ClassCodeGeneratorFactory);
+        var call = () => new ManagementCodeGenerator(mockOptions.Object, outputProvider.Object, _managementClient, ClassCodeGeneratorFactory, Logger.Object);
 
+        Logger.VerifyNoOtherCalls();
         call.Should().ThrowExactly<InvalidOperationException>();
     }
 
@@ -64,10 +65,11 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             }
         };
 
-        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, outputProvider.Object, managementClient.Object, ClassCodeGeneratorFactory);
+        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, outputProvider.Object, managementClient.Object, ClassCodeGeneratorFactory, Logger.Object);
 
         var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>());
 
+        Logger.VerifyNoOtherCalls();
         result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
     }
 
@@ -84,7 +86,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
         });
 
-        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
+        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory, Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -92,6 +94,9 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs").Should().NotBeEmpty();
         Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")).Should().NotBeEmpty();
+
+        Logger.Verify(a =>
+            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -113,7 +118,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = true
         });
 
-        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
+        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory, Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -123,6 +128,9 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         {
             Path.GetFileName(filepath).Should().EndWith($".{transformFilename}.cs");
         }
+
+        Logger.Verify(a =>
+            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -144,7 +152,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
         });
 
-        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
+        var codeGenerator = new ManagementCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory, Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -159,6 +167,9 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             var customFileExists = File.Exists(filepath.Replace($".{transformFilename}", ""));
             customFileExists.Should().BeTrue();
         }
+
+        Logger.Verify(a =>
+            a.Log(It.Is<string>(m => m == $"{allFilesCount} content type models were successfully created.")));
 
         // Cleanup
         Directory.Delete(TempDir, true);

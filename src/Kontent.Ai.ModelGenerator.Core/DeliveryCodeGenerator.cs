@@ -19,8 +19,9 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
         IOptions<CodeGeneratorOptions> options,
         IOutputProvider outputProvider,
         IDeliveryClient deliveryClient,
-        IClassCodeGeneratorFactory classCodeGeneratorFactory)
-        : base(options, outputProvider, classCodeGeneratorFactory)
+        IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IUserMessageLogger logger)
+        : base(options, outputProvider, classCodeGeneratorFactory, logger)
     {
         if (options.Value.ManagementApi)
         {

@@ -1,7 +1,6 @@
 ﻿using Kontent.Ai.Delivery;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Delivery.Builders.DeliveryClient;
-using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Contract;
 using Microsoft.Extensions.Options;
@@ -30,8 +29,9 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var deliveryClient = new Mock<IDeliveryClient>();
         var outputProvider = new Mock<IOutputProvider>();
 
-        var call = () => new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object, ClassCodeGeneratorFactory);
+        var call = () => new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object, ClassCodeGeneratorFactory, Logger.Object);
 
+        Logger.VerifyNoOtherCalls();
         call.Should().ThrowExactly<InvalidOperationException>();
     }
 
@@ -64,10 +64,11 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         contentType.SetupGet(type => type.System.Codename).Returns(contentTypeCodename);
         contentType.SetupGet(type => type.Elements).Returns(new Dictionary<string, IContentElement> { { elementCodename, contentElement.Object } });
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object, ClassCodeGeneratorFactory);
+        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object, ClassCodeGeneratorFactory, Logger.Object);
 
         var result = codeGenerator.GetClassCodeGenerator(contentType.Object);
 
+        Logger.VerifyNoOtherCalls();
         result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
     }
 
@@ -95,7 +96,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory);
+        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory, Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -104,6 +105,8 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs").Should().NotBeEmpty();
         Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")).Should().NotBeEmpty();
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().BeEmpty();
+
+        Logger.Verify(a => a.Log(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -136,7 +139,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory);
+        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory, Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -146,6 +149,8 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         {
             Path.GetFileName(filepath).Should().EndWith($".{transformFilename}.cs");
         }
+
+        Logger.Verify(a => a.Log(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -179,7 +184,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId)
             .WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory);
+        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory, Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -194,6 +199,8 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             var customFileExists = File.Exists(filepath.Replace($".{transformFilename}", ""));
             customFileExists.Should().BeTrue();
         }
+
+        Logger.Verify(a => a.Log(It.Is<string>(m => m == $"{allFilesCount} content type models were successfully created.")));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -223,12 +230,17 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory);
+        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory, Logger.Object);
+
+        Logger.Setup(f => f.Log($"{NumberOfContentTypes} content type models were successfully created."));
+        Logger.Setup(f => f.Log("CustomTypeProvider class was successfully created."));
 
         await codeGenerator.RunAsync();
 
         Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypes + 1);
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().NotBeEmpty();
+
+        Logger.VerifyAll();
 
         // Cleanup
         Directory.Delete(TempDir, true);

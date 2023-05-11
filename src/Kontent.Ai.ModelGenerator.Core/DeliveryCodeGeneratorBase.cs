@@ -13,8 +13,9 @@ public abstract class DeliveryCodeGeneratorBase : CodeGeneratorBase
     protected DeliveryCodeGeneratorBase(
         IOptions<CodeGeneratorOptions> options,
         IOutputProvider outputProvider,
-        IClassCodeGeneratorFactory classCodeGeneratorFactory)
-        : base(options, outputProvider, classCodeGeneratorFactory)
+        IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IUserMessageLogger logger)
+        : base(options, outputProvider, classCodeGeneratorFactory, logger)
     {
     }
 

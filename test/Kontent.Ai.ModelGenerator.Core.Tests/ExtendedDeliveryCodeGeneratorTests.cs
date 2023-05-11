@@ -42,6 +42,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ExtendedDeliveryModels = true
         });
 
+        Logger.VerifyNoOtherCalls();
         Creator(mockOptions.Object).Should().Throw<InvalidOperationException>();
     }
 
@@ -55,6 +56,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ExtendedDeliveryModels = false
         });
 
+        Logger.VerifyNoOtherCalls();
         Creator(mockOptions.Object).Should().Throw<InvalidOperationException>();
     }
 
@@ -68,8 +70,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ExtendedDeliveryModels = true
         });
 
-        var extendedDeliveryCodeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient, ClassCodeGeneratorFactory);
+        var extendedDeliveryCodeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient, ClassCodeGeneratorFactory, Logger.Object);
 
+        Logger.VerifyNoOtherCalls();
         extendedDeliveryCodeGenerator.Should().NotBeNull();
     }
 
@@ -115,7 +118,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             SubpagesContentTypeData.ArticleContentType
         };
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient, ClassCodeGeneratorFactory);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient, ClassCodeGeneratorFactory, Logger.Object);
 
         var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
 
@@ -183,6 +186,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             new ExtendedDeliveryClassCodeGenerator(expectedExtendedDeliveryClassDefinition, "ContentType.Generated", generateStructuredModularContent)
         };
 
+        Logger.VerifyNoOtherCalls();
         result.Should().BeEquivalentTo(expected);
     }
 
@@ -204,7 +208,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory, Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -212,6 +216,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs").Should().NotBeEmpty();
         Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")).Should().NotBeEmpty();
+
+        Logger.Verify(a =>
+            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created.")));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -237,7 +244,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             FileNameSuffix = transformFilename
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory, Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -247,6 +254,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         {
             Path.GetFileName(filepath).Should().EndWith($".{transformFilename}.cs");
         }
+
+        Logger.Verify(a =>
+            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created.")));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -272,7 +282,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             FileNameSuffix = transformFilename
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory, Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -293,6 +303,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             generatedFileExists.Should().BeTrue();
             typedGeneratedFileExists.Should().BeTrue();
         }
+
+        Logger.Verify(a =>
+            a.Log(It.Is<string>(m => m == $"{allFilesCount} content type models were successfully created.")));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -316,7 +329,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory, Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -326,12 +339,15 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().NotBeEmpty();
 
+        Logger.Verify(a =>
+            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created.")));
+
         // Cleanup
         Directory.Delete(TempDir, true);
     }
 
     private Func<ExtendedDeliveryCodeGenerator> Creator(IOptions<CodeGeneratorOptions> options) =>
-        () => new ExtendedDeliveryCodeGenerator(options, _outputProvider, _managementClient, ClassCodeGeneratorFactory);
+        () => new ExtendedDeliveryCodeGenerator(options, _outputProvider, _managementClient, ClassCodeGeneratorFactory, Logger.Object);
 
     private string DefaultLinkedItemsType(StructuredModelFlags structuredModel) =>
         TextHelpers.GetEnumerableType(

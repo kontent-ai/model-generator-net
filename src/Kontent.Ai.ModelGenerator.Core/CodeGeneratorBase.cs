@@ -12,6 +12,7 @@ namespace Kontent.Ai.ModelGenerator.Core;
 
 public abstract class CodeGeneratorBase
 {
+    protected readonly IUserMessageLogger Logger;
     protected readonly IClassCodeGeneratorFactory ClassCodeGeneratorFactory;
     protected readonly CodeGeneratorOptions Options;
     protected readonly IOutputProvider OutputProvider;
@@ -20,11 +21,16 @@ public abstract class CodeGeneratorBase
     protected string NoContentTypeAvailableMessage =>
         $@"No content type available for the project ({Options.GetProjectId()}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.";
 
-    protected CodeGeneratorBase(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IClassCodeGeneratorFactory classCodeGeneratorFactory)
+    protected CodeGeneratorBase(
+        IOptions<CodeGeneratorOptions> options,
+        IOutputProvider outputProvider,
+        IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IUserMessageLogger logger)
     {
         ClassCodeGeneratorFactory = classCodeGeneratorFactory;
         Options = options.Value;
         OutputProvider = outputProvider;
+        Logger = logger;
     }
 
     public async Task<int> RunAsync()
@@ -49,7 +55,7 @@ public abstract class CodeGeneratorBase
         }
 
         OutputProvider.Output(content, fileName, overwriteExisting);
-        Console.WriteLine($"{fileName} class was successfully created.");
+        Logger.Log($"{fileName} class was successfully created.");
     }
 
     protected void WriteToOutputProvider(ICollection<ClassCodeGenerator> classCodeGenerators)
@@ -60,7 +66,7 @@ public abstract class CodeGeneratorBase
                 codeGenerator.OverwriteExisting);
         }
 
-        Console.WriteLine($"{classCodeGenerators.Count} content type models were successfully created.");
+        Logger.Log($"{classCodeGenerators.Count} content type models were successfully created.");
     }
 
     protected ClassCodeGenerator GetCustomClassCodeGenerator(string contentTypeCodename)
@@ -79,25 +85,25 @@ public abstract class CodeGeneratorBase
 
     protected abstract Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators();
 
-    protected static void WriteConsoleErrorMessage(Exception exception, string elementCodename, string elementType, string className)
+    protected void WriteConsoleErrorMessage(Exception exception, string elementCodename, string elementType, string className)
     {
         switch (exception)
         {
             case InvalidOperationException:
-                Console.WriteLine($"Warning: Element '{elementCodename}' is already present in Content Type '{className}'.");
+                Logger.Log($"Warning: Element '{elementCodename}' is already present in Content Type '{className}'.");
                 break;
             case InvalidIdentifierException:
-                Console.WriteLine($"Warning: Can't create valid C# Identifier from '{elementCodename}'. Skipping element.");
+                Logger.Log($"Warning: Can't create valid C# Identifier from '{elementCodename}'. Skipping element.");
                 break;
             case ArgumentNullException or ArgumentException:
-                Console.WriteLine($"Warning: Skipping unknown Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
+                Logger.Log($"Warning: Skipping unknown Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
                 break;
         }
     }
 
-    protected static void WriteConsoleErrorMessage(string contentTypeCodename)
+    protected void WriteConsoleErrorMessage(string contentTypeCodename)
     {
-        Console.WriteLine($"Warning: Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name.");
+        Logger.Log($"Warning: Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name.");
     }
 
     private async Task GenerateContentTypeModels()
@@ -106,7 +112,7 @@ public abstract class CodeGeneratorBase
 
         if (!classCodeGenerators.Any())
         {
-            Console.WriteLine(NoContentTypeAvailableMessage);
+            Logger.Log(NoContentTypeAvailableMessage);
             return;
         }
 
@@ -119,7 +125,7 @@ public abstract class CodeGeneratorBase
 
         if (!classCodeGenerators.Any())
         {
-            Console.WriteLine(NoContentTypeAvailableMessage);
+            Logger.Log(NoContentTypeAvailableMessage);
             return;
         }
 
