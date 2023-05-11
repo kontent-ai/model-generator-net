@@ -26,8 +26,9 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
         IOutputProvider outputProvider,
         IManagementClient managementClient,
         IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IDeliveryElementService deliveryElementService,
         IUserMessageLogger logger)
-        : base(options, outputProvider, classCodeGeneratorFactory, logger)
+        : base(options, outputProvider, classCodeGeneratorFactory, deliveryElementService, logger)
     {
         if (options.Value.ManagementApi())
         {
@@ -110,7 +111,7 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
 
     private void AddProperty(ElementMetadataBase el, ref ClassDefinition classDefinition, ref ClassDefinition typedClassDefinition, List<ContentTypeModel> contentTypes)
     {
-        var elementType = DeliveryElementHelper.GetElementType(Options, el.Type.ToString());
+        var elementType = DeliveryElementService.GetElementType(el.Type.ToString());
         if (elementType == ElementMetadataType.LinkedItems.ToString() || elementType == ElementMetadataType.Subpages.ToString())
         {
             if (TypedDeliveryPropertyMapper.TryMap(el, contentTypes, Options, out var typedProperty))

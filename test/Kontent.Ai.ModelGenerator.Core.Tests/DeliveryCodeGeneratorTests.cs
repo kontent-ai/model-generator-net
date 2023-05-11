@@ -3,6 +3,7 @@ using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Delivery.Builders.DeliveryClient;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Contract;
+using Kontent.Ai.ModelGenerator.Core.Services;
 using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
@@ -17,6 +18,13 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     private const int NumberOfContentTypes = 13;
     protected override string TempDir => Path.Combine(Path.GetTempPath(), "DeliveryCodeGeneratorIntegrationTests");
 
+    private readonly Mock<IDeliveryElementService> _deliveryElementService;
+
+    public DeliveryCodeGeneratorTests()
+    {
+        _deliveryElementService = new Mock<IDeliveryElementService>();
+    }
+
     [Fact]
     public void Constructor_ManagementIsTrue_Throws()
     {
@@ -29,7 +37,13 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var deliveryClient = new Mock<IDeliveryClient>();
         var outputProvider = new Mock<IOutputProvider>();
 
-        var call = () => new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object, ClassCodeGeneratorFactory, Logger.Object);
+        var call = () => new DeliveryCodeGenerator(
+            mockOptions.Object,
+            outputProvider.Object,
+            deliveryClient.Object,
+            ClassCodeGeneratorFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
 
         Logger.VerifyNoOtherCalls();
         call.Should().ThrowExactly<InvalidOperationException>();
@@ -55,8 +69,9 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var outputProvider = new Mock<IOutputProvider>();
 
         var elementCodename = "element_codename";
+        var elementType = "text";
         var contentElement = new Mock<IContentElement>();
-        contentElement.SetupGet(element => element.Type).Returns("text");
+        contentElement.SetupGet(element => element.Type).Returns(elementType);
         contentElement.SetupGet(element => element.Codename).Returns(elementCodename);
 
         var contentType = new Mock<IContentType>();
@@ -64,7 +79,15 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         contentType.SetupGet(type => type.System.Codename).Returns(contentTypeCodename);
         contentType.SetupGet(type => type.Elements).Returns(new Dictionary<string, IContentElement> { { elementCodename, contentElement.Object } });
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, outputProvider.Object, deliveryClient.Object, ClassCodeGeneratorFactory, Logger.Object);
+        _deliveryElementService.Setup(x => x.GetElementType(elementType)).Returns(elementType);
+
+        var codeGenerator = new DeliveryCodeGenerator(
+            mockOptions.Object,
+            outputProvider.Object,
+            deliveryClient.Object,
+            ClassCodeGeneratorFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
 
         var result = codeGenerator.GetClassCodeGenerator(contentType.Object);
 
@@ -96,7 +119,13 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory, Logger.Object);
+        var codeGenerator = new DeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            deliveryClient,
+            ClassCodeGeneratorFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -139,7 +168,13 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory, Logger.Object);
+        var codeGenerator = new DeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            deliveryClient,
+            ClassCodeGeneratorFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -184,7 +219,13 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId)
             .WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory, Logger.Object);
+        var codeGenerator = new DeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            deliveryClient,
+            ClassCodeGeneratorFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -230,7 +271,13 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
-        var codeGenerator = new DeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), deliveryClient, ClassCodeGeneratorFactory, Logger.Object);
+        var codeGenerator = new DeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            deliveryClient,
+            ClassCodeGeneratorFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
 
         Logger.Setup(f => f.Log($"{NumberOfContentTypes} content type models were successfully created."));
         Logger.Setup(f => f.Log("CustomTypeProvider class was successfully created."));

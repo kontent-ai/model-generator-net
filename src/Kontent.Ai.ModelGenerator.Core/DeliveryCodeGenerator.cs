@@ -20,8 +20,9 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
         IOutputProvider outputProvider,
         IDeliveryClient deliveryClient,
         IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IDeliveryElementService deliveryElementService,
         IUserMessageLogger logger)
-        : base(options, outputProvider, classCodeGeneratorFactory, logger)
+        : base(options, outputProvider, classCodeGeneratorFactory, deliveryElementService, logger)
     {
         if (options.Value.ManagementApi)
         {
@@ -69,7 +70,7 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
         {
             try
             {
-                var elementType = DeliveryElementHelper.GetElementType(Options, element.Type);
+                var elementType = DeliveryElementService.GetElementType(element.Type);
                 var property = Property.FromContentTypeElement(element.Codename, elementType);
                 AddProperty(property, ref classDefinition);
             }

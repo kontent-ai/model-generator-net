@@ -9,6 +9,7 @@ using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Contract;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
+using Kontent.Ai.ModelGenerator.Core.Services;
 using Kontent.Ai.ModelGenerator.Core.Tests.TestHelpers;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -24,12 +25,14 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
     private readonly IManagementClient _managementClient;
     private readonly IOutputProvider _outputProvider;
+    private readonly Mock<IDeliveryElementService> _deliveryElementService;
     protected override string TempDir => Path.Combine(Path.GetTempPath(), "ExtendedDeliveryCodeGeneratorIntegrationTests");
 
     public ExtendedDeliveryCodeGeneratorTests()
     {
         _managementClient = CreateManagementClient();
         _outputProvider = new Mock<IOutputProvider>().Object;
+        _deliveryElementService = new Mock<IDeliveryElementService>();
     }
 
     [Fact]
@@ -70,7 +73,13 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ExtendedDeliveryModels = true
         });
 
-        var extendedDeliveryCodeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient, ClassCodeGeneratorFactory, Logger.Object);
+        var extendedDeliveryCodeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProvider,
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
 
         Logger.VerifyNoOtherCalls();
         extendedDeliveryCodeGenerator.Should().NotBeNull();
@@ -118,7 +127,18 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             SubpagesContentTypeData.ArticleContentType
         };
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient, ClassCodeGeneratorFactory, Logger.Object);
+        foreach (var elementMetadataBase in contentType.Elements)
+        {
+            _deliveryElementService.Setup(x => x.GetElementType(elementMetadataBase.Type.ToString())).Returns(elementMetadataBase.Type.ToString());
+        }
+
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProvider,
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
 
         var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
 
@@ -208,7 +228,13 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory, Logger.Object);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -244,7 +270,13 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             FileNameSuffix = transformFilename
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory, Logger.Object);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -282,7 +314,13 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             FileNameSuffix = transformFilename
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory, Logger.Object);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -329,7 +367,13 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient, ClassCodeGeneratorFactory, Logger.Object);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -347,7 +391,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     private Func<ExtendedDeliveryCodeGenerator> Creator(IOptions<CodeGeneratorOptions> options) =>
-        () => new ExtendedDeliveryCodeGenerator(options, _outputProvider, _managementClient, ClassCodeGeneratorFactory, Logger.Object);
+        () => new ExtendedDeliveryCodeGenerator(options, _outputProvider, _managementClient, ClassCodeGeneratorFactory, _deliveryElementService.Object, Logger.Object);
 
     private string DefaultLinkedItemsType(StructuredModelFlags structuredModel) =>
         TextHelpers.GetEnumerableType(
