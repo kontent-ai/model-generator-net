@@ -25,8 +25,9 @@ public class ManagementCodeGenerator : CodeGeneratorBase
         IOutputProvider outputProvider,
         IManagementClient managementClient,
         IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IClassDefinitionFactory classDefinitionFactory,
         IUserMessageLogger logger)
-        : base(options, outputProvider, classCodeGeneratorFactory, logger)
+        : base(options, outputProvider, classCodeGeneratorFactory, classDefinitionFactory, logger)
     {
         if (!options.Value.ManagementApi)
         {
@@ -69,7 +70,7 @@ public class ManagementCodeGenerator : CodeGeneratorBase
 
     internal ClassCodeGenerator GetClassCodeGenerator(ContentTypeModel contentType, IEnumerable<ContentTypeSnippetModel> managementSnippets)
     {
-        var classDefinition = new ClassDefinition(contentType.Codename);
+        var classDefinition = ClassDefinitionFactory.CreateClassDefinition(contentType.Codename);
 
         foreach (var element in contentType.Elements.ExcludeGuidelines())
         {

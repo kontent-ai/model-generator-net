@@ -19,9 +19,10 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
         IOutputProvider outputProvider,
         IDeliveryClient deliveryClient,
         IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IClassDefinitionFactory classDefinitionFactory,
         IDeliveryElementService deliveryElementService,
         IUserMessageLogger logger)
-        : base(options, outputProvider, classCodeGeneratorFactory, deliveryElementService, logger)
+        : base(options, outputProvider, classCodeGeneratorFactory, classDefinitionFactory, deliveryElementService, logger)
     {
         if (options.Value.ManagementApi)
         {
@@ -63,7 +64,7 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
 
     internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType)
     {
-        var classDefinition = new ClassDefinition(contentType.System.Codename);
+        var classDefinition = ClassDefinitionFactory.CreateClassDefinition(contentType.System.Codename);
 
         foreach (var element in contentType.Elements.Values)
         {

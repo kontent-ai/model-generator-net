@@ -26,9 +26,10 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
         IOutputProvider outputProvider,
         IManagementClient managementClient,
         IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IClassDefinitionFactory classDefinitionFactory,
         IDeliveryElementService deliveryElementService,
         IUserMessageLogger logger)
-        : base(options, outputProvider, classCodeGeneratorFactory, deliveryElementService, logger)
+        : base(options, outputProvider, classCodeGeneratorFactory, classDefinitionFactory, deliveryElementService, logger)
     {
         if (options.Value.ManagementApi())
         {
@@ -76,8 +77,8 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
 
     internal IEnumerable<ClassCodeGenerator> GetClassCodeGenerators(ContentTypeModel contentType, List<ContentTypeSnippetModel> managementSnippets, List<ContentTypeModel> contentTypes)
     {
-        var classDefinition = new ClassDefinition(contentType.Codename);
-        var typedClassDefinition = new ClassDefinition(contentType.Codename);
+        var classDefinition = ClassDefinitionFactory.CreateClassDefinition(contentType.Codename);
+        var typedClassDefinition = ClassDefinitionFactory.CreateClassDefinition(contentType.Codename);
 
         foreach (var element in contentType.Elements.ExcludeGuidelines())
         {

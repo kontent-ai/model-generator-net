@@ -15,9 +15,10 @@ public abstract class DeliveryCodeGeneratorBase : CodeGeneratorBase
         IOptions<CodeGeneratorOptions> options,
         IOutputProvider outputProvider,
         IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IClassDefinitionFactory classDefinitionFactory,
         IDeliveryElementService deliveryElementService,
         IUserMessageLogger logger)
-        : base(options, outputProvider, classCodeGeneratorFactory, logger)
+        : base(options, outputProvider, classCodeGeneratorFactory, classDefinitionFactory, logger)
     {
         DeliveryElementService = deliveryElementService;
     }

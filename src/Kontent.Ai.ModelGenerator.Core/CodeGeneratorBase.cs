@@ -14,6 +14,7 @@ public abstract class CodeGeneratorBase
 {
     protected readonly IUserMessageLogger Logger;
     protected readonly IClassCodeGeneratorFactory ClassCodeGeneratorFactory;
+    protected readonly IClassDefinitionFactory ClassDefinitionFactory;
     protected readonly CodeGeneratorOptions Options;
     protected readonly IOutputProvider OutputProvider;
 
@@ -25,9 +26,11 @@ public abstract class CodeGeneratorBase
         IOptions<CodeGeneratorOptions> options,
         IOutputProvider outputProvider,
         IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IClassDefinitionFactory classDefinitionFactory,
         IUserMessageLogger logger)
     {
         ClassCodeGeneratorFactory = classCodeGeneratorFactory;
+        ClassDefinitionFactory = classDefinitionFactory;
         Options = options.Value;
         OutputProvider = outputProvider;
         Logger = logger;
