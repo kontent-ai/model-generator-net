@@ -17,9 +17,7 @@ public class ClassDefinition
 
     public ClassDefinition(string codeName)
     {
-        Codename = string.IsNullOrWhiteSpace(codeName)
-            ? throw new ArgumentException("Class codeName must be a non null and not white space string.", nameof(codeName))
-            : codeName;
+        Codename = codeName;
     }
 
     public void AddProperty(Property property)

@@ -45,6 +45,7 @@ internal class Program
             services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
             services.AddSingleton<IUserMessageLogger, UserMessageLogger>();
             services.AddSingleton<IClassCodeGeneratorFactory, ClassCodeGeneratorFactory>();
+            services.AddSingleton<IClassDefinitionFactory, ClassDefinitionFactory>();
             services.AddSingleton<IDeliveryElementService, DeliveryElementService>();
             services.AddSingleton<ManagementCodeGenerator>();
             services.AddSingleton<DeliveryCodeGenerator>();
