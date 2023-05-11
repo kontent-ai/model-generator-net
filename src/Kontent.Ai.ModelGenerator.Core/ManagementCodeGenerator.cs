@@ -65,7 +65,7 @@ public class ManagementCodeGenerator : CodeGeneratorBase
     {
         var classDefinition = new ClassDefinition(contentType.Codename);
 
-        foreach (var element in contentType.Elements)
+        foreach (var element in contentType.Elements.ExcludeGuidelines())
         {
             try
             {

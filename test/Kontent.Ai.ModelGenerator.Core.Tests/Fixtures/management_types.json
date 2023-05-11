@@ -18,6 +18,12 @@
           "codename": "hero_unit"
         },
         {
+          "guidelines": "<p><br/></p>",
+          "type": "guidelines",
+          "id": "d78f1910-d80f-4051-9004-4dd577d5e707",
+          "codename": "guidelines"
+        },
+        {
           "item_count_limit": null,
           "allowed_content_types": [],
           "name": "Articles",

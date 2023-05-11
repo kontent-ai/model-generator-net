@@ -71,7 +71,7 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
         var classDefinition = new ClassDefinition(contentType.Codename);
         var typedClassDefinition = new ClassDefinition(contentType.Codename);
 
-        foreach (var element in contentType.Elements)
+        foreach (var element in contentType.Elements.ExcludeGuidelines())
         {
             try
             {

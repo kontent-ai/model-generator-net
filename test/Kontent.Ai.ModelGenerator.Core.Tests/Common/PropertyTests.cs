@@ -78,7 +78,7 @@ public class PropertyTests
         var fromContentTypeElementCall = () =>
             Property.FromContentTypeElement(TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), "codename"));
 
-        fromContentTypeElementCall.Should().ThrowExactly<UnsupportedTypeException>();
+        fromContentTypeElementCall.Should().ThrowExactly<ArgumentException>();
     }
 
     [Theory]

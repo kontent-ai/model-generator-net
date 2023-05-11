@@ -8,6 +8,9 @@ namespace Kontent.Ai.ModelGenerator.Core.Helpers;
 
 public static class ManagementElementHelper
 {
+    public static IEnumerable<ElementMetadataBase> ExcludeGuidelines(this IEnumerable<ElementMetadataBase> elements) =>
+        elements.Where(el => el.Type != ElementMetadataType.Guidelines);
+
     public static IEnumerable<ElementMetadataBase> GetManagementContentTypeSnippetElements(
         ElementMetadataBase element,
         IEnumerable<ContentTypeSnippetModel> managementSnippets)
@@ -25,7 +28,7 @@ public static class ManagementElementHelper
             throw new ArgumentException($"{nameof(managementSnippet)} shouldn't be null.");
         }
 
-        return managementSnippet.Elements;
+        return managementSnippet.Elements.ExcludeGuidelines();
     }
 
     private static void Validate(

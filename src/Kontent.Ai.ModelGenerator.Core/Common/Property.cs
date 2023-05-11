@@ -113,12 +113,7 @@ public class Property
             return new Property(element.Codename, ManagementElementTypesDictionary[element.Type], element.Id.ToString());
         }
 
-        if (element.Type == ElementMetadataType.Guidelines)
-        {
-            throw new UnsupportedTypeException();
-        }
-
-        throw new ArgumentException($"Unknown Content Type {element.Type}", nameof(element));
+        throw new ArgumentException($"Unknown Content Type Element {element.Type}", nameof(element));
     }
 
     public static Property FromContentTypeElement(ElementMetadataBase element, string elementType) =>
@@ -135,11 +130,6 @@ public class Property
             return new Property(finalPropertyName, resultElementType);
         }
 
-        if (element.Type == ElementMetadataType.Guidelines)
-        {
-            throw new UnsupportedTypeException();
-        }
-
-        throw new ArgumentException($"Unknown Content Type {element.Type}", nameof(element));
+        throw new ArgumentException($"Unknown Content Type Element {element.Type}", nameof(element));
     }
 }
