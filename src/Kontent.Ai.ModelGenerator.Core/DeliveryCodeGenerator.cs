@@ -6,7 +6,6 @@ using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Contract;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
-using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Microsoft.Extensions.Options;
 
 namespace Kontent.Ai.ModelGenerator.Core;
@@ -87,7 +86,7 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
         return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
     }
 
-    private static void TryAddSystemProperty(ClassDefinition classDefinition)
+    private void TryAddSystemProperty(ClassDefinition classDefinition)
     {
         try
         {
@@ -95,7 +94,7 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
         }
         catch (InvalidOperationException)
         {
-            Console.WriteLine(
+            Logger.Log(
                 $"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
         }
     }
