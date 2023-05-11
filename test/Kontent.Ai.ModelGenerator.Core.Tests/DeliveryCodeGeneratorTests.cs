@@ -1,12 +1,10 @@
 ﻿using Kontent.Ai.Delivery;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Delivery.Builders.DeliveryClient;
-using Kontent.Ai.Management.Models.Shared;
-using Kontent.Ai.Management.Models.Types;
+using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Contract;
 using Kontent.Ai.ModelGenerator.Core.Services;
-using Kontent.Ai.ModelGenerator.Core.Tests.TestHelpers;
 using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
@@ -22,9 +20,20 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     protected override string TempDir => Path.Combine(Path.GetTempPath(), "DeliveryCodeGeneratorIntegrationTests");
 
     private readonly Mock<IDeliveryElementService> _deliveryElementService;
+    private readonly Mock<IDeliveryClient> _deliveryClientMock;
+    private readonly Mock<IOutputProvider> _outputProviderMock;
+    private readonly IDeliveryClient _deliveryClient;
 
     public DeliveryCodeGeneratorTests()
     {
+        var mockHttp = new MockHttpMessageHandler();
+        mockHttp.When("https://deliver.kontent.ai/*")
+            .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
+        var httpClient = mockHttp.ToHttpClient();
+        _deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
+
+        _deliveryClientMock = new Mock<IDeliveryClient>();
+        _outputProviderMock = new Mock<IOutputProvider>();
         _deliveryElementService = new Mock<IDeliveryElementService>();
     }
 
@@ -37,14 +46,12 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = true
         });
 
-        var deliveryClient = new Mock<IDeliveryClient>();
-        var outputProvider = new Mock<IOutputProvider>();
-
         var call = () => new DeliveryCodeGenerator(
             mockOptions.Object,
-            outputProvider.Object,
-            deliveryClient.Object,
+            _outputProviderMock.Object,
+            _deliveryClientMock.Object,
             ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
             _deliveryElementService.Object,
             Logger.Object);
 
@@ -68,9 +75,6 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             StructuredModel = structuredModel.ToString()
         });
 
-        var deliveryClient = new Mock<IDeliveryClient>();
-        var outputProvider = new Mock<IOutputProvider>();
-
         var elementCodename = "element_codename";
         var elementType = "text";
         var contentElement = new Mock<IContentElement>();
@@ -86,15 +90,53 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var codeGenerator = new DeliveryCodeGenerator(
             mockOptions.Object,
-            outputProvider.Object,
-            deliveryClient.Object,
+            _outputProviderMock.Object,
+            _deliveryClientMock.Object,
             ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
             _deliveryElementService.Object,
             Logger.Object);
 
         var result = codeGenerator.GetClassCodeGenerator(contentType.Object);
 
         Logger.VerifyNoOtherCalls();
+        result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
+    }
+
+    [Fact]
+    public void GetClassCodeGenerator_DuplicateSystemProperty_MessageIsLogged()
+    {
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = false
+        });
+
+        var contentTypeCodename = "Contenttype";
+        var classDefinition = new ClassDefinition(contentTypeCodename);
+        classDefinition.AddSystemProperty();
+
+        var contentType = new Mock<IContentType>();
+        contentType.SetupGet(type => type.System.Codename).Returns(contentTypeCodename);
+        contentType.SetupGet(type => type.Elements).Returns(new Dictionary<string, IContentElement>());
+
+        var classDefinitionFactoryMock = new Mock<IClassDefinitionFactory>();
+        classDefinitionFactoryMock
+            .Setup(x => x.CreateClassDefinition(It.IsAny<string>()))
+            .Returns(classDefinition);
+
+        var codeGenerator = new DeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProviderMock.Object,
+            _deliveryClientMock.Object,
+            ClassCodeGeneratorFactory,
+            classDefinitionFactoryMock.Object,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        var result = codeGenerator.GetClassCodeGenerator(contentType.Object);
+
+        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{contentTypeCodename}'.")));
         result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
     }
 
@@ -117,18 +159,17 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             .Setup(x => x.Types)
             .Returns(new List<IContentType>());
 
-        var deliveryClient = new Mock<IDeliveryClient>();
-        deliveryClient
+
+        _deliveryClientMock
             .Setup(x => x.GetTypesAsync(It.IsAny<IEnumerable<IQueryParameter>>()))
             .Returns(Task.FromResult(responseModelMock.Object));
 
-        var outputProvider = new Mock<IOutputProvider>();
-
         var codeGenerator = new DeliveryCodeGenerator(
             mockOptions.Object,
-            outputProvider.Object,
-            deliveryClient.Object,
+            _outputProviderMock.Object,
+            _deliveryClientMock.Object,
             ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
             _deliveryElementService.Object,
             Logger.Object);
 
@@ -157,18 +198,16 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             .Setup(x => x.Types)
             .Returns((IList<IContentType>)null);
 
-        var deliveryClient = new Mock<IDeliveryClient>();
-        deliveryClient
+        _deliveryClientMock
             .Setup(x => x.GetTypesAsync(It.IsAny<IEnumerable<IQueryParameter>>()))
             .Returns(Task.FromResult(responseModelMock.Object));
 
-        var outputProvider = new Mock<IOutputProvider>();
-
         var codeGenerator = new DeliveryCodeGenerator(
             mockOptions.Object,
-            outputProvider.Object,
-            deliveryClient.Object,
+            _outputProviderMock.Object,
+            _deliveryClientMock.Object,
             ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
             _deliveryElementService.Object,
             Logger.Object);
 
@@ -178,16 +217,50 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         result.Should().Be(0);
     }
 
+    [Fact]
+    public async Task RunAsync_DeliveryElementServiceThrowsException_MessageIsLogged()
+    {
+        var projectId = Guid.NewGuid().ToString();
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            DeliveryOptions = new DeliveryOptions
+            {
+                ProjectId = projectId
+            }
+        });
+
+        var responseModelMock = new Mock<IDeliveryTypeListingResponse>();
+        responseModelMock
+            .Setup(x => x.Types)
+            .Returns((IList<IContentType>)null);
+
+        _deliveryElementService.Setup(x => x.GetElementType(It.IsAny<string>())).Throws<ArgumentNullException>();
+
+        var codeGenerator = new DeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProviderMock.Object,
+            _deliveryClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        Logger.Setup(n => n.Log(It.Is<string>(m => m.Contains("Warning: Skipping unknown Content Element type "))));
+        Logger.Setup(n => n.Log(It.Is<string>(m => m == "26 content type models were successfully created.")));
+
+        var result = await codeGenerator.RunAsync();
+
+        Logger.VerifyAll();
+        result.Should().Be(0);
+    }
+
     [Theory]
     [InlineData(StructuredModelFlags.ModularContent)]
     [InlineData(StructuredModelFlags.NotSet)]
     public async Task IntegrationTest_RunAsync_CorrectFiles(StructuredModelFlags structuredModel)
     {
-        var mockHttp = new MockHttpMessageHandler();
-        mockHttp.When("https://deliver.kontent.ai/*")
-            .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
-        var httpClient = mockHttp.ToHttpClient();
-
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
@@ -200,13 +273,12 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             StructuredModel = structuredModel.ToString()
         });
 
-        var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
-
         var codeGenerator = new DeliveryCodeGenerator(
             mockOptions.Object,
             new FileSystemOutputProvider(mockOptions.Object),
-            deliveryClient,
+            _deliveryClient,
             ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
             new DeliveryElementService(mockOptions.Object),
             Logger.Object);
 
@@ -229,11 +301,6 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     [InlineData(StructuredModelFlags.NotSet)]
     public async Task IntegrationTest_RunAsync_GeneratedSuffix_CorrectFiles(StructuredModelFlags structuredModel)
     {
-        var mockHttp = new MockHttpMessageHandler();
-        mockHttp.When("https://deliver.kontent.ai/*")
-            .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
-        var httpClient = mockHttp.ToHttpClient();
-
         const string transformFilename = "CustomSuffix";
 
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -249,13 +316,12 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false
         });
 
-        var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
-
         var codeGenerator = new DeliveryCodeGenerator(
             mockOptions.Object,
             new FileSystemOutputProvider(mockOptions.Object),
-            deliveryClient,
+            _deliveryClient,
             ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
             new DeliveryElementService(mockOptions.Object),
             Logger.Object);
 
@@ -279,11 +345,6 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     [InlineData(StructuredModelFlags.NotSet)]
     public async Task IntegrationTest_RunAsync_GeneratePartials_CorrectFiles(StructuredModelFlags structuredModel)
     {
-        var mockHttp = new MockHttpMessageHandler();
-        mockHttp.When("https://deliver.kontent.ai/*")
-            .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
-        var httpClient = mockHttp.ToHttpClient();
-
         const string transformFilename = "Generated";
 
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -299,14 +360,12 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false
         });
 
-        var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId)
-            .WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
-
         var codeGenerator = new DeliveryCodeGenerator(
             mockOptions.Object,
             new FileSystemOutputProvider(mockOptions.Object),
-            deliveryClient,
+            _deliveryClient,
             ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
             new DeliveryElementService(mockOptions.Object),
             Logger.Object);
 
@@ -335,11 +394,6 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     [InlineData(StructuredModelFlags.NotSet)]
     public async Task IntegrationTest_RunAsync_TypeProvider_CorrectFiles(StructuredModelFlags structuredModel)
     {
-        var mockHttp = new MockHttpMessageHandler();
-        mockHttp.When("https://deliver.kontent.ai/*")
-            .Respond("application/json", await File.ReadAllTextAsync(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
-        var httpClient = mockHttp.ToHttpClient();
-
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
@@ -352,13 +406,12 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             StructuredModel = structuredModel.ToString()
         });
 
-        var deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
-
         var codeGenerator = new DeliveryCodeGenerator(
             mockOptions.Object,
             new FileSystemOutputProvider(mockOptions.Object),
-            deliveryClient,
+            _deliveryClient,
             ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
             new DeliveryElementService(mockOptions.Object),
             Logger.Object);
 
