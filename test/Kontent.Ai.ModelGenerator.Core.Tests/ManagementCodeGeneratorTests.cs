@@ -1,5 +1,6 @@
 ﻿using Kontent.Ai.Management;
 using Kontent.Ai.Management.Configuration;
+using Kontent.Ai.Management.Models.Shared;
 using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.Management.Models.TypeSnippets;
@@ -40,6 +41,54 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         Logger.VerifyNoOtherCalls();
         call.Should().ThrowExactly<InvalidOperationException>();
+    }
+
+    [Fact]
+    public async Task RunAsync_NoContentTypes_MessageIsLogged()
+    {
+        var projectId = Guid.NewGuid().ToString();
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = true,
+            ManagementOptions = new ManagementOptions
+            {
+                ProjectId = projectId,
+                ApiKey = "api_key"
+            }
+        });
+
+        var contentTypeListingResponseModel = new Mock<IListingResponseModel<ContentTypeModel>>();
+        contentTypeListingResponseModel.As<IEnumerable<ContentTypeModel>>()
+        .Setup(c => c.GetEnumerator())
+            .Returns(new List<ContentTypeModel>().GetEnumerator);
+
+        var contentTypeSnippetListingResponseModel = new Mock<IListingResponseModel<ContentTypeSnippetModel>>();
+        contentTypeSnippetListingResponseModel.As<IEnumerable<ContentTypeSnippetModel>>()
+        .Setup(c => c.GetEnumerator())
+            .Returns(new List<ContentTypeSnippetModel>().GetEnumerator);
+
+        var managementClient = new Mock<IManagementClient>();
+        managementClient
+            .Setup(x => x.ListContentTypesAsync())
+            .Returns(Task.FromResult(contentTypeListingResponseModel.Object));
+        managementClient
+            .Setup(x => x.ListContentTypeSnippetsAsync())
+            .Returns(Task.FromResult(contentTypeSnippetListingResponseModel.Object));
+
+        var outputProvider = new Mock<IOutputProvider>();
+
+        var codeGenerator = new ManagementCodeGenerator(
+            mockOptions.Object,
+            outputProvider.Object,
+            managementClient.Object,
+            ClassCodeGeneratorFactory,
+            Logger.Object);
+
+        var result = await codeGenerator.RunAsync();
+
+        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")));
+        result.Should().Be(0);
     }
 
     [Fact]

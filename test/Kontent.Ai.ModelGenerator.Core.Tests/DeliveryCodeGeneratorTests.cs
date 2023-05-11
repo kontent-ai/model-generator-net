@@ -1,9 +1,12 @@
 ﻿using Kontent.Ai.Delivery;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Delivery.Builders.DeliveryClient;
+using Kontent.Ai.Management.Models.Shared;
+using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Contract;
 using Kontent.Ai.ModelGenerator.Core.Services;
+using Kontent.Ai.ModelGenerator.Core.Tests.TestHelpers;
 using Microsoft.Extensions.Options;
 using Moq;
 using RichardSzalay.MockHttp;
@@ -93,6 +96,86 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         Logger.VerifyNoOtherCalls();
         result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
+    }
+
+    [Fact]
+    public async Task RunAsync_NoContentTypes_MessageIsLogged()
+    {
+        var projectId = Guid.NewGuid().ToString();
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            DeliveryOptions = new DeliveryOptions
+            {
+                ProjectId = projectId
+            }
+        });
+
+        var responseModelMock = new Mock<IDeliveryTypeListingResponse>();
+        responseModelMock
+            .Setup(x => x.Types)
+            .Returns(new List<IContentType>());
+
+        var deliveryClient = new Mock<IDeliveryClient>();
+        deliveryClient
+            .Setup(x => x.GetTypesAsync(It.IsAny<IEnumerable<IQueryParameter>>()))
+            .Returns(Task.FromResult(responseModelMock.Object));
+
+        var outputProvider = new Mock<IOutputProvider>();
+
+        var codeGenerator = new DeliveryCodeGenerator(
+            mockOptions.Object,
+            outputProvider.Object,
+            deliveryClient.Object,
+            ClassCodeGeneratorFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        var result = await codeGenerator.RunAsync();
+
+        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")));
+        result.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task RunAsync_TypesIsNull_MessageIsLogged()
+    {
+        var projectId = Guid.NewGuid().ToString();
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            DeliveryOptions = new DeliveryOptions
+            {
+                ProjectId = projectId
+            }
+        });
+
+        var responseModelMock = new Mock<IDeliveryTypeListingResponse>();
+        responseModelMock
+            .Setup(x => x.Types)
+            .Returns((IList<IContentType>)null);
+
+        var deliveryClient = new Mock<IDeliveryClient>();
+        deliveryClient
+            .Setup(x => x.GetTypesAsync(It.IsAny<IEnumerable<IQueryParameter>>()))
+            .Returns(Task.FromResult(responseModelMock.Object));
+
+        var outputProvider = new Mock<IOutputProvider>();
+
+        var codeGenerator = new DeliveryCodeGenerator(
+            mockOptions.Object,
+            outputProvider.Object,
+            deliveryClient.Object,
+            ClassCodeGeneratorFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        var result = await codeGenerator.RunAsync();
+
+        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")));
+        result.Should().Be(0);
     }
 
     [Theory]
