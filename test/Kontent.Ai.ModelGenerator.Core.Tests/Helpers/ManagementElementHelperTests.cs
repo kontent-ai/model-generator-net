@@ -127,4 +127,126 @@ public class ManagementElementHelperTests
         result.Should().ContainSingle(el => el.Id == expectedElementId);
         result.Should().ContainSingle(el => el.Id == expectedElement2Id);
     }
+
+    [Fact]
+    public void GetManagementContentTypeSnippetElements_SkipsGuidelines_Returns()
+    {
+        var expectedElementId = Guid.NewGuid();
+        var expectedElement2Id = Guid.NewGuid();
+        var snippetCodename = "snippet_codename";
+
+        var snippetElement = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename, ElementMetadataType.ContentTypeSnippet);
+
+        var snippets = new List<ContentTypeSnippetModel>
+        {
+            new ContentTypeSnippetModel
+            {
+                Codename = snippetCodename,
+                Elements = new List<ElementMetadataBase>
+                {
+                    TestDataGenerator.GenerateElementMetadataBase(expectedElementId, $"{snippetCodename}_el"),
+                    TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), $"{snippetCodename}_guidelines"),
+                    TestDataGenerator.GenerateElementMetadataBase(expectedElement2Id, $"{snippetCodename}_el2", ElementMetadataType.Number)
+                }
+            }
+        };
+
+        var result = ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, snippets).ToList();
+
+        result.Should().NotBeNullOrEmpty();
+        result.Count.Should().Be(2);
+        result.Should().ContainSingle(el => el.Id == expectedElementId);
+        result.Should().ContainSingle(el => el.Id == expectedElement2Id);
+    }
+
+    [Theory]
+    [MemberData(nameof(HasGuidelinesElement))]
+    public void ExcludeGuidelines_HasGuidelinesElement_GuidelinesIsExcluded(IEnumerable<ElementMetadataBase> elements, IEnumerable<ElementMetadataBase> expectedElements)
+    {
+        var result = elements.ExcludeGuidelines();
+
+        result.Should().BeEquivalentTo(expectedElements);
+    }
+
+    [Theory]
+    [MemberData(nameof(MissingGuidelinesElement))]
+    public void ExcludeGuidelines_MissingGuidelinesElement_GuidelinesIsExcluded(IEnumerable<ElementMetadataBase> elements)
+    {
+        var result = elements.ExcludeGuidelines();
+
+        result.Should().BeEquivalentTo(elements);
+    }
+
+    public static IEnumerable<object[]> MissingGuidelinesElement()
+    {
+        var firstElement = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "element_codename");
+        var secondElement = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "second_element_codename");
+        var expectedElements = new List<ElementMetadataBase> { firstElement, secondElement };
+
+        yield return new object[]
+        {
+            new List<ElementMetadataBase>
+            {
+                firstElement
+            }
+        };
+        yield return new object[]
+        {
+            new List<ElementMetadataBase>
+            {
+                firstElement,
+                secondElement,
+            }
+        };
+        yield return new object[]
+        {
+            new List<ElementMetadataBase>()
+        };
+    }
+
+    public static IEnumerable<object[]> HasGuidelinesElement()
+    {
+        var firstElement = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "element_codename");
+        var secondElement = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "second_element_codename");
+        var expectedElements = new List<ElementMetadataBase> { firstElement, secondElement };
+
+        yield return new object[]
+        {
+            new List<ElementMetadataBase>
+            {
+                firstElement,
+                TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), "element_codename"),
+                secondElement
+            },
+            expectedElements
+        };
+        yield return new object[]
+        {
+            new List<ElementMetadataBase>
+            {
+                TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), "element_codename"),
+                firstElement,
+                secondElement
+            },
+            expectedElements
+        };
+        yield return new object[]
+        {
+            new List<ElementMetadataBase>
+            {
+                firstElement,
+                secondElement,
+                TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), "element_codename")
+            },
+            expectedElements
+        };
+        yield return new object[]
+        {
+            new List<ElementMetadataBase>
+            {
+                TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), "element_codename")
+            },
+            new List<ElementMetadataBase>()
+        };
+    }
 }
