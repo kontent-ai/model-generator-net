@@ -54,7 +54,8 @@ public class PropertyTests
         element.TypeName.Should().Be(expectedTypeName);
     }
 
-    [Theory, MemberData(nameof(ManagementElements))]
+    [Theory]
+    [MemberData(nameof(ManagementElements))]
     public void FromContentTypeElement_ManagementApiModel_Returns(string expectedTypeName, string expectedCodename, ElementMetadataBase element)
     {
         var property = Property.FromContentTypeElement(element);

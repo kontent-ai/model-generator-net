@@ -74,7 +74,7 @@ public abstract class CodeGeneratorBase
 
     protected ClassCodeGenerator GetCustomClassCodeGenerator(string contentTypeCodename)
     {
-        var classDefinition = new ClassDefinition(contentTypeCodename);
+        var classDefinition = ClassDefinitionFactory.CreateClassDefinition(contentTypeCodename);
         var classFilename = $"{classDefinition.ClassName}";
 
         return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, true);
