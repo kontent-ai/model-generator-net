@@ -136,6 +136,45 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     [Fact]
+    public void GetClassCodeGenerator_DuplicateProperty_MessageIsLogged()
+    {
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = true
+        });
+
+        var outputProvider = new Mock<IOutputProvider>();
+        var managementClient = new Mock<IManagementClient>();
+
+        var contentTypeCodename = "Contenttype";
+        var elementCodename = "element_codename";
+        var contentType = new ContentTypeModel
+        {
+            Name = "Contenttype",
+            Codename = contentTypeCodename,
+            Elements = new List<ElementMetadataBase>
+            {
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename)
+            }
+        };
+
+        var codeGenerator = new ManagementCodeGenerator(
+            mockOptions.Object,
+            outputProvider.Object,
+            managementClient.Object,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            Logger.Object);
+
+        var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>());
+
+        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"Warning: Element '{elementCodename}' is already present in Content Type '{contentType.Name}'.")));
+        result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
+    }
+
+    [Fact]
     public async Task IntegrationTest_RunAsync_CorrectFiles()
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();

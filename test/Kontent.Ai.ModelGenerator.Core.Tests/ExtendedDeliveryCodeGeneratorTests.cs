@@ -276,6 +276,62 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     [Fact]
+    public void GetClassCodeGenerators_DuplicateProperty_MessageIsLogged()
+    {
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            ExtendedDeliveryModels = true,
+        });
+
+        var elementCodename = "duplicate_codename";
+        var contentType = new ContentTypeModel
+        {
+            Name = "ContentType",
+            Codename = "content_type",
+            Elements = new List<ElementMetadataBase>
+            {
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename)
+            }
+        };
+
+        var contentTypes = new List<ContentTypeModel>
+        {
+            contentType
+        };
+
+        foreach (var elementMetadataBase in contentType.Elements)
+        {
+            _deliveryElementService.Setup(x => x.GetElementType(elementMetadataBase.Type.ToString())).Returns(elementMetadataBase.Type.ToString());
+        }
+
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProvider,
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        var expectedClassDefinition = new ClassDefinition(contentType.Codename);
+        expectedClassDefinition.AddProperty(new Property(elementCodename, "string"));
+        expectedClassDefinition.AddPropertyCodenameConstant(elementCodename);
+        var expected = new List<ClassCodeGenerator>
+        {
+            new ExtendedDeliveryClassCodeGenerator(expectedClassDefinition, "ContentType.Generated", false),
+            new TypedExtendedDeliveryClassCodeGenerator( new ClassDefinition(contentType.Codename), "ContentType.Typed.Generated")
+        };
+
+        var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
+
+        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"Warning: Element '{elementCodename}' is already present in Content Type '{contentType.Name}'.")));
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
     public async Task RunAsync_NoContentTypes_MessageIsLogged()
     {
         var projectId = Guid.NewGuid().ToString();
