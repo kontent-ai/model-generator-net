@@ -19,7 +19,7 @@ public abstract class CodeGeneratorBase
     protected readonly IOutputProvider OutputProvider;
 
     protected string FilenameSuffix => string.IsNullOrEmpty(Options.FileNameSuffix) ? "" : $".{Options.FileNameSuffix}";
-    protected string NoContentTypeAvailableMessage =>
+    private string NoContentTypeAvailableMessage =>
         $@"No content type available for the project ({Options.GetProjectId()}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.";
 
     protected CodeGeneratorBase(
@@ -128,7 +128,6 @@ public abstract class CodeGeneratorBase
 
         if (!classCodeGenerators.Any())
         {
-            Logger.Log(NoContentTypeAvailableMessage);
             return;
         }
 

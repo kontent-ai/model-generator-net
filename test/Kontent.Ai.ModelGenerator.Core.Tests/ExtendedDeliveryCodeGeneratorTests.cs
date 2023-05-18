@@ -271,7 +271,8 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
 
-        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"Warning: Can't create valid C# Identifier from '{elementCodename}'. Skipping element.")));
+        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"Warning: Can't create valid C# Identifier from '{elementCodename}'. Skipping element.")),
+            Times.Exactly(1));
         result.Should().BeEquivalentTo(expected);
     }
 
@@ -327,12 +328,17 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
 
-        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"Warning: Element '{elementCodename}' is already present in Content Type '{contentType.Name}'.")));
+        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"Warning: Element '{elementCodename}' is already present in Content Type '{contentType.Name}'.")),
+            Times.Exactly(1));
         result.Should().BeEquivalentTo(expected);
     }
 
-    [Fact]
-    public async Task RunAsync_NoContentTypes_MessageIsLogged()
+    [Theory]
+    [InlineData(true, "BaseClass")]
+    [InlineData(true, null)]
+    [InlineData(false, "BaseClass")]
+    [InlineData(false, null)]
+    public async Task RunAsync_NoContentTypes_MessageIsLogged(bool withTypeProvider, string baseClass)
     {
         var projectId = Guid.NewGuid().ToString();
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -340,6 +346,8 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         {
             ManagementApi = false,
             ExtendedDeliveryModels = true,
+            WithTypeProvider = withTypeProvider,
+            BaseClass = baseClass,
             ManagementOptions = new ManagementOptions
             {
                 ProjectId = projectId,
@@ -376,7 +384,8 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = await codeGenerator.RunAsync();
 
-        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")));
+        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
+            Times.Exactly(1));
         result.Should().Be(0);
     }
 
@@ -454,7 +463,8 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")).Should().NotBeEmpty();
 
         Logger.Verify(a =>
-            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created.")));
+            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created.")),
+            Times.Exactly(1));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -499,7 +509,8 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         }
 
         Logger.Verify(a =>
-            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created.")));
+            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created.")),
+            Times.Exactly(1));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -555,7 +566,8 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         }
 
         Logger.Verify(a =>
-            a.Log(It.Is<string>(m => m == $"{allFilesCount} content type models were successfully created.")));
+            a.Log(It.Is<string>(m => m == $"{allFilesCount} content type models were successfully created.")),
+            Times.Exactly(1));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -597,7 +609,8 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().NotBeEmpty();
 
         Logger.Verify(a =>
-            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created.")));
+            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created.")),
+            Times.Exactly(1));
 
         // Cleanup
         Directory.Delete(TempDir, true);

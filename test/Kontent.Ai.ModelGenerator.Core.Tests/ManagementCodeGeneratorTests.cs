@@ -49,14 +49,17 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         call.Should().ThrowExactly<InvalidOperationException>();
     }
 
-    [Fact]
-    public async Task RunAsync_NoContentTypes_MessageIsLogged()
+    [Theory]
+    [InlineData("BaseClass")]
+    [InlineData(null)]
+    public async Task RunAsync_NoContentTypes_MessageIsLogged(string baseClass)
     {
         var projectId = Guid.NewGuid().ToString();
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = true,
+            BaseClass = baseClass,
             ManagementOptions = new ManagementOptions
             {
                 ProjectId = projectId,
@@ -94,7 +97,8 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = await codeGenerator.RunAsync();
 
-        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")));
+        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
+            Times.Exactly(1));
         result.Should().Be(0);
     }
 
@@ -170,7 +174,8 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>());
 
-        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"Warning: Element '{elementCodename}' is already present in Content Type '{contentType.Name}'.")));
+        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"Warning: Element '{elementCodename}' is already present in Content Type '{contentType.Name}'.")),
+            Times.Exactly(1));
         result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
     }
 
@@ -203,7 +208,8 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")).Should().NotBeEmpty();
 
         Logger.Verify(a =>
-            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")));
+            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")),
+            Times.Exactly(1));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -243,7 +249,8 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         }
 
         Logger.Verify(a =>
-            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")));
+            a.Log(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")),
+            Times.Exactly(1));
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -288,7 +295,8 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         }
 
         Logger.Verify(a =>
-            a.Log(It.Is<string>(m => m == $"{allFilesCount} content type models were successfully created.")));
+            a.Log(It.Is<string>(m => m == $"{allFilesCount} content type models were successfully created.")),
+            Times.Exactly(1));
 
         // Cleanup
         Directory.Delete(TempDir, true);

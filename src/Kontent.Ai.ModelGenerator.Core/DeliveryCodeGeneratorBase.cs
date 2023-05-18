@@ -41,7 +41,6 @@ public abstract class DeliveryCodeGeneratorBase : CodeGeneratorBase
 
         if (!classCodeGenerators.Any())
         {
-            Logger.Log(NoContentTypeAvailableMessage);
             return;
         }
 
