@@ -266,6 +266,58 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         result.Should().Be(0);
     }
 
+    [Fact]
+    public async Task RunAsync_ContentTypeHasInvalidIdentifier_MessageIsLogged()
+    {
+        var projectId = Guid.NewGuid().ToString();
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            WithTypeProvider = false,
+            DeliveryOptions = new DeliveryOptions
+            {
+                ProjectId = projectId
+            }
+        });
+
+        var contentTypeCodename = "";
+        var classDefinition = new ClassDefinition(contentTypeCodename);
+
+        var contentType = new Mock<IContentType>();
+        contentType.SetupGet(type => type.System.Codename).Returns(contentTypeCodename);
+        contentType.SetupGet(type => type.Elements).Returns(new Dictionary<string, IContentElement>());
+
+        var responseModelMock = new Mock<IDeliveryTypeListingResponse>();
+        responseModelMock
+            .Setup(x => x.Types)
+            .Returns(new List<IContentType> { contentType.Object });
+
+        _deliveryClientMock
+            .Setup(x => x.GetTypesAsync(It.IsAny<IEnumerable<IQueryParameter>>()))
+            .Returns(Task.FromResult(responseModelMock.Object));
+
+        var classDefinitionFactory = new Mock<IClassDefinitionFactory>();
+        classDefinitionFactory
+            .Setup(x => x.CreateClassDefinition(It.IsAny<string>()))
+            .Returns(classDefinition);
+
+        var codeGenerator = new DeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProviderMock.Object,
+            _deliveryClientMock.Object,
+            ClassCodeGeneratorFactory,
+            classDefinitionFactory.Object,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        var result = await codeGenerator.RunAsync();
+
+        Logger.Verify(n => n.Log(It.Is<string>(m => m.Contains($"Warning: Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name."))),
+            Times.Exactly(1));
+        result.Should().Be(0);
+    }
+
     [Theory]
     [InlineData(StructuredModelFlags.ModularContent)]
     [InlineData(StructuredModelFlags.NotSet)]

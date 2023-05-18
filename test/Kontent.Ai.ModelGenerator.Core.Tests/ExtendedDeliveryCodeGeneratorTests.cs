@@ -390,7 +390,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     [Fact]
-    public async Task RunAsync_DeliveryElementServiceThrowsException_MessageIsLogged()
+    public async Task RunAsync_ContentTypeHasInvalidIdentifier_MessageIsLogged()
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
@@ -404,10 +404,68 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
         });
 
-        var responseModelMock = new Mock<IDeliveryTypeListingResponse>();
-        responseModelMock
-            .Setup(x => x.Types)
-            .Returns((IList<IContentType>)null);
+        var contentType = new ContentTypeModel
+        {
+            Codename = "",
+            Elements = new List<ElementMetadataBase>()
+        };
+        var contentTypes = new List<ContentTypeModel>
+        {
+            contentType
+        };
+        var contentTypeListingResponseModel = new Mock<IListingResponseModel<ContentTypeModel>>();
+        contentTypeListingResponseModel.As<IEnumerable<ContentTypeModel>>()
+            .Setup(c => c.GetEnumerator())
+            .Returns(contentTypes.GetEnumerator);
+
+        var contentTypeSnippetListingResponseModel = new Mock<IListingResponseModel<ContentTypeSnippetModel>>();
+        contentTypeSnippetListingResponseModel.As<IEnumerable<ContentTypeSnippetModel>>()
+            .Setup(c => c.GetEnumerator())
+            .Returns(new List<ContentTypeSnippetModel>().GetEnumerator);
+
+        var managementClient = new Mock<IManagementClient>();
+        managementClient
+            .Setup(x => x.ListContentTypesAsync())
+            .Returns(Task.FromResult(contentTypeListingResponseModel.Object));
+        managementClient
+            .Setup(x => x.ListContentTypeSnippetsAsync())
+            .Returns(Task.FromResult(contentTypeSnippetListingResponseModel.Object));
+
+        var classDefinitionFactory = new Mock<IClassDefinitionFactory>();
+        classDefinitionFactory
+            .Setup(x => x.CreateClassDefinition(It.IsAny<string>()))
+            .Returns(new ClassDefinition(contentType.Codename));
+
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProviderMock.Object,
+            managementClient.Object,
+            ClassCodeGeneratorFactory,
+            classDefinitionFactory.Object,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        var result = await codeGenerator.RunAsync();
+
+        Logger.Verify(n => n.Log(It.Is<string>(m => m.Contains($"Warning: Skipping Content Type '{contentType.Codename}'. Can't create valid C# identifier from its name."))),
+            Times.Exactly(1));
+        result.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task RunAsync_DeliveryElementServiceThrowsException_MessageIsLogged()
+    {
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+        {
+            ExtendedDeliveryModels = true,
+            Namespace = "CustomNamespace",
+            OutputDir = TempDir,
+            ManagementApi = false,
+            GeneratePartials = false,
+            WithTypeProvider = false,
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
+        });
 
         _deliveryElementService.Setup(x => x.GetElementType(It.IsAny<string>())).Throws<ArgumentNullException>();
 

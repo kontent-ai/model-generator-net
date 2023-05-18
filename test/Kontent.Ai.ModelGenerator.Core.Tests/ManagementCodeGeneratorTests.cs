@@ -4,6 +4,7 @@ using Kontent.Ai.Management.Models.Shared;
 using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.Management.Models.TypeSnippets;
+using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Contract;
 using Kontent.Ai.ModelGenerator.Core.Tests.TestHelpers;
@@ -19,10 +20,12 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
     /// </summary>
     private const int NumberOfContentTypes = 14;
     private readonly IManagementClient _managementClient;
+    private readonly Mock<IOutputProvider> _outputProviderMock;
     protected override string TempDir => Path.Combine(Path.GetTempPath(), "ManagementCodeGeneratorIntegrationTests");
 
     public ManagementCodeGeneratorTests()
     {
+        _outputProviderMock = new Mock<IOutputProvider>();
         _managementClient = CreateManagementClient();
     }
 
@@ -35,11 +38,9 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false
         });
 
-        var outputProvider = new Mock<IOutputProvider>();
-
         var call = () => new ManagementCodeGenerator(
             mockOptions.Object,
-            outputProvider.Object,
+            _outputProviderMock.Object,
             _managementClient,
             ClassCodeGeneratorFactory,
             ClassDefinitionFactory,
@@ -85,11 +86,9 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             .Setup(x => x.ListContentTypeSnippetsAsync())
             .Returns(Task.FromResult(contentTypeSnippetListingResponseModel.Object));
 
-        var outputProvider = new Mock<IOutputProvider>();
-
         var codeGenerator = new ManagementCodeGenerator(
             mockOptions.Object,
-            outputProvider.Object,
+            _outputProviderMock.Object,
             managementClient.Object,
             ClassCodeGeneratorFactory,
             ClassDefinitionFactory,
@@ -103,6 +102,66 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
     }
 
     [Fact]
+    public async Task RunAsync_ContentTypeHasInvalidIdentifier_MessageIsLogged()
+    {
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = true,
+            ManagementOptions = new ManagementOptions
+            {
+                ProjectId = Guid.NewGuid().ToString(),
+                ApiKey = "api_key"
+            }
+        });
+
+        var contentType = new ContentTypeModel
+        {
+            Codename = "",
+            Elements = new List<ElementMetadataBase>()
+        };
+        var contentTypes = new List<ContentTypeModel>
+        {
+            contentType
+        };
+        var contentTypeListingResponseModel = new Mock<IListingResponseModel<ContentTypeModel>>();
+        contentTypeListingResponseModel.As<IEnumerable<ContentTypeModel>>()
+            .Setup(c => c.GetEnumerator())
+            .Returns(contentTypes.GetEnumerator);
+
+        var contentTypeSnippetListingResponseModel = new Mock<IListingResponseModel<ContentTypeSnippetModel>>();
+        contentTypeSnippetListingResponseModel.As<IEnumerable<ContentTypeSnippetModel>>()
+            .Setup(c => c.GetEnumerator())
+            .Returns(new List<ContentTypeSnippetModel>().GetEnumerator);
+
+        var managementClient = new Mock<IManagementClient>();
+        managementClient
+            .Setup(x => x.ListContentTypesAsync())
+            .Returns(Task.FromResult(contentTypeListingResponseModel.Object));
+        managementClient
+            .Setup(x => x.ListContentTypeSnippetsAsync())
+            .Returns(Task.FromResult(contentTypeSnippetListingResponseModel.Object));
+
+        var classDefinitionFactory = new Mock<IClassDefinitionFactory>();
+        classDefinitionFactory
+            .Setup(x => x.CreateClassDefinition(It.IsAny<string>()))
+            .Returns(new ClassDefinition(contentType.Codename));
+
+        var codeGenerator = new ManagementCodeGenerator(
+            mockOptions.Object,
+            _outputProviderMock.Object,
+            managementClient.Object,
+            ClassCodeGeneratorFactory,
+            classDefinitionFactory.Object,
+            Logger.Object);
+
+        var result = await codeGenerator.RunAsync();
+
+        Logger.Verify(n => n.Log(It.Is<string>(m => m.Contains($"Warning: Skipping Content Type '{contentType.Codename}'. Can't create valid C# identifier from its name."))), Times.Exactly(1));
+        result.Should().Be(0);
+    }
+
+    [Fact]
     public void GetClassCodeGenerator_Returns()
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
@@ -111,7 +170,6 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = true
         });
 
-        var outputProvider = new Mock<IOutputProvider>();
         var managementClient = new Mock<IManagementClient>();
 
         var contentTypeCodename = "Contenttype";
@@ -127,7 +185,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         var codeGenerator = new ManagementCodeGenerator(
             mockOptions.Object,
-            outputProvider.Object,
+            _outputProviderMock.Object,
             managementClient.Object,
             ClassCodeGeneratorFactory,
             ClassDefinitionFactory,
@@ -148,7 +206,6 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = true
         });
 
-        var outputProvider = new Mock<IOutputProvider>();
         var managementClient = new Mock<IManagementClient>();
 
         var contentTypeCodename = "Contenttype";
@@ -166,7 +223,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         var codeGenerator = new ManagementCodeGenerator(
             mockOptions.Object,
-            outputProvider.Object,
+            _outputProviderMock.Object,
             managementClient.Object,
             ClassCodeGeneratorFactory,
             ClassDefinitionFactory,
