@@ -97,7 +97,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         var result = await codeGenerator.RunAsync();
 
         Logger.Verify(n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
-            Times.Exactly(1));
+            Times.Once());
         result.Should().Be(0);
     }
 
@@ -157,7 +157,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = await codeGenerator.RunAsync();
 
-        Logger.Verify(n => n.LogWarning(It.Is<string>(m => m.Contains($"Skipping Content Type '{contentType.Codename}'. Can't create valid C# identifier from its name."))), Times.Exactly(1));
+        Logger.Verify(n => n.LogWarning(It.Is<string>(m => m.Contains($"Skipping Content Type '{contentType.Codename}'. Can't create valid C# identifier from its name."))), Times.Once());
         result.Should().Be(0);
     }
 
@@ -232,7 +232,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>());
 
         Logger.Verify(n => n.LogWarning(It.Is<string>(m => m == $"Element '{elementCodename}' is already present in Content Type '{contentType.Name}'.")),
-            Times.Exactly(1));
+            Times.Once());
         result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
     }
 
@@ -266,7 +266,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         Logger.Verify(a =>
             a.LogInfo(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")),
-            Times.Exactly(1));
+            Times.Once());
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -307,7 +307,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         Logger.Verify(a =>
             a.LogInfo(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")),
-            Times.Exactly(1));
+            Times.Once());
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -353,7 +353,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         Logger.Verify(a =>
             a.LogInfo(It.Is<string>(m => m == $"{allFilesCount} content type models were successfully created.")),
-            Times.Exactly(1));
+            Times.Once());
 
         // Cleanup
         Directory.Delete(TempDir, true);
