@@ -12,6 +12,7 @@ public class UserMessageLoggerTests
         _userMessageLogger = new UserMessageLogger();
         _stringWriter = new StringWriter();
         Console.SetOut(_stringWriter);
+        Console.SetError(_stringWriter);
     }
 
     [Fact]
@@ -64,5 +65,31 @@ public class UserMessageLoggerTests
         _stringWriter.ToString().Should().BeEmpty();
 
         _stringWriter.Flush();
+    }
+
+    [Fact]
+    public async Task LogErrorAsync_MessageIsLoggedToConsole()
+    {
+        var message = "message";
+        var expectedMessage = $"{message}{Environment.NewLine}";
+
+        await _userMessageLogger.LogErrorAsync(message);
+
+        _stringWriter.ToString().Should().Be(expectedMessage);
+
+        await _stringWriter.FlushAsync();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("  ")]
+    [InlineData(null)]
+    public async Task LogErrorAsync_MessageIsNullOrWhitespace_MessageIsNotLoggedToConsole(string message)
+    {
+        await _userMessageLogger.LogErrorAsync(message);
+
+        _stringWriter.ToString().Should().BeEmpty();
+
+        await _stringWriter.FlushAsync();
     }
 }

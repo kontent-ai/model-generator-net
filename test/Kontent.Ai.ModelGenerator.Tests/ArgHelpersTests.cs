@@ -82,9 +82,11 @@ public class ArgHelpersTests
     [MemberData(nameof(SupportedDeliveryOptions))]
     public void ContainsContainsValidArgs_SupportedDeliveryOptions_ReturnsTrue(string[] args)
     {
+        var expected = new ArgValidationResult(Array.Empty<string>());
+
         var result = ArgHelpers.ContainsValidArgs(args);
 
-        result.Should().BeTrue();
+        result.Should().BeEquivalentTo(expected);
     }
 
     [Theory]
@@ -99,18 +101,23 @@ public class ArgHelpersTests
             arg,
             "arg_value"
         };
+
+        var expected = new ArgValidationResult(new List<string> { arg });
+
         var result = ArgHelpers.ContainsValidArgs(args);
 
-        result.Should().BeFalse();
+        result.Should().BeEquivalentTo(expected);
     }
 
     [Theory]
     [MemberData(nameof(SupportedManagementOptions))]
     public void ContainsContainsValidArgs_SupportedManagementOptions_ReturnsTrue(string[] args)
     {
+        var expected = new ArgValidationResult(Array.Empty<string>());
+
         var result = ArgHelpers.ContainsValidArgs(args);
 
-        result.Should().BeTrue();
+        result.Should().BeEquivalentTo(expected);
     }
 
     [Theory]
@@ -126,18 +133,23 @@ public class ArgHelpersTests
             arg,
             "arg_value"
         };
+
+        var expected = new ArgValidationResult(new List<string> { arg });
+
         var result = ArgHelpers.ContainsValidArgs(args);
 
-        result.Should().BeFalse();
+        result.Should().BeEquivalentTo(expected);
     }
 
     [Theory]
     [MemberData(nameof(SupportedExtendedDeliveryOptions))]
     public void ContainsContainsValidArgs_SupportedExtendedDeliveryOptions_ReturnsTrue(string[] args)
     {
+        var expected = new ArgValidationResult(Array.Empty<string>());
+
         var result = ArgHelpers.ContainsValidArgs(args);
 
-        result.Should().BeTrue();
+        result.Should().BeEquivalentTo(expected);
     }
 
     [Theory]
@@ -156,9 +168,11 @@ public class ArgHelpersTests
             "arg_value"
         };
 
+        var expected = new ArgValidationResult(new List<string> { arg });
+
         var result = ArgHelpers.ContainsValidArgs(args);
 
-        result.Should().BeFalse();
+        result.Should().BeEquivalentTo(expected);
     }
 
     [Fact]

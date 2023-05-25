@@ -19,14 +19,21 @@ internal class Program
 {
     public static async Task<int> Main(string[] args)
     {
+        var logger = new UserMessageLogger();
         try
         {
             // Create an instance of a DI container
             var services = new ServiceCollection();
 
-            if (!ArgHelpers.ContainsValidArgs(args))
+            var argValidationResult = ArgHelpers.ContainsValidArgs(args);
+            if (argValidationResult.HasUnsupportedParams)
             {
-                await WriteErrorMessageAsync("Failed to run due to invalid configuration.");
+                await logger.LogErrorAsync("Failed to run due to invalid configuration.");
+                foreach (var unsupportedArg in argValidationResult.UnsupportedArgs)
+                {
+                    await logger.LogErrorAsync($"Unsupported parameter: {unsupportedArg}");
+                }
+
                 return 1;
             }
 
@@ -43,7 +50,7 @@ internal class Program
             services.AddDeliveryClient(configuration);
             services.AddTransient<HttpClient>();
             services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
-            services.AddSingleton<IUserMessageLogger, UserMessageLogger>();
+            services.AddSingleton<IUserMessageLogger>(logger);
             services.AddSingleton<IClassCodeGeneratorFactory, ClassCodeGeneratorFactory>();
             services.AddSingleton<IClassDefinitionFactory, ClassDefinitionFactory>();
             services.AddSingleton<IDeliveryElementService, DeliveryElementService>();
@@ -58,7 +65,7 @@ internal class Program
             var options = serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value;
             options.Validate();
 
-            PrintSdkVersion(options);
+            await PrintSdkVersion(options);
 
             // Code generator entry point
             return options.GetDesiredModelsType() switch
@@ -74,22 +81,20 @@ internal class Program
             if ((aex.InnerExceptions.Count == 1) && aex.InnerException is DeliveryException)
             {
                 // Return a friendlier message
-                await WriteErrorMessageAsync(aex.InnerException.Message);
+                await logger.LogErrorAsync(aex.InnerException.Message);
             }
             return 1;
         }
         catch (Exception ex)
         {
-            await WriteErrorMessageAsync(ex.Message);
+            await logger.LogErrorAsync(ex.Message);
             return 1;
         }
-    }
 
-    private static async Task WriteErrorMessageAsync(string message) => await Console.Error.WriteLineAsync(message);
-
-    private static void PrintSdkVersion(CodeGeneratorOptions codeGeneratorOptions)
-    {
-        var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(codeGeneratorOptions.GetDesiredModelsType());
-        Console.WriteLine($"Models were generated for {usedSdkInfo.Name} version {usedSdkInfo.Version}");
+        async Task PrintSdkVersion(CodeGeneratorOptions codeGeneratorOptions)
+        {
+            var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(codeGeneratorOptions.GetDesiredModelsType());
+            await logger.LogErrorAsync($"Models were generated for {usedSdkInfo.Name} version {usedSdkInfo.Version}");
+        }
     }
 }

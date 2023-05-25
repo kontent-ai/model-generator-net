@@ -27,9 +27,8 @@ internal static class ArgHelpers
         .Union(GetSpecificSwitchMappings(args))
         .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-    public static bool ContainsValidArgs(string[] args)
+    public static ArgValidationResult ContainsValidArgs(string[] args)
     {
-        var containsValidArgs = true;
         var codeGeneratorOptionsProperties = typeof(CodeGeneratorOptions).GetProperties()
             .Where(p =>
                 p.PropertyType != ManagementProgramOptionsData.Type &&
@@ -38,7 +37,7 @@ internal static class ArgHelpers
             .Select(p => p.Name.ToLower())
             .ToList();
 
-        var brokenArgs = args.Where(a =>
+        var unsupportedArgs = args.Where(a =>
         {
             if (!StartsWithArgumentName(a)) return false;
 
@@ -50,13 +49,7 @@ internal static class ArgHelpers
                    !IsOptionPropertyValid(codeGeneratorOptionsProperties, argumentName);
         });
 
-        foreach (var arg in brokenArgs)
-        {
-            Console.Error.WriteLine($"Unsupported parameter: {arg}");
-            containsValidArgs = false;
-        }
-
-        return containsValidArgs;
+        return new ArgValidationResult(unsupportedArgs);
     }
 
     public static UsedSdkInfo GetUsedSdkInfo(DesiredModelsType desiredModelsType) => desiredModelsType switch
