@@ -1,4 +1,5 @@
-﻿using Kontent.Ai.Management.Models.Types.Elements;
+﻿using Kontent.Ai.Delivery.Abstractions;
+using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Tests.TestHelpers;
 
@@ -54,17 +55,6 @@ public class PropertyTests
         element.TypeName.Should().Be(expectedTypeName);
     }
 
-    [Theory]
-    [MemberData(nameof(ManagementElements))]
-    public void FromContentTypeElement_ManagementApiModel_Returns(string expectedTypeName, string expectedCodename, ElementMetadataBase element)
-    {
-        var property = Property.FromContentTypeElement(element);
-
-        property.Identifier.Should().Be(expectedCodename);
-        property.TypeName.Should().Be(expectedTypeName);
-        property.Id.Should().Be(element.Id.ToString());
-    }
-
     [Fact]
     public void FromContentTypeElement_DeliveryApiModel_InvalidContentTypeElement_Throws()
     {
@@ -80,6 +70,62 @@ public class PropertyTests
             Property.FromContentTypeElement(TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), "codename"));
 
         fromContentTypeElementCall.Should().ThrowExactly<ArgumentException>();
+    }
+
+    [Theory]
+    [MemberData(nameof(ManagementElements))]
+    public void FromContentTypeElement_ManagementApiModel_Returns(string expectedTypeName, string expectedCodename, ElementMetadataBase element)
+    {
+        var property = Property.FromContentTypeElement(element);
+
+        property.Identifier.Should().Be(expectedCodename);
+        property.TypeName.Should().Be(expectedTypeName);
+        property.Id.Should().Be(element.Id.ToString());
+    }
+
+    [Fact]
+    public void FromContentTypeElement_ExtendedDeliveryModel_TypedProperty_GuidelinesElement_Throws()
+    {
+        var fromContentTypeElementCall = () =>
+            Property.FromContentTypeElement(TestDataGenerator.GenerateGuidelinesElement(
+                Guid.NewGuid(), "codename"),
+                "guidelines",
+                "guidelines");
+
+        fromContentTypeElementCall.Should().ThrowExactly<ArgumentException>();
+    }
+
+    [Theory]
+    [MemberData(nameof(ExtendedDeliveryElements))]
+    public void FromContentTypeElement_ExtendedDeliveryModel_TypedProperty_Returns(string elementType, string expectedTypeName, string expectedIdentifier, ElementMetadataBase element)
+    {
+        var result = Property.FromContentTypeElement(element, elementType, element.Codename);
+
+        result.Identifier.Should().Be(expectedIdentifier);
+        result.TypeName.Should().Be(expectedTypeName);
+        result.Id.Should().BeNull();
+    }
+
+    [Fact]
+    public void FromContentTypeElement_ExtendedDeliveryModel_GuidelinesElement_Throws()
+    {
+        var fromContentTypeElementCall = () =>
+            Property.FromContentTypeElement(
+                TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), "codename"),
+                "guidelines");
+
+        fromContentTypeElementCall.Should().ThrowExactly<ArgumentException>();
+    }
+
+    [Theory]
+    [MemberData(nameof(ExtendedDeliveryElements))]
+    public void FromContentTypeElement_ExtendedDeliveryModel_Returns(string elementType, string expectedTypeName, string expectedIdentifier, ElementMetadataBase element)
+    {
+        var result = Property.FromContentTypeElement(element, elementType);
+
+        result.Identifier.Should().Be(expectedIdentifier);
+        result.TypeName.Should().Be(expectedTypeName);
+        result.Id.Should().BeNull();
     }
 
     [Theory]
@@ -184,4 +230,74 @@ public class PropertyTests
             ("CustomElement", "CustomElement",
                 TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "custom_element", ElementMetadataType.Custom))
         }.Select(triple => new object[] { triple.Item1, triple.Item2, triple.Item3 });
+
+    public static IEnumerable<object[]> ExtendedDeliveryElements =>
+        new List<(string, string, string, ElementMetadataBase)>
+        {
+            (
+                ElementMetadataType.Text.ToString(),
+                "string",
+                "TextElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "text_element")),
+            (
+                ElementMetadataType.RichText.ToString(),
+                "string",
+                "RichTextElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "rich_text_element", ElementMetadataType.RichText)),
+            (
+                $"{ElementMetadataType.RichText}{Property.StructuredSuffix}",
+                nameof(IRichTextContent),
+                "RichTextElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "rich_text_element", ElementMetadataType.RichText)),
+            (
+                ElementMetadataType.Number.ToString(),
+                "decimal?",
+                "NumberElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "number_element", ElementMetadataType.Number)),
+            (
+                ElementMetadataType.MultipleChoice.ToString(),
+                "IEnumerable<IMultipleChoiceOption>",
+                "MultipleChoiceElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "multiple_choice_element", ElementMetadataType.MultipleChoice)),
+            (
+                ElementMetadataType.DateTime.ToString(),
+                "DateTime?",
+                "DateTimeElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "date_time_element", ElementMetadataType.DateTime)),
+            (
+                $"{ElementMetadataType.DateTime}{Property.StructuredSuffix}",
+                nameof(IDateTimeContent),
+                "DateTimeElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "date_time_element", ElementMetadataType.DateTime)),
+            (
+                ElementMetadataType.Asset.ToString(),
+                "IEnumerable<IAsset>",
+                "AssetElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "asset_element", ElementMetadataType.Asset)),
+            (
+                "CustomLinkedItemsType",
+                "CustomLinkedItemsType",
+                "LinkedItemsElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "linked_items_element", ElementMetadataType.LinkedItems)),
+            (
+                "CustomSubpagesType",
+                "CustomSubpagesType",
+                "SubpagesElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "subpages_element", ElementMetadataType.Subpages)),
+            (
+                ElementMetadataType.Taxonomy.ToString(),
+                "IEnumerable<ITaxonomyTerm>",
+                "TaxonomyElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "taxonomy_element", ElementMetadataType.Taxonomy)),
+            (
+                ElementMetadataType.UrlSlug.ToString(),
+                "string",
+                "UrlSlugElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "url_slug_element", ElementMetadataType.UrlSlug)),
+            (
+                ElementMetadataType.Custom.ToString(),
+                "string",
+                "CustomElement",
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), "custom_element", ElementMetadataType.Custom))
+        }.Select(quadruple => new object[] { quadruple.Item1, quadruple.Item2, quadruple.Item3, quadruple.Item4 });
 }

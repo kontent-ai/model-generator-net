@@ -47,7 +47,7 @@ public class Property
         { "custom", "string" }
     }.ToImmutableDictionary();
 
-    internal static readonly IImmutableDictionary<string, string> ExtendedDeliverElementTypesDictionary = new Dictionary<string, string>
+    private static readonly IImmutableDictionary<string, string> ExtendedDeliverElementTypesDictionary = new Dictionary<string, string>
     {
         { ElementMetadataType.Text.ToString(), "string" },
         { ElementMetadataType.RichText.ToString(), "string" },
@@ -92,15 +92,6 @@ public class Property
 
     public static bool IsModularContentElementType(string elementType) => elementType == ModularContentElementType;
 
-    public static bool IsContentTypeSupported(string elementType, bool extendedDeliveryModels) => extendedDeliveryModels
-        ? ExtendedDeliverElementTypesDictionary.ContainsKey(elementType)
-        : DeliverElementTypesDictionary.ContainsKey(elementType);
-
-    public static bool IsContentTypeSupported(string elementType) => DeliverElementTypesDictionary.ContainsKey(elementType);
-
-    public static bool IsContentTypeSupported(ElementMetadataType elementType) =>
-        ManagementElementTypesDictionary.ContainsKey(elementType);
-
     public static Property FromContentTypeElement(string codename, string elementType) => IsContentTypeSupported(elementType)
         ? new Property(codename, DeliverElementTypesDictionary[elementType])
         : throw new ArgumentException($"Unknown Content Type {elementType}", nameof(elementType));
@@ -131,4 +122,13 @@ public class Property
 
         throw new ArgumentException($"Unknown Content Type Element {element.Type}", nameof(element));
     }
+
+    private static bool IsContentTypeSupported(string elementType, bool extendedDeliveryModels) => extendedDeliveryModels
+        ? ExtendedDeliverElementTypesDictionary.ContainsKey(elementType)
+        : DeliverElementTypesDictionary.ContainsKey(elementType);
+
+    private static bool IsContentTypeSupported(string elementType) => DeliverElementTypesDictionary.ContainsKey(elementType);
+
+    private static bool IsContentTypeSupported(ElementMetadataType elementType) =>
+        ManagementElementTypesDictionary.ContainsKey(elementType);
 }
