@@ -2,5 +2,6 @@
 
 public interface IUserMessageLogger
 {
-    void Log(string message);
+    void LogInfo(string message);
+    void LogWarning(string message);
 }

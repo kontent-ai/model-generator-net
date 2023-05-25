@@ -58,7 +58,7 @@ public abstract class CodeGeneratorBase
         }
 
         OutputProvider.Output(content, fileName, overwriteExisting);
-        Logger.Log($"{fileName} class was successfully created.");
+        Logger.LogInfo($"{fileName} class was successfully created.");
     }
 
     protected void WriteToOutputProvider(ICollection<ClassCodeGenerator> classCodeGenerators)
@@ -69,7 +69,7 @@ public abstract class CodeGeneratorBase
                 codeGenerator.OverwriteExisting);
         }
 
-        Logger.Log($"{classCodeGenerators.Count} content type models were successfully created.");
+        Logger.LogInfo($"{classCodeGenerators.Count} content type models were successfully created.");
     }
 
     protected ClassCodeGenerator GetCustomClassCodeGenerator(string contentTypeCodename)
@@ -93,20 +93,20 @@ public abstract class CodeGeneratorBase
         switch (exception)
         {
             case InvalidOperationException:
-                Logger.Log($"Warning: Element '{elementCodename}' is already present in Content Type '{className}'.");
+                Logger.LogWarning($"Element '{elementCodename}' is already present in Content Type '{className}'.");
                 break;
             case InvalidIdentifierException:
-                Logger.Log($"Warning: Can't create valid C# Identifier from '{elementCodename}'. Skipping element.");
+                Logger.LogWarning($"Can't create valid C# Identifier from '{elementCodename}'. Skipping element.");
                 break;
             case ArgumentNullException or ArgumentException:
-                Logger.Log($"Warning: Skipping unknown Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
+                Logger.LogWarning($"Skipping unknown Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
                 break;
         }
     }
 
     protected void WriteConsoleErrorMessage(string contentTypeCodename)
     {
-        Logger.Log($"Warning: Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name.");
+        Logger.LogWarning($"Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name.");
     }
 
     private async Task GenerateContentTypeModels()
@@ -115,7 +115,7 @@ public abstract class CodeGeneratorBase
 
         if (!classCodeGenerators.Any())
         {
-            Logger.Log(NoContentTypeAvailableMessage);
+            Logger.LogInfo(NoContentTypeAvailableMessage);
             return;
         }
 

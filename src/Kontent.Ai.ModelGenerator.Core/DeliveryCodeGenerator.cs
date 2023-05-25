@@ -95,8 +95,8 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
         }
         catch (InvalidOperationException)
         {
-            Logger.Log(
-                $"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
+            Logger.LogWarning(
+                $"Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
         }
     }
 }

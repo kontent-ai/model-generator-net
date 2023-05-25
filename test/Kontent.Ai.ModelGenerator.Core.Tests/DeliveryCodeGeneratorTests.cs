@@ -136,7 +136,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = codeGenerator.GetClassCodeGenerator(contentType.Object);
 
-        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{contentTypeCodename}'.")),
+        Logger.Verify(n => n.LogWarning(It.Is<string>(m => m == $"Can't add 'System' property. It's in collision with existing element in Content Type '{contentTypeCodename}'.")),
             Times.Exactly(1));
         result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
     }
@@ -183,7 +183,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var result = await codeGenerator.RunAsync();
 
         Logger.Verify(
-            n => n.Log(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
+            n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
             Times.Exactly(1));
         result.Should().Be(0);
     }
@@ -222,7 +222,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = await codeGenerator.RunAsync();
 
-        Logger.Verify(n => n.Log(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
+        Logger.Verify(n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
             Times.Exactly(1));
         result.Should().Be(0);
     }
@@ -257,8 +257,8 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             _deliveryElementService.Object,
             Logger.Object);
 
-        Logger.Setup(n => n.Log(It.Is<string>(m => m.Contains("Warning: Skipping unknown Content Element type "))));
-        Logger.Setup(n => n.Log(It.Is<string>(m => m == "26 content type models were successfully created.")));
+        Logger.Setup(n => n.LogWarning(It.Is<string>(m => m.Contains("Skipping unknown Content Element type "))));
+        Logger.Setup(n => n.LogInfo(It.Is<string>(m => m == "26 content type models were successfully created.")));
 
         var result = await codeGenerator.RunAsync();
 
@@ -313,7 +313,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = await codeGenerator.RunAsync();
 
-        Logger.Verify(n => n.Log(It.Is<string>(m => m.Contains($"Warning: Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name."))),
+        Logger.Verify(n => n.LogWarning(It.Is<string>(m => m.Contains($"Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name."))),
             Times.Exactly(1));
         result.Should().Be(0);
     }
@@ -352,7 +352,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")).Should().NotBeEmpty();
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().BeEmpty();
 
-        Logger.Verify(a => a.Log(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")),
+        Logger.Verify(a => a.LogInfo(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")),
             Times.Exactly(1));
 
         // Cleanup
@@ -397,7 +397,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             Path.GetFileName(filepath).Should().EndWith($".{transformFilename}.cs");
         }
 
-        Logger.Verify(a => a.Log(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")),
+        Logger.Verify(a => a.LogInfo(It.Is<string>(m => m == $"{NumberOfContentTypes} content type models were successfully created.")),
             Times.Exactly(1));
 
         // Cleanup
@@ -447,7 +447,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             customFileExists.Should().BeTrue();
         }
 
-        Logger.Verify(a => a.Log(It.Is<string>(m => m == $"{allFilesCount} content type models were successfully created.")),
+        Logger.Verify(a => a.LogInfo(It.Is<string>(m => m == $"{allFilesCount} content type models were successfully created.")),
             Times.Exactly(1));
 
         // Cleanup
@@ -480,8 +480,8 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             new DeliveryElementService(mockOptions.Object),
             Logger.Object);
 
-        Logger.Setup(f => f.Log($"{NumberOfContentTypes} content type models were successfully created."));
-        Logger.Setup(f => f.Log("CustomTypeProvider class was successfully created."));
+        Logger.Setup(f => f.LogInfo($"{NumberOfContentTypes} content type models were successfully created."));
+        Logger.Setup(f => f.LogInfo("CustomTypeProvider class was successfully created."));
 
         await codeGenerator.RunAsync();
 
