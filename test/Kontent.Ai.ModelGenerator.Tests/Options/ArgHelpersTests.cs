@@ -4,7 +4,7 @@ using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Options;
 
-namespace Kontent.Ai.ModelGenerator.Tests;
+namespace Kontent.Ai.ModelGenerator.Tests.Options;
 
 public class ArgHelpersTests
 {
