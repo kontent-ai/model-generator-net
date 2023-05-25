@@ -17,9 +17,10 @@ namespace Kontent.Ai.ModelGenerator;
 
 internal class Program
 {
+    internal static IUserMessageLogger Logger { private get; set; } = new UserMessageLogger();
+
     public static async Task<int> Main(string[] args)
     {
-        var logger = new UserMessageLogger();
         try
         {
             // Create an instance of a DI container
@@ -28,10 +29,10 @@ internal class Program
             var argValidationResult = ArgHelpers.ContainsValidArgs(args);
             if (argValidationResult.HasUnsupportedParams)
             {
-                await logger.LogErrorAsync("Failed to run due to invalid configuration.");
+                await Logger.LogErrorAsync("Failed to run due to invalid configuration.");
                 foreach (var unsupportedArg in argValidationResult.UnsupportedArgs)
                 {
-                    await logger.LogErrorAsync($"Unsupported parameter: {unsupportedArg}");
+                    await Logger.LogErrorAsync($"Unsupported parameter: {unsupportedArg}");
                 }
 
                 return 1;
@@ -50,7 +51,7 @@ internal class Program
             services.AddDeliveryClient(configuration);
             services.AddTransient<HttpClient>();
             services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
-            services.AddSingleton<IUserMessageLogger>(logger);
+            services.AddSingleton<IUserMessageLogger>(Logger);
             services.AddSingleton<IClassCodeGeneratorFactory, ClassCodeGeneratorFactory>();
             services.AddSingleton<IClassDefinitionFactory, ClassDefinitionFactory>();
             services.AddSingleton<IDeliveryElementService, DeliveryElementService>();
@@ -65,7 +66,7 @@ internal class Program
             var options = serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value;
             options.Validate();
 
-            await PrintSdkVersion(options);
+            PrintSdkVersion(options);
 
             // Code generator entry point
             return options.GetDesiredModelsType() switch
@@ -81,20 +82,20 @@ internal class Program
             if ((aex.InnerExceptions.Count == 1) && aex.InnerException is DeliveryException)
             {
                 // Return a friendlier message
-                await logger.LogErrorAsync(aex.InnerException.Message);
+                await Logger.LogErrorAsync(aex.InnerException.Message);
             }
             return 1;
         }
         catch (Exception ex)
         {
-            await logger.LogErrorAsync(ex.Message);
+            await Logger.LogErrorAsync(ex.Message);
             return 1;
         }
 
-        async Task PrintSdkVersion(CodeGeneratorOptions codeGeneratorOptions)
+        void PrintSdkVersion(CodeGeneratorOptions codeGeneratorOptions)
         {
             var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(codeGeneratorOptions.GetDesiredModelsType());
-            await logger.LogErrorAsync($"Models were generated for {usedSdkInfo.Name} version {usedSdkInfo.Version}");
+            Logger.LogInfo($"Models were generated for {usedSdkInfo.Name} version {usedSdkInfo.Version}");
         }
     }
 }
