@@ -84,7 +84,7 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
 
         var classFilename = GetFileClassName(classDefinition.ClassName);
 
-        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
+        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, Logger);
     }
 
     private void TryAddSystemProperty(ClassDefinition classDefinition)

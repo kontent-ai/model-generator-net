@@ -97,6 +97,6 @@ public class ManagementCodeGenerator : CodeGeneratorBase
 
         var classFilename = GetFileClassName(classDefinition.ClassName);
 
-        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
+        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, Logger);
     }
 }

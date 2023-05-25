@@ -208,7 +208,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var expected = new List<ClassCodeGenerator>
         {
             new TypedExtendedDeliveryClassCodeGenerator(expectedTypedExtendedDeliveryClassDefinition, "ContentType.Typed.Generated"),
-            new ExtendedDeliveryClassCodeGenerator(expectedExtendedDeliveryClassDefinition, "ContentType.Generated", generateStructuredModularContent)
+            new ExtendedDeliveryClassCodeGenerator(expectedExtendedDeliveryClassDefinition, "ContentType.Generated", generateStructuredModularContent, Logger.Object)
         };
 
         Logger.VerifyNoOtherCalls();
@@ -266,7 +266,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var expected = new List<ClassCodeGenerator>
         {
             new TypedExtendedDeliveryClassCodeGenerator(new ClassDefinition(contentType.Codename), "ContentType.Typed.Generated"),
-            new ExtendedDeliveryClassCodeGenerator(new ClassDefinition(contentType.Codename), "ContentType.Generated", false)
+            new ExtendedDeliveryClassCodeGenerator(new ClassDefinition(contentType.Codename), "ContentType.Generated", false, Logger.Object)
         };
 
         var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
@@ -322,7 +322,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         expectedClassDefinition.AddPropertyCodenameConstant(elementCodename);
         var expected = new List<ClassCodeGenerator>
         {
-            new ExtendedDeliveryClassCodeGenerator(expectedClassDefinition, "ContentType.Generated", false),
+            new ExtendedDeliveryClassCodeGenerator(expectedClassDefinition, "ContentType.Generated", false, Logger.Object),
             new TypedExtendedDeliveryClassCodeGenerator( new ClassDefinition(contentType.Codename), "ContentType.Typed.Generated")
         };
 

@@ -6,5 +6,10 @@ namespace Kontent.Ai.ModelGenerator.Core.Contract;
 
 public interface IClassCodeGeneratorFactory
 {
-    ClassCodeGenerator CreateClassCodeGenerator(CodeGeneratorOptions options, ClassDefinition classDefinition, string classFilename, bool customPartial = false);
+    ClassCodeGenerator CreateClassCodeGenerator(
+        CodeGeneratorOptions options,
+        ClassDefinition classDefinition,
+        string classFilename,
+        IUserMessageLogger logger,
+        bool customPartial = false);
 }

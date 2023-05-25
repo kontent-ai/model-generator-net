@@ -7,7 +7,12 @@ namespace Kontent.Ai.ModelGenerator.Core.Common;
 
 public class ClassCodeGeneratorFactory : IClassCodeGeneratorFactory
 {
-    public ClassCodeGenerator CreateClassCodeGenerator(CodeGeneratorOptions options, ClassDefinition classDefinition, string classFilename, bool customPartial = false)
+    public ClassCodeGenerator CreateClassCodeGenerator(
+        CodeGeneratorOptions options,
+        ClassDefinition classDefinition,
+        string classFilename,
+        IUserMessageLogger logger,
+        bool customPartial = false)
     {
         if (options == null)
         {
@@ -24,6 +29,11 @@ public class ClassCodeGeneratorFactory : IClassCodeGeneratorFactory
             throw new ArgumentNullException(nameof(classFilename));
         }
 
+        if (logger == null)
+        {
+            throw new ArgumentNullException(nameof(logger));
+        }
+
         if (customPartial)
         {
             return new PartialClassCodeGenerator(classDefinition, classFilename, options.Namespace);
@@ -35,7 +45,7 @@ public class ClassCodeGeneratorFactory : IClassCodeGeneratorFactory
         }
 
         return options.ExtendedDeliveryModels()
-            ? new ExtendedDeliveryClassCodeGenerator(classDefinition, classFilename, options.IsStructuredModelModularContent(), options.Namespace)
+            ? new ExtendedDeliveryClassCodeGenerator(classDefinition, classFilename, options.IsStructuredModelModularContent(), logger, options.Namespace)
             : new DeliveryClassCodeGenerator(classDefinition, classFilename, options.Namespace);
     }
 }

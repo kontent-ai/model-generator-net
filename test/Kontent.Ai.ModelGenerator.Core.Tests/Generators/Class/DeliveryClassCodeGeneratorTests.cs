@@ -24,7 +24,7 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         ClassDefinition.AddProperty(Property.FromContentTypeElement("url_slug", "url_slug"));
         ClassDefinition.AddProperty(Property.FromContentTypeElement("custom", "custom"));
 
-        ClassDefinition.TryAddSystemProperty();
+        ClassDefinition.AddSystemProperty();
     }
 
     [Fact]

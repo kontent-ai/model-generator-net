@@ -77,7 +77,7 @@ public abstract class CodeGeneratorBase
         var classDefinition = ClassDefinitionFactory.CreateClassDefinition(contentTypeCodename);
         var classFilename = $"{classDefinition.ClassName}";
 
-        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, true);
+        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, Logger, true);
     }
 
     protected static void AddProperty(Property property, ref ClassDefinition classDefinition)

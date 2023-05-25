@@ -7,18 +7,20 @@ namespace Kontent.Ai.ModelGenerator.Core.Tests.Common;
 
 public class ClassCodeGeneratorFactoryTests
 {
-    private readonly IClassCodeGeneratorFactory ClassCodeGeneratorFactory;
+    private readonly IClassCodeGeneratorFactory _classCodeGeneratorFactory;
+    private readonly IUserMessageLogger _userMessageLogger;
 
     public ClassCodeGeneratorFactoryTests()
     {
-        ClassCodeGeneratorFactory = new ClassCodeGeneratorFactory();
+        _userMessageLogger = new UserMessageLogger();
+        _classCodeGeneratorFactory = new ClassCodeGeneratorFactory();
     }
 
     [Fact]
     public void CreateClassCodeGenerator_CodeGeneratorOptionsIsNull_ThrowsException()
     {
         var createClassCodeGeneratorCall = () =>
-            ClassCodeGeneratorFactory.CreateClassCodeGenerator(null, new ClassDefinition("codename"), "classFileName");
+            _classCodeGeneratorFactory.CreateClassCodeGenerator(null, new ClassDefinition("codename"), "classFileName", _userMessageLogger);
 
         createClassCodeGeneratorCall.Should().ThrowExactly<ArgumentNullException>();
     }
@@ -27,7 +29,7 @@ public class ClassCodeGeneratorFactoryTests
     public void CreateClassCodeGenerator_ClassDefinitionIsNull_ThrowsException()
     {
         var createClassCodeGeneratorCall = () =>
-            ClassCodeGeneratorFactory.CreateClassCodeGenerator(new CodeGeneratorOptions(), null, "classFileName");
+            _classCodeGeneratorFactory.CreateClassCodeGenerator(new CodeGeneratorOptions(), null, "classFileName", _userMessageLogger);
 
         createClassCodeGeneratorCall.Should().ThrowExactly<ArgumentNullException>();
     }
@@ -36,7 +38,16 @@ public class ClassCodeGeneratorFactoryTests
     public void CreateClassCodeGenerator_ClassFilenameIsNull_ThrowsException()
     {
         var createClassCodeGeneratorCall = () =>
-            ClassCodeGeneratorFactory.CreateClassCodeGenerator(new CodeGeneratorOptions(), new ClassDefinition("codename"), null);
+            _classCodeGeneratorFactory.CreateClassCodeGenerator(new CodeGeneratorOptions(), new ClassDefinition("codename"), null, _userMessageLogger);
+
+        createClassCodeGeneratorCall.Should().ThrowExactly<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void CreateClassCodeGenerator_LoggerIsNull_ThrowsException()
+    {
+        var createClassCodeGeneratorCall = () =>
+            _classCodeGeneratorFactory.CreateClassCodeGenerator(new CodeGeneratorOptions(), new ClassDefinition("codename"), "classFileName", null);
 
         createClassCodeGeneratorCall.Should().ThrowExactly<ArgumentNullException>();
     }
@@ -51,7 +62,7 @@ public class ClassCodeGeneratorFactoryTests
             ManagementApi = false
         };
 
-        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, false);
+        var result = _classCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, _userMessageLogger, false);
 
         AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
     }
@@ -66,7 +77,7 @@ public class ClassCodeGeneratorFactoryTests
             ManagementApi = false
         };
 
-        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+        var result = _classCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, _userMessageLogger);
 
         AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
     }
@@ -82,7 +93,7 @@ public class ClassCodeGeneratorFactoryTests
             ExtendedDeliveryModels = true
         };
 
-        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+        var result = _classCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, _userMessageLogger);
 
         AssertClassCodeGenerator<ExtendedDeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
     }
@@ -99,7 +110,7 @@ public class ClassCodeGeneratorFactoryTests
             ManagementApi = managementApi
         };
 
-        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, true);
+        var result = _classCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, _userMessageLogger, true);
 
         AssertClassCodeGenerator<PartialClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
     }
@@ -116,7 +127,7 @@ public class ClassCodeGeneratorFactoryTests
             Namespace = customNamespace
         };
 
-        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, true);
+        var result = _classCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, _userMessageLogger, true);
 
         AssertClassCodeGenerator<PartialClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
     }
@@ -133,7 +144,7 @@ public class ClassCodeGeneratorFactoryTests
             Namespace = customNamespace
         };
 
-        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+        var result = _classCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, _userMessageLogger);
 
         AssertClassCodeGenerator<DeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
     }
@@ -151,7 +162,7 @@ public class ClassCodeGeneratorFactoryTests
             ExtendedDeliveryModels = true
         };
 
-        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+        var result = _classCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, _userMessageLogger);
 
         AssertClassCodeGenerator<ExtendedDeliveryClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
     }
@@ -166,7 +177,7 @@ public class ClassCodeGeneratorFactoryTests
             ManagementApi = true
         };
 
-        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+        var result = _classCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, _userMessageLogger);
 
         AssertClassCodeGenerator<ManagementClassCodeGenerator>(result, classDefinitionCodename, classFileName, ClassCodeGenerator.DefaultNamespace);
     }
@@ -183,7 +194,7 @@ public class ClassCodeGeneratorFactoryTests
             Namespace = customNamespace
         };
 
-        var result = ClassCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName);
+        var result = _classCodeGeneratorFactory.CreateClassCodeGenerator(codeGeneratorOptions, new ClassDefinition(classDefinitionCodename), classFileName, _userMessageLogger);
 
         AssertClassCodeGenerator<ManagementClassCodeGenerator>(result, classDefinitionCodename, classFileName, customNamespace);
     }

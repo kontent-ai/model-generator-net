@@ -67,7 +67,7 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
     {
         AddModularContent(generateStructuredModularContent);
 
-        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName, generateStructuredModularContent);
+        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName, generateStructuredModularContent, LoggerMock.Object);
 
         classCodeGenerator.Should().NotBeNull();
         classCodeGenerator.OverwriteExisting.Should().BeTrue();
@@ -80,7 +80,7 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
     {
         AddModularContent(generateStructuredModularContent);
 
-        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName, generateStructuredModularContent);
+        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName, generateStructuredModularContent, LoggerMock.Object);
 
         var compiledCode = classCodeGenerator.GenerateCode();
 
@@ -97,11 +97,11 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
     {
         AddModularContent(generateStructuredModularContent);
 
-        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName, generateStructuredModularContent);
+        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName, generateStructuredModularContent, LoggerMock.Object);
         var compiledCode = classCodeGenerator.GenerateCode();
 
         var heroClassDefinition = new ClassDefinition("Hero");
-        var heroClassCodeGenerator = new ExtendedDeliveryClassCodeGenerator(heroClassDefinition, heroClassDefinition.ClassName, generateStructuredModularContent);
+        var heroClassCodeGenerator = new ExtendedDeliveryClassCodeGenerator(heroClassDefinition, heroClassDefinition.ClassName, generateStructuredModularContent, LoggerMock.Object);
         var compiledHeroCode = heroClassCodeGenerator.GenerateCode();
 
         var articleClassDefinition = new ClassDefinition("Article");

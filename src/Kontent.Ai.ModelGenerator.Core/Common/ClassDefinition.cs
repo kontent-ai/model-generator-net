@@ -45,19 +45,6 @@ public class ClassDefinition
         AddProperty(new Property("system", nameof(IContentItemSystemAttributes)));
     }
 
-    public void TryAddSystemProperty()
-    {
-        try
-        {
-            AddProperty(new Property("system", nameof(IContentItemSystemAttributes)));
-        }
-        catch (InvalidOperationException)
-        {
-            Console.WriteLine(
-                $"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{ClassName}'.");
-        }
-    }
-
     private bool PropertyIsAlreadyPresent(Property property)
     {
         return Properties.Exists(e => e.Identifier == property.Identifier);
