@@ -8,6 +8,7 @@ using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Kontent.Ai.ModelGenerator.Core.Tests.TestHelpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Moq;
 
 namespace Kontent.Ai.ModelGenerator.Core.Tests.Generators.Class;
 
@@ -71,6 +72,20 @@ public class ExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBa
 
         classCodeGenerator.Should().NotBeNull();
         classCodeGenerator.OverwriteExisting.Should().BeTrue();
+    }
+
+    [Fact]
+    public void GenerateCode_DuplicateSystemProperty_LogsMessage()
+    {
+        ClassDefinition.AddSystemProperty();
+
+        var classCodeGenerator = new ExtendedDeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName, false, LoggerMock.Object);
+
+        classCodeGenerator.GenerateCode();
+
+        LoggerMock.Verify(n =>
+            n.LogWarning(It.Is<string>(m => m == $"Can't add 'System' property. It's in collision with existing element in Content Type '{ClassDefinition.ClassName}'.")),
+            Times.Once());
     }
 
     [Theory]
