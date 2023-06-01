@@ -9,6 +9,7 @@ using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.Management.Models.TypeSnippets;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Core.Contract;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Microsoft.Extensions.Options;
@@ -20,7 +21,15 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
     public const string TypedSuffixFileName = ".Typed";
     private readonly IManagementClient _managementClient;
 
-    public ExtendedDeliveryCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IManagementClient managementClient) : base(options, outputProvider)
+    public ExtendedDeliveryCodeGenerator(
+        IOptions<CodeGeneratorOptions> options,
+        IOutputProvider outputProvider,
+        IManagementClient managementClient,
+        IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IClassDefinitionFactory classDefinitionFactory,
+        IDeliveryElementService deliveryElementService,
+        IUserMessageLogger logger)
+        : base(options, outputProvider, classCodeGeneratorFactory, classDefinitionFactory, deliveryElementService, logger)
     {
         if (options.Value.ManagementApi())
         {
@@ -68,8 +77,8 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
 
     internal IEnumerable<ClassCodeGenerator> GetClassCodeGenerators(ContentTypeModel contentType, List<ContentTypeSnippetModel> managementSnippets, List<ContentTypeModel> contentTypes)
     {
-        var classDefinition = new ClassDefinition(contentType.Codename);
-        var typedClassDefinition = new ClassDefinition(contentType.Codename);
+        var classDefinition = ClassDefinitionFactory.CreateClassDefinition(contentType.Codename);
+        var typedClassDefinition = ClassDefinitionFactory.CreateClassDefinition(contentType.Codename);
 
         foreach (var element in contentType.Elements.ExcludeGuidelines())
         {
@@ -97,13 +106,13 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
         return new List<ClassCodeGenerator>
         {
             new TypedExtendedDeliveryClassCodeGenerator(typedClassDefinition, GetFileClassName(classDefinition.ClassName + TypedSuffixFileName)),
-            ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, GetFileClassName(classDefinition.ClassName))
+            ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, GetFileClassName(classDefinition.ClassName), Logger)
         };
     }
 
     private void AddProperty(ElementMetadataBase el, ref ClassDefinition classDefinition, ref ClassDefinition typedClassDefinition, List<ContentTypeModel> contentTypes)
     {
-        var elementType = DeliveryElementHelper.GetElementType(Options, el.Type.ToString());
+        var elementType = DeliveryElementService.GetElementType(el.Type.ToString());
         if (elementType == ElementMetadataType.LinkedItems.ToString() || elementType == ElementMetadataType.Subpages.ToString())
         {
             if (TypedDeliveryPropertyMapper.TryMap(el, contentTypes, Options, out var typedProperty))

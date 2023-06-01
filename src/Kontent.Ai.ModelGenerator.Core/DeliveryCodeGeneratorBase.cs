@@ -1,17 +1,26 @@
 ﻿using Kontent.Ai.ModelGenerator.Core.Configuration;
-using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Kontent.Ai.ModelGenerator.Core.Generators;
 using Microsoft.Extensions.Options;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Kontent.Ai.ModelGenerator.Core.Contract;
 
 namespace Kontent.Ai.ModelGenerator.Core;
 
 public abstract class DeliveryCodeGeneratorBase : CodeGeneratorBase
 {
-    protected DeliveryCodeGeneratorBase(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider) : base(options, outputProvider)
+    protected readonly IDeliveryElementService DeliveryElementService;
+
+    protected DeliveryCodeGeneratorBase(
+        IOptions<CodeGeneratorOptions> options,
+        IOutputProvider outputProvider,
+        IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IClassDefinitionFactory classDefinitionFactory,
+        IDeliveryElementService deliveryElementService,
+        IUserMessageLogger logger)
+        : base(options, outputProvider, classCodeGeneratorFactory, classDefinitionFactory, logger)
     {
+        DeliveryElementService = deliveryElementService;
     }
 
     public new async Task<int> RunAsync()
@@ -32,7 +41,6 @@ public abstract class DeliveryCodeGeneratorBase : CodeGeneratorBase
 
         if (!classCodeGenerators.Any())
         {
-            Console.WriteLine(NoContentTypeAvailableMessage);
             return;
         }
 

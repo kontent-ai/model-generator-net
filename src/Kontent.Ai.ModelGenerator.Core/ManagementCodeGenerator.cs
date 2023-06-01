@@ -9,6 +9,7 @@ using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.Management.Models.TypeSnippets;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Core.Contract;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Microsoft.Extensions.Options;
@@ -19,8 +20,14 @@ public class ManagementCodeGenerator : CodeGeneratorBase
 {
     private readonly IManagementClient _managementClient;
 
-    public ManagementCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IManagementClient managementClient)
-        : base(options, outputProvider)
+    public ManagementCodeGenerator(
+        IOptions<CodeGeneratorOptions> options,
+        IOutputProvider outputProvider,
+        IManagementClient managementClient,
+        IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IClassDefinitionFactory classDefinitionFactory,
+        IUserMessageLogger logger)
+        : base(options, outputProvider, classCodeGeneratorFactory, classDefinitionFactory, logger)
     {
         if (!options.Value.ManagementApi)
         {
@@ -63,7 +70,7 @@ public class ManagementCodeGenerator : CodeGeneratorBase
 
     internal ClassCodeGenerator GetClassCodeGenerator(ContentTypeModel contentType, IEnumerable<ContentTypeSnippetModel> managementSnippets)
     {
-        var classDefinition = new ClassDefinition(contentType.Codename);
+        var classDefinition = ClassDefinitionFactory.CreateClassDefinition(contentType.Codename);
 
         foreach (var element in contentType.Elements.ExcludeGuidelines())
         {
@@ -90,6 +97,6 @@ public class ManagementCodeGenerator : CodeGeneratorBase
 
         var classFilename = GetFileClassName(classDefinition.ClassName);
 
-        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
+        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, Logger);
     }
 }

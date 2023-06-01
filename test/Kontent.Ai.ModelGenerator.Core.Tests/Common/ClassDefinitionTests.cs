@@ -5,25 +5,6 @@ namespace Kontent.Ai.ModelGenerator.Core.Tests.Common;
 public class ClassDefinitionTests
 {
     [Fact]
-    public void Constructor_SetsClassNameIdentifier()
-    {
-        var definition = new ClassDefinition("Article type");
-
-        definition.ClassName.Should().Be("ArticleType");
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("  ")]
-    public void Constructor_CodenameIsNullEmptyOrWhiteSpace_Throws(string codename)
-    {
-        var call = () => new ClassDefinition(codename);
-
-        call.Should().ThrowExactly<ArgumentException>();
-    }
-
-    [Fact]
     public void AddProperty_AddCustomProperty_PropertyIsAdded()
     {
         var propertyCodename = "element_1";

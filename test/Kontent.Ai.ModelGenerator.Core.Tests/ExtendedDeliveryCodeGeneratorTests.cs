@@ -1,13 +1,16 @@
 ﻿using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management;
 using Kontent.Ai.Management.Configuration;
+using Kontent.Ai.Management.Models.Shared;
 using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.Management.Models.TypeSnippets;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Core.Contract;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
+using Kontent.Ai.ModelGenerator.Core.Services;
 using Kontent.Ai.ModelGenerator.Core.Tests.TestHelpers;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -23,12 +26,16 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
     private readonly IManagementClient _managementClient;
     private readonly IOutputProvider _outputProvider;
+    private readonly Mock<IOutputProvider> _outputProviderMock;
+    private readonly Mock<IDeliveryElementService> _deliveryElementService;
     protected override string TempDir => Path.Combine(Path.GetTempPath(), "ExtendedDeliveryCodeGeneratorIntegrationTests");
 
     public ExtendedDeliveryCodeGeneratorTests()
     {
         _managementClient = CreateManagementClient();
         _outputProvider = new Mock<IOutputProvider>().Object;
+        _deliveryElementService = new Mock<IDeliveryElementService>();
+        _outputProviderMock = new Mock<IOutputProvider>();
     }
 
     [Fact]
@@ -41,6 +48,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ExtendedDeliveryModels = true
         });
 
+        Logger.VerifyNoOtherCalls();
         Creator(mockOptions.Object).Should().Throw<InvalidOperationException>();
     }
 
@@ -54,6 +62,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ExtendedDeliveryModels = false
         });
 
+        Logger.VerifyNoOtherCalls();
         Creator(mockOptions.Object).Should().Throw<InvalidOperationException>();
     }
 
@@ -67,8 +76,16 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ExtendedDeliveryModels = true
         });
 
-        var extendedDeliveryCodeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient);
+        var extendedDeliveryCodeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProvider,
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
 
+        Logger.VerifyNoOtherCalls();
         extendedDeliveryCodeGenerator.Should().NotBeNull();
     }
 
@@ -114,7 +131,19 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             SubpagesContentTypeData.ArticleContentType
         };
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, _outputProvider, _managementClient);
+        foreach (var elementMetadataBase in contentType.Elements)
+        {
+            _deliveryElementService.Setup(x => x.GetElementType(elementMetadataBase.Type.ToString())).Returns(elementMetadataBase.Type.ToString());
+        }
+
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProvider,
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
 
         var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
 
@@ -179,10 +208,282 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var expected = new List<ClassCodeGenerator>
         {
             new TypedExtendedDeliveryClassCodeGenerator(expectedTypedExtendedDeliveryClassDefinition, "ContentType.Typed.Generated"),
-            new ExtendedDeliveryClassCodeGenerator(expectedExtendedDeliveryClassDefinition, "ContentType.Generated", generateStructuredModularContent)
+            new ExtendedDeliveryClassCodeGenerator(expectedExtendedDeliveryClassDefinition, "ContentType.Generated", generateStructuredModularContent, Logger.Object)
         };
 
+        Logger.VerifyNoOtherCalls();
         result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void GetClassCodeGenerators_InvalidIdentifier_MessageIsLogged()
+    {
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            ExtendedDeliveryModels = true,
+        });
+
+        var elementCodename = "";
+        var contentType = new ContentTypeModel
+        {
+            Codename = "content_type",
+            Elements = new List<ElementMetadataBase>
+            {
+                new LinkedItemsElementMetadataModel
+                {
+                    Name = "",
+                    Codename = elementCodename,
+                    AllowedTypes = new List<Reference>
+                    {
+                        Reference.ById(LinkedItemsContentTypeData.ArticleContentType.Id)
+                    }
+                }
+            }
+        };
+
+        var contentTypes = new List<ContentTypeModel>
+        {
+            contentType,
+            LinkedItemsContentTypeData.ArticleContentType
+        };
+
+        foreach (var elementMetadataBase in contentType.Elements)
+        {
+            _deliveryElementService.Setup(x => x.GetElementType(elementMetadataBase.Type.ToString())).Returns(elementMetadataBase.Type.ToString());
+        }
+
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProvider,
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        var expected = new List<ClassCodeGenerator>
+        {
+            new TypedExtendedDeliveryClassCodeGenerator(new ClassDefinition(contentType.Codename), "ContentType.Typed.Generated"),
+            new ExtendedDeliveryClassCodeGenerator(new ClassDefinition(contentType.Codename), "ContentType.Generated", false, Logger.Object)
+        };
+
+        var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
+
+        Logger.Verify(n => n.LogWarning(It.Is<string>(m => m == $"Can't create valid C# Identifier from '{elementCodename}'. Skipping element.")),
+            Times.Once());
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Fact]
+    public void GetClassCodeGenerators_DuplicateProperty_MessageIsLogged()
+    {
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            ExtendedDeliveryModels = true,
+        });
+
+        var elementCodename = "duplicate_codename";
+        var contentType = new ContentTypeModel
+        {
+            Name = "ContentType",
+            Codename = "content_type",
+            Elements = new List<ElementMetadataBase>
+            {
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename),
+                TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename)
+            }
+        };
+
+        var contentTypes = new List<ContentTypeModel>
+        {
+            contentType
+        };
+
+        foreach (var elementMetadataBase in contentType.Elements)
+        {
+            _deliveryElementService.Setup(x => x.GetElementType(elementMetadataBase.Type.ToString())).Returns(elementMetadataBase.Type.ToString());
+        }
+
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProvider,
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        var expectedClassDefinition = new ClassDefinition(contentType.Codename);
+        expectedClassDefinition.AddProperty(new Property(elementCodename, "string"));
+        expectedClassDefinition.AddPropertyCodenameConstant(elementCodename);
+        var expected = new List<ClassCodeGenerator>
+        {
+            new ExtendedDeliveryClassCodeGenerator(expectedClassDefinition, "ContentType.Generated", false, Logger.Object),
+            new TypedExtendedDeliveryClassCodeGenerator( new ClassDefinition(contentType.Codename), "ContentType.Typed.Generated")
+        };
+
+        var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
+
+        Logger.Verify(n => n.LogWarning(It.Is<string>(m => m == $"Element '{elementCodename}' is already present in Content Type '{contentType.Name}'.")),
+            Times.Once());
+        result.Should().BeEquivalentTo(expected);
+    }
+
+    [Theory]
+    [InlineData(true, "BaseClass")]
+    [InlineData(true, null)]
+    [InlineData(false, "BaseClass")]
+    [InlineData(false, null)]
+    public async Task RunAsync_NoContentTypes_MessageIsLogged(bool withTypeProvider, string baseClass)
+    {
+        var projectId = Guid.NewGuid().ToString();
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            ExtendedDeliveryModels = true,
+            WithTypeProvider = withTypeProvider,
+            BaseClass = baseClass,
+            ManagementOptions = new ManagementOptions
+            {
+                ProjectId = projectId,
+                ApiKey = "api_key"
+            }
+        });
+
+        var contentTypeListingResponseModel = new Mock<IListingResponseModel<ContentTypeModel>>();
+        contentTypeListingResponseModel.As<IEnumerable<ContentTypeModel>>()
+        .Setup(c => c.GetEnumerator())
+            .Returns(new List<ContentTypeModel>().GetEnumerator);
+
+        var contentTypeSnippetListingResponseModel = new Mock<IListingResponseModel<ContentTypeSnippetModel>>();
+        contentTypeSnippetListingResponseModel.As<IEnumerable<ContentTypeSnippetModel>>()
+        .Setup(c => c.GetEnumerator())
+            .Returns(new List<ContentTypeSnippetModel>().GetEnumerator);
+
+        var managementClient = new Mock<IManagementClient>();
+        managementClient
+            .Setup(x => x.ListContentTypesAsync())
+            .Returns(Task.FromResult(contentTypeListingResponseModel.Object));
+        managementClient
+            .Setup(x => x.ListContentTypeSnippetsAsync())
+            .Returns(Task.FromResult(contentTypeSnippetListingResponseModel.Object));
+
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProviderMock.Object,
+            managementClient.Object,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        var result = await codeGenerator.RunAsync();
+
+        Logger.Verify(n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
+            Times.Once());
+        result.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task RunAsync_ContentTypeHasInvalidIdentifier_MessageIsLogged()
+    {
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+        {
+            ExtendedDeliveryModels = true,
+            Namespace = "CustomNamespace",
+            OutputDir = TempDir,
+            ManagementApi = false,
+            GeneratePartials = false,
+            WithTypeProvider = false,
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
+        });
+
+        var contentType = new ContentTypeModel
+        {
+            Codename = "",
+            Elements = new List<ElementMetadataBase>()
+        };
+        var contentTypes = new List<ContentTypeModel>
+        {
+            contentType
+        };
+        var contentTypeListingResponseModel = new Mock<IListingResponseModel<ContentTypeModel>>();
+        contentTypeListingResponseModel.As<IEnumerable<ContentTypeModel>>()
+            .Setup(c => c.GetEnumerator())
+            .Returns(contentTypes.GetEnumerator);
+
+        var contentTypeSnippetListingResponseModel = new Mock<IListingResponseModel<ContentTypeSnippetModel>>();
+        contentTypeSnippetListingResponseModel.As<IEnumerable<ContentTypeSnippetModel>>()
+            .Setup(c => c.GetEnumerator())
+            .Returns(new List<ContentTypeSnippetModel>().GetEnumerator);
+
+        var managementClient = new Mock<IManagementClient>();
+        managementClient
+            .Setup(x => x.ListContentTypesAsync())
+            .Returns(Task.FromResult(contentTypeListingResponseModel.Object));
+        managementClient
+            .Setup(x => x.ListContentTypeSnippetsAsync())
+            .Returns(Task.FromResult(contentTypeSnippetListingResponseModel.Object));
+
+        var classDefinitionFactory = new Mock<IClassDefinitionFactory>();
+        classDefinitionFactory
+            .Setup(x => x.CreateClassDefinition(It.IsAny<string>()))
+            .Returns(new ClassDefinition(contentType.Codename));
+
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProviderMock.Object,
+            managementClient.Object,
+            ClassCodeGeneratorFactory,
+            classDefinitionFactory.Object,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        var result = await codeGenerator.RunAsync();
+
+        Logger.Verify(n => n.LogWarning(It.Is<string>(m => m.Contains($"Skipping Content Type '{contentType.Codename}'. Can't create valid C# identifier from its name."))),
+            Times.Once());
+        result.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task RunAsync_DeliveryElementServiceThrowsException_MessageIsLogged()
+    {
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+        {
+            ExtendedDeliveryModels = true,
+            Namespace = "CustomNamespace",
+            OutputDir = TempDir,
+            ManagementApi = false,
+            GeneratePartials = false,
+            WithTypeProvider = false,
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
+        });
+
+        _deliveryElementService.Setup(x => x.GetElementType(It.IsAny<string>())).Throws<ArgumentNullException>();
+
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProviderMock.Object,
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        Logger.Setup(n => n.LogWarning(It.Is<string>(m => m.Contains("Skipping unknown Content Element type "))));
+
+        var result = await codeGenerator.RunAsync();
+
+        Logger.VerifyAll();
+        result.Should().Be(0);
     }
 
     [Theory]
@@ -203,7 +504,14 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -211,6 +519,10 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*.Generated.cs").Should().NotBeEmpty();
         Directory.EnumerateFiles(Path.GetFullPath(TempDir)).Where(p => !p.Contains("*.Generated.cs")).Should().NotBeEmpty();
+
+        Logger.Verify(a =>
+            a.LogInfo(It.Is<string>(m => m == $"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created.")),
+            Times.Once());
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -236,7 +548,14 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             FileNameSuffix = transformFilename
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -246,6 +565,10 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         {
             Path.GetFileName(filepath).Should().EndWith($".{transformFilename}.cs");
         }
+
+        Logger.Verify(a =>
+            a.LogInfo(It.Is<string>(m => m == $"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created.")),
+            Times.Once());
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -271,7 +594,14 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             FileNameSuffix = transformFilename
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
 
         await codeGenerator.RunAsync();
 
@@ -292,6 +622,10 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             generatedFileExists.Should().BeTrue();
             typedGeneratedFileExists.Should().BeTrue();
         }
+
+        Logger.Verify(a =>
+            a.LogInfo(It.Is<string>(m => m == $"{allFilesCount} content type models were successfully created.")),
+            Times.Once());
 
         // Cleanup
         Directory.Delete(TempDir, true);
@@ -315,7 +649,17 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
         });
 
-        var codeGenerator = new ExtendedDeliveryCodeGenerator(mockOptions.Object, new FileSystemOutputProvider(mockOptions.Object), _managementClient);
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
+
+        Logger.Setup(f => f.LogInfo($"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created."));
+        Logger.Setup(f => f.LogInfo("CustomTypeProvider class was successfully created."));
 
         await codeGenerator.RunAsync();
 
@@ -325,12 +669,60 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().NotBeEmpty();
 
+        Logger.VerifyAll();
+
+        // Cleanup
+        Directory.Delete(TempDir, true);
+    }
+
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_BaseClass_CorrectFiles(StructuredModelFlags structuredModel)
+    {
+        var baseClassName = "CustomBaseClass";
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+        {
+            ExtendedDeliveryModels = true,
+            Namespace = "CustomNamespace",
+            OutputDir = TempDir,
+            ManagementApi = false,
+            GeneratePartials = false,
+            StructuredModel = structuredModel.ToString(),
+            WithTypeProvider = false,
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
+            BaseClass = baseClassName
+        });
+
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
+
+        Logger.Setup(f => f.LogInfo($"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created."));
+        Logger.Setup(f => f.LogInfo($"{baseClassName} class was successfully created."));
+        Logger.Setup(f => f.LogInfo($"{baseClassName}Extender class was successfully created."));
+
+        await codeGenerator.RunAsync();
+
+        var generatedFilesWithoutBaseClassFiles = Directory.GetFiles(Path.GetFullPath(TempDir)).Where(f => !f.Contains(baseClassName)).ToList();
+
+        generatedFilesWithoutBaseClassFiles.Count.Should().Be(NumberOfContentTypesWithDefaultContentItem);
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir), $"*{baseClassName}*").Count().Should().Be(2);
+
+        Logger.VerifyAll();
+
         // Cleanup
         Directory.Delete(TempDir, true);
     }
 
     private Func<ExtendedDeliveryCodeGenerator> Creator(IOptions<CodeGeneratorOptions> options) =>
-        () => new ExtendedDeliveryCodeGenerator(options, _outputProvider, _managementClient);
+        () => new ExtendedDeliveryCodeGenerator(options, _outputProvider, _managementClient, ClassCodeGeneratorFactory, ClassDefinitionFactory, _deliveryElementService.Object, Logger.Object);
 
     private string DefaultLinkedItemsType(StructuredModelFlags structuredModel) =>
         TextHelpers.GetEnumerableType(

@@ -1,4 +1,4 @@
-﻿namespace Kontent.Ai.ModelGenerator.Core;
+﻿namespace Kontent.Ai.ModelGenerator.Core.Contract;
 
 public interface IOutputProvider
 {

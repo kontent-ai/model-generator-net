@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Core.Contract;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
-using Kontent.Ai.ModelGenerator.Core.Helpers;
 using Microsoft.Extensions.Options;
 
 namespace Kontent.Ai.ModelGenerator.Core;
@@ -14,8 +14,15 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
 {
     private readonly IDeliveryClient _deliveryClient;
 
-    public DeliveryCodeGenerator(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider, IDeliveryClient deliveryClient)
-        : base(options, outputProvider)
+    public DeliveryCodeGenerator(
+        IOptions<CodeGeneratorOptions> options,
+        IOutputProvider outputProvider,
+        IDeliveryClient deliveryClient,
+        IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IClassDefinitionFactory classDefinitionFactory,
+        IDeliveryElementService deliveryElementService,
+        IUserMessageLogger logger)
+        : base(options, outputProvider, classCodeGeneratorFactory, classDefinitionFactory, deliveryElementService, logger)
     {
         if (options.Value.ManagementApi)
         {
@@ -57,13 +64,13 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
 
     internal ClassCodeGenerator GetClassCodeGenerator(IContentType contentType)
     {
-        var classDefinition = new ClassDefinition(contentType.System.Codename);
+        var classDefinition = ClassDefinitionFactory.CreateClassDefinition(contentType.System.Codename);
 
         foreach (var element in contentType.Elements.Values)
         {
             try
             {
-                var elementType = DeliveryElementHelper.GetElementType(Options, element.Type);
+                var elementType = DeliveryElementService.GetElementType(element.Type);
                 var property = Property.FromContentTypeElement(element.Codename, elementType);
                 AddProperty(property, ref classDefinition);
             }
@@ -77,10 +84,10 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
 
         var classFilename = GetFileClassName(classDefinition.ClassName);
 
-        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename);
+        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, Logger);
     }
 
-    private static void TryAddSystemProperty(ClassDefinition classDefinition)
+    private void TryAddSystemProperty(ClassDefinition classDefinition)
     {
         try
         {
@@ -88,8 +95,8 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
         }
         catch (InvalidOperationException)
         {
-            Console.WriteLine(
-                $"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
+            Logger.LogWarning(
+                $"Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
         }
     }
 }

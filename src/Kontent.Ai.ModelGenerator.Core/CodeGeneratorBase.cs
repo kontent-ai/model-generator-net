@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
+using Kontent.Ai.ModelGenerator.Core.Contract;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Microsoft.Extensions.Options;
 
@@ -11,17 +12,28 @@ namespace Kontent.Ai.ModelGenerator.Core;
 
 public abstract class CodeGeneratorBase
 {
+    protected readonly IUserMessageLogger Logger;
+    protected readonly IClassCodeGeneratorFactory ClassCodeGeneratorFactory;
+    protected readonly IClassDefinitionFactory ClassDefinitionFactory;
     protected readonly CodeGeneratorOptions Options;
     protected readonly IOutputProvider OutputProvider;
 
     protected string FilenameSuffix => string.IsNullOrEmpty(Options.FileNameSuffix) ? "" : $".{Options.FileNameSuffix}";
-    protected string NoContentTypeAvailableMessage =>
+    private string NoContentTypeAvailableMessage =>
         $@"No content type available for the project ({Options.GetProjectId()}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.";
 
-    protected CodeGeneratorBase(IOptions<CodeGeneratorOptions> options, IOutputProvider outputProvider)
+    protected CodeGeneratorBase(
+        IOptions<CodeGeneratorOptions> options,
+        IOutputProvider outputProvider,
+        IClassCodeGeneratorFactory classCodeGeneratorFactory,
+        IClassDefinitionFactory classDefinitionFactory,
+        IUserMessageLogger logger)
     {
+        ClassCodeGeneratorFactory = classCodeGeneratorFactory;
+        ClassDefinitionFactory = classDefinitionFactory;
         Options = options.Value;
         OutputProvider = outputProvider;
+        Logger = logger;
     }
 
     public async Task<int> RunAsync()
@@ -40,13 +52,13 @@ public abstract class CodeGeneratorBase
 
     protected void WriteToOutputProvider(string content, string fileName, bool overwriteExisting)
     {
-        if (string.IsNullOrEmpty(content))
+        if (string.IsNullOrWhiteSpace(content))
         {
             return;
         }
 
         OutputProvider.Output(content, fileName, overwriteExisting);
-        Console.WriteLine($"{fileName} class was successfully created.");
+        Logger.LogInfo($"{fileName} class was successfully created.");
     }
 
     protected void WriteToOutputProvider(ICollection<ClassCodeGenerator> classCodeGenerators)
@@ -57,15 +69,15 @@ public abstract class CodeGeneratorBase
                 codeGenerator.OverwriteExisting);
         }
 
-        Console.WriteLine($"{classCodeGenerators.Count} content type models were successfully created.");
+        Logger.LogInfo($"{classCodeGenerators.Count} content type models were successfully created.");
     }
 
     protected ClassCodeGenerator GetCustomClassCodeGenerator(string contentTypeCodename)
     {
-        var classDefinition = new ClassDefinition(contentTypeCodename);
+        var classDefinition = ClassDefinitionFactory.CreateClassDefinition(contentTypeCodename);
         var classFilename = $"{classDefinition.ClassName}";
 
-        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, true);
+        return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, Logger, true);
     }
 
     protected static void AddProperty(Property property, ref ClassDefinition classDefinition)
@@ -76,25 +88,25 @@ public abstract class CodeGeneratorBase
 
     protected abstract Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators();
 
-    protected static void WriteConsoleErrorMessage(Exception exception, string elementCodename, string elementType, string className)
+    protected void WriteConsoleErrorMessage(Exception exception, string elementCodename, string elementType, string className)
     {
         switch (exception)
         {
             case InvalidOperationException:
-                Console.WriteLine($"Warning: Element '{elementCodename}' is already present in Content Type '{className}'.");
+                Logger.LogWarning($"Element '{elementCodename}' is already present in Content Type '{className}'.");
                 break;
             case InvalidIdentifierException:
-                Console.WriteLine($"Warning: Can't create valid C# Identifier from '{elementCodename}'. Skipping element.");
+                Logger.LogWarning($"Can't create valid C# Identifier from '{elementCodename}'. Skipping element.");
                 break;
             case ArgumentNullException or ArgumentException:
-                Console.WriteLine($"Warning: Skipping unknown Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
+                Logger.LogWarning($"Skipping unknown Content Element type '{elementType}'. (Content Type: '{className}', Element Codename: '{elementCodename}').");
                 break;
         }
     }
 
-    protected static void WriteConsoleErrorMessage(string contentTypeCodename)
+    protected void WriteConsoleErrorMessage(string contentTypeCodename)
     {
-        Console.WriteLine($"Warning: Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name.");
+        Logger.LogWarning($"Skipping Content Type '{contentTypeCodename}'. Can't create valid C# identifier from its name.");
     }
 
     private async Task GenerateContentTypeModels()
@@ -103,7 +115,7 @@ public abstract class CodeGeneratorBase
 
         if (!classCodeGenerators.Any())
         {
-            Console.WriteLine(NoContentTypeAvailableMessage);
+            Logger.LogInfo(NoContentTypeAvailableMessage);
             return;
         }
 
@@ -116,7 +128,6 @@ public abstract class CodeGeneratorBase
 
         if (!classCodeGenerators.Any())
         {
-            Console.WriteLine(NoContentTypeAvailableMessage);
             return;
         }
 

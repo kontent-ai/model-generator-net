@@ -1,32 +1,48 @@
 ﻿using Kontent.Ai.ModelGenerator.Core.Configuration;
-using Kontent.Ai.ModelGenerator.Core.Helpers;
+using Kontent.Ai.ModelGenerator.Core.Services;
+using Microsoft.Extensions.Options;
+using Moq;
 
-namespace Kontent.Ai.ModelGenerator.Core.Tests.Helpers;
+namespace Kontent.Ai.ModelGenerator.Core.Tests.Services;
 
-public class DeliveryElementHelperTests
+public class DeliveryElementServiceTests
 {
     [Fact]
-    public void GetElementType_OptionsIsNull_ThrowsException()
+    public void Constructor_OptionsIsNull_ThrowsException()
     {
-        var call = () => DeliveryElementHelper.GetElementType(null, "type");
+        var call = () => new DeliveryElementService(null);
 
-        call.Should().ThrowExactly<ArgumentNullException>();
+        call.Should().ThrowExactly<NullReferenceException>();
+    }
+
+    [Fact]
+    public void Constructor_ManagementApiIsTrue_ThrowsException()
+    {
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = true
+        });
+
+        var call = () => new DeliveryElementService(mockOptions.Object);
+
+        call.Should().ThrowExactly<InvalidOperationException>();
     }
 
     [Fact]
     public void GetElementType_ElementTypeIsNull_ThrowsException()
     {
-        var call = () => DeliveryElementHelper.GetElementType(new CodeGeneratorOptions { ManagementApi = false }, null);
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = false
+        });
+
+        var deliveryElementService = new DeliveryElementService(mockOptions.Object);
+
+        var call = () => deliveryElementService.GetElementType(null);
 
         call.Should().ThrowExactly<ArgumentNullException>();
-    }
-
-    [Fact]
-    public void GetElementType_ManagementApiIsTrue_ThrowsException()
-    {
-        var call = () => DeliveryElementHelper.GetElementType(new CodeGeneratorOptions { ManagementApi = true }, "type");
-
-        call.Should().ThrowExactly<InvalidOperationException>();
     }
 
     [Theory]
@@ -39,11 +55,16 @@ public class DeliveryElementHelperTests
     [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.True | StructuredModelFlags.DateTime | StructuredModelFlags.ModularContent, "date_time", "date_time(structured)")]
     public void GetElementType_StructuredModel_ReturnsStructuredElementType(StructuredModelFlags structuredModel, string elementType, string expected)
     {
-        var result = DeliveryElementHelper.GetElementType(new CodeGeneratorOptions
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
             StructuredModel = structuredModel.ToString()
-        }, elementType);
+        });
+
+        var deliveryElementService = new DeliveryElementService(mockOptions.Object);
+
+        var result = deliveryElementService.GetElementType(elementType);
 
         result.Should().Be(expected);
     }
@@ -55,11 +76,16 @@ public class DeliveryElementHelperTests
     [InlineData(StructuredModelFlags.ModularContent, "rich_text", "rich_text")]
     public void GetElementType_StructuredModelForDifferentElement_ReturnsElementType(StructuredModelFlags structuredModel, string elementType, string expected)
     {
-        var result = DeliveryElementHelper.GetElementType(new CodeGeneratorOptions
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
             StructuredModel = structuredModel.ToString()
-        }, elementType);
+        });
+
+        var deliveryElementService = new DeliveryElementService(mockOptions.Object);
+
+        var result = deliveryElementService.GetElementType(elementType);
 
         result.Should().Be(expected);
     }
@@ -75,11 +101,16 @@ public class DeliveryElementHelperTests
     [InlineData(StructuredModelFlags.NotSet, "text", "text")]
     public void GetElementType_Returns(StructuredModelFlags structuredModel, string elementType, string expected)
     {
-        var result = DeliveryElementHelper.GetElementType(new CodeGeneratorOptions
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
             StructuredModel = structuredModel.ToString()
-        }, elementType);
+        });
+
+        var deliveryElementService = new DeliveryElementService(mockOptions.Object);
+
+        var result = deliveryElementService.GetElementType(elementType);
 
         result.Should().Be(expected);
     }

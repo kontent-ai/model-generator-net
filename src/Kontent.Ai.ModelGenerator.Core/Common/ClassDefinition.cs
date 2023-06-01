@@ -17,9 +17,7 @@ public class ClassDefinition
 
     public ClassDefinition(string codeName)
     {
-        Codename = string.IsNullOrWhiteSpace(codeName)
-            ? throw new ArgumentException("Class codeName must be a non null and not white space string.", nameof(codeName))
-            : codeName;
+        Codename = codeName;
     }
 
     public void AddProperty(Property property)
@@ -45,19 +43,6 @@ public class ClassDefinition
     public void AddSystemProperty()
     {
         AddProperty(new Property("system", nameof(IContentItemSystemAttributes)));
-    }
-
-    public void TryAddSystemProperty()
-    {
-        try
-        {
-            AddProperty(new Property("system", nameof(IContentItemSystemAttributes)));
-        }
-        catch (InvalidOperationException)
-        {
-            Console.WriteLine(
-                $"Warning: Can't add 'System' property. It's in collision with existing element in Content Type '{ClassName}'.");
-        }
     }
 
     private bool PropertyIsAlreadyPresent(Property property)
