@@ -493,4 +493,49 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         // Cleanup
         Directory.Delete(TempDir, true);
     }
+
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_BaseClass_CorrectFiles(StructuredModelFlags structuredModel)
+    {
+        var baseClassName = "CustomBaseClass";
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+        {
+            DeliveryOptions = new DeliveryOptions { ProjectId = ProjectId },
+            Namespace = "CustomNamespace",
+            OutputDir = TempDir,
+            ManagementApi = false,
+            GeneratePartials = false,
+            WithTypeProvider = false,
+            StructuredModel = structuredModel.ToString(),
+            BaseClass = baseClassName
+        });
+
+        var codeGenerator = new DeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            _deliveryClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
+
+        Logger.Setup(f => f.LogInfo($"{NumberOfContentTypes} content type models were successfully created."));
+        Logger.Setup(f => f.LogInfo($"{baseClassName} class was successfully created."));
+        Logger.Setup(f => f.LogInfo($"{baseClassName}Extender class was successfully created."));
+
+        await codeGenerator.RunAsync();
+
+        var x = Directory.GetFiles(Path.GetFullPath(TempDir));
+
+        Directory.GetFiles(Path.GetFullPath(TempDir)).Length.Should().Be(NumberOfContentTypes + 2);
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir), $"*{baseClassName}*").Count().Should().Be(2);
+
+        Logger.VerifyAll();
+
+        // Cleanup
+        Directory.Delete(TempDir, true);
+    }
 }

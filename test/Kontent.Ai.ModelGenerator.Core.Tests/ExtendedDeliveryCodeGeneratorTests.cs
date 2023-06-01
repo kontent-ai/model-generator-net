@@ -658,6 +658,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             new DeliveryElementService(mockOptions.Object),
             Logger.Object);
 
+        Logger.Setup(f => f.LogInfo($"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created."));
+        Logger.Setup(f => f.LogInfo("CustomTypeProvider class was successfully created."));
+
         await codeGenerator.RunAsync();
 
         var generatedFilesWithoutTypeProvider = Directory.GetFiles(Path.GetFullPath(TempDir)).Where(f => !f.EndsWith("TypeProvider.cs")).ToList();
@@ -666,9 +669,53 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         Directory.EnumerateFiles(Path.GetFullPath(TempDir), "*TypeProvider.cs").Should().NotBeEmpty();
 
-        Logger.Verify(a =>
-            a.LogInfo(It.Is<string>(m => m == $"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created.")),
-            Times.Once());
+        Logger.VerifyAll();
+
+        // Cleanup
+        Directory.Delete(TempDir, true);
+    }
+
+    [Theory]
+    [InlineData(StructuredModelFlags.ModularContent)]
+    [InlineData(StructuredModelFlags.NotSet)]
+    public async Task IntegrationTest_RunAsync_BaseClass_CorrectFiles(StructuredModelFlags structuredModel)
+    {
+        var baseClassName = "CustomBaseClass";
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+        {
+            ExtendedDeliveryModels = true,
+            Namespace = "CustomNamespace",
+            OutputDir = TempDir,
+            ManagementApi = false,
+            GeneratePartials = false,
+            StructuredModel = structuredModel.ToString(),
+            WithTypeProvider = false,
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
+            BaseClass = baseClassName
+        });
+
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            new DeliveryElementService(mockOptions.Object),
+            Logger.Object);
+
+        Logger.Setup(f => f.LogInfo($"{NumberOfContentTypesWithDefaultContentItem} content type models were successfully created."));
+        Logger.Setup(f => f.LogInfo($"{baseClassName} class was successfully created."));
+        Logger.Setup(f => f.LogInfo($"{baseClassName}Extender class was successfully created."));
+
+        await codeGenerator.RunAsync();
+
+        var generatedFilesWithoutBaseClassFiles = Directory.GetFiles(Path.GetFullPath(TempDir)).Where(f => !f.Contains(baseClassName)).ToList();
+
+        generatedFilesWithoutBaseClassFiles.Count.Should().Be(NumberOfContentTypesWithDefaultContentItem);
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir), $"*{baseClassName}*").Count().Should().Be(2);
+
+        Logger.VerifyAll();
 
         // Cleanup
         Directory.Delete(TempDir, true);

@@ -358,4 +358,43 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         // Cleanup
         Directory.Delete(TempDir, true);
     }
+
+    [Fact]
+    public async Task IntegrationTest_RunAsync_BaseClass_CorrectFiles()
+    {
+        var baseClassName = "CustomBaseClass";
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
+        {
+            Namespace = "CustomNamespace",
+            OutputDir = TempDir,
+            GeneratePartials = false,
+            ManagementApi = true,
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
+            BaseClass = baseClassName
+        });
+
+        var codeGenerator = new ManagementCodeGenerator(
+            mockOptions.Object,
+            new FileSystemOutputProvider(mockOptions.Object),
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            Logger.Object);
+
+
+        Logger.Setup(f => f.LogInfo($"{NumberOfContentTypes} content type models were successfully created."));
+        Logger.Setup(f => f.LogInfo($"{baseClassName} class was successfully created."));
+        Logger.Setup(f => f.LogInfo($"{baseClassName}Extender class was successfully created."));
+
+        await codeGenerator.RunAsync();
+
+        Directory.GetFiles(Path.GetFullPath(TempDir), "*.cs").Where(f => !f.Contains(baseClassName)).Count().Should().Be(NumberOfContentTypes);
+        Directory.EnumerateFiles(Path.GetFullPath(TempDir), $"*{baseClassName}*").Count().Should().Be(2);
+
+        Logger.VerifyAll();
+
+        // Cleanup
+        Directory.Delete(TempDir, true);
+    }
 }
