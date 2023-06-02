@@ -105,7 +105,7 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
 
         return new List<ClassCodeGenerator>
         {
-            new TypedExtendedDeliveryClassCodeGenerator(typedClassDefinition, GetFileClassName(classDefinition.ClassName + TypedSuffixFileName)),
+            new TypedExtendedDeliveryClassCodeGenerator(typedClassDefinition, GetFileClassName(classDefinition.ClassName + TypedSuffixFileName), Options.Namespace),
             ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, GetFileClassName(classDefinition.ClassName), Logger)
         };
     }

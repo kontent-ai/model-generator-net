@@ -4,6 +4,7 @@ using Kontent.Ai.Delivery.Builders.DeliveryClient;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Contract;
+using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Kontent.Ai.ModelGenerator.Core.Services;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -101,6 +102,47 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         Logger.VerifyNoOtherCalls();
         result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
+    }
+
+    [Theory]
+    [InlineData("CustomNamespace", "CustomNamespace")]
+    [InlineData(null, ClassCodeGenerator.DefaultNamespace)]
+    public void GetClassCodeGenerator_CustomNamespace_Returns(string customNamespace, string expectedNamespace)
+    {
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            Namespace = customNamespace
+        });
+
+        var elementCodename = "element_codename";
+        var elementType = "text";
+        var contentElement = new Mock<IContentElement>();
+        contentElement.SetupGet(element => element.Type).Returns(elementType);
+        contentElement.SetupGet(element => element.Codename).Returns(elementCodename);
+
+        var contentType = new Mock<IContentType>();
+        var contentTypeCodename = "Contenttype";
+        contentType.SetupGet(type => type.System.Codename).Returns(contentTypeCodename);
+        contentType.SetupGet(type => type.Elements).Returns(new Dictionary<string, IContentElement> { { elementCodename, contentElement.Object } });
+
+        _deliveryElementService.Setup(x => x.GetElementType(elementType)).Returns(elementType);
+
+        var codeGenerator = new DeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProviderMock.Object,
+            _deliveryClientMock.Object,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        var result = codeGenerator.GetClassCodeGenerator(contentType.Object);
+
+        Logger.VerifyNoOtherCalls();
+        result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
+        result.Namespace.Should().Be(expectedNamespace);
     }
 
     [Fact]
