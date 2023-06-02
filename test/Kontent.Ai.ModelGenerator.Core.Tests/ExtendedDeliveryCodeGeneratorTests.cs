@@ -215,6 +215,133 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         result.Should().BeEquivalentTo(expected);
     }
 
+    [Theory]
+    [InlineData("CustomNamespace", "CustomNamespace")]
+    [InlineData(null, ClassCodeGenerator.DefaultNamespace)]
+    public void GetClassCodeGenerators_CustomNamespace_Returns(string customNamespace, string expectedNamespace)
+    {
+        var structuredModel = StructuredModelFlags.NotSet;
+        var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
+        mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
+        {
+            ManagementApi = false,
+            ExtendedDeliveryModels = true,
+            Namespace = customNamespace
+        });
+
+        var contentType = new ContentTypeModel
+        {
+            Codename = "content_type",
+            Elements = new List<ElementMetadataBase>
+            {
+                LinkedItemsContentTypeData.SingleAllowedTypeMultiItems,
+                LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem,
+                LinkedItemsContentTypeData.SingleAllowedTypeAtMostSingleItem,
+                LinkedItemsContentTypeData.MultiAllowedTypesExactlySingleItem,
+                LinkedItemsContentTypeData.MultiAllowedTypesAtMostSingleItem,
+                LinkedItemsContentTypeData.MultiAllowedTypesMultiItems,
+                SubpagesContentTypeData.SingleAllowedTypeMultiItems,
+                SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem,
+                SubpagesContentTypeData.SingleAllowedTypeAtMostSingleItem,
+                SubpagesContentTypeData.MultiAllowedTypesExactlySingleItem,
+                SubpagesContentTypeData.MultiAllowedTypesAtMostSingleItem,
+                SubpagesContentTypeData.MultiAllowedTypesMultiItems,
+            }
+        };
+
+        var contentTypes = new List<ContentTypeModel>
+        {
+            contentType,
+            LinkedItemsContentTypeData.ArticleContentType,
+            LinkedItemsContentTypeData.HeroContentType,
+            SubpagesContentTypeData.HeroContentType,
+            SubpagesContentTypeData.ArticleContentType
+        };
+
+        foreach (var elementMetadataBase in contentType.Elements)
+        {
+            _deliveryElementService.Setup(x => x.GetElementType(elementMetadataBase.Type.ToString())).Returns(elementMetadataBase.Type.ToString());
+        }
+
+        var codeGenerator = new ExtendedDeliveryCodeGenerator(
+            mockOptions.Object,
+            _outputProvider,
+            _managementClient,
+            ClassCodeGeneratorFactory,
+            ClassDefinitionFactory,
+            _deliveryElementService.Object,
+            Logger.Object);
+
+        var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
+
+        var expectedTypedExtendedDeliveryClassDefinition = new ClassDefinition(contentType.Codename);
+        expectedTypedExtendedDeliveryClassDefinition.Properties.AddRange(new List<Property>
+        {
+            Property.FromContentTypeElement(
+                LinkedItemsContentTypeData.SingleAllowedTypeMultiItems,
+                $"IEnumerable<{LinkedItemsContentTypeData.HeroContentType.Name}>",
+                "Modular_Content_Heroes_Hero"),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, LinkedItemsContentTypeData.ArticleContentType.Name),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeAtMostSingleItem, LinkedItemsContentTypeData.HeroContentType.Name),
+            Property.FromContentTypeElement(
+                SubpagesContentTypeData.SingleAllowedTypeMultiItems,
+                $"IEnumerable<{SubpagesContentTypeData.HeroContentType.Name}>",
+                "Subpages_Heroes_Hero"),
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem, SubpagesContentTypeData.ArticleContentType.Name),
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeAtMostSingleItem, SubpagesContentTypeData.HeroContentType.Name)
+        });
+        expectedTypedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
+        {
+            "Modular_Content_Heroes_Hero",
+            "modular_content_article",
+            "modular_content_hero",
+            "Subpages_Heroes_Hero",
+            "subpages_article",
+            "subpages_hero"
+        });
+
+        var expectedExtendedDeliveryClassDefinition = new ClassDefinition(contentType.Codename);
+        expectedExtendedDeliveryClassDefinition.Properties.AddRange(new List<Property>
+        {
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeAtMostSingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesAtMostSingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(LinkedItemsContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeAtMostSingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesAtMostSingleItem, DefaultLinkedItemsType(structuredModel)),
+            Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType(structuredModel))
+        });
+        expectedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
+        {
+            "modular_content_heroes",
+            "modular_content_article",
+            "modular_content_hero",
+            "modular_content_blog",
+            "modular_content_coffee",
+            "modular_content_coffees",
+            "subpages_heroes",
+            "subpages_article",
+            "subpages_hero",
+            "subpages_blog",
+            "subpages_coffee",
+            "subpages_coffees"
+        });
+
+        var expected = new List<ClassCodeGenerator>
+        {
+            new TypedExtendedDeliveryClassCodeGenerator(expectedTypedExtendedDeliveryClassDefinition, "ContentType.Typed.Generated", expectedNamespace),
+            new ExtendedDeliveryClassCodeGenerator(expectedExtendedDeliveryClassDefinition, "ContentType.Generated", false, Logger.Object, expectedNamespace)
+        };
+
+        Logger.VerifyNoOtherCalls();
+        result.Should().BeEquivalentTo(expected);
+    }
+
     [Fact]
     public void GetClassCodeGenerators_InvalidIdentifier_MessageIsLogged()
     {

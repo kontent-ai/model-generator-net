@@ -7,6 +7,7 @@ using Kontent.Ai.Management.Models.TypeSnippets;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Contract;
+using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Kontent.Ai.ModelGenerator.Core.Tests.TestHelpers;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -161,13 +162,16 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         result.Should().Be(0);
     }
 
-    [Fact]
-    public void GetClassCodeGenerator_Returns()
+    [Theory]
+    [InlineData("CustomNamespace", "CustomNamespace")]
+    [InlineData(null, ClassCodeGenerator.DefaultNamespace)]
+    public void GetClassCodeGenerator_Returns(string customNamespace, string expectedNamespace)
     {
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
-            ManagementApi = true
+            ManagementApi = true,
+            Namespace = customNamespace
         });
 
         var managementClient = new Mock<IManagementClient>();
@@ -195,6 +199,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         Logger.VerifyNoOtherCalls();
         result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
+        result.Namespace.Should().Be(expectedNamespace);
     }
 
     [Fact]
