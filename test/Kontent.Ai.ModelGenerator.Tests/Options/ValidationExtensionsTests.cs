@@ -10,13 +10,13 @@ public class ValidationExtensionsTests
     [Fact]
     public void Validate_ManagementOptions_DoesNotThrow()
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         var codeGeneratorOptions = new CodeGeneratorOptions
         {
             ManagementApi = true,
             ManagementOptions = new ManagementOptions
             {
-                ProjectId = projectId,
+                EnvironmentId = environmentId,
                 ApiKey = "apiKey"
             }
         };
@@ -34,13 +34,13 @@ public class ValidationExtensionsTests
     [InlineData(StructuredModelFlags.RichText | StructuredModelFlags.DateTime | StructuredModelFlags.True)]
     public void Validate_DeliveryOptions_DoesNotThrow(StructuredModelFlags structuredModel)
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         var codeGeneratorOptions = new CodeGeneratorOptions
         {
             ManagementApi = false,
             DeliveryOptions = new DeliveryOptions
             {
-                ProjectId = projectId
+                EnvironmentId = environmentId
             },
             StructuredModel = structuredModel.ToString()
         };
@@ -53,14 +53,14 @@ public class ValidationExtensionsTests
     [Fact]
     public void Validate_ExtendedDeliveryModels_DoesNotThrow()
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         var codeGeneratorOptions = new CodeGeneratorOptions
         {
             ManagementApi = false,
             ExtendedDeliveryModels = true,
             ManagementOptions = new ManagementOptions
             {
-                ProjectId = projectId,
+                EnvironmentId = environmentId,
                 ApiKey = "apiKey"
             }
         };
@@ -81,17 +81,17 @@ public class ValidationExtensionsTests
         var validateCall = () => codeGeneratorOptions.Validate();
 
         validateCall.Should().ThrowExactly<Exception>()
-            .And.Message.Should().Be("You have to provide at least the 'ProjectId' argument. See http://bit.ly/k-params for more details on configuration.");
+            .And.Message.Should().Be("You have to provide at least the 'EnvironmentId' argument. See http://bit.ly/k-params for more details on configuration.");
     }
 
     [Fact]
-    public void Validate_DeliveryOptionsProjectIdIsNull_ThrowsException()
+    public void Validate_DeliveryOptionsEnvironmentIdIsNull_ThrowsException()
     {
         var codeGeneratorOptions = new CodeGeneratorOptions
         {
             DeliveryOptions = new DeliveryOptions
             {
-                ProjectId = null
+                EnvironmentId = null
             }
         };
 
@@ -106,13 +106,13 @@ public class ValidationExtensionsTests
     [InlineData(StructuredModelFlags.DateTime | StructuredModelFlags.ValidationIssue | StructuredModelFlags.RichText)]
     public void Validate_DeliveryOptionsStructuredModelFlagsContainValidationIssue_ThrowsException(StructuredModelFlags structuredModel)
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         var codeGeneratorOptions = new CodeGeneratorOptions
         {
             ManagementApi = false,
             DeliveryOptions = new DeliveryOptions
             {
-                ProjectId = projectId
+                EnvironmentId = environmentId
             },
             StructuredModel = structuredModel.ToString()
         };
@@ -126,38 +126,38 @@ public class ValidationExtensionsTests
     [MemberData(nameof(OptionsUsingManagementApiOptionsData))]
     public void Validate_ManagementOptionsIsNull_ThrowsException(CodeGeneratorOptions codeGeneratorOptions, string expectedSdkName, string expectedUrl)
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         codeGeneratorOptions.DeliveryOptions = new DeliveryOptions
         {
-            ProjectId = projectId
+            EnvironmentId = environmentId
         };
         codeGeneratorOptions.ManagementOptions = null;
 
         var validateCall = () => codeGeneratorOptions.Validate();
 
         validateCall.Should().ThrowExactly<Exception>()
-            .And.Message.Should().Be($"You have to provide the 'ProjectId' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.");
+            .And.Message.Should().Be($"You have to provide the 'EnvironmentId' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.");
     }
 
     [Theory]
     [MemberData(nameof(OptionsUsingManagementApiOptionsData))]
-    public void Validate_ManagementOptionsProjectIdIsNull_ThrowsException(CodeGeneratorOptions codeGeneratorOptions, string expectedSdkName, string expectedUrl)
+    public void Validate_ManagementOptionsEnvironmentIdIsNull_ThrowsException(CodeGeneratorOptions codeGeneratorOptions, string expectedSdkName, string expectedUrl)
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         codeGeneratorOptions.DeliveryOptions = new DeliveryOptions
         {
-            ProjectId = projectId
+            EnvironmentId = environmentId
         };
         codeGeneratorOptions.ManagementOptions = new ManagementOptions
         {
-            ProjectId = null,
+            EnvironmentId = null,
             ApiKey = "apiKey"
         };
 
         var validateCall = () => codeGeneratorOptions.Validate();
 
         validateCall.Should().ThrowExactly<Exception>()
-            .And.Message.Should().Be($"You have to provide the 'ProjectId' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.");
+            .And.Message.Should().Be($"You have to provide the 'EnvironmentId' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.");
     }
 
     [Theory]
@@ -168,14 +168,14 @@ public class ValidationExtensionsTests
         string expectedSdkName,
         string expectedUrl)
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         codeGeneratorOptions.DeliveryOptions = new DeliveryOptions
         {
-            ProjectId = projectId
+            EnvironmentId = environmentId
         };
         codeGeneratorOptions.ManagementOptions = new ManagementOptions
         {
-            ProjectId = projectId,
+            EnvironmentId = environmentId,
             ApiKey = apiKey
         };
 

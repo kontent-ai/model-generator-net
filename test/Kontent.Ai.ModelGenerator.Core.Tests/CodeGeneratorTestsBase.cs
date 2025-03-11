@@ -12,7 +12,7 @@ namespace Kontent.Ai.ModelGenerator.Core.Tests;
 public abstract class CodeGeneratorTestsBase
 {
     protected abstract string TempDir { get; }
-    protected const string ProjectId = "975bf280-fd91-488c-994c-2f04416e5ee3";
+    protected const string EnvironmentId = "975bf280-fd91-488c-994c-2f04416e5ee3";
     protected readonly IClassCodeGeneratorFactory ClassCodeGeneratorFactory;
     protected readonly IClassDefinitionFactory ClassDefinitionFactory;
     protected readonly Mock<IUserMessageLogger> Logger;

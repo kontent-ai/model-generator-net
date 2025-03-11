@@ -7,7 +7,7 @@
 
 | Packages                  |                                                                Version                                                                |                                                              Downloads                                                              |                        Compatibility                         |        Documentation        |
 | ------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------: | :-------------------------: |
-| Kontent.Ai.ModelGenerator | [![NuGet](https://img.shields.io/nuget/vpre/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [![NuGet](https://img.shields.io/nuget/dt/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [`net6.0`](https://dotnet.microsoft.com/download/dotnet/6.0) | [📖 Docs](./docs/README.md) |
+| Kontent.Ai.ModelGenerator | [![NuGet](https://img.shields.io/nuget/vpre/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [![NuGet](https://img.shields.io/nuget/dt/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [`net8.0`](https://dotnet.microsoft.com/download/dotnet/8.0) | [📖 Docs](./docs/README.md) |
 
 This utility generates strongly-typed (POCO) models based on [content types](https://kontent.ai/learn/tutorials/manage-kontent/content-modeling/create-and-delete-content-types) in a Kontent.ai project. You can choose one of the following:
 
@@ -27,13 +27,13 @@ The recommended way of obtaining this tool is installing it as a [.NET Tool](htt
 #### Global Tool
 
 - `dotnet tool install -g Kontent.Ai.ModelGenerator`
-- `KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel "<structured_model>"] [--filenamesuffix "<suffix>"]`
+- `KontentModelGenerator --environmentid "<environmenid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel "<structured_model>"] [--filenamesuffix "<suffix>"]`
 
 #### Local Tool
 
 - `dotnet new tool-manifest` to initialize the tools manifest (if you haven't done that already)
 - `dotnet tool install Kontent.Ai.ModelGenerator` (to install the latest version
-- `dotnet tool run KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel "<structured_model>"] [--filenamesuffix "<suffix>"]`
+- `dotnet tool run KontentModelGenerator --environmentId "<environmenid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel "<structured_model>"] [--filenamesuffix "<suffix>"]`
 
 ### Standalone apps for Windows 🗔, Linux 🐧, macOS 🍎
 
@@ -41,7 +41,7 @@ The recommended way of obtaining this tool is installing it as a [.NET Tool](htt
 
 Latest release: [Download](https://github.com/kontent-ai/model-generator-net/releases/latest)
 
-- `KontentModelGenerator --projectid "<projectid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel "<structured_model>"] [--filenamesuffix "<suffix>"]`
+- `KontentModelGenerator --environmentId "<environmenid>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel "<structured_model>"] [--filenamesuffix "<suffix>"]`
 
 To learn how to generate executables for your favorite target platform, follow the steps in the [docs](./docs/build-and-run.md).
 
@@ -49,7 +49,7 @@ To learn how to generate executables for your favorite target platform, follow t
 
 | Short key |                Long key                  | Required |   Default value   | Description |
 | --------- | :--------------------------------------: | :------: | :---------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-| `-p`      |              `--projectid`               |   True   |      `null`       |                                                                                                                                                  A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                                                                                                                                                       |
+| `-i`      |            `--environmentId`             |   True   |      `null`       |                                                                                                                                                  A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                                                                                                                                                       |
 | `-n`      |              `--namespace`               |  False   | `KontentAiModels` |                                                                                                                                                    A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                                                                                                                                                        |
 | `-o`      |              `--outputdir`               |  False   |       `\.`        |                                                                                                                                                                                    An output folder path                                                                                                                                                                                       |
 | `-g`      |           `--generatepartials`           |  False   |      `true`       |                                                                                                                          Generates partial classes for customization. Partial classes are the best practice for customization so the recommended value is `true`.                                                                                                                              |
@@ -108,7 +108,7 @@ namespace KontentAiModels
 ### Customizing models - Extended delivery models
 Provides support to customize generated models based on content linked/subpages element constraints. This feature uses [Management SDK](https://github.com/kontent-ai/management-sdk-net) thus you'll need to provide api key as well.
 
-`KontentModelGenerator --projectid "<projectid>" -e true -k "<apikey>"`
+`KontentModelGenerator --environmentId "<environmenid>" -e true -k "<apikey>"`
 
 #### Extended delivery models example output
 Model is generated using structured model option ModularContent.
@@ -162,14 +162,14 @@ public partial class Home
 ### Usage
 
 ```sh
-KontentModelGenerator.exe --projectid "<projectid>" --managementapi true --apikey "<apikey>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
+KontentModelGenerator.exe --environmentId "<environmenid>" --managementapi true --apikey "<apikey>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--filenamesuffix "<suffix>"]
 ```
 
 ### Management API parameters
 
 | Short key |      Long key      | Required |   Default value   |                                                              Description                                                               |
 | --------- | :----------------: | :------: | :---------------: | :------------------------------------------------------------------------------------------------------------------------------------: |
-| `-p`      |   `--projectid`    |   True   |      `null`       |                        A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                         |
+| `-p`      |   `--environmentId`    |   True   |      `null`       |                        A GUID that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Project ID                         |
 | `-m`      | `--managementapi`  |   True   |      `false`      |        Indicates that models should be generated for [Content Management SDK](https://github.com/kontent-ai/management-sdk-net)        |
 | `-k`      |     `--apikey`     |   True   |      `null`       |                     A api key that can be found in [Kontent](https://app.kontent.ai) -> API keys -> Management API                     |
 | `-n`      |   `--namespace`    |  False   | `KontentAiModels` |                          A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                          |

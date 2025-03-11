@@ -30,8 +30,10 @@ public class ArgHelpersTests
             { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
             { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
             { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
-            { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
-            { "--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" }
+            { "-i", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" },
+            { "--environmentid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" },
+            { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" }, // Backwards compatibility
+            { "--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" } // Backwards compatibility
 };
 
     private static IDictionary<string, string> ExpectedDeliveryMappings => new Dictionary<string, string>
@@ -47,8 +49,10 @@ public class ArgHelpersTests
         { "-s", nameof(CodeGeneratorOptions.StructuredModel) },
         { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) },
         { "-m", nameof(CodeGeneratorOptions.ManagementApi) },
-        { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-        { "--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" }
+        { "-i", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" },
+        { "--environmentid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" },
+        { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" }, // Backwards compatibility
+        { "--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" } // Backwards compatibility
     };
 
     [Theory]
@@ -187,33 +191,33 @@ public class ArgHelpersTests
 
     public static IEnumerable<object[]> DeliveryApiSwitchOptions()
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
 
-        yield return new object[] { new string[] { "-p", projectId, "-m", "False" } };
-        yield return new object[] { new string[] { "-p", projectId, "-m", "false" } };
-        yield return new object[] { new string[] { "-p", projectId, "-m=false" } };
-        yield return new object[] { new string[] { "-p", projectId, "-m=False" } };
-        yield return new object[] { new string[] { "-p", projectId } };
+        yield return [new [] { "-p", environmentId, "-m", "False" }];
+        yield return [new [] { "-p", environmentId, "-m", "false" }];
+        yield return [new [] { "-p", environmentId, "-m=false" }];
+        yield return [new [] { "-p", environmentId, "-m=False" }];
+        yield return [new [] { "-p", environmentId }];
     }
 
     public static IEnumerable<object[]> MapiSwitchOptions()
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
 
-        yield return new object[] { new string[] { "-p", projectId, "-m", "True" } };
-        yield return new object[] { new string[] { "-p", projectId, "-m", "true" } };
-        yield return new object[] { new string[] { "-p", projectId, "-m=true" } };
-        yield return new object[] { new string[] { "-p", projectId, "-m=True" } };
+        yield return [new [] { "-p", environmentId, "-m", "True" }];
+        yield return [new [] { "-p", environmentId, "-m", "true" }];
+        yield return [new [] { "-p", environmentId, "-m=true" }];
+        yield return [new [] { "-p", environmentId, "-m=True" }];
     }
 
     public static IEnumerable<object[]> ExtendedDeliveryApiSwitchOptions()
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
 
-        yield return new object[] { new string[] { "-p", projectId, "-e", "True" } };
-        yield return new object[] { new string[] { "-p", projectId, "-e", "true" } };
-        yield return new object[] { new string[] { "-p", projectId, "-e=true" } };
-        yield return new object[] { new string[] { "-p", projectId, "-e=True" } };
+        yield return [new [] { "-p", environmentId, "-e", "True" }];
+        yield return [new [] { "-p", environmentId, "-e", "true" }];
+        yield return [new [] { "-p", environmentId, "-e=true" }];
+        yield return [new [] { "-p", environmentId, "-e=True" }];
     }
 
     public static IEnumerable<object[]> SupportedManagementOptions()
@@ -229,7 +233,7 @@ public class ArgHelpersTests
 
         foreach (var arg in args)
         {
-            yield return new object[] { arg };
+            yield return [arg];
         }
     }
 
@@ -247,7 +251,7 @@ public class ArgHelpersTests
 
         foreach (var arg in args)
         {
-            yield return new object[] { arg };
+            yield return [arg];
         }
     }
 
@@ -265,7 +269,7 @@ public class ArgHelpersTests
 
         foreach (var arg in args)
         {
-            yield return new object[] { arg };
+            yield return [arg];
         }
     }
 

@@ -31,7 +31,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         mockHttp.When("https://deliver.kontent.ai/*")
             .Respond("application/json", File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "Fixtures/delivery_types.json")));
         var httpClient = mockHttp.ToHttpClient();
-        _deliveryClient = DeliveryClientBuilder.WithProjectId(ProjectId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
+        _deliveryClient = DeliveryClientBuilder.WithEnvironmentId(EnvironmentId).WithDeliveryHttpClient(new DeliveryHttpClient(httpClient)).Build();
 
         _deliveryClientMock = new Mock<IDeliveryClient>();
         _outputProviderMock = new Mock<IOutputProvider>();
@@ -190,7 +190,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     [InlineData(false, null)]
     public async Task RunAsync_NoContentTypes_MessageIsLogged(bool withTypeProvider, string baseClass)
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
@@ -199,7 +199,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             BaseClass = baseClass,
             DeliveryOptions = new DeliveryOptions
             {
-                ProjectId = projectId
+                EnvironmentId = environmentId
             }
         });
 
@@ -225,7 +225,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var result = await codeGenerator.RunAsync();
 
         Logger.Verify(
-            n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
+            n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({environmentId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
             Times.Once());
         result.Should().Be(0);
     }
@@ -233,14 +233,14 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     [Fact]
     public async Task RunAsync_TypesIsNull_MessageIsLogged()
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
             DeliveryOptions = new DeliveryOptions
             {
-                ProjectId = projectId
+                EnvironmentId = environmentId
             }
         });
 
@@ -264,7 +264,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = await codeGenerator.RunAsync();
 
-        Logger.Verify(n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
+        Logger.Verify(n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({environmentId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
             Times.Once());
         result.Should().Be(0);
     }
@@ -272,14 +272,14 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     [Fact]
     public async Task RunAsync_DeliveryElementServiceThrowsException_MessageIsLogged()
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
             ManagementApi = false,
             DeliveryOptions = new DeliveryOptions
             {
-                ProjectId = projectId
+                EnvironmentId = environmentId
             }
         });
 
@@ -311,7 +311,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     [Fact]
     public async Task RunAsync_ContentTypeHasInvalidIdentifier_MessageIsLogged()
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
@@ -319,7 +319,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             WithTypeProvider = false,
             DeliveryOptions = new DeliveryOptions
             {
-                ProjectId = projectId
+                EnvironmentId = environmentId
             }
         });
 
@@ -368,7 +368,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
-            DeliveryOptions = new DeliveryOptions { ProjectId = ProjectId },
+            DeliveryOptions = new DeliveryOptions { EnvironmentId = EnvironmentId },
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             ManagementApi = false,
@@ -411,7 +411,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
-            DeliveryOptions = new DeliveryOptions { ProjectId = ProjectId },
+            DeliveryOptions = new DeliveryOptions { EnvironmentId = EnvironmentId },
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             GeneratePartials = false,
@@ -456,7 +456,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
-            DeliveryOptions = new DeliveryOptions { ProjectId = ProjectId },
+            DeliveryOptions = new DeliveryOptions { EnvironmentId = EnvironmentId },
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             FileNameSuffix = transformFilename,
@@ -504,7 +504,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
-            DeliveryOptions = new DeliveryOptions { ProjectId = ProjectId },
+            DeliveryOptions = new DeliveryOptions { EnvironmentId = EnvironmentId },
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             ManagementApi = false,
@@ -545,7 +545,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
-            DeliveryOptions = new DeliveryOptions { ProjectId = ProjectId },
+            DeliveryOptions = new DeliveryOptions { EnvironmentId = EnvironmentId },
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             ManagementApi = false,

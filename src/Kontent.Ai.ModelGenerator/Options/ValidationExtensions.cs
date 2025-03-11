@@ -35,9 +35,9 @@ public static class ValidationExtensions
     /// <exception cref="Exception"></exception>
     private static void ManagementOptionsValidate(this CodeGeneratorOptions codeGeneratorOptions)
     {
-        if (codeGeneratorOptions.ManagementOptions?.ProjectId == null)
+        if (codeGeneratorOptions.ManagementOptions?.EnvironmentId == null)
         {
-            throw new Exception(ExceptionMessage(codeGeneratorOptions, nameof(ManagementOptions.ProjectId)));
+            throw new Exception(ExceptionMessage(codeGeneratorOptions, nameof(ManagementOptions.EnvironmentId)));
         }
 
         if (string.IsNullOrWhiteSpace(codeGeneratorOptions.ManagementOptions.ApiKey))
@@ -54,7 +54,7 @@ public static class ValidationExtensions
     {
         if (codeGeneratorOptions.DeliveryOptions == null)
         {
-            throw new Exception(ExceptionMessage(codeGeneratorOptions, nameof(DeliveryOptions.ProjectId)));
+            throw new Exception(ExceptionMessage(codeGeneratorOptions, nameof(DeliveryOptions.EnvironmentId)));
         }
 
         if (codeGeneratorOptions.StructuredModelFlags.HasFlag(StructuredModelFlags.ValidationIssue))

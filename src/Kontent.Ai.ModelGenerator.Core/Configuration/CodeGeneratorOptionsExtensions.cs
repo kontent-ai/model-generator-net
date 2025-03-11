@@ -20,10 +20,10 @@ public static class CodeGeneratorOptionsExtensions
         return options.ExtendedDeliveryModels() ? DesiredModelsType.ExtendedDelivery : DesiredModelsType.Delivery;
     }
 
-    public static string GetProjectId(this CodeGeneratorOptions options) =>
+    public static string GetEnvironmentId(this CodeGeneratorOptions options) =>
         options.ManagementApi || options.ExtendedDeliveryModels
-            ? options.ManagementOptions.ProjectId
-            : options.DeliveryOptions.ProjectId;
+            ? options.ManagementOptions.EnvironmentId
+            : options.DeliveryOptions.EnvironmentId;
 
     public static bool IsStructuredModelModularContent(this CodeGeneratorOptions options) =>
         options.StructuredModelFlags.HasFlag(StructuredModelFlags.ModularContent);

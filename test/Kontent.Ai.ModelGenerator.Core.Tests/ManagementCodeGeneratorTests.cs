@@ -56,7 +56,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
     [InlineData(null)]
     public async Task RunAsync_NoContentTypes_MessageIsLogged(string baseClass)
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
@@ -64,7 +64,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             BaseClass = baseClass,
             ManagementOptions = new ManagementOptions
             {
-                ProjectId = projectId,
+                EnvironmentId = environmentId,
                 ApiKey = "api_key"
             }
         });
@@ -97,7 +97,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = await codeGenerator.RunAsync();
 
-        Logger.Verify(n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
+        Logger.Verify(n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({environmentId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
             Times.Once());
         result.Should().Be(0);
     }
@@ -111,7 +111,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = true,
             ManagementOptions = new ManagementOptions
             {
-                ProjectId = Guid.NewGuid().ToString(),
+                EnvironmentId = Guid.NewGuid().ToString(),
                 ApiKey = "api_key"
             }
         });
@@ -251,7 +251,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             OutputDir = TempDir,
             ManagementApi = true,
             GeneratePartials = false,
-            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", EnvironmentId = EnvironmentId }
         });
 
         var codeGenerator = new ManagementCodeGenerator(
@@ -285,7 +285,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.Setup(x => x.Value).Returns(new CodeGeneratorOptions
         {
-            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", EnvironmentId = EnvironmentId },
             Namespace = "CustomNamespace",
             OutputDir = TempDir,
             GeneratePartials = false,
@@ -331,7 +331,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             FileNameSuffix = transformFilename,
             GeneratePartials = true,
             ManagementApi = true,
-            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", EnvironmentId = EnvironmentId }
         });
 
         var codeGenerator = new ManagementCodeGenerator(
@@ -375,7 +375,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             OutputDir = TempDir,
             GeneratePartials = false,
             ManagementApi = true,
-            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", EnvironmentId = EnvironmentId },
             BaseClass = baseClassName
         });
 
