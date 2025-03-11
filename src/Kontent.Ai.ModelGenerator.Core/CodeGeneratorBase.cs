@@ -20,7 +20,7 @@ public abstract class CodeGeneratorBase
 
     protected string FilenameSuffix => string.IsNullOrEmpty(Options.FileNameSuffix) ? "" : $".{Options.FileNameSuffix}";
     private string NoContentTypeAvailableMessage =>
-        $@"No content type available for the project ({Options.GetProjectId()}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.";
+        $@"No content type available for the project ({Options.GetEnvironmentId()}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.";
 
     protected CodeGeneratorBase(
         IOptions<CodeGeneratorOptions> options,

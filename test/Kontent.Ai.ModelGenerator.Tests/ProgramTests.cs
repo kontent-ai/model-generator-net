@@ -3,7 +3,7 @@
 public class ProgramTests
 {
     [Fact]
-    public async Task CreateCodeGeneratorOptions_NoProjectId_ReturnsError()
+    public async Task CreateCodeGeneratorOptions_NoEnvironmentId_ReturnsError()
     {
         var result = await Program.Main(Array.Empty<string>());
         result.Should().Be(1);

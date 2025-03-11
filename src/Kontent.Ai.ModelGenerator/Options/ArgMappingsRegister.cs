@@ -23,20 +23,24 @@ internal class ArgMappingsRegister
         { "-m", nameof(CodeGeneratorOptions.ManagementApi) }
     };
 
-    public static readonly IDictionary<string, string> DeliveryProjectIdMappings = new Dictionary<string, string>
+    public static readonly IDictionary<string, string> DeliveryEnvironmentIdMappings = new Dictionary<string, string>
     {
-        { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" },
-        {"--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.ProjectId)}" } // Backwards compatibility
+        { "-i", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" },
+        { "--environmentid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" },
+        { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" }, // Backwards compatibility
+        {"--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" } // Backwards compatibility
     };
 
-    public static readonly IDictionary<string, string> ManagementProjectIdMappings = new Dictionary<string, string>
+    public static readonly IDictionary<string, string> ManagementEnvironmentIdMappings = new Dictionary<string, string>
     {
-        { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" },
-        {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.ProjectId)}" } // Backwards compatibility
+        { "-i", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" },
+        { "--environmentid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" },
+        { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" }, // Backwards compatibility
+        {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" } // Backwards compatibility
     };
 
     public static readonly IEnumerable<string> AllMappingsKeys =
         GeneralMappings.Keys
-            .Union(DeliveryProjectIdMappings.Keys)
-            .Union(ManagementProjectIdMappings.Keys);
+            .Union(DeliveryEnvironmentIdMappings.Keys)
+            .Union(ManagementEnvironmentIdMappings.Keys);
 }

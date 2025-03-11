@@ -467,7 +467,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
     [InlineData(false, null)]
     public async Task RunAsync_NoContentTypes_MessageIsLogged(bool withTypeProvider, string baseClass)
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
         var mockOptions = new Mock<IOptions<CodeGeneratorOptions>>();
         mockOptions.SetupGet(option => option.Value).Returns(new CodeGeneratorOptions
         {
@@ -477,7 +477,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             BaseClass = baseClass,
             ManagementOptions = new ManagementOptions
             {
-                ProjectId = projectId,
+                EnvironmentId = environmentId,
                 ApiKey = "api_key"
             }
         });
@@ -511,7 +511,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = await codeGenerator.RunAsync();
 
-        Logger.Verify(n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({projectId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
+        Logger.Verify(n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({environmentId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
             Times.Once());
         result.Should().Be(0);
     }
@@ -528,7 +528,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = false,
-            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", EnvironmentId = EnvironmentId }
         });
 
         var contentType = new ContentTypeModel
@@ -591,7 +591,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             ManagementApi = false,
             GeneratePartials = false,
             WithTypeProvider = false,
-            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", EnvironmentId = EnvironmentId }
         });
 
         _deliveryElementService.Setup(x => x.GetElementType(It.IsAny<string>())).Throws<ArgumentNullException>();
@@ -628,7 +628,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             GeneratePartials = false,
             WithTypeProvider = false,
             StructuredModel = structuredModel.ToString(),
-            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId }
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", EnvironmentId = EnvironmentId }
         });
 
         var codeGenerator = new ExtendedDeliveryCodeGenerator(
@@ -671,7 +671,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             GeneratePartials = false,
             WithTypeProvider = false,
             StructuredModel = structuredModel.ToString(),
-            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", EnvironmentId = EnvironmentId },
             FileNameSuffix = transformFilename
         });
 
@@ -717,7 +717,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             GeneratePartials = true,
             WithTypeProvider = false,
             StructuredModel = structuredModel.ToString(),
-            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", EnvironmentId = EnvironmentId },
             FileNameSuffix = transformFilename
         });
 
@@ -773,7 +773,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             GeneratePartials = false,
             WithTypeProvider = true,
             StructuredModel = structuredModel.ToString(),
-            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", EnvironmentId = EnvironmentId },
         });
 
         var codeGenerator = new ExtendedDeliveryCodeGenerator(
@@ -818,7 +818,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             GeneratePartials = false,
             StructuredModel = structuredModel.ToString(),
             WithTypeProvider = false,
-            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", ProjectId = ProjectId },
+            ManagementOptions = new ManagementOptions { ApiKey = "apiKey", EnvironmentId = EnvironmentId },
             BaseClass = baseClassName
         });
 

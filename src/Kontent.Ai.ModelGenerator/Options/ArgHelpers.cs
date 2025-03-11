@@ -98,11 +98,11 @@ internal static class ArgHelpers
                 argName == extendedDeliverDecidingArgs.ShorthandedArgName ||
                 argName == extendedDeliverDecidingArgs.FullArgName)
             {
-                return ArgMappingsRegister.ManagementProjectIdMappings;
+                return ArgMappingsRegister.ManagementEnvironmentIdMappings;
             }
         }
 
-        return ArgMappingsRegister.DeliveryProjectIdMappings;
+        return ArgMappingsRegister.DeliveryEnvironmentIdMappings;
     }
 
     private static bool IsOptionPropertyValid<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>

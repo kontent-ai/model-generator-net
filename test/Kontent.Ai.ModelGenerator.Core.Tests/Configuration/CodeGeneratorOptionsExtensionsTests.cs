@@ -342,9 +342,9 @@ public class CodeGeneratorOptionsExtensionsTests
     }
 
     [Fact]
-    public void GetProjectId_DeliveryApi_Returns()
+    public void GetEnvironmentId_DeliveryApi_Returns()
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
 
         var options = new CodeGeneratorOptions
         {
@@ -352,19 +352,19 @@ public class CodeGeneratorOptionsExtensionsTests
             ExtendedDeliveryModels = false,
             DeliveryOptions = new DeliveryOptions
             {
-                ProjectId = projectId
+                EnvironmentId = environmentId
             }
         };
 
-        var result = options.GetProjectId();
+        var result = options.GetEnvironmentId();
 
-        result.Should().Be(projectId);
+        result.Should().Be(environmentId);
     }
 
     [Fact]
-    public void GetProjectId_ManagementApi_Returns()
+    public void GetEnvironmentId_ManagementApi_Returns()
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
 
         var options = new CodeGeneratorOptions
         {
@@ -372,19 +372,19 @@ public class CodeGeneratorOptionsExtensionsTests
             ExtendedDeliveryModels = false,
             ManagementOptions = new ManagementOptions
             {
-                ProjectId = projectId
+                EnvironmentId = environmentId
             }
         };
 
-        var result = options.GetProjectId();
+        var result = options.GetEnvironmentId();
 
-        result.Should().Be(projectId);
+        result.Should().Be(environmentId);
     }
 
     [Fact]
-    public void GetProjectId_ExtendedDeliveryModels_Returns()
+    public void GetEnvironmentId_ExtendedDeliveryModels_Returns()
     {
-        var projectId = Guid.NewGuid().ToString();
+        var environmentId = Guid.NewGuid().ToString();
 
         var options = new CodeGeneratorOptions
         {
@@ -392,12 +392,12 @@ public class CodeGeneratorOptionsExtensionsTests
             ExtendedDeliveryModels = true,
             ManagementOptions = new ManagementOptions
             {
-                ProjectId = projectId
+                EnvironmentId = environmentId
             }
         };
 
-        var result = options.GetProjectId();
+        var result = options.GetEnvironmentId();
 
-        result.Should().Be(projectId);
+        result.Should().Be(environmentId);
     }
 }
