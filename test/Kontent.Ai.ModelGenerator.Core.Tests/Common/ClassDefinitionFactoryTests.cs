@@ -28,6 +28,6 @@ public class ClassDefinitionFactoryTests
     {
         var call = () => _factory.CreateClassDefinition(codename);
 
-        call.Should().ThrowExactly<ArgumentException>();
+        call.Should().Throw<ArgumentException>();
     }
 }

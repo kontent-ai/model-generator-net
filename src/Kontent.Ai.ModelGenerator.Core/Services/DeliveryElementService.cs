@@ -18,10 +18,7 @@ public class DeliveryElementService : IDeliveryElementService
 
     public string GetElementType(string elementType)
     {
-        if (elementType == null)
-        {
-            throw new ArgumentNullException(nameof(elementType));
-        }
+        ArgumentNullException.ThrowIfNull(elementType);
 
         if (!Options.IsStructuredModelEnabled())
         {
@@ -46,10 +43,7 @@ public class DeliveryElementService : IDeliveryElementService
 
     private static void Validate(CodeGeneratorOptions options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentNullException.ThrowIfNull(options);
 
         if (options.ManagementApi)
         {

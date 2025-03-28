@@ -7,22 +7,15 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
-public class ExtendedDeliveryClassCodeGenerator : DeliveryClassCodeGenerator
+public class ExtendedDeliveryClassCodeGenerator(
+    ClassDefinition classDefinition,
+    string classFilename,
+    bool generateStructuredModularContent,
+    IUserMessageLogger userMessageLogger,
+    string @namespace = ClassCodeGenerator.DefaultNamespace) : DeliveryClassCodeGenerator(classDefinition, classFilename, @namespace)
 {
-    private readonly IUserMessageLogger _userMessageLogger;
-    private readonly bool _generateStructuredModularContent;
-
-    public ExtendedDeliveryClassCodeGenerator(
-        ClassDefinition classDefinition,
-        string classFilename,
-        bool generateStructuredModularContent,
-        IUserMessageLogger userMessageLogger,
-        string @namespace = DefaultNamespace)
-        : base(classDefinition, classFilename, @namespace)
-    {
-        _generateStructuredModularContent = generateStructuredModularContent;
-        _userMessageLogger = userMessageLogger;
-    }
+    private readonly IUserMessageLogger _userMessageLogger = userMessageLogger;
+    private readonly bool _generateStructuredModularContent = generateStructuredModularContent;
 
     protected override TypeDeclarationSyntax GetClassDeclaration()
     {

@@ -37,18 +37,18 @@ public class TypeProviderCodeGeneratorTests
 
         var compilation = CSharpCompilation.Create(
             assemblyName: Path.GetRandomFileName(),
-            syntaxTrees: new[] {
+            syntaxTrees: [
                 CSharpSyntaxTree.ParseText(compiledCode),
                 CSharpSyntaxTree.ParseText(dummyClasses)
-            },
-            references: new[] {
+            ],
+            references: [
                 MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("netstandard")).Location),
                 MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("mscorlib")).Location),
                 MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Runtime")).Location),
                 MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Linq")).Location),
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.IApiResponse).GetTypeInfo().Assembly.Location)
-            },
+            ],
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         using var ms = new MemoryStream();

@@ -8,7 +8,7 @@ namespace Kontent.Ai.ModelGenerator.Core.Tests.Helpers;
 
 public class TypedDeliveryPropertyMapperTests
 {
-    private static readonly CodeGeneratorOptions ExtendedDeliveryModelsOptions = new CodeGeneratorOptions
+    private static readonly CodeGeneratorOptions ExtendedDeliveryModelsOptions = new()
     {
         ExtendedDeliveryModels = true
     };
@@ -18,7 +18,7 @@ public class TypedDeliveryPropertyMapperTests
     {
         var contentTypes = new List<ContentTypeModel>
         {
-            new ContentTypeModel()
+            new()
         };
 
         var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(null, contentTypes, ExtendedDeliveryModelsOptions, out _);
@@ -31,7 +31,7 @@ public class TypedDeliveryPropertyMapperTests
     {
         var contentTypes = new List<ContentTypeModel>
         {
-            new ContentTypeModel()
+            new()
         };
         var element = new AssetElementMetadataModel();
 
@@ -66,7 +66,7 @@ public class TypedDeliveryPropertyMapperTests
     {
         var contentTypes = new List<ContentTypeModel>
         {
-            new ContentTypeModel()
+            new()
         };
 
         var tryMapCall = () => TypedDeliveryPropertyMapper.TryMap(element, contentTypes, null, out _);
@@ -80,7 +80,7 @@ public class TypedDeliveryPropertyMapperTests
     {
         var contentTypes = new List<ContentTypeModel>
         {
-            new ContentTypeModel()
+            new()
         };
         var options = new CodeGeneratorOptions
         {
@@ -99,13 +99,11 @@ public class TypedDeliveryPropertyMapperTests
 
         var allContentTypes = new List<ContentTypeModel>()
         {
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "grinder",
                 Id = Guid.NewGuid()
             },
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "coffee",
                 Id = Guid.NewGuid()
             }
@@ -122,13 +120,11 @@ public class TypedDeliveryPropertyMapperTests
     {
         var allContentTypes = new List<ContentTypeModel>()
         {
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "grinder",
                 Id = Guid.NewGuid()
             },
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "coffee",
                 Id = Guid.NewGuid()
             }
@@ -149,13 +145,11 @@ public class TypedDeliveryPropertyMapperTests
     {
         var allContentTypes = new List<ContentTypeModel>()
         {
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "grinder",
                 Id = Guid.NewGuid()
             },
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "coffee",
                 Id = Guid.NewGuid()
             }
@@ -176,13 +170,11 @@ public class TypedDeliveryPropertyMapperTests
     {
         var allContentTypes = new List<ContentTypeModel>()
         {
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "grinder",
                 Id = Guid.NewGuid()
             },
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "coffee",
                 Id = Guid.NewGuid()
             }
@@ -203,13 +195,11 @@ public class TypedDeliveryPropertyMapperTests
     {
         var allContentTypes = new List<ContentTypeModel>()
         {
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "grinder",
                 Id = Guid.NewGuid()
             },
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "coffee",
                 Id = Guid.NewGuid()
             }
@@ -227,13 +217,11 @@ public class TypedDeliveryPropertyMapperTests
     {
         var allContentTypes = new List<ContentTypeModel>()
         {
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "grinder",
                 Id = Guid.NewGuid()
             },
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "coffee",
                 Id = Guid.NewGuid()
             }
@@ -261,8 +249,7 @@ public class TypedDeliveryPropertyMapperTests
 
         var linkedContentTypeModels = new List<ContentTypeModel>()
         {
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "article",
                 Id = Guid.NewGuid()
             }
@@ -296,8 +283,7 @@ public class TypedDeliveryPropertyMapperTests
 
         var linkedContentTypeModels = new List<ContentTypeModel>()
         {
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "article",
                 Id = Guid.NewGuid()
             }
@@ -342,8 +328,7 @@ public class TypedDeliveryPropertyMapperTests
 
         var linkedContentTypeModels = new List<ContentTypeModel>()
         {
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "article",
                 Id = Guid.NewGuid()
             }
@@ -379,8 +364,7 @@ public class TypedDeliveryPropertyMapperTests
 
         var linkedContentTypeModels = new List<ContentTypeModel>()
         {
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "article",
                 Id = Guid.NewGuid()
             }
@@ -416,13 +400,11 @@ public class TypedDeliveryPropertyMapperTests
 
         var linkedContentTypeModels = new List<ContentTypeModel>()
         {
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "article",
                 Id = Guid.NewGuid()
             },
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "blog",
                 Id = Guid.NewGuid()
             }
@@ -458,13 +440,11 @@ public class TypedDeliveryPropertyMapperTests
 
         var linkedContentTypeModels = new List<ContentTypeModel>()
         {
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "article",
                 Id = Guid.NewGuid()
             },
-            new ContentTypeModel
-            {
+            new() {
                 Codename = "blog",
                 Id = Guid.NewGuid()
             }

@@ -14,25 +14,13 @@ public class ClassCodeGeneratorFactory : IClassCodeGeneratorFactory
         IUserMessageLogger logger,
         bool customPartial = false)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentNullException.ThrowIfNull(options);
 
-        if (classDefinition == null)
-        {
-            throw new ArgumentNullException(nameof(classDefinition));
-        }
+        ArgumentNullException.ThrowIfNull(classDefinition);
 
-        if (classFilename == null)
-        {
-            throw new ArgumentNullException(nameof(classFilename));
-        }
+        ArgumentNullException.ThrowIfNull(classFilename);
 
-        if (logger == null)
-        {
-            throw new ArgumentNullException(nameof(logger));
-        }
+        ArgumentNullException.ThrowIfNull(logger);
 
         if (customPartial)
         {

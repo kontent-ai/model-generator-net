@@ -5,20 +5,15 @@ using Kontent.Ai.ModelGenerator.Core.Helpers;
 
 namespace Kontent.Ai.ModelGenerator.Core.Common;
 
-public class ClassDefinition
+public class ClassDefinition(string codeName)
 {
-    public List<Property> Properties { get; } = new List<Property>();
+    public List<Property> Properties { get; } = [];
 
-    public List<string> PropertyCodenameConstants { get; } = new List<string>();
+    public List<string> PropertyCodenameConstants { get; } = [];
 
     public string ClassName => TextHelpers.GetValidPascalCaseIdentifierName(Codename);
 
-    public string Codename { get; }
-
-    public ClassDefinition(string codeName)
-    {
-        Codename = codeName;
-    }
+    public string Codename { get; } = codeName;
 
     public void AddProperty(Property property)
     {

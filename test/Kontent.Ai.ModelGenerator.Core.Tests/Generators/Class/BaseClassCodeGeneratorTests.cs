@@ -5,7 +5,7 @@ namespace Kontent.Ai.ModelGenerator.Core.Tests.Generators.Class;
 
 public class BaseClassCodeGeneratorTests
 {
-    private readonly CodeGeneratorOptions CodeGeneratorOptions = new CodeGeneratorOptions
+    private readonly CodeGeneratorOptions CodeGeneratorOptions = new()
     {
         BaseClass = "ContentBase"
     };

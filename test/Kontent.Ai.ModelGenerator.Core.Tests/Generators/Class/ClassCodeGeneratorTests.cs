@@ -87,9 +87,9 @@ public class ClassCodeGeneratorTests
     }
 
     private static object[] ConstructorParams(string classDefinitionCodename = null, string classFileName = null, string @namespace = null)
-        => new object[] { GetClassDefinition(classDefinitionCodename), classFileName, @namespace };
+        => [GetClassDefinition(classDefinitionCodename), classFileName, @namespace];
 
     private static ClassDefinition GetClassDefinition(string classDefinitionCodename) => classDefinitionCodename == null
-        ? (ClassDefinition)null
+        ? null
         : new ClassDefinition(classDefinitionCodename);
 }

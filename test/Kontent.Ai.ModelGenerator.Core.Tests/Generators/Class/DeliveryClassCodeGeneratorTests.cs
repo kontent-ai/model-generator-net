@@ -57,14 +57,14 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
 
         var compilation = CSharpCompilation.Create(
             assemblyName: Path.GetRandomFileName(),
-            syntaxTrees: new[]
-            {
+            syntaxTrees:
+            [
                 CSharpSyntaxTree.ParseText(compiledCode)
-            },
-            references: new[] {
+            ],
+            references: [
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.IApiResponse).GetTypeInfo().Assembly.Location)
-            },
+            ],
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         AssertCompiledCode(compilation);

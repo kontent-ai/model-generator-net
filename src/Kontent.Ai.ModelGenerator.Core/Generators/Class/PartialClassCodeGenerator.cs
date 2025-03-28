@@ -6,13 +6,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
-public class PartialClassCodeGenerator : DeliveryClassCodeGeneratorBase
+public class PartialClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = ClassCodeGenerator.DefaultNamespace) : DeliveryClassCodeGeneratorBase(classDefinition, classFilename, @namespace)
 {
-    public PartialClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace)
-        : base(classDefinition, classFilename, @namespace)
-    {
-    }
-
     protected override TypeDeclarationSyntax GetClassDeclaration()
     {
         var classDeclaration = base.GetClassDeclaration();
