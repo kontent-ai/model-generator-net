@@ -68,8 +68,8 @@ public class ManagementClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
 
         var compilation = CSharpCompilation.Create(
             assemblyName: Path.GetRandomFileName(),
-            syntaxTrees: new[] { CSharpSyntaxTree.ParseText(compiledCode) },
-            references: new[] {
+            syntaxTrees: [CSharpSyntaxTree.ParseText(compiledCode)],
+            references: [
                 MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("netstandard")).Location),
                 MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("mscorlib")).Location),
                 MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Runtime")).Location),
@@ -77,7 +77,7 @@ public class ManagementClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
                 MetadataReference.CreateFromFile(typeof(Management.Modules.ModelBuilders.IModelProvider).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Management.Models.LanguageVariants.Elements.BaseElement).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Newtonsoft.Json.IJsonLineInfo).GetTypeInfo().Assembly.Location)
-            },
+            ],
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         AssertCompiledCode(compilation);

@@ -9,7 +9,7 @@ using Kontent.Ai.ModelGenerator.Core.Helpers;
 
 namespace Kontent.Ai.ModelGenerator.Core.Common;
 
-public class Property
+public class Property(string codename, string typeName, string id = null)
 {
     private const string RichTextElementType = "rich_text";
     private const string DateTimeElementType = "date_time";
@@ -21,14 +21,14 @@ public class Property
 
     public string Identifier => TextHelpers.GetValidPascalCaseIdentifierName(Codename);
 
-    public string Codename { get; }
+    public string Codename { get; } = codename;
 
-    public string Id { get; }
+    public string Id { get; } = id;
 
     /// <summary>
     /// Returns return type of the property in a string format (e.g.: "string").
     /// </summary>
-    public string TypeName { get; }
+    public string TypeName { get; } = typeName;
 
     private static readonly IImmutableDictionary<string, string> DeliverElementTypesDictionary = new Dictionary<string, string>
     {
@@ -78,13 +78,6 @@ public class Property
         { ElementMetadataType.UrlSlug,nameof(UrlSlugElement) },
         { ElementMetadataType.Custom, nameof(CustomElement) }
     }.ToImmutableDictionary();
-
-    public Property(string codename, string typeName, string id = null)
-    {
-        Codename = codename;
-        TypeName = typeName;
-        Id = id;
-    }
 
     public static bool IsDateTimeElementType(string elementType) => elementType == DateTimeElementType;
 

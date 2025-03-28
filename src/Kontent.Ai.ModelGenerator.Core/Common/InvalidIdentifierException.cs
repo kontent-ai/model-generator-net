@@ -2,9 +2,6 @@
 
 namespace Kontent.Ai.ModelGenerator.Core.Common;
 
-public class InvalidIdentifierException : Exception
+public class InvalidIdentifierException(string message) : Exception(message)
 {
-    public InvalidIdentifierException(string message) : base(message)
-    {
-    }
 }

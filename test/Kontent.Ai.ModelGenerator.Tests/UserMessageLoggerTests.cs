@@ -86,6 +86,8 @@ public class UserMessageLoggerTests
     [InlineData(null)]
     public async Task LogErrorAsync_MessageIsNullOrWhitespace_MessageIsNotLoggedToConsole(string message)
     {
+        _stringWriter.GetStringBuilder().Clear();
+
         await _userMessageLogger.LogErrorAsync(message);
 
         _stringWriter.ToString().Should().BeEmpty();

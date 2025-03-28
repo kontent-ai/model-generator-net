@@ -7,27 +7,20 @@ using Newtonsoft.Json.Serialization;
 
 namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
-public class ManagementClassCodeGenerator : ClassCodeGenerator
+public class ManagementClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = ClassCodeGenerator.DefaultNamespace) : ClassCodeGenerator(classDefinition, classFilename, @namespace)
 {
-    private static readonly string KontentElementIdAttributeName = new string
-    (
+    private static readonly string KontentElementIdAttributeName = new    (
         nameof(KontentElementIdAttribute)
             .Substring(0, nameof(KontentElementIdAttribute).Length - "Attribute".Length)
             .ToArray()
     );
 
-    public ManagementClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace)
-        : base(classDefinition, classFilename, @namespace)
-    {
-    }
-
     protected override UsingDirectiveSyntax[] GetApiUsings() =>
-        new[]
-        {
+        [
             SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Management.Models.LanguageVariants.Elements.BaseElement).Namespace!)),
             SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(KontentElementIdAttribute).Namespace!)),
             SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName($"{nameof(Newtonsoft)}.{nameof(Newtonsoft.Json)}"))
-        };
+        ];
 
     protected override TypeDeclarationSyntax GetClassDeclaration()
     {

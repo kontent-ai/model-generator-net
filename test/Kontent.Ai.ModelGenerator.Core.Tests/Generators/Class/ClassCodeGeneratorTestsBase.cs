@@ -8,8 +8,8 @@ namespace Kontent.Ai.ModelGenerator.Core.Tests.Generators.Class;
 
 public abstract class ClassCodeGeneratorTestsBase
 {
-    protected readonly ClassDefinition ClassDefinition = new ClassDefinition("Complete content type");
-    protected readonly Mock<IUserMessageLogger> LoggerMock = new Mock<IUserMessageLogger>();
+    protected readonly ClassDefinition ClassDefinition = new("Complete content type");
+    protected readonly Mock<IUserMessageLogger> LoggerMock = new();
 
     protected void AssertCompiledCode(CSharpCompilation compilation)
     {

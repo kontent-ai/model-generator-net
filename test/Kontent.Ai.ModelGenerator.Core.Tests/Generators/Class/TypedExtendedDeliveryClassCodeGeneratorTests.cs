@@ -25,7 +25,7 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
         var singleAllowedTypeMultiItemsTypeCodename = "modular_content_heroes";
         var singleAllowedTypeMultiItems = (LinkedItemsElementMetadataModel)TestDataGenerator.
             GenerateElementMetadataBase(Guid.NewGuid(), singleAllowedTypeMultiItemsTypeCodename, ElementMetadataType.LinkedItems);
-        singleAllowedTypeMultiItems.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeMultiItemsTypeName) });
+        singleAllowedTypeMultiItems.AllowedTypes = [Reference.ByCodename(singleAllowedTypeMultiItemsTypeName)];
         singleAllowedTypeMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
             singleAllowedTypeMultiItems,
@@ -35,14 +35,14 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
         // Linked items element limited to a single type with exactly 1 item.
         var singleAllowedTypeExactlySingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
             GenerateElementMetadataBase(Guid.NewGuid(), "modular_content_article", ElementMetadataType.LinkedItems);
-        singleAllowedTypeExactlySingleItem.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeExactlySingleItemTypeName) });
+        singleAllowedTypeExactlySingleItem.AllowedTypes = [Reference.ByCodename(singleAllowedTypeExactlySingleItemTypeName)];
         singleAllowedTypeExactlySingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
         ClassDefinition.AddProperty(Property.FromContentTypeElement(singleAllowedTypeExactlySingleItem, singleAllowedTypeExactlySingleItemTypeName));
 
         // Linked items element limited to a single type with at most 1 item.
         var singleAllowedTypeAtMostSingleItem = (LinkedItemsElementMetadataModel)TestDataGenerator.
             GenerateElementMetadataBase(Guid.NewGuid(), "modular_content_nemesis", ElementMetadataType.LinkedItems);
-        singleAllowedTypeAtMostSingleItem.AllowedTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeAtMostSingleItemTypeName) });
+        singleAllowedTypeAtMostSingleItem.AllowedTypes = [Reference.ByCodename(singleAllowedTypeAtMostSingleItemTypeName)];
         singleAllowedTypeAtMostSingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.AtMost, Value = 1 };
         ClassDefinition.AddProperty(Property.FromContentTypeElement(singleAllowedTypeAtMostSingleItem, singleAllowedTypeAtMostSingleItemTypeName));
 
@@ -54,7 +54,7 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
         var subpagesSingleAllowedTypeMultiItemsTypeCodename = "subpages_heroes";
         var subpagesSingleAllowedTypeMultiItems = (SubpagesElementMetadataModel)TestDataGenerator.
             GenerateElementMetadataBase(Guid.NewGuid(), subpagesSingleAllowedTypeMultiItemsTypeCodename, ElementMetadataType.Subpages);
-        subpagesSingleAllowedTypeMultiItems.AllowedContentTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeMultiItemsTypeName) });
+        subpagesSingleAllowedTypeMultiItems.AllowedContentTypes = [Reference.ByCodename(singleAllowedTypeMultiItemsTypeName)];
         subpagesSingleAllowedTypeMultiItems.ItemCountLimit = new LimitModel { Condition = LimitType.AtLeast, Value = 1 };
         ClassDefinition.AddProperty(Property.FromContentTypeElement(
             subpagesSingleAllowedTypeMultiItems,
@@ -64,14 +64,14 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
         // Subpages element limited to a single type with exactly 1 item.
         var subpagesSingleAllowedTypeExactlySingleItem = (SubpagesElementMetadataModel)TestDataGenerator.
             GenerateElementMetadataBase(Guid.NewGuid(), "subpages_article", ElementMetadataType.Subpages);
-        subpagesSingleAllowedTypeExactlySingleItem.AllowedContentTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeExactlySingleItemTypeName) });
+        subpagesSingleAllowedTypeExactlySingleItem.AllowedContentTypes = [Reference.ByCodename(singleAllowedTypeExactlySingleItemTypeName)];
         subpagesSingleAllowedTypeExactlySingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.Exactly, Value = 1 };
         ClassDefinition.AddProperty(Property.FromContentTypeElement(subpagesSingleAllowedTypeExactlySingleItem, singleAllowedTypeExactlySingleItemTypeName));
 
         // Subpages element limited to a single type with at most 1 item.
         var subpagesSingleAllowedTypeAtMostSingleItem = (SubpagesElementMetadataModel)TestDataGenerator.
             GenerateElementMetadataBase(Guid.NewGuid(), "subpages_nemesis", ElementMetadataType.Subpages);
-        subpagesSingleAllowedTypeAtMostSingleItem.AllowedContentTypes = new List<Reference>(new List<Reference> { Reference.ByCodename(singleAllowedTypeAtMostSingleItemTypeName) });
+        subpagesSingleAllowedTypeAtMostSingleItem.AllowedContentTypes = [Reference.ByCodename(singleAllowedTypeAtMostSingleItemTypeName)];
         subpagesSingleAllowedTypeAtMostSingleItem.ItemCountLimit = new LimitModel { Condition = LimitType.AtMost, Value = 1 };
         ClassDefinition.AddProperty(Property.FromContentTypeElement(subpagesSingleAllowedTypeAtMostSingleItem, singleAllowedTypeAtMostSingleItemTypeName));
 
@@ -122,18 +122,18 @@ public class TypedExtendedDeliveryClassCodeGeneratorTests : ClassCodeGeneratorTe
 
         var compilation = CSharpCompilation.Create(
             assemblyName: Path.GetRandomFileName(),
-            syntaxTrees: new[]
-            {
+            syntaxTrees:
+            [
                 CSharpSyntaxTree.ParseText(compiledHeroCode),
                 CSharpSyntaxTree.ParseText(compiledArticleCode),
                 CSharpSyntaxTree.ParseText(compiledNemesisCode),
                 CSharpSyntaxTree.ParseText(compiledCode),
-            },
-            references: new[] {
+            ],
+            references: [
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(Assembly.Load(new AssemblyName("System.Linq")).Location),
                 MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.IApiResponse).GetTypeInfo().Assembly.Location)
-            },
+            ],
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
         AssertCompiledCode(compilation);

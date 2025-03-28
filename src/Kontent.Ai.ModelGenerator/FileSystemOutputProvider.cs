@@ -5,9 +5,9 @@ using Microsoft.Extensions.Options;
 
 namespace Kontent.Ai.ModelGenerator;
 
-public class FileSystemOutputProvider : IOutputProvider
+public class FileSystemOutputProvider(IOptions<CodeGeneratorOptions> options) : IOutputProvider
 {
-    private readonly IOptions<CodeGeneratorOptions> _options;
+    private readonly IOptions<CodeGeneratorOptions> _options = options;
 
     internal string OutputDir
     {
@@ -26,11 +26,6 @@ public class FileSystemOutputProvider : IOutputProvider
 
             return outputDir;
         }
-    }
-
-    public FileSystemOutputProvider(IOptions<CodeGeneratorOptions> options)
-    {
-        _options = options;
     }
 
     public void Output(string content, string fileName, bool overwriteExisting)

@@ -4,13 +4,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
-public class DeliveryClassCodeGenerator : DeliveryClassCodeGeneratorBase
+public class DeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = ClassCodeGenerator.DefaultNamespace) : DeliveryClassCodeGeneratorBase(classDefinition, classFilename, @namespace)
 {
-    public DeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace)
-        : base(classDefinition, classFilename, @namespace)
-    {
-    }
-
     protected override TypeDeclarationSyntax GetClassDeclaration()
     {
         var classDeclaration = base.GetClassDeclaration();
@@ -22,12 +17,12 @@ public class DeliveryClassCodeGenerator : DeliveryClassCodeGeneratorBase
         return classDeclaration;
     }
 
-    protected override UsingDirectiveSyntax[] GetApiUsings() => new[]
-    {
+    protected override UsingDirectiveSyntax[] GetApiUsings() =>
+    [
         SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
         SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
         SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
-    };
+    ];
 
     private FieldDeclarationSyntax ClassCodenameConstant => GetFieldDeclaration("string", "Codename", ClassDefinition.Codename);
 }

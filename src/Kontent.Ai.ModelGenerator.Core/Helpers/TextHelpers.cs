@@ -8,7 +8,7 @@ namespace Kontent.Ai.ModelGenerator.Core.Helpers;
 
 public static class TextHelpers
 {
-    private static readonly Regex LineEndings = new Regex(@"\r\n|\n\r|\n|\r");
+    private static readonly Regex LineEndings = new(@"\r\n|\n\r|\n|\r");
     private const string WordSeparator = " ";
 
     /// <summary>
@@ -25,7 +25,7 @@ public static class TextHelpers
     /// </summary>
     /// <param name="name">name to be transformed</param>
     /// <returns></returns>
-    public static string GetUpperSnakeCasedIdentifierName(string name) => new string(
+    public static string GetUpperSnakeCasedIdentifierName(string name) => new(
         SplitName(name)
             .Select(word => char.ToUpper(word[0]) + word.Substring(1) + "_")
             .Aggregate((previous, current) => previous + current)
@@ -70,6 +70,6 @@ public static class TextHelpers
 
         return sanitizedName
             .ToLower()
-            .Split(new[] { WordSeparator }, StringSplitOptions.RemoveEmptyEntries);
+            .Split([WordSeparator], StringSplitOptions.RemoveEmptyEntries);
     }
 }

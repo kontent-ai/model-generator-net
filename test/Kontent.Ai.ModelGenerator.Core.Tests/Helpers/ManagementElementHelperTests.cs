@@ -20,7 +20,7 @@ public class ManagementElementHelperTests
     public void GetManagementContentTypeSnippetElements_ManagementContentTypeIsNull_ThrowsException()
     {
         var getManagementContentTypeSnippetElementsCall = () =>
-            ManagementElementHelper.GetManagementContentTypeSnippetElements(null, new List<ContentTypeSnippetModel>());
+            ManagementElementHelper.GetManagementContentTypeSnippetElements(null, []);
 
         getManagementContentTypeSnippetElementsCall.Should().ThrowExactly<ArgumentNullException>();
     }
@@ -32,8 +32,7 @@ public class ManagementElementHelperTests
 
         var snippets = new List<ContentTypeSnippetModel>
         {
-            new ContentTypeSnippetModel
-            {
+            new() {
                 Codename = contentTypeElementCodename,
                 Elements = new List<ElementMetadataBase>()
             }
@@ -55,7 +54,7 @@ public class ManagementElementHelperTests
         var snippetElement = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), contentTypeElementCodename, ElementMetadataType.ContentTypeSnippet);
 
         var getManagementContentTypeSnippetElementsCall =
-            () => ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, new List<ContentTypeSnippetModel>());
+            () => ManagementElementHelper.GetManagementContentTypeSnippetElements(snippetElement, []);
 
         getManagementContentTypeSnippetElementsCall.Should().ThrowExactly<ArgumentException>();
     }
@@ -70,8 +69,7 @@ public class ManagementElementHelperTests
 
         var snippets = new List<ContentTypeSnippetModel>
         {
-            new ContentTypeSnippetModel
-            {
+            new() {
                 Codename = snippetCodename,
                 Elements = new List<ElementMetadataBase>
                 {
@@ -93,7 +91,7 @@ public class ManagementElementHelperTests
 
         var element = TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), snippetCodename);
 
-        var result = ManagementElementHelper.GetManagementContentTypeSnippetElements(element, new List<ContentTypeSnippetModel>());
+        var result = ManagementElementHelper.GetManagementContentTypeSnippetElements(element, []);
 
         result.Should().BeNull();
     }
@@ -109,14 +107,12 @@ public class ManagementElementHelperTests
 
         var snippets = new List<ContentTypeSnippetModel>
         {
-            new ContentTypeSnippetModel
-            {
+            new() {
                 Codename = snippetCodename,
-                Elements = new List<ElementMetadataBase>
-                {
+                Elements = [
                     TestDataGenerator.GenerateElementMetadataBase(expectedElementId, $"{snippetCodename}_el"),
                     TestDataGenerator.GenerateElementMetadataBase(expectedElement2Id, $"{snippetCodename}_el2", ElementMetadataType.Number)
-                }
+                ]
             }
         };
 
@@ -139,15 +135,13 @@ public class ManagementElementHelperTests
 
         var snippets = new List<ContentTypeSnippetModel>
         {
-            new ContentTypeSnippetModel
-            {
+            new() {
                 Codename = snippetCodename,
-                Elements = new List<ElementMetadataBase>
-                {
+                Elements = [
                     TestDataGenerator.GenerateElementMetadataBase(expectedElementId, $"{snippetCodename}_el"),
                     TestDataGenerator.GenerateGuidelinesElement(Guid.NewGuid(), $"{snippetCodename}_guidelines"),
                     TestDataGenerator.GenerateElementMetadataBase(expectedElement2Id, $"{snippetCodename}_el2", ElementMetadataType.Number)
-                }
+                ]
             }
         };
 

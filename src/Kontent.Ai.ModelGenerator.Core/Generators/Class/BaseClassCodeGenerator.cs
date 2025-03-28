@@ -10,24 +10,19 @@ using Microsoft.CodeAnalysis.Formatting;
 
 namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
-public class BaseClassCodeGenerator : GeneralGenerator
+public class BaseClassCodeGenerator(CodeGeneratorOptions options) : GeneralGenerator(options.Namespace)
 {
     /// <summary>
     /// Collection of classes to extend (HashSet ensures that classes get extended only once)
     /// </summary>
     private readonly ICollection<string> _classesToExtend = new HashSet<string>();
 
-    private readonly CodeGeneratorOptions _options;
+    private readonly CodeGeneratorOptions _options = options;
 
     /// <summary>
     /// The calculated Extender Classname
     /// </summary>
     public string ExtenderClassName => $"{_options.BaseClass}Extender";
-
-    public BaseClassCodeGenerator(CodeGeneratorOptions options) : base(options.Namespace)
-    {
-        _options = options;
-    }
 
     /// <summary>
     /// Add string values for classes that should be added as partials so they inherit from the base class
@@ -64,7 +59,7 @@ namespace {Namespace}
         var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
         cu = cu.WithLeadingTrivia(ClassDescription());
 
-        AdhocWorkspace cw = new AdhocWorkspace();
+        AdhocWorkspace cw = new();
         return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
     }
 
@@ -91,7 +86,7 @@ namespace {Namespace}
         var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
         cu = cu.WithLeadingTrivia(ExtenderClassDescription);
 
-        AdhocWorkspace cw = new AdhocWorkspace();
+        AdhocWorkspace cw = new();
         return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
     }
 

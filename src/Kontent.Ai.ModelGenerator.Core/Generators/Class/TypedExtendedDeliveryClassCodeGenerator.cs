@@ -7,27 +7,22 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
-public class TypedExtendedDeliveryClassCodeGenerator : ClassCodeGenerator
+public class TypedExtendedDeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = ClassCodeGenerator.DefaultNamespace) : ClassCodeGenerator(classDefinition, classFilename, @namespace)
 {
     private const string OfTypeName = "OfType";
     private const string FirstOrDefaultName = "FirstOrDefault";
     private const string SingleSuffix = "Single";
     private const string TypedSuffix = "Typed";
 
-    public TypedExtendedDeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = DefaultNamespace)
-        : base(classDefinition, classFilename, @namespace)
-    {
-    }
-
     protected override MemberDeclarationSyntax[] Properties => GetProperties();
 
-    protected override UsingDirectiveSyntax[] GetApiUsings() => new[]
-    {
+    protected override UsingDirectiveSyntax[] GetApiUsings() =>
+    [
         SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
         SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Enumerable).Namespace!)),
         SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
         SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
-    };
+    ];
 
     protected override TypeDeclarationSyntax GetClassDeclaration()
     {

@@ -12,18 +12,14 @@ using Microsoft.CodeAnalysis.Formatting;
 
 namespace Kontent.Ai.ModelGenerator.Core.Generators;
 
-public class TypeProviderCodeGenerator : GeneralGenerator
+public class TypeProviderCodeGenerator(string @namespace = ClassCodeGenerator.DefaultNamespace) : GeneralGenerator(@namespace)
 {
     public const string ClassName = "CustomTypeProvider";
 
     /// <summary>
     /// Codename -> ClassName dictionary
     /// </summary>
-    private readonly Dictionary<string, string> _contentTypes = new Dictionary<string, string>();
-
-    public TypeProviderCodeGenerator(string @namespace = ClassCodeGenerator.DefaultNamespace) : base(@namespace)
-    {
-    }
+    private readonly Dictionary<string, string> _contentTypes = [];
 
     public void AddContentType(string codename, string className)
     {
@@ -50,7 +46,7 @@ public class TypeProviderCodeGenerator : GeneralGenerator
         var cu = (CompilationUnitSyntax)SyntaxTree.GetRoot();
         cu = cu.WithLeadingTrivia(ClassDescription());
 
-        AdhocWorkspace cw = new AdhocWorkspace();
+        AdhocWorkspace cw = new();
         return Formatter.Format(cu, cw).ToFullString().NormalizeLineEndings();
     }
 

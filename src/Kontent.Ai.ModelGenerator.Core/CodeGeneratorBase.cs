@@ -10,31 +10,22 @@ using Microsoft.Extensions.Options;
 
 namespace Kontent.Ai.ModelGenerator.Core;
 
-public abstract class CodeGeneratorBase
+public abstract class CodeGeneratorBase(
+    IOptions<CodeGeneratorOptions> options,
+    IOutputProvider outputProvider,
+    IClassCodeGeneratorFactory classCodeGeneratorFactory,
+    IClassDefinitionFactory classDefinitionFactory,
+    IUserMessageLogger logger)
 {
-    protected readonly IUserMessageLogger Logger;
-    protected readonly IClassCodeGeneratorFactory ClassCodeGeneratorFactory;
-    protected readonly IClassDefinitionFactory ClassDefinitionFactory;
-    protected readonly CodeGeneratorOptions Options;
-    protected readonly IOutputProvider OutputProvider;
+    protected readonly IUserMessageLogger Logger = logger;
+    protected readonly IClassCodeGeneratorFactory ClassCodeGeneratorFactory = classCodeGeneratorFactory;
+    protected readonly IClassDefinitionFactory ClassDefinitionFactory = classDefinitionFactory;
+    protected readonly CodeGeneratorOptions Options = options.Value;
+    protected readonly IOutputProvider OutputProvider = outputProvider;
 
     protected string FilenameSuffix => string.IsNullOrEmpty(Options.FileNameSuffix) ? "" : $".{Options.FileNameSuffix}";
     private string NoContentTypeAvailableMessage =>
-        $@"No content type available for the project ({Options.GetEnvironmentId()}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.";
-
-    protected CodeGeneratorBase(
-        IOptions<CodeGeneratorOptions> options,
-        IOutputProvider outputProvider,
-        IClassCodeGeneratorFactory classCodeGeneratorFactory,
-        IClassDefinitionFactory classDefinitionFactory,
-        IUserMessageLogger logger)
-    {
-        ClassCodeGeneratorFactory = classCodeGeneratorFactory;
-        ClassDefinitionFactory = classDefinitionFactory;
-        Options = options.Value;
-        OutputProvider = outputProvider;
-        Logger = logger;
-    }
+        $@"No content type available for the environment ({Options.GetEnvironmentId()}). Check the environment and project settings at https://app.kontent.ai/.";
 
     public async Task<int> RunAsync()
     {

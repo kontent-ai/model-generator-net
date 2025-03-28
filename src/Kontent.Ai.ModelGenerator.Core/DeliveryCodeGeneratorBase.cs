@@ -7,21 +7,15 @@ using Kontent.Ai.ModelGenerator.Core.Contract;
 
 namespace Kontent.Ai.ModelGenerator.Core;
 
-public abstract class DeliveryCodeGeneratorBase : CodeGeneratorBase
+public abstract class DeliveryCodeGeneratorBase(
+    IOptions<CodeGeneratorOptions> options,
+    IOutputProvider outputProvider,
+    IClassCodeGeneratorFactory classCodeGeneratorFactory,
+    IClassDefinitionFactory classDefinitionFactory,
+    IDeliveryElementService deliveryElementService,
+    IUserMessageLogger logger) : CodeGeneratorBase(options, outputProvider, classCodeGeneratorFactory, classDefinitionFactory, logger)
 {
-    protected readonly IDeliveryElementService DeliveryElementService;
-
-    protected DeliveryCodeGeneratorBase(
-        IOptions<CodeGeneratorOptions> options,
-        IOutputProvider outputProvider,
-        IClassCodeGeneratorFactory classCodeGeneratorFactory,
-        IClassDefinitionFactory classDefinitionFactory,
-        IDeliveryElementService deliveryElementService,
-        IUserMessageLogger logger)
-        : base(options, outputProvider, classCodeGeneratorFactory, classDefinitionFactory, logger)
-    {
-        DeliveryElementService = deliveryElementService;
-    }
+    protected readonly IDeliveryElementService DeliveryElementService = deliveryElementService;
 
     public new async Task<int> RunAsync()
     {
@@ -39,7 +33,7 @@ public abstract class DeliveryCodeGeneratorBase : CodeGeneratorBase
     {
         var classCodeGenerators = await GetClassCodeGenerators();
 
-        if (!classCodeGenerators.Any())
+        if (classCodeGenerators.Count == 0)
         {
             return;
         }
