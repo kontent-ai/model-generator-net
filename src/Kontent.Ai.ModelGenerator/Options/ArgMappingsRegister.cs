@@ -28,7 +28,7 @@ internal class ArgMappingsRegister
         { "-i", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" },
         { "--environmentid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" },
         { "-p", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" }, // Backwards compatibility
-        {"--projectid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" } // Backwards compatibility
+        {"--environmentid", $"{nameof(DeliveryOptions)}:{nameof(DeliveryOptions.EnvironmentId)}" } // Backwards compatibility
     };
 
     public static readonly IDictionary<string, string> ManagementEnvironmentIdMappings = new Dictionary<string, string>
@@ -36,7 +36,7 @@ internal class ArgMappingsRegister
         { "-i", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" },
         { "--environmentid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" },
         { "-p", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" }, // Backwards compatibility
-        {"--projectid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" } // Backwards compatibility
+        {"--environmentid", $"{nameof(ManagementOptions)}:{nameof(ManagementOptions.EnvironmentId)}" } // Backwards compatibility
     };
 
     public static readonly IEnumerable<string> AllMappingsKeys =

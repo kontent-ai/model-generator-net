@@ -6,10 +6,10 @@
     <Product>Kontent.ai</Product>
     <PackageIconUrl>https://github.com/kontent-ai/.github/blob/main/logos/kai-logo-symbol-color-rgb.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://github.com/kontent-ai/model-generator-net</RepositoryUrl>
-    <Copyright>© 2022 Kontent.ai s.r.o. All rights reserved.</Copyright>
+    <Copyright>© 2025 Kontent.ai s.r.o. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>tool;kontent-ai;generator</PackageTags>
-    <Description>This utility generates strongly-typed models based on content-types in a Kontent.ai project. The models are supposed to be used together with the Kontent.ai Delivery SDK for .NET or Kontent.ai Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
+    <Description>This utility generates strongly-typed models based on content types in a Kontent.ai environment. The models are meant to be used together with the Kontent.ai Delivery/Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>kai-logo-symbol-color-rgb.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
