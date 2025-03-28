@@ -4,20 +4,17 @@ Welcome to the Kontent.ai Model Generateor .NET docs!
 
 ## Table of Contents
 
-* [**Release & version management**](https://github.com/kontent-ai/kontent-ai.github.io/blob/main/docs/articles/Release-%26-version-management-of-.NET-projects.md)
+* [**Release & version management**](https://kontent-ai.github.io/ci-and-automation/net-guidelines/Kontent.ai-best-practices-for-.csproj-files#version-management)
 * [**Building and running the generator for your target platform**](./build-and-run.md)
 
 ***
 
 ## Blog
 
-* [Kontent blog](https://kontent.ai/blog)
+* [Kontent.ai blog](https://kontent.ai/blog)
 
 ## Documentation
 
 * [Kontent.ai Learn portal](https://kontent.ai/learn)
-* [Kontent.ai API reference](https://kontent.ai/learn/reference)
+* [Kontent.ai API reference](https://kontent.ai/learn/docs/apis/overview)
 
-## Product roadmap
-
-* [Kontent Roadmap](https://kontent.ai/roadmap)

@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Configuration;

@@ -511,7 +511,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
 
         var result = await codeGenerator.RunAsync();
 
-        Logger.Verify(n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the project ({environmentId}). Please make sure you have the Delivery API enabled at https://app.kontent.ai/.")),
+        Logger.Verify(n => n.LogInfo(It.Is<string>(m => m == $"No content type available for the environment ({environmentId}). Check the environment and project settings at https://app.kontent.ai/.")),
             Times.Once());
         result.Should().Be(0);
     }
