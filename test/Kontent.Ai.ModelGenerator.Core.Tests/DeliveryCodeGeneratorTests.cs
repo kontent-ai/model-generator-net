@@ -206,7 +206,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var responseModelMock = new Mock<IDeliveryTypeListingResponse>();
         responseModelMock
             .Setup(x => x.Types)
-            .Returns(new List<IContentType>());
+            .Returns([]);
 
 
         _deliveryClientMock
@@ -333,7 +333,7 @@ public class DeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var responseModelMock = new Mock<IDeliveryTypeListingResponse>();
         responseModelMock
             .Setup(x => x.Types)
-            .Returns(new List<IContentType> { contentType.Object });
+            .Returns([contentType.Object]);
 
         _deliveryClientMock
             .Setup(x => x.GetTypesAsync(It.IsAny<IEnumerable<IQueryParameter>>()))

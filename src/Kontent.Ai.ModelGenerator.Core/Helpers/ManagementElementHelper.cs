@@ -35,14 +35,7 @@ public static class ManagementElementHelper
         ElementMetadataBase element,
         IEnumerable<ContentTypeSnippetModel> managementSnippets)
     {
-        if (element == null)
-        {
-            throw new ArgumentNullException(nameof(element));
-        }
-
-        if (managementSnippets == null)
-        {
-            throw new ArgumentNullException(nameof(managementSnippets));
-        }
+        ArgumentNullException.ThrowIfNull(element);
+        ArgumentNullException.ThrowIfNull(managementSnippets);
     }
 }

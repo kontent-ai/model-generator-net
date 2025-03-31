@@ -185,10 +185,9 @@ public class ValidationExtensionsTests
             .And.Message.Should().Be($"You have to provide the 'ApiKey' to generate type for {expectedSdkName} SDK. See {expectedUrl} for more details on configuration.");
     }
 
-    public static IEnumerable<object[]> OptionsUsingManagementApiOptionsData => new List<object[]>
-    {
-        new object[]
-        {
+    public static IEnumerable<object[]> OptionsUsingManagementApiOptionsData =>
+    [
+        [
             new CodeGeneratorOptions
             {
                 ManagementApi = true,
@@ -196,9 +195,8 @@ public class ValidationExtensionsTests
             },
             "Management",
             "https://bit.ly/3rSMeDA"
-        },
-        new object[]
-        {
+        ],
+        [
             new CodeGeneratorOptions
             {
                 ManagementApi = false,
@@ -206,13 +204,12 @@ public class ValidationExtensionsTests
             },
             "Delivery",
             "https://bit.ly/3rSMeDA"
-        }
-    };
+        ]
+    ];
 
-    public static IEnumerable<object[]> OptionsUsingManagementApiOptionsApiKeyIsNullOrWhiteSpaceData => new List<object[]>
-    {
-        new object[]
-        {
+    public static IEnumerable<object[]> OptionsUsingManagementApiOptionsApiKeyIsNullOrWhiteSpaceData =>
+    [
+        [
             new CodeGeneratorOptions
             {
                 ManagementApi = true,
@@ -221,9 +218,8 @@ public class ValidationExtensionsTests
             null,
             "Management",
             "https://bit.ly/3rSMeDA"
-        },
-        new object[]
-        {
+        ],
+        [
             new CodeGeneratorOptions
             {
                 ManagementApi = false,
@@ -232,6 +228,6 @@ public class ValidationExtensionsTests
             "",
             "Delivery",
             "https://bit.ly/3rSMeDA"
-        }
-    };
+        ]
+    ];
 }

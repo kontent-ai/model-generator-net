@@ -119,7 +119,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         var contentType = new ContentTypeModel
         {
             Codename = "",
-            Elements = new List<ElementMetadataBase>()
+            Elements = []
         };
         var contentTypes = new List<ContentTypeModel>
         {
@@ -181,10 +181,10 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         var contentType = new ContentTypeModel
         {
             Codename = contentTypeCodename,
-            Elements = new List<ElementMetadataBase>
-            {
+            Elements =
+            [
                 TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename)
-            }
+            ]
         };
 
         var codeGenerator = new ManagementCodeGenerator(
@@ -195,7 +195,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             ClassDefinitionFactory,
             Logger.Object);
 
-        var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>());
+        var result = codeGenerator.GetClassCodeGenerator(contentType, []);
 
         Logger.VerifyNoOtherCalls();
         result.ClassFilename.Should().Be($"{contentTypeCodename}.Generated");
@@ -219,11 +219,11 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
         {
             Name = "Contenttype",
             Codename = contentTypeCodename,
-            Elements = new List<ElementMetadataBase>
-            {
+            Elements =
+            [
                 TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename),
                 TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename)
-            }
+            ]
         };
 
         var codeGenerator = new ManagementCodeGenerator(
@@ -234,7 +234,7 @@ public class ManagementCodeGeneratorTests : CodeGeneratorTestsBase
             ClassDefinitionFactory,
             Logger.Object);
 
-        var result = codeGenerator.GetClassCodeGenerator(contentType, new List<ContentTypeSnippetModel>());
+        var result = codeGenerator.GetClassCodeGenerator(contentType, []);
 
         Logger.Verify(n => n.LogWarning(It.Is<string>(m => m == $"Element '{elementCodename}' is already present in Content Type '{contentType.Name}'.")),
             Times.Once());
