@@ -20,18 +20,18 @@ public static class TypedDeliveryPropertyMapper
     {
         Validate(contentTypes, el, options);
 
-        var elementOptions = GetElementOptions(el);
+        var (AllowedTypes, ItemCountLimit) = GetElementOptions(el);
 
-        if (!IsAllowedContentTypesOptionSupported(elementOptions.AllowedTypes))
+        if (!IsAllowedContentTypesOptionSupported(AllowedTypes))
         {
             typedProperty = null;
             return false;
         }
 
-        var allowedContentType = GetAllowedContentType(elementOptions.AllowedTypes.First().Id.Value, contentTypes);
+        var allowedContentType = GetAllowedContentType(AllowedTypes.First().Id.Value, contentTypes);
         var allowedContentTypeCodename = TextHelpers.GetValidPascalCaseIdentifierName(allowedContentType.Codename);
 
-        if (IsItemCountLimitOptionSupported(elementOptions.ItemCountLimit))
+        if (IsItemCountLimitOptionSupported(ItemCountLimit))
         {
             typedProperty = Property.FromContentTypeElement(el, allowedContentTypeCodename);
             return true;
@@ -43,25 +43,15 @@ public static class TypedDeliveryPropertyMapper
 
     private static void Validate(List<ContentTypeModel> contentTypes, ElementMetadataBase element, CodeGeneratorOptions options)
     {
-        if (contentTypes == null)
-        {
-            throw new ArgumentNullException(nameof(contentTypes));
-        }
+        ArgumentNullException.ThrowIfNull(contentTypes);
 
         if (!contentTypes.Any())
         {
             throw new ArgumentException($"{nameof(contentTypes)} cannot be empty");
         }
 
-        if (element == null)
-        {
-            throw new ArgumentNullException(nameof(element));
-        }
-
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        ArgumentNullException.ThrowIfNull(element);
+        ArgumentNullException.ThrowIfNull(options);
 
         if (!options.ExtendedDeliveryModels())
         {
@@ -78,17 +68,8 @@ public static class TypedDeliveryPropertyMapper
         Condition: LimitType.Exactly or LimitType.AtMost
     };
 
-    private static ContentTypeModel GetAllowedContentType(Guid allowedTypeId, List<ContentTypeModel> contentTypes)
-    {
-        var allowedType = contentTypes.FirstOrDefault(type => allowedTypeId == type.Id);
-
-        if (allowedType == null)
-        {
-            throw new ArgumentException("Could not find allowed type.");
-        }
-
-        return allowedType;
-    }
+    private static ContentTypeModel GetAllowedContentType(Guid allowedTypeId, List<ContentTypeModel> contentTypes) =>
+        contentTypes.FirstOrDefault(type => allowedTypeId == type.Id) ?? throw new ArgumentException("Could not find allowed type.");
 
     private static string GetCompoundPropertyName(string codename, string typeName) => $"{codename}_{typeName}";
 
@@ -119,10 +100,7 @@ public static class TypedDeliveryPropertyMapper
 
         static void ValidateTypedElement(ElementMetadataBase element)
         {
-            if (element == null)
-            {
-                throw new ArgumentNullException();
-            }
+            ArgumentNullException.ThrowIfNull(element);
         }
     }
 }

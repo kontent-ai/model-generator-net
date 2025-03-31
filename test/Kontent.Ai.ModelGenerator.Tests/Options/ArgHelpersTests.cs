@@ -8,14 +8,14 @@ namespace Kontent.Ai.ModelGenerator.Tests.Options;
 
 public class ArgHelpersTests
 {
-    private static IEnumerable<string> GeneralOptionArgs => ToLower(new List<string>
-        {
+    private static IEnumerable<string> GeneralOptionArgs => ToLower(
+        [
             nameof(CodeGeneratorOptions.Namespace),
             nameof(CodeGeneratorOptions.OutputDir),
             nameof(CodeGeneratorOptions.FileNameSuffix),
             nameof(CodeGeneratorOptions.GeneratePartials),
             nameof(CodeGeneratorOptions.BaseClass)
-        });
+        ]);
 
     private static IDictionary<string, string> ExpectedManagementMappings => new Dictionary<string, string>
         {
@@ -223,10 +223,10 @@ public class ArgHelpersTests
     public static IEnumerable<object[]> SupportedManagementOptions()
     {
         var args = AppendValuesToArgs(ExpectedManagementMappings)
-            .Concat(AppendValuesToArgs(ToLower(new List<string>
-            {
+            .Concat(AppendValuesToArgs(ToLower(
+            [
                 nameof(CodeGeneratorOptions.ManagementApi)
-            })))
+            ])))
             .Concat(AppendValuesToArgs(GeneralOptionArgs))
             .Concat(AppendValuesToArgs(typeof(ManagementOptions)))
             .ToArray();
@@ -240,11 +240,11 @@ public class ArgHelpersTests
     public static IEnumerable<object[]> SupportedDeliveryOptions()
     {
         var args = AppendValuesToArgs(ExpectedDeliveryMappings)
-            .Concat(AppendValuesToArgs(ToLower(new List<string>
-            {
+            .Concat(AppendValuesToArgs(ToLower(
+            [
                 nameof(CodeGeneratorOptions.StructuredModel),
                 nameof(CodeGeneratorOptions.WithTypeProvider)
-            })))
+            ])))
             .Concat(AppendValuesToArgs(GeneralOptionArgs))
             .Concat(AppendValuesToArgs(typeof(DeliveryOptions)))
             .ToArray();
@@ -258,11 +258,11 @@ public class ArgHelpersTests
     public static IEnumerable<object[]> SupportedExtendedDeliveryOptions()
     {
         var args = AppendValuesToArgs(ExpectedManagementMappings)
-            .Concat(AppendValuesToArgs(ToLower(new List<string>
-            {
+            .Concat(AppendValuesToArgs(ToLower(
+            [
                 nameof(CodeGeneratorOptions.StructuredModel),
                 nameof(CodeGeneratorOptions.WithTypeProvider)
-            })))
+            ])))
             .Concat(AppendValuesToArgs(GeneralOptionArgs))
             .Concat(AppendValuesToArgs(typeof(ManagementOptions)))
             .ToArray();

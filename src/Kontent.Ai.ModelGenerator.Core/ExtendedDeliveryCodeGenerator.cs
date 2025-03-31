@@ -103,11 +103,11 @@ public class ExtendedDeliveryCodeGenerator : DeliveryCodeGeneratorBase
             }
         }
 
-        return new List<ClassCodeGenerator>
-        {
+        return
+        [
             new TypedExtendedDeliveryClassCodeGenerator(typedClassDefinition, GetFileClassName(classDefinition.ClassName + TypedSuffixFileName), Options.Namespace),
             ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, GetFileClassName(classDefinition.ClassName), Logger)
-        };
+        ];
     }
 
     private void AddProperty(ElementMetadataBase el, ref ClassDefinition classDefinition, ref ClassDefinition typedClassDefinition, List<ContentTypeModel> contentTypes)

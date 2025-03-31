@@ -15,13 +15,13 @@ internal static class ArgHelpers
     private const char NamePrefix = '-';
 
     private static readonly ProgramOptionsData<ManagementOptions> ManagementProgramOptionsData =
-        new ProgramOptionsData<ManagementOptions>(typeof(ManagementOptions), "management-sdk-net");
+        new(typeof(ManagementOptions), "management-sdk-net");
 
     private static readonly ProgramOptionsData<DeliveryOptions> DeliveryProgramOptionsData =
-        new ProgramOptionsData<DeliveryOptions>(typeof(DeliveryOptions), "delivery-sdk-net");
+        new(typeof(DeliveryOptions), "delivery-sdk-net");
 
     private static readonly ProgramOptionsData<ManagementOptions> ExtendedDeliveryProgramOptionsData =
-        new ProgramOptionsData<ManagementOptions>(typeof(ManagementOptions), typeof(DeliveryOptions), "delivery-sdk-net");
+        new(typeof(ManagementOptions), typeof(DeliveryOptions), "delivery-sdk-net");
 
     public static IDictionary<string, string> GetSwitchMappings(string[] args) => ArgMappingsRegister.GeneralMappings
         .Union(GetSpecificSwitchMappings(args))
@@ -149,15 +149,9 @@ internal static class ArgHelpers
         }
     }
 
-    private class DecidingArgs
+    private class DecidingArgs(string shorthandedArgName, string fullArgName)
     {
-        public string ShorthandedArgName { get; }
-        public string FullArgName { get; }
-
-        public DecidingArgs(string shorthandedArgName, string fullArgName)
-        {
-            ShorthandedArgName = $"{NamePrefix}{shorthandedArgName}";
-            FullArgName = fullArgName;
-        }
+        public string ShorthandedArgName { get; } = $"{NamePrefix}{shorthandedArgName}";
+        public string FullArgName { get; } = fullArgName;
     }
 }

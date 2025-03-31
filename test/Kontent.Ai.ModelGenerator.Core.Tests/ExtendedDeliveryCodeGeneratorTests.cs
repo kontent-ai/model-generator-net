@@ -105,8 +105,8 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var contentType = new ContentTypeModel
         {
             Codename = "content_type",
-            Elements = new List<ElementMetadataBase>
-            {
+            Elements =
+            [
                 LinkedItemsContentTypeData.SingleAllowedTypeMultiItems,
                 LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem,
                 LinkedItemsContentTypeData.SingleAllowedTypeAtMostSingleItem,
@@ -119,7 +119,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
                 SubpagesContentTypeData.MultiAllowedTypesExactlySingleItem,
                 SubpagesContentTypeData.MultiAllowedTypesAtMostSingleItem,
                 SubpagesContentTypeData.MultiAllowedTypesMultiItems,
-            }
+            ]
         };
 
         var contentTypes = new List<ContentTypeModel>
@@ -145,11 +145,11 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             _deliveryElementService.Object,
             Logger.Object);
 
-        var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
+        var result = codeGenerator.GetClassCodeGenerators(contentType, [], contentTypes).ToList();
 
         var expectedTypedExtendedDeliveryClassDefinition = new ClassDefinition(contentType.Codename);
-        expectedTypedExtendedDeliveryClassDefinition.Properties.AddRange(new List<Property>
-        {
+        expectedTypedExtendedDeliveryClassDefinition.Properties.AddRange(
+        [
             Property.FromContentTypeElement(
                 LinkedItemsContentTypeData.SingleAllowedTypeMultiItems,
                 $"IEnumerable<{LinkedItemsContentTypeData.HeroContentType.Name}>",
@@ -162,20 +162,20 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
                 "Subpages_Heroes_Hero"),
             Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem, SubpagesContentTypeData.ArticleContentType.Name),
             Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeAtMostSingleItem, SubpagesContentTypeData.HeroContentType.Name)
-        });
-        expectedTypedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
-        {
+        ]);
+        expectedTypedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(
+        [
             "Modular_Content_Heroes_Hero",
             "modular_content_article",
             "modular_content_hero",
             "Subpages_Heroes_Hero",
             "subpages_article",
             "subpages_hero"
-        });
+        ]);
 
         var expectedExtendedDeliveryClassDefinition = new ClassDefinition(contentType.Codename);
-        expectedExtendedDeliveryClassDefinition.Properties.AddRange(new List<Property>
-        {
+        expectedExtendedDeliveryClassDefinition.Properties.AddRange(
+        [
             Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeAtMostSingleItem, DefaultLinkedItemsType(structuredModel)),
@@ -188,9 +188,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesAtMostSingleItem, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType(structuredModel))
-        });
-        expectedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
-        {
+        ]);
+        expectedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(
+        [
             "modular_content_heroes",
             "modular_content_article",
             "modular_content_hero",
@@ -203,7 +203,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             "subpages_blog",
             "subpages_coffee",
             "subpages_coffees"
-        });
+        ]);
 
         var expected = new List<ClassCodeGenerator>
         {
@@ -232,8 +232,8 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var contentType = new ContentTypeModel
         {
             Codename = "content_type",
-            Elements = new List<ElementMetadataBase>
-            {
+            Elements =
+            [
                 LinkedItemsContentTypeData.SingleAllowedTypeMultiItems,
                 LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem,
                 LinkedItemsContentTypeData.SingleAllowedTypeAtMostSingleItem,
@@ -246,7 +246,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
                 SubpagesContentTypeData.MultiAllowedTypesExactlySingleItem,
                 SubpagesContentTypeData.MultiAllowedTypesAtMostSingleItem,
                 SubpagesContentTypeData.MultiAllowedTypesMultiItems,
-            }
+            ]
         };
 
         var contentTypes = new List<ContentTypeModel>
@@ -272,11 +272,11 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             _deliveryElementService.Object,
             Logger.Object);
 
-        var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
+        var result = codeGenerator.GetClassCodeGenerators(contentType, [], contentTypes).ToList();
 
         var expectedTypedExtendedDeliveryClassDefinition = new ClassDefinition(contentType.Codename);
-        expectedTypedExtendedDeliveryClassDefinition.Properties.AddRange(new List<Property>
-        {
+        expectedTypedExtendedDeliveryClassDefinition.Properties.AddRange(
+        [
             Property.FromContentTypeElement(
                 LinkedItemsContentTypeData.SingleAllowedTypeMultiItems,
                 $"IEnumerable<{LinkedItemsContentTypeData.HeroContentType.Name}>",
@@ -289,20 +289,20 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
                 "Subpages_Heroes_Hero"),
             Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeExactlySingleItem, SubpagesContentTypeData.ArticleContentType.Name),
             Property.FromContentTypeElement(SubpagesContentTypeData.SingleAllowedTypeAtMostSingleItem, SubpagesContentTypeData.HeroContentType.Name)
-        });
-        expectedTypedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
-        {
+        ]);
+        expectedTypedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(
+        [
             "Modular_Content_Heroes_Hero",
             "modular_content_article",
             "modular_content_hero",
             "Subpages_Heroes_Hero",
             "subpages_article",
             "subpages_hero"
-        });
+        ]);
 
         var expectedExtendedDeliveryClassDefinition = new ClassDefinition(contentType.Codename);
-        expectedExtendedDeliveryClassDefinition.Properties.AddRange(new List<Property>
-        {
+        expectedExtendedDeliveryClassDefinition.Properties.AddRange(
+        [
             Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeMultiItems, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(LinkedItemsContentTypeData.SingleAllowedTypeAtMostSingleItem, DefaultLinkedItemsType(structuredModel)),
@@ -315,9 +315,9 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesExactlySingleItem, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesAtMostSingleItem, DefaultLinkedItemsType(structuredModel)),
             Property.FromContentTypeElement(SubpagesContentTypeData.MultiAllowedTypesMultiItems, DefaultLinkedItemsType(structuredModel))
-        });
-        expectedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(new List<string>
-        {
+        ]);
+        expectedExtendedDeliveryClassDefinition.PropertyCodenameConstants.AddRange(
+        [
             "modular_content_heroes",
             "modular_content_article",
             "modular_content_hero",
@@ -330,7 +330,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             "subpages_blog",
             "subpages_coffee",
             "subpages_coffees"
-        });
+        ]);
 
         var expected = new List<ClassCodeGenerator>
         {
@@ -356,18 +356,18 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var contentType = new ContentTypeModel
         {
             Codename = "content_type",
-            Elements = new List<ElementMetadataBase>
-            {
+            Elements =
+            [
                 new LinkedItemsElementMetadataModel
                 {
                     Name = "",
                     Codename = elementCodename,
-                    AllowedTypes = new List<Reference>
-                    {
+                    AllowedTypes =
+                    [
                         Reference.ById(LinkedItemsContentTypeData.ArticleContentType.Id)
-                    }
+                    ]
                 }
-            }
+            ]
         };
 
         var contentTypes = new List<ContentTypeModel>
@@ -396,7 +396,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             new ExtendedDeliveryClassCodeGenerator(new ClassDefinition(contentType.Codename), "ContentType.Generated", false, Logger.Object)
         };
 
-        var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
+        var result = codeGenerator.GetClassCodeGenerators(contentType, [], contentTypes).ToList();
 
         Logger.Verify(n => n.LogWarning(It.Is<string>(m => m == $"Can't create valid C# Identifier from '{elementCodename}'. Skipping element.")),
             Times.Once());
@@ -418,11 +418,11 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         {
             Name = "ContentType",
             Codename = "content_type",
-            Elements = new List<ElementMetadataBase>
-            {
+            Elements =
+            [
                 TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename),
                 TestDataGenerator.GenerateElementMetadataBase(Guid.NewGuid(), elementCodename)
-            }
+            ]
         };
 
         var contentTypes = new List<ContentTypeModel>
@@ -453,7 +453,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
             new TypedExtendedDeliveryClassCodeGenerator( new ClassDefinition(contentType.Codename), "ContentType.Typed.Generated")
         };
 
-        var result = codeGenerator.GetClassCodeGenerators(contentType, new List<ContentTypeSnippetModel>(), contentTypes).ToList();
+        var result = codeGenerator.GetClassCodeGenerators(contentType, [], contentTypes).ToList();
 
         Logger.Verify(n => n.LogWarning(It.Is<string>(m => m == $"Element '{elementCodename}' is already present in Content Type '{contentType.Name}'.")),
             Times.Once());
@@ -534,7 +534,7 @@ public class ExtendedDeliveryCodeGeneratorTests : CodeGeneratorTestsBase
         var contentType = new ContentTypeModel
         {
             Codename = "",
-            Elements = new List<ElementMetadataBase>()
+            Elements = []
         };
         var contentTypes = new List<ContentTypeModel>
         {
