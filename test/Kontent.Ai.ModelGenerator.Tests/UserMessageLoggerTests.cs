@@ -67,19 +67,18 @@ public class UserMessageLoggerTests
         _stringWriter.Flush();
     }
 
-    // TODO: Fix this test
-    // [Fact]
-    // public async Task LogErrorAsync_MessageIsLoggedToConsole()
-    // {
-    //     var message = "message";
-    //     var expectedMessage = $"{message}{Environment.NewLine}";
+    [Fact]
+    public async Task LogErrorAsync_MessageIsLoggedToConsole()
+    {
+        var message = "message";
+        var expectedMessage = $"{message}{Environment.NewLine}";
 
-    //     await _userMessageLogger.LogErrorAsync(message);
+        await _userMessageLogger.LogErrorAsync(message);
 
-    //     _stringWriter.ToString().Should().Be(expectedMessage);
+        _stringWriter.ToString().Should().Be(expectedMessage);
 
-    //     await _stringWriter.FlushAsync();
-    // }
+        await _stringWriter.FlushAsync();
+    }
 
     [Theory]
     [InlineData("")]
