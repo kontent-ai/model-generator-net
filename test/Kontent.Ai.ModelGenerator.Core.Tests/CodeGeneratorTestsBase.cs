@@ -1,14 +1,13 @@
-﻿using Kontent.Ai.Management.Models.Shared;
-using Kontent.Ai.Management.Models.Types;
-using Kontent.Ai.Management.Models.TypeSnippets;
-using Kontent.Ai.Management;
-using Kontent.Ai.ModelGenerator.Core.Common;
+﻿using Kontent.Ai.ModelGenerator.Core.Common;
 using Moq;
-using Kontent.Ai.ModelGenerator.Core.Tests.Fixtures;
 using Kontent.Ai.ModelGenerator.Core.Contract;
 
 namespace Kontent.Ai.ModelGenerator.Core.Tests;
 
+/// <summary>
+/// Base class for code generator tests.
+/// Modern beta version only supports Delivery SDK models.
+/// </summary>
 public abstract class CodeGeneratorTestsBase
 {
     protected abstract string TempDir { get; }
@@ -28,28 +27,5 @@ public abstract class CodeGeneratorTestsBase
             Directory.Delete(TempDir, true);
         }
         Directory.CreateDirectory(TempDir);
-    }
-
-    protected static IManagementClient CreateManagementClient()
-    {
-        var managementModelsProvider = new ManagementModelsProvider();
-        var managementClientMock = new Mock<IManagementClient>();
-
-        var contentTypeListingResponseModel = new Mock<IListingResponseModel<ContentTypeModel>>();
-        contentTypeListingResponseModel.As<IEnumerable<ContentTypeModel>>()
-            .Setup(c => c.GetEnumerator())
-            .Returns(managementModelsProvider.ManagementContentTypeModels.GetEnumerator);
-
-        var contentTypeSnippetListingResponseModel = new Mock<IListingResponseModel<ContentTypeSnippetModel>>();
-        contentTypeSnippetListingResponseModel.As<IEnumerable<ContentTypeSnippetModel>>()
-            .Setup(c => c.GetEnumerator())
-            .Returns(managementModelsProvider.ManagementContentTypeSnippetModels.GetEnumerator);
-
-        managementClientMock.Setup(client => client.ListContentTypeSnippetsAsync())
-            .ReturnsAsync(() => contentTypeSnippetListingResponseModel.Object);
-        managementClientMock.Setup(client => client.ListContentTypesAsync())
-            .ReturnsAsync(() => contentTypeListingResponseModel.Object);
-
-        return managementClientMock.Object;
     }
 }

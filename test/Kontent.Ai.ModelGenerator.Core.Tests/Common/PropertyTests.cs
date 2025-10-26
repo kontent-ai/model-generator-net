@@ -32,18 +32,15 @@ public class PropertyTests
 
     [Theory]
     [InlineData("text", "string")]
-    [InlineData("rich_text", "string")]
-    [InlineData($"rich_text{Property.StructuredSuffix}", "IRichTextContent")]
-    [InlineData("number", "decimal?")]
-    [InlineData("multiple_choice", "IEnumerable<IMultipleChoiceOption>")]
+    [InlineData("rich_text", "RichTextContent")]
+    [InlineData("number", "double?")]
+    [InlineData("multiple_choice", "IEnumerable<MultipleChoiceOption>")]
     [InlineData("date_time", "DateTime?")]
-    [InlineData($"date_time{Property.StructuredSuffix}", "IDateTimeContent")]
-    [InlineData("asset", "IEnumerable<IAsset>")]
-    [InlineData("modular_content", "IEnumerable<object>")]
-    [InlineData($"modular_content{Property.StructuredSuffix}", "IEnumerable<IContentItem>")]
-    [InlineData("taxonomy", "IEnumerable<ITaxonomyTerm>")]
+    [InlineData("asset", "IEnumerable<Asset>")]
+    [InlineData("modular_content", "IEnumerable<IEmbeddedContent>")]
+    [InlineData("taxonomy", "IEnumerable<TaxonomyTerm>")]
     [InlineData("url_slug", "string")]
-    [InlineData("custom", "string")]
+    [InlineData("custom", "string?")]
     public void FromContentTypeElement_DeliveryApiModel_Returns(string contentType, string expectedTypeName)
     {
         var codename = "element_codename";

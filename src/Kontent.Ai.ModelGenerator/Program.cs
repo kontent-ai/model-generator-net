@@ -37,9 +37,8 @@ internal class Program
                 .AddCommandLine(args, ArgHelpers.GetSwitchMappings(args))
                 .Build();
 
-            // Fill the DI container
+            // Fill the DI container - modern beta version only supports Delivery SDK
             services.Configure<CodeGeneratorOptions>(configuration);
-            services.AddManagementClient(configuration);
             services.AddDeliveryClient(configuration);
             services.AddTransient<HttpClient>();
             services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
@@ -47,9 +46,7 @@ internal class Program
             services.AddSingleton<IClassCodeGeneratorFactory, ClassCodeGeneratorFactory>();
             services.AddSingleton<IClassDefinitionFactory, ClassDefinitionFactory>();
             services.AddSingleton<IDeliveryElementService, DeliveryElementService>();
-            services.AddSingleton<ManagementCodeGenerator>();
             services.AddSingleton<DeliveryCodeGenerator>();
-            services.AddSingleton<ExtendedDeliveryCodeGenerator>();
 
             // Build the DI container
             var serviceProvider = services.BuildServiceProvider();
@@ -58,22 +55,16 @@ internal class Program
             var options = serviceProvider.GetService<IOptions<CodeGeneratorOptions>>().Value;
             options.Validate();
 
-            PrintSdkVersion(options);
+            PrintSdkVersion();
 
-            // Code generator entry point
-            return options.GetDesiredModelsType() switch
-            {
-                DesiredModelsType.Delivery => await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync(),
-                DesiredModelsType.ExtendedDelivery => await serviceProvider.GetService<ExtendedDeliveryCodeGenerator>().RunAsync(),
-                DesiredModelsType.Management => await serviceProvider.GetService<ManagementCodeGenerator>().RunAsync(),
-                _ => throw new ArgumentOutOfRangeException()
-            };
+            // Code generator entry point - modern beta only supports Delivery SDK
+            return await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync();
         }
         catch (AggregateException aex)
         {
-            if ((aex.InnerExceptions.Count == 1) && aex.InnerException is DeliveryException)
+            // Return a friendlier message for exceptions
+            if (aex.InnerExceptions.Count == 1 && aex.InnerException != null)
             {
-                // Return a friendlier message
                 await WriteErrorMessageAsync(aex.InnerException.Message);
             }
             return 1;
@@ -87,9 +78,9 @@ internal class Program
 
     private static async Task WriteErrorMessageAsync(string message) => await Console.Error.WriteLineAsync(message);
 
-    private static void PrintSdkVersion(CodeGeneratorOptions codeGeneratorOptions)
+    private static void PrintSdkVersion()
     {
-        var usedSdkInfo = ArgHelpers.GetUsedSdkInfo(codeGeneratorOptions.GetDesiredModelsType());
+        var usedSdkInfo = ArgHelpers.GetUsedSdkInfo();
         Console.WriteLine($"Models were generated for {usedSdkInfo.Name} version {usedSdkInfo.Version}");
     }
 }

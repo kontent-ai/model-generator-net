@@ -24,17 +24,12 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
         IUserMessageLogger logger)
         : base(options, outputProvider, classCodeGeneratorFactory, classDefinitionFactory, deliveryElementService, logger)
     {
-        if (options.Value.ManagementApi)
-        {
-            throw new InvalidOperationException("Cannot create Delivery models with Management API options.");
-        }
-
         _deliveryClient = deliveryClient;
     }
 
     protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
     {
-        var deliveryTypes = (await _deliveryClient.GetTypesAsync()).Types;
+        var deliveryTypes = (await _deliveryClient.GetTypes().ExecuteAsync()).Value;
 
         var codeGenerators = new List<ClassCodeGenerator>();
         if (deliveryTypes == null)
@@ -62,18 +57,18 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
     {
         var classDefinition = ClassDefinitionFactory.CreateClassDefinition(contentType.System.Codename);
 
-        foreach (var element in contentType.Elements.Values)
+        foreach (var element in contentType.Elements)
         {
             try
             {
-                var elementType = DeliveryElementService.GetElementType(element.Type);
-                var property = Property.FromContentTypeElement(element.Codename, elementType);
+                var elementType = DeliveryElementService.GetElementType(element.Value.Type);
+                var property = Property.FromContentTypeElement(element.Key, elementType);
                 // Modern delivery: no codename constants, just add the property
                 classDefinition.AddProperty(property);
             }
             catch (Exception e)
             {
-                WriteConsoleErrorMessage(e, element.Codename, element.Type, classDefinition.ClassName);
+                WriteConsoleErrorMessage(e, element.Key, element.Value.Type, classDefinition.ClassName);
             }
         }
 

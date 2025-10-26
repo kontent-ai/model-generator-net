@@ -15,11 +15,8 @@ public class ClassCodeGeneratorFactory : IClassCodeGeneratorFactory
         bool customPartial = false)
     {
         ArgumentNullException.ThrowIfNull(options);
-
         ArgumentNullException.ThrowIfNull(classDefinition);
-
         ArgumentNullException.ThrowIfNull(classFilename);
-
         ArgumentNullException.ThrowIfNull(logger);
 
         if (customPartial)
@@ -27,13 +24,7 @@ public class ClassCodeGeneratorFactory : IClassCodeGeneratorFactory
             return new PartialClassCodeGenerator(classDefinition, classFilename, options.Namespace);
         }
 
-        if (options.ManagementApi())
-        {
-            return new ManagementClassCodeGenerator(classDefinition, classFilename, options.Namespace);
-        }
-
-        return options.ExtendedDeliveryModels()
-            ? new ExtendedDeliveryClassCodeGenerator(classDefinition, classFilename, options.IsStructuredModelModularContent(), logger, options.Namespace)
-            : new DeliveryClassCodeGenerator(classDefinition, classFilename, options.Namespace);
+        // Modern beta only supports Delivery SDK models
+        return new DeliveryClassCodeGenerator(classDefinition, classFilename, options.Namespace);
     }
 }

@@ -4,37 +4,31 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Kontent.Ai.Delivery.Abstractions;
-using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 
 namespace Kontent.Ai.ModelGenerator.Options;
 
+/// <summary>
+/// Argument helpers for the CLI tool.
+/// Modern beta version only supports Delivery SDK models.
+/// </summary>
 internal static class ArgHelpers
 {
     private const char NameAndValueSeparator = '=';
     private const char NamePrefix = '-';
 
-    private static readonly ProgramOptionsData<ManagementOptions> ManagementProgramOptionsData =
-        new(typeof(ManagementOptions), "management-sdk-net");
-
     private static readonly ProgramOptionsData<DeliveryOptions> DeliveryProgramOptionsData =
         new(typeof(DeliveryOptions), "delivery-sdk-net");
 
-    private static readonly ProgramOptionsData<ManagementOptions> ExtendedDeliveryProgramOptionsData =
-        new(typeof(ManagementOptions), typeof(DeliveryOptions), "delivery-sdk-net");
-
     public static IDictionary<string, string> GetSwitchMappings(string[] args) => ArgMappingsRegister.GeneralMappings
-        .Union(GetSpecificSwitchMappings(args))
+        .Union(ArgMappingsRegister.DeliveryEnvironmentIdMappings)
         .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
     public static bool ContainsValidArgs(string[] args)
     {
         var containsValidArgs = true;
         var codeGeneratorOptionsProperties = typeof(CodeGeneratorOptions).GetProperties()
-            .Where(p =>
-                p.PropertyType != ManagementProgramOptionsData.Type &&
-                p.PropertyType != DeliveryProgramOptionsData.Type &&
-                p.PropertyType != ExtendedDeliveryProgramOptionsData.Type)
+            .Where(p => p.PropertyType != DeliveryProgramOptionsData.Type)
             .Select(p => p.Name.ToLower())
             .ToList();
 
@@ -44,9 +38,7 @@ internal static class ArgHelpers
 
             var argumentName = SplitArgument(a).FirstOrDefault();
             return !ArgMappingsRegister.AllMappingsKeys.Contains(argumentName) &&
-                   !IsOptionPropertyValid(ManagementProgramOptionsData, argumentName) &&
                    !IsOptionPropertyValid(DeliveryProgramOptionsData, argumentName) &&
-                   !IsOptionPropertyValid(ExtendedDeliveryProgramOptionsData, argumentName) &&
                    !IsOptionPropertyValid(codeGeneratorOptionsProperties, argumentName);
         });
 
@@ -59,51 +51,7 @@ internal static class ArgHelpers
         return containsValidArgs;
     }
 
-    public static UsedSdkInfo GetUsedSdkInfo(DesiredModelsType desiredModelsType) => desiredModelsType switch
-    {
-        DesiredModelsType.Delivery => DeliveryProgramOptionsData.UsedSdkInfo,
-        DesiredModelsType.Management => ManagementProgramOptionsData.UsedSdkInfo,
-        DesiredModelsType.ExtendedDelivery => ExtendedDeliveryProgramOptionsData.UsedSdkInfo,
-        _ => throw new ArgumentOutOfRangeException(nameof(desiredModelsType))
-    };
-
-    private static IDictionary<string, string> GetSpecificSwitchMappings(string[] args)
-    {
-        var managementDecidingArgs = new DecidingArgs("m", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ManagementApi)));
-        var extendedDeliverDecidingArgs = new DecidingArgs("e", GetPrefixedMappingName(nameof(CodeGeneratorOptions.ExtendedDeliveryModels)));
-
-        for (var i = 0; i < args.Length; i++)
-        {
-            if (!StartsWithArgumentName(args[i])) continue;
-
-            string argValue, argName;
-            if (args[i].Contains(NameAndValueSeparator))
-            {
-                var argPair = SplitArgument(args[i]);
-
-                argName = argPair[0];
-                argValue = argPair[1];
-            }
-            else
-            {
-                argName = args[i];
-                argValue = args[i + 1];
-            }
-
-            if (!bool.TrueString.Equals(argValue, StringComparison.OrdinalIgnoreCase))
-                continue;
-
-            if (argName == managementDecidingArgs.ShorthandedArgName ||
-                argName == managementDecidingArgs.FullArgName ||
-                argName == extendedDeliverDecidingArgs.ShorthandedArgName ||
-                argName == extendedDeliverDecidingArgs.FullArgName)
-            {
-                return ArgMappingsRegister.ManagementEnvironmentIdMappings;
-            }
-        }
-
-        return ArgMappingsRegister.DeliveryEnvironmentIdMappings;
-    }
+    public static UsedSdkInfo GetUsedSdkInfo() => DeliveryProgramOptionsData.UsedSdkInfo;
 
     private static bool IsOptionPropertyValid<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>
         (ProgramOptionsData<T> programOptionsData, string arg) =>
