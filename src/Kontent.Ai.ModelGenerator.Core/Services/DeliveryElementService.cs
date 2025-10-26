@@ -28,10 +28,6 @@ public class DeliveryElementService : IDeliveryElementService
     private static void Validate(CodeGeneratorOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
-
-        if (options.ManagementApi)
-        {
-            throw new InvalidOperationException("Cannot generate structured model for the Management models.");
-        }
+        // Modern beta version only supports Delivery SDK models
     }
 }

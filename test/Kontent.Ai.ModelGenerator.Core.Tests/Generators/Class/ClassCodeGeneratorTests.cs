@@ -75,14 +75,12 @@ public class ClassCodeGeneratorTests
     public static IEnumerable<object[]> GetTypes()
     {
         yield return new object[] { typeof(PartialClassCodeGenerator) };
-        yield return new object[] { typeof(ManagementClassCodeGenerator) };
         yield return new object[] { typeof(DeliveryClassCodeGenerator) };
     }
 
     public static IEnumerable<object[]> GetTypesWithEmptyStringParam()
     {
         yield return new object[] { typeof(PartialClassCodeGenerator), "" };
-        yield return new object[] { typeof(ManagementClassCodeGenerator), "  " };
         yield return new object[] { typeof(DeliveryClassCodeGenerator), null };
     }
 

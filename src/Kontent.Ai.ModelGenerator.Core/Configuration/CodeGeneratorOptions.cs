@@ -1,34 +1,19 @@
-﻿using System;
-using System.Linq;
-using Kontent.Ai.Delivery.Abstractions;
-using Kontent.Ai.Management.Configuration;
+﻿using Kontent.Ai.Delivery.Abstractions;
 
 namespace Kontent.Ai.ModelGenerator.Core.Configuration;
 
+/// <summary>
+/// Configuration options for generating modern Delivery SDK model classes (records).
+/// This is a beta version that only supports the modern Delivery SDK (v19+).
+/// </summary>
 public class CodeGeneratorOptions
 {
-    private const char StructuredModelSeparator = ',';
-    private const bool DefaultExtendedDeliveryModels = false;
-    private const bool DefaultGeneratePartials = true;
     private const bool DefaultWithTypeProvider = true;
-    private const bool DefaultManagementApi = false;
-    private const string DefaultFileNameSuffix = "Generated";
-    private const StructuredModelFlags DefaultStructuredModelFlags = StructuredModelFlags.NotSet;
 
     /// <summary>
     /// Delivery Client configuration.
     /// </summary>
     public DeliveryOptions DeliveryOptions { get; set; }
-
-    /// <summary>
-    /// Management Client configuration.
-    /// </summary>
-    public ManagementOptions ManagementOptions { get; set; }
-
-    /// <summary>
-    /// Indicates whether the extended Delivery models should be generated
-    /// </summary>
-    public bool ExtendedDeliveryModels { get; set; } = DefaultExtendedDeliveryModels;
 
     /// <summary>
     /// Namespace name of the generated classes
@@ -41,60 +26,9 @@ public class CodeGeneratorOptions
     public string OutputDir { get; set; }
 
     /// <summary>
-    /// Optionally add suffix to the generated files
-    /// </summary>
-    [Obsolete("FileNameSuffix is not used by modern delivery models (single file generation). Only applies to ExtendedDelivery and Management models.")]
-    public string FileNameSuffix { get; set; } = DefaultFileNameSuffix;
-
-    /// <summary>
-    /// Optionally generate partial classes for user customization
-    /// </summary>
-    [Obsolete("GeneratePartials is not used by modern delivery models (always generates single partial record). Only applies to ExtendedDelivery and Management models.")]
-    public bool GeneratePartials { get; set; } = DefaultGeneratePartials;
-
-    /// <summary>
     /// Indicates whether the CustomTypeProvider class should be generated
     /// </summary>
     public bool WithTypeProvider { get; set; } = DefaultWithTypeProvider;
-
-    /// <summary>
-    /// Indicates whether the classes should be generated with types that represent structured data model
-    /// </summary>
-    [Obsolete("StructuredModel is not used by modern delivery models (always structured). Only applies to ExtendedDelivery models.")]
-    public string StructuredModel
-    {
-        get => null;
-        set
-        {
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                StructuredModelFlags = StructuredModelFlags.NotSet;
-                return;
-            }
-
-            var splitStructuredModels = value.Split(StructuredModelSeparator);
-
-            if (!splitStructuredModels.Any())
-            {
-                StructuredModelFlags = StructuredModelFlags.NotSet;
-                return;
-            }
-
-            StructuredModelFlags = splitStructuredModels
-                .Select(structuredModel =>
-                    Enum.TryParse<StructuredModelFlags>(structuredModel, true, out var parsed)
-                        ? parsed
-                        : StructuredModelFlags.ValidationIssue)
-                .Aggregate((result, next) => result | next);
-        }
-    }
-
-    public StructuredModelFlags StructuredModelFlags { get; private set; } = DefaultStructuredModelFlags;
-
-    /// <summary>
-    /// Indicates whether the classes should be generated for CM API SDK
-    /// </summary>
-    public bool ManagementApi { get; set; } = DefaultManagementApi;
 
     /// <summary>
     /// Indicates whether a base class should be created and all output classes should derive from it using a partial class

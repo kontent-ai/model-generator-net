@@ -23,7 +23,8 @@ public abstract class CodeGeneratorBase(
     protected readonly CodeGeneratorOptions Options = options.Value;
     protected readonly IOutputProvider OutputProvider = outputProvider;
 
-    protected string FilenameSuffix => string.IsNullOrEmpty(Options.FileNameSuffix) ? "" : $".{Options.FileNameSuffix}";
+    // Modern delivery models don't use filename suffixes (single file generation)
+    protected string FilenameSuffix => "";
     private string NoContentTypeAvailableMessage =>
         $@"No content type available for the environment ({Options.GetEnvironmentId()}). Check the environment and project settings at https://app.kontent.ai/.";
 
