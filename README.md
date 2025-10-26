@@ -9,10 +9,27 @@
 | ------------------------- | :-----------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------: | :-------------------------: |
 | Kontent.Ai.ModelGenerator | [![NuGet](https://img.shields.io/nuget/vpre/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [![NuGet](https://img.shields.io/nuget/dt/Kontent.Ai.ModelGenerator.svg)](https://www.nuget.org/packages/Kontent.Ai.ModelGenerator) | [`net8.0`](https://dotnet.microsoft.com/download/dotnet/8.0) | [📖 Docs](./docs/README.md) |
 
-This utility generates strongly-typed (POCO) models based on [content types](https://kontent.ai/learn/tutorials/manage-kontent/content-modeling/create-and-delete-content-types) in a Kontent.ai project environment. You can choose one of the following:
+## ⚠️ Beta Version Notice
+
+**This is a beta version** of the model generator that has been modernized to work with the **updated Kontent.ai Delivery SDK for .NET (v19+)**, which is also currently in beta.
+
+### Important Notes:
+- ✅ **Delivery SDK Models**: Fully supported - generates modern record-based models for the new Delivery SDK
+- ⏳ **Management SDK Models**: Not yet updated - will be modernized in a future release
+- ⏳ **Extended Delivery Models**: Not yet updated - will be modernized when Management SDK is updated
+- ❌ **Legacy Delivery SDK**: This version **does not work** with the legacy Delivery SDK (v18.x and earlier)
+
+### Migration Information:
+- **Using the new Delivery SDK (v19+)?** → Use this beta version
+- **Using the legacy Delivery SDK (v18.x)?** → Use the [previous stable release](https://github.com/kontent-ai/model-generator-net/releases)
+- **Full public release**: Will happen once the Management SDK is also modernized and released
+
+---
+
+This utility generates strongly-typed models based on [content types](https://kontent.ai/learn/tutorials/manage-kontent/content-modeling/create-and-delete-content-types) in a Kontent.ai project environment. You can choose one of the following:
 
 - [Generate models compatible with the Kontent.ai Delivery SDK for .NET](#how-to-use-for-delivery-sdk)
-- [Generate models compatible with the Kontent.ai Management SDK for .NET](#how-to-use-for-management-sdk).
+- [Generate models compatible with the Kontent.ai Management SDK for .NET](#how-to-use-for-management-sdk) *(unchanged from previous version)*
 
 ⚠️ Please note that this tool uses [Delivery SDK](https://github.com/kontent-ai/delivery-sdk-net) and [Management SDK](https://github.com/kontent-ai/management-sdk-net).
 
@@ -27,13 +44,13 @@ The recommended way of obtaining this tool is installing it as a [.NET Tool](htt
 #### Global Tool
 
 - `dotnet tool install -g Kontent.Ai.ModelGenerator`
-- `KontentModelGenerator --environmentid "<environmentId>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel "<structured_model>"] [--filenamesuffix "<suffix>"]`
+- `KontentModelGenerator --environmentid "<environmentId>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--baseclass "<base-class-name>"]`
 
 #### Local Tool
 
 - `dotnet new tool-manifest` to initialize the tools manifest (if you haven't done that already)
 - `dotnet tool install Kontent.Ai.ModelGenerator` (to install the latest version
-- `dotnet tool run KontentModelGenerator --environmentId "<environmentId>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel "<structured_model>"] [--filenamesuffix "<suffix>"]`
+- `dotnet tool run KontentModelGenerator --environmentId "<environmentId>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--baseclass "<base-class-name>"]`
 
 ### Standalone apps for Windows 🗔, Linux 🐧, macOS 🍎
 
@@ -41,7 +58,7 @@ The recommended way of obtaining this tool is installing it as a [.NET Tool](htt
 
 Latest release: [Download](https://github.com/kontent-ai/model-generator-net/releases/latest)
 
-- `KontentModelGenerator --environmentId "<environmentId>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--structuredmodel "<structured_model>"] [--filenamesuffix "<suffix>"]`
+- `KontentModelGenerator --environmentId "<environmentId>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--baseclass "<base-class-name>"]`
 
 To learn how to generate executables for your favorite target platform, follow the steps in the [docs](./docs/build-and-run.md).
 
@@ -52,13 +69,13 @@ To learn how to generate executables for your favorite target platform, follow t
 | `-i`      |            `--environmentId`             |   True   |      `null`       |                                                                                                                                                  A GUID that can be found in [Kontent.ai](https://app.kontent.ai) -> Environment settings -> Environment ID                                                                                                                                                      |
 | `-n`      |              `--namespace`               |  False   | `KontentAiModels` |                                                                                                                                                    A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                                                                                                                                                        |
 | `-o`      |              `--outputdir`               |  False   |       `\.`        |                                                                                                                                                                                    An output folder path                                                                                                                                                                                       |
-| `-g`      |           `--generatepartials`           |  False   |      `true`       |                                                                                                                          Generates partial classes for customization. Partial classes are the best practice for customization so the recommended value is `true`.                                                                                                                              |
 | `-t`      |           `--withtypeprovider`           |  False   |      `true`       |                                          Indicates whether the `CustomTypeProvider` class should be generated (see [Customizing the strong-type binding logic](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/strongly-typed-models.md#customizing-the-strong-type-binding-logic) for more info)                                              |
-| `-s`      |           `--structuredmodel`            |  False   |      `null`       | Allowed values [`RichText`, `DateTime`, `True`, `ModularContent`], as a separator you should use `,`. ⚠️ `True` parameter is **obsolete** and interprets the same value as `RichText`. For further details see [structured models rendering](https://github.com/kontent-ai/delivery-sdk-net/blob/master/docs/customization-and-extensibility/structured-models/structured-models-rendering.md) |
-| `-f`      |           `--filenamesuffix`             |  False   |      `null`       |                                                                                                                                                        Adds a suffix to generated filenames (e.g., News.cs becomes News.Generated.cs)                                                                                                                                                          |
 | `-b`      |              `--baseclass`               |  False   |      `null`       |                                                                                                                            If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes                                                                                                                              |
-| `-e`      |        `--extendeddeliverymodels`        |  False   |     `false`       |                                                                                                                                                                 Indicates whether extended deliver models should be generated                                                                                                                                                                  |
-| `-k`      |                 `--apikey`               |   True   |      `null`       |                                                                                                                                           Can be used with the extended delivery models. For details please see [Management API parameters section](#management-api-parameters)                                                                                                               |
+| `-g`      |           `--generatepartials`           |  False   |      `true`       |                                                                                                                          ⚠️ **DEPRECATED** - Modern delivery models always generate as single partial records. This option only applies to Management/ExtendedDelivery models.                                                                                                                              |
+| `-s`      |           `--structuredmodel`            |  False   |      `null`       | ⚠️ **DEPRECATED** - Modern delivery models are always structured. This option only applies to ExtendedDelivery models. |
+| `-f`      |           `--filenamesuffix`             |  False   |      `null`       |                                                                                                                                                        ⚠️ **DEPRECATED** - Modern delivery models generate single files without suffixes. This option only applies to Management/ExtendedDelivery models.                                                                                                                                                          |
+| `-e`      |        `--extendeddeliverymodels`        |  False   |     `false`       |                                                                                                                                                                 ⚠️ **NOT YET UPDATED** - Extended delivery model generation is not yet modernized                                                                                                                                                                  |
+| `-k`      |                 `--apikey`               |   False   |      `null`       |                                                                                                                                           Required for extended delivery models. For details please see [Management API parameters section](#management-api-parameters)                                                                                                               |
 
 For advanced configuration please see [Advanced configuration (Preview API, Secure API)](#advanced-configuration-preview-api-secure-api)
 
@@ -80,35 +97,117 @@ There are two ways of configuring advanced Delivery SDK options (such as secure 
 
 ### Delivery API example output
 
-```csharp
-using System;
-using System.Collections.Generic;
-using Kontent.Ai.Delivery.Abstractions;
+The generator now produces modern **record-based models** with the following characteristics:
+- File-scoped namespaces
+- `public partial record` declarations
+- `{ get; init; }` accessors for immutability
+- `[JsonPropertyName]` attributes for property mapping
+- Modern concrete types (`RichTextContent`, `Asset`, `TaxonomyTerm`, etc.)
+- `= default!` initializers for non-nullable reference types
+- No system properties or codename constants (cleaner models)
+- Implements `IElementsModel` interface
 
-namespace KontentAiModels
+**Generated file: `Article.cs`**
+
+```csharp
+// <auto-generated>
+// This code was generated by a kontent-generators-net tool
+// (see https://github.com/kontent-ai/model-generator-net).
+//
+// Changes to this file may cause incorrect behavior and will be lost if the code is regenerated.
+// For further modifications of the class, create a separate file with the partial class.
+// </auto-generated>
+
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using Kontent.Ai.Delivery.Abstractions;
+using Kontent.Ai.Delivery.ContentItems;
+using Kontent.Ai.Delivery.ContentItems.RichText;
+using Kontent.Ai.Delivery.SharedModels;
+
+namespace KontentAiModels;
+
+public partial record Article : IElementsModel
 {
-    public partial class CompleteContentType
-    {
-        public string Text { get; set; }
-        public string RichText { get; set; }
-        public decimal? Number { get; set; }
-        public IEnumerable<MultipleChoiceOption> MultipleChoice { get; set; }
-        public DateTime? DateTime { get; set; }
-        public IEnumerable<Asset> Asset { get; set; }
-        public IEnumerable<object> ModularContent { get; set; }
-        public IEnumerable<object> Subpages { get; set; }
-        public IEnumerable<TaxonomyTerm> Taxonomy { get; set; }
-        public string UrlSlug { get; set; }
-        public string CustomElement { get; set; }
-        public ContentItemSystemAttributes System { get; set; }
-    }
+    [JsonPropertyName("title")]
+    public string Title { get; init; } = default!;
+
+    [JsonPropertyName("body_copy")]
+    public RichTextContent BodyCopy { get; init; } = default!;
+
+    [JsonPropertyName("post_date")]
+    public DateTime? PostDate { get; init; }
+
+    [JsonPropertyName("teaser_image")]
+    public IEnumerable<Asset> TeaserImage { get; init; } = default!;
+
+    [JsonPropertyName("related_articles")]
+    public IEnumerable<IEmbeddedContent> RelatedArticles { get; init; } = default!;
+
+    [JsonPropertyName("personas")]
+    public IEnumerable<TaxonomyTerm> Personas { get; init; } = default!;
+
+    [JsonPropertyName("url_pattern")]
+    public string UrlPattern { get; init; } = default!;
+
+    [JsonPropertyName("custom_tracking_code")]
+    public string? CustomTrackingCode { get; init; }
 }
 ```
 
+### Key differences from legacy version:
+- ✅ **Records instead of classes** - Modern, immutable data structures
+- ✅ **File-scoped namespaces** - Cleaner syntax
+- ✅ **JSON attributes** - Explicit property name mapping
+- ✅ **Concrete types** - `RichTextContent`, `Asset`, `TaxonomyTerm` instead of interfaces
+- ✅ **Single file** - No more `.Generated.cs` split
+- ✅ **No system property** - System metadata accessed separately
+- ✅ **No codename constants** - Simplified model structure
+
+### Customizing generated models
+
+Since the generated models are **partial records**, you can extend them by creating your own partial record file:
+
+**Generated file: `Article.cs` (auto-generated)**
+```csharp
+namespace KontentAiModels;
+
+public partial record Article : IElementsModel
+{
+    [JsonPropertyName("title")]
+    public string Title { get; init; } = default!;
+    // ... other properties
+}
+```
+
+**Your custom file: `Article.Custom.cs` (your customizations)**
+```csharp
+namespace KontentAiModels;
+
+public partial record Article
+{
+    // Add computed properties
+    public string Slug => Title.ToLowerInvariant().Replace(" ", "-");
+
+    // Add custom methods
+    public bool IsPublished() => PostDate.HasValue && PostDate.Value <= DateTime.Now;
+
+    // Add validation
+    public bool IsValid() => !string.IsNullOrEmpty(Title) && BodyCopy != null;
+}
+```
+
+The generator creates the base model, and you maintain customizations in separate files that won't be overwritten.
+
 ### Customizing models - Extended delivery models
+
+⚠️ **NOT YET UPDATED FOR MODERN DELIVERY SDK** - This feature is still using the legacy approach and will be modernized in a future release once the Management SDK is also updated.
+
 Provides support to customize generated models based on content linked/subpages element constraints. This feature uses [Management SDK](https://github.com/kontent-ai/management-sdk-net) thus you'll need to provide api key as well.
 
 `KontentModelGenerator --environmentId "<environmentId>" -e true -k "<apikey>"`
+
+**Note**: Extended delivery models currently generate using the legacy class-based format and are not compatible with the modern Delivery SDK (v19+).
 
 #### Extended delivery models example output
 Model is generated using structured model option ModularContent.
@@ -158,6 +257,8 @@ public partial class Home
 ```
 
 ## How to use for [Management SDK](https://github.com/kontent-ai/management-sdk-net)
+
+⚠️ **UNCHANGED FROM PREVIOUS VERSION** - Management model generation remains unchanged and uses the legacy class-based format. This will be modernized in a future release when the Management SDK is updated.
 
 ### Usage
 
