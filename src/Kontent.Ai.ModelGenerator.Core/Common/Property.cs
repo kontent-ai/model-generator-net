@@ -30,21 +30,28 @@ public class Property(string codename, string typeName, string id = null)
     /// </summary>
     public string TypeName { get; } = typeName;
 
+    /// <summary>
+    /// Gets whether this property is nullable and should not have a default! initializer.
+    /// </summary>
+    public bool IsNullable => TypeName.EndsWith("?");
+
+    /// <summary>
+    /// Gets whether this property requires a default! initializer (non-nullable reference type).
+    /// </summary>
+    public bool RequiresDefaultInitializer => !IsNullable && !TypeName.EndsWith("?");
+
     private static readonly IImmutableDictionary<string, string> DeliverElementTypesDictionary = new Dictionary<string, string>
     {
         { "text", "string" },
-        { RichTextElementType, "string" },
-        { $"{RichTextElementType}{StructuredSuffix}", nameof(IRichTextContent)},
-        { "number", "decimal?" },
+        { RichTextElementType, "RichTextContent" },
+        { "number", "double?" },
         { DateTimeElementType, "DateTime?" },
-        { $"{DateTimeElementType}{StructuredSuffix}", nameof(IDateTimeContent) },
-        { "multiple_choice", TextHelpers.GetEnumerableType(nameof(IMultipleChoiceOption))},
-        { "asset", TextHelpers.GetEnumerableType(nameof(IAsset)) },
-        { ModularContentElementType, TextHelpers.GetEnumerableType(ObjectType) },
-        { $"{ModularContentElementType}{StructuredSuffix}", TextHelpers.GetEnumerableType(nameof(IContentItem)) },
-        { "taxonomy", TextHelpers.GetEnumerableType(nameof(ITaxonomyTerm)) },
+        { "multiple_choice", "IEnumerable<MultipleChoiceOption>"},
+        { "asset", "IEnumerable<Asset>" },
+        { ModularContentElementType, "IEnumerable<IEmbeddedContent>" },
+        { "taxonomy", "IEnumerable<TaxonomyTerm>" },
         { "url_slug", "string" },
-        { "custom", "string" }
+        { "custom", "string?" }
     }.ToImmutableDictionary();
 
     private static readonly IImmutableDictionary<string, string> ExtendedDeliverElementTypesDictionary = new Dictionary<string, string>

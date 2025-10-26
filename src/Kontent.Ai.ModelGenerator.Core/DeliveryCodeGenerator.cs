@@ -46,11 +46,7 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
         {
             try
             {
-                if (Options.GeneratePartials)
-                {
-                    codeGenerators.Add(GetCustomClassCodeGenerator(contentType.System.Codename));
-                }
-
+                // Modern delivery generates single file per content type (no partials)
                 codeGenerators.Add(GetClassCodeGenerator(contentType));
             }
             catch (InvalidIdentifierException)
@@ -72,7 +68,8 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
             {
                 var elementType = DeliveryElementService.GetElementType(element.Type);
                 var property = Property.FromContentTypeElement(element.Codename, elementType);
-                AddProperty(property, ref classDefinition);
+                // Modern delivery: no codename constants, just add the property
+                classDefinition.AddProperty(property);
             }
             catch (Exception e)
             {
@@ -80,23 +77,10 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
             }
         }
 
-        TryAddSystemProperty(classDefinition);
+        // Modern delivery: no system property
 
         var classFilename = GetFileClassName(classDefinition.ClassName);
 
         return ClassCodeGeneratorFactory.CreateClassCodeGenerator(Options, classDefinition, classFilename, Logger);
-    }
-
-    private void TryAddSystemProperty(ClassDefinition classDefinition)
-    {
-        try
-        {
-            classDefinition.AddSystemProperty();
-        }
-        catch (InvalidOperationException)
-        {
-            Logger.LogWarning(
-                $"Can't add 'System' property. It's in collision with existing element in Content Type '{classDefinition.ClassName}'.");
-        }
     }
 }
