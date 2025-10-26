@@ -20,24 +20,8 @@ public class DeliveryElementService : IDeliveryElementService
     {
         ArgumentNullException.ThrowIfNull(elementType);
 
-        if (!Options.IsStructuredModelEnabled())
-        {
-            return elementType;
-        }
-
-        if (Options.StructuredModelFlags.HasFlag(StructuredModelFlags.DateTime) && Property.IsDateTimeElementType(elementType))
-        {
-            elementType += Property.StructuredSuffix;
-        }
-        else if (Options.IsStructuredModelRichText() && Property.IsRichTextElementType(elementType))
-        {
-            elementType += Property.StructuredSuffix;
-        }
-        else if (!Options.ExtendedDeliveryModels && Options.IsStructuredModelModularContent() && Property.IsModularContentElementType(elementType))
-        {
-            elementType += Property.StructuredSuffix;
-        }
-
+        // Modern delivery models are always structured - no suffix needed
+        // Extended delivery models have their own type resolution logic
         return elementType;
     }
 

@@ -25,6 +25,16 @@ public abstract class ClassCodeGenerator : GeneralGenerator
 
     public bool OverwriteExisting => GetType() != typeof(PartialClassCodeGenerator);
 
+    /// <summary>
+    /// Determines if this generator creates a record instead of a class.
+    /// </summary>
+    protected virtual bool IsRecord => false;
+
+    /// <summary>
+    /// Determines if this generator uses file-scoped namespace.
+    /// </summary>
+    protected virtual bool UseFileScopedNamespace => false;
+
     public string GenerateCode()
     {
         var usings = GetApiUsings();
@@ -39,17 +49,85 @@ public abstract class ClassCodeGenerator : GeneralGenerator
     protected abstract UsingDirectiveSyntax[] GetApiUsings();
 
     protected virtual MemberDeclarationSyntax[] Properties
-        => ClassDefinition.Properties.OrderBy(p => p.Identifier).Select(element => SyntaxFactory
-            .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
-            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-            .AddAccessorListAccessors(
-                GetAccessorDeclaration(SyntaxKind.GetAccessorDeclaration),
-                GetAccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
-            )).ToArray<MemberDeclarationSyntax>();
+        => ClassDefinition.Properties.OrderBy(p => p.Identifier).Select(element =>
+        {
+            var property = SyntaxFactory
+                .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
 
-    protected virtual TypeDeclarationSyntax GetClassDeclaration() => SyntaxFactory.ClassDeclaration(ClassDefinition.ClassName)
-        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-        .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
+            // Add JSON attribute with property name
+            property = property.AddAttributeLists(
+                SyntaxFactory.AttributeList(
+                    SyntaxFactory.SingletonSeparatedList(
+                        SyntaxFactory.Attribute(
+                            SyntaxFactory.IdentifierName("JsonPropertyName"),
+                            SyntaxFactory.AttributeArgumentList(
+                                SyntaxFactory.SingletonSeparatedList(
+                                    SyntaxFactory.AttributeArgument(
+                                        SyntaxFactory.LiteralExpression(
+                                            SyntaxKind.StringLiteralExpression,
+                                            SyntaxFactory.Literal(element.Codename)))))))));
+
+            // Add accessor list (init instead of set for records/modern delivery)
+            if (IsRecord)
+            {
+                // Records need { get; init; }
+                property = property.AddAccessorListAccessors(
+                    GetAccessorDeclaration(SyntaxKind.GetAccessorDeclaration),
+                    GetAccessorDeclaration(SyntaxKind.InitAccessorDeclaration));
+
+                // Add = default! for non-nullable properties
+                if (element.RequiresDefaultInitializer)
+                {
+                    property = property.WithInitializer(
+                        SyntaxFactory.EqualsValueClause(
+                            SyntaxFactory.PostfixUnaryExpression(
+                                SyntaxKind.SuppressNullableWarningExpression,
+                                SyntaxFactory.LiteralExpression(SyntaxKind.DefaultLiteralExpression,
+                                    SyntaxFactory.Token(SyntaxKind.DefaultKeyword)))))
+                        .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+                }
+            }
+            else
+            {
+                property = property.AddAccessorListAccessors(
+                    GetAccessorDeclaration(SyntaxKind.GetAccessorDeclaration),
+                    GetAccessorDeclaration(SyntaxKind.SetAccessorDeclaration));
+            }
+
+            return property;
+        }).ToArray<MemberDeclarationSyntax>();
+
+    protected virtual TypeDeclarationSyntax GetClassDeclaration()
+    {
+        TypeDeclarationSyntax typeDeclaration;
+
+        if (IsRecord)
+        {
+            // Create record declaration with proper braces
+            typeDeclaration = SyntaxFactory.RecordDeclaration(
+                attributeLists: default,
+                modifiers: default,
+                keyword: SyntaxFactory.Token(SyntaxKind.RecordKeyword),
+                identifier: SyntaxFactory.Identifier(ClassDefinition.ClassName),
+                typeParameterList: null,
+                parameterList: null,
+                baseList: null,
+                constraintClauses: default,
+                openBraceToken: SyntaxFactory.Token(SyntaxKind.OpenBraceToken),
+                members: default,
+                closeBraceToken: SyntaxFactory.Token(SyntaxKind.CloseBraceToken),
+                semicolonToken: default);
+        }
+        else
+        {
+            typeDeclaration = SyntaxFactory.ClassDeclaration(ClassDefinition.ClassName);
+        }
+
+        return typeDeclaration
+            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
+    }
 
     protected override SyntaxTrivia ClassDescription() => ClassDeclarationHelper.GenerateSyntaxTrivia(
         @$"{LostChangesComment}
@@ -60,11 +138,28 @@ public abstract class ClassCodeGenerator : GeneralGenerator
 
     private CompilationUnitSyntax GetCompilationUnit(TypeDeclarationSyntax classDeclaration, UsingDirectiveSyntax[] usings)
     {
-        var compilationUnit = SyntaxFactory.CompilationUnit()
-            .AddUsings(usings)
-            .AddMembers(
-                SyntaxFactory.NamespaceDeclaration(SyntaxFactory.IdentifierName(Namespace))
-                    .AddMembers(classDeclaration));
+        CompilationUnitSyntax compilationUnit;
+
+        if (UseFileScopedNamespace)
+        {
+            // File-scoped namespace: namespace Foo;
+            var fileScopedNamespace = SyntaxFactory.FileScopedNamespaceDeclaration(
+                SyntaxFactory.IdentifierName(Namespace))
+                .AddMembers(classDeclaration);
+
+            compilationUnit = SyntaxFactory.CompilationUnit()
+                .AddUsings(usings)
+                .AddMembers(fileScopedNamespace);
+        }
+        else
+        {
+            // Traditional namespace: namespace Foo { }
+            compilationUnit = SyntaxFactory.CompilationUnit()
+                .AddUsings(usings)
+                .AddMembers(
+                    SyntaxFactory.NamespaceDeclaration(SyntaxFactory.IdentifierName(Namespace))
+                        .AddMembers(classDeclaration));
+        }
 
         compilationUnit = compilationUnit.WithLeadingTrivia(ClassDescription());
 

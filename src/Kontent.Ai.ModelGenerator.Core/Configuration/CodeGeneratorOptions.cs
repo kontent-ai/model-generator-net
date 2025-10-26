@@ -43,11 +43,13 @@ public class CodeGeneratorOptions
     /// <summary>
     /// Optionally add suffix to the generated files
     /// </summary>
+    [Obsolete("FileNameSuffix is not used by modern delivery models (single file generation). Only applies to ExtendedDelivery and Management models.")]
     public string FileNameSuffix { get; set; } = DefaultFileNameSuffix;
 
     /// <summary>
     /// Optionally generate partial classes for user customization
     /// </summary>
+    [Obsolete("GeneratePartials is not used by modern delivery models (always generates single partial record). Only applies to ExtendedDelivery and Management models.")]
     public bool GeneratePartials { get; set; } = DefaultGeneratePartials;
 
     /// <summary>
@@ -58,6 +60,7 @@ public class CodeGeneratorOptions
     /// <summary>
     /// Indicates whether the classes should be generated with types that represent structured data model
     /// </summary>
+    [Obsolete("StructuredModel is not used by modern delivery models (always structured). Only applies to ExtendedDelivery models.")]
     public string StructuredModel
     {
         get => null;

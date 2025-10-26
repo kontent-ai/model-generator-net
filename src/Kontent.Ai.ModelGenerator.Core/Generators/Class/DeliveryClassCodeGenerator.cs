@@ -1,28 +1,36 @@
-﻿using Kontent.Ai.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Core.Common;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
-public class DeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = ClassCodeGenerator.DefaultNamespace) : DeliveryClassCodeGeneratorBase(classDefinition, classFilename, @namespace)
+public class DeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = ClassCodeGenerator.DefaultNamespace) : ClassCodeGenerator(classDefinition, classFilename, @namespace)
 {
+    protected override bool IsRecord => true;
+
+    protected override bool UseFileScopedNamespace => true;
+
     protected override TypeDeclarationSyntax GetClassDeclaration()
     {
-        var classDeclaration = base.GetClassDeclaration();
+        var recordDeclaration = base.GetClassDeclaration();
 
-        classDeclaration = classDeclaration.AddMembers(ClassCodenameConstant);
-        classDeclaration = classDeclaration.AddMembers(PropertyCodenameConstants);
-        classDeclaration = classDeclaration.AddMembers(Properties);
+        // Add IElementsModel interface
+        recordDeclaration = (TypeDeclarationSyntax)recordDeclaration.AddBaseListTypes(
+            SyntaxFactory.SimpleBaseType(SyntaxFactory.IdentifierName("IElementsModel")));
 
-        return classDeclaration;
+        // Add properties
+        recordDeclaration = recordDeclaration.AddMembers(Properties);
+
+        return recordDeclaration;
     }
 
     protected override UsingDirectiveSyntax[] GetApiUsings() =>
     [
-        SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(nameof(System))),
-        SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(System.Collections.Generic.IEnumerable<>).Namespace!)),
-        SyntaxFactory.UsingDirective(SyntaxFactory.IdentifierName(typeof(Delivery.Abstractions.IApiResponse).Namespace!))
+        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
+        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Text.Json.Serialization")),
+        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Delivery.Abstractions")),
+        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Delivery.ContentItems")),
+        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Delivery.ContentItems.RichText")),
+        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Delivery.SharedModels"))
     ];
-
-    private FieldDeclarationSyntax ClassCodenameConstant => GetFieldDeclaration("string", "Codename", ClassDefinition.Codename);
 }

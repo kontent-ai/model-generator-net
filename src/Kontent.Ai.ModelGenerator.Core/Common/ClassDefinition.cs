@@ -25,6 +25,10 @@ public class ClassDefinition(string codeName)
         Properties.Add(property);
     }
 
+    /// <summary>
+    /// Adds a property codename constant. Not used by modern delivery models.
+    /// </summary>
+    [Obsolete("Modern delivery models don't use codename constants. This method is only used by legacy generators.")]
     public void AddPropertyCodenameConstant(string codeName)
     {
         if (PropertyCodenameConstants.Contains(codeName))
@@ -35,6 +39,10 @@ public class ClassDefinition(string codeName)
         PropertyCodenameConstants.Add(codeName);
     }
 
+    /// <summary>
+    /// Adds a system property. Not used by modern delivery models.
+    /// </summary>
+    [Obsolete("Modern delivery models don't include a System property. This method is only used by legacy generators.")]
     public void AddSystemProperty()
     {
         AddProperty(new Property("system", nameof(IContentItemSystemAttributes)));
