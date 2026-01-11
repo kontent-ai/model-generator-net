@@ -129,9 +129,13 @@ public abstract class ClassCodeGenerator : GeneralGenerator
             .AddModifiers(SyntaxFactory.Token(SyntaxKind.PartialKeyword));
     }
 
-    protected override SyntaxTrivia ClassDescription() => ClassDeclarationHelper.GenerateSyntaxTrivia(
-        @$"{LostChangesComment}
-// For further modifications of the class, create a separate file with the partial class.");
+    protected override SyntaxTrivia ClassDescription()
+    {
+        var typeWord = IsRecord ? "record" : "class";
+        return ClassDeclarationHelper.GenerateSyntaxTrivia(
+            @$"{LostChangesComment}
+// To extend this {typeWord}, create a separate partial {typeWord} with the same name.");
+    }
 
     protected static AccessorDeclarationSyntax GetAccessorDeclaration(SyntaxKind kind) =>
         SyntaxFactory.AccessorDeclaration(kind).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
