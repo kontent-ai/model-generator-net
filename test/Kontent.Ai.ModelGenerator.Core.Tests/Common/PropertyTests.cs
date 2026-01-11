@@ -35,7 +35,7 @@ public class PropertyTests
     [InlineData("rich_text", "RichTextContent")]
     [InlineData("number", "double?")]
     [InlineData("multiple_choice", "IEnumerable<MultipleChoiceOption>")]
-    [InlineData("date_time", "DateTime?")]
+    [InlineData("date_time", "DateTimeContent")]
     [InlineData("asset", "IEnumerable<Asset>")]
     [InlineData("modular_content", "IEnumerable<IEmbeddedContent>")]
     [InlineData("taxonomy", "IEnumerable<TaxonomyTerm>")]

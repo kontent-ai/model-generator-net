@@ -45,7 +45,7 @@ public class Property(string codename, string typeName, string id = null)
         { "text", "string" },
         { RichTextElementType, "RichTextContent" },
         { "number", "double?" },
-        { DateTimeElementType, "DateTime?" },
+        { DateTimeElementType, "DateTimeContent" },
         { "multiple_choice", "IEnumerable<MultipleChoiceOption>"},
         { "asset", "IEnumerable<Asset>" },
         { ModularContentElementType, "IEnumerable<IEmbeddedContent>" },

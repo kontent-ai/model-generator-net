@@ -7,7 +7,7 @@
 
 ## ⚠️ BETA VERSION - Modern Delivery SDK ONLY
 
-**This beta version ONLY works with the modernized Kontent.ai Delivery SDK for .NET (v19.0.0-beta-2 and higher).**
+**This beta version ONLY works with the modernized Kontent.ai Delivery SDK for .NET (v19.0.0-beta-3 and higher).**
 
 ### What this version supports:
 - ✅ **Modern Delivery SDK (v19+)** - Generates record-based models with modern types
@@ -110,7 +110,7 @@ using Kontent.Ai.Delivery.SharedModels;
 
 namespace KontentAiModels;
 
-public partial record Article : IElementsModel
+public partial record Article
 {
     [JsonPropertyName("title")]
     public string Title { get; init; } = default!;
@@ -119,7 +119,7 @@ public partial record Article : IElementsModel
     public RichTextContent BodyCopy { get; init; } = default!;
 
     [JsonPropertyName("post_date")]
-    public DateTime? PostDate { get; init; }
+    public DateTimeContent PostDate { get; init; }
 
     [JsonPropertyName("teaser_image")]
     public IEnumerable<Asset> TeaserImage { get; init; } = default!;
@@ -146,7 +146,7 @@ Since the generated models are **partial records**, you can extend them by creat
 ```csharp
 namespace KontentAiModels;
 
-public partial record Article : IElementsModel
+public partial record Article
 {
     [JsonPropertyName("title")]
     public string Title { get; init; } = default!;
