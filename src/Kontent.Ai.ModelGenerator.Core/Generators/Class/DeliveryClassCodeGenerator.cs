@@ -14,10 +14,6 @@ public class DeliveryClassCodeGenerator(ClassDefinition classDefinition, string 
     {
         var recordDeclaration = base.GetClassDeclaration();
 
-        // Add IElementsModel interface
-        recordDeclaration = (TypeDeclarationSyntax)recordDeclaration.AddBaseListTypes(
-            SyntaxFactory.SimpleBaseType(SyntaxFactory.IdentifierName("IElementsModel")));
-
         // Add properties
         recordDeclaration = recordDeclaration.AddMembers(Properties);
 
