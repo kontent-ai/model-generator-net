@@ -34,7 +34,7 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         classCodeGenerator.OverwriteExisting.Should().BeTrue();
     }
 
-    [Fact(Skip = "Snapshot test - expected output uses legacy class format, needs update for modern record format")]
+    [Fact]
     public void Build_CreatesClassWithCompleteContentType()
     {
         var classCodeGenerator = new DeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
@@ -44,10 +44,10 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         var executingPath = AppContext.BaseDirectory;
         var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
 
-        compiledCode.Should().Be(expectedCode);
+        compiledCode.Trim().Should().Be(expectedCode.Trim());
     }
 
-    [Fact(Skip = "Compilation test needs additional assembly references for SDK v19 - will be fixed in future update")]
+    [Fact]
     public void IntegrationTest_GeneratedCodeCompilesWithoutErrors()
     {
         var classCodeGenerator = new DeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
@@ -61,8 +61,8 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
             ],
             references: [
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.IElementsModel).GetTypeInfo().Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Delivery.ContentItems.RichText.RichTextContent).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.IEmbeddedContent).GetTypeInfo().Assembly.Location),
+                MetadataReference.CreateFromFile(Assembly.Load("Kontent.Ai.Delivery").Location),
                 MetadataReference.CreateFromFile(typeof(System.Text.Json.Serialization.JsonPropertyNameAttribute).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(DateTime).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(IEnumerable<>).GetTypeInfo().Assembly.Location),

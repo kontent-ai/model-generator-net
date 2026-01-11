@@ -8,8 +8,8 @@
     <Company>Kontent s.r.o.</Company>
     <Product>Kontent.ai</Product>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageIcon>kai-logo-symbol-color-rgb.png</PackageIcon>
-    <PackageIconUrl>https://github.com/kontent-ai/.github/blob/main/logos/kai-logo-symbol-color-rgb.png?raw=true</PackageIconUrl>
+    <PackageIcon>kontent-ai-k-icon-color.png</PackageIcon>
+    <PackageIconUrl>https://github.com/kontent-ai/.github/blob/main/logos/kontent-ai-k-icon-color.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://github.com/kontent-ai/model-generator-net</RepositoryUrl>
     <Copyright>© 2022 Kontent.ai s.r.o. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -42,7 +42,7 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
 
     <None Include="../../README.md" Pack="true" PackagePath="" />
-    <None Include="../../kai-logo-symbol-color-rgb.png" Pack="true" PackagePath="" />
+    <None Include="../../kontent-ai-k-icon-color.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
