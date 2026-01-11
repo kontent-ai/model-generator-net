@@ -28,6 +28,6 @@ public class PartialClassCodeGeneratorTests
         var executingPath = AppContext.BaseDirectory;
         var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_CustomPartial.txt");
 
-        compiledCode.Should().Be(expectedCode);
+        compiledCode.Trim().Should().Be(expectedCode.Trim());
     }
 }

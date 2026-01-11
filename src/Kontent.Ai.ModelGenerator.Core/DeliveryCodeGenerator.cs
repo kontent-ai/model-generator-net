@@ -29,15 +29,15 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
 
     protected override async Task<ICollection<ClassCodeGenerator>> GetClassCodeGenerators()
     {
-        var deliveryTypes = (await _deliveryClient.GetTypes().ExecuteAsync()).Value;
+        var deliveryTypesResponse = (await _deliveryClient.GetTypes().ExecuteAsync()).Value;
 
         var codeGenerators = new List<ClassCodeGenerator>();
-        if (deliveryTypes == null)
+        if (deliveryTypesResponse == null)
         {
             return codeGenerators;
         }
 
-        foreach (var contentType in deliveryTypes)
+        foreach (var contentType in deliveryTypesResponse.Types)
         {
             try
             {

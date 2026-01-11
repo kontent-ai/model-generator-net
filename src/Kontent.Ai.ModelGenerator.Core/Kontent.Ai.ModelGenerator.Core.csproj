@@ -4,14 +4,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <Authors>Kontent s.r.o.</Authors>
     <Product>Kontent.ai</Product>
-    <PackageIconUrl>https://github.com/kontent-ai/.github/blob/main/logos/kai-logo-symbol-color-rgb.png?raw=true</PackageIconUrl>
+    <PackageIconUrl>https://github.com/kontent-ai/.github/blob/main/logos/kontent-ai-k-icon-color.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://github.com/kontent-ai/model-generator-net</RepositoryUrl>
     <Copyright>© 2025 Kontent.ai s.r.o. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>tool;kontent-ai;generator</PackageTags>
     <Description>This utility generates strongly-typed models based on content types in a Kontent.ai environment. The models are meant to be used together with the Kontent.ai Delivery/Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageIcon>kai-logo-symbol-color-rgb.png</PackageIcon>
+    <PackageIcon>kontent-ai-k-icon-color.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -25,17 +25,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kontent.Ai.Delivery" Version="19.0.0-beta-2" />
+    <PackageReference Include="Kontent.Ai.Delivery" Version="19.0.0-beta-3" />
     <PackageReference Include="Kontent.Ai.Management" Version="6.6.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.8" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kontent.Ai.Delivery.Abstractions" Version="19.0.0-beta-2" />
+    <PackageReference Include="Kontent.Ai.Delivery.Abstractions" Version="19.0.0-beta-3" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.13.0" />
     <None Include="../../README.md" Pack="true" PackagePath="" />
-    <None Include="../../kai-logo-symbol-color-rgb.png" Pack="true" PackagePath="" />
+    <None Include="../../kontent-ai-k-icon-color.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
