@@ -63,6 +63,7 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Delivery.Abstractions.IEmbeddedContent).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(Assembly.Load("Kontent.Ai.Delivery").Location),
+                MetadataReference.CreateFromFile(typeof(Delivery.Attributes.ContentTypeCodenameAttribute).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(System.Text.Json.Serialization.JsonPropertyNameAttribute).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(DateTime).GetTypeInfo().Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(IEnumerable<>).GetTypeInfo().Assembly.Location),

@@ -9,12 +9,14 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Kontent.Ai.Delivery.Abstractions;
+using Kontent.Ai.Delivery.Attributes;
 using Kontent.Ai.Delivery.ContentItems;
 using Kontent.Ai.Delivery.ContentItems.RichText;
 using Kontent.Ai.Delivery.SharedModels;
 
 namespace KontentAiModels;
 
+[ContentTypeCodename("Complete content type")]
 public partial record CompleteContentType
 {
     [JsonPropertyName("asset")]
