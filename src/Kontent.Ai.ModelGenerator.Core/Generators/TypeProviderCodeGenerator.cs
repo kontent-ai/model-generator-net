@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.Formatting;
 
 namespace Kontent.Ai.ModelGenerator.Core.Generators;
 
+[Obsolete("TypeProvider is now generated via source generation in Delivery SDK 19.0.0-rc1+. This class will be removed in a future version.")]
 public class TypeProviderCodeGenerator(string @namespace = ClassCodeGenerator.DefaultNamespace) : GeneralGenerator(@namespace)
 {
     public const string ClassName = "CustomTypeProvider";

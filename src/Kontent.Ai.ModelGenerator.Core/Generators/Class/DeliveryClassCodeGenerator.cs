@@ -14,6 +14,19 @@ public class DeliveryClassCodeGenerator(ClassDefinition classDefinition, string 
     {
         var recordDeclaration = base.GetClassDeclaration();
 
+        // Add ContentTypeCodename attribute
+        recordDeclaration = recordDeclaration.AddAttributeLists(
+            SyntaxFactory.AttributeList(
+                SyntaxFactory.SingletonSeparatedList(
+                    SyntaxFactory.Attribute(
+                        SyntaxFactory.IdentifierName("ContentTypeCodename"),
+                        SyntaxFactory.AttributeArgumentList(
+                            SyntaxFactory.SingletonSeparatedList(
+                                SyntaxFactory.AttributeArgument(
+                                    SyntaxFactory.LiteralExpression(
+                                        SyntaxKind.StringLiteralExpression,
+                                        SyntaxFactory.Literal(ClassDefinition.Codename)))))))));
+
         // Add properties
         recordDeclaration = recordDeclaration.AddMembers(Properties);
 
@@ -25,6 +38,7 @@ public class DeliveryClassCodeGenerator(ClassDefinition classDefinition, string 
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Text.Json.Serialization")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Delivery.Abstractions")),
+        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Delivery.Attributes")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Delivery.ContentItems")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Delivery.ContentItems.RichText")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Delivery.SharedModels"))

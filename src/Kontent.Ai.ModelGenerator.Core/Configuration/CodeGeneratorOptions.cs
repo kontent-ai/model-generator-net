@@ -1,4 +1,5 @@
-﻿using Kontent.Ai.Delivery.Abstractions;
+﻿using System;
+using Kontent.Ai.Delivery.Abstractions;
 
 namespace Kontent.Ai.ModelGenerator.Core.Configuration;
 
@@ -8,7 +9,7 @@ namespace Kontent.Ai.ModelGenerator.Core.Configuration;
 /// </summary>
 public class CodeGeneratorOptions
 {
-    private const bool DefaultWithTypeProvider = true;
+    private const bool DefaultWithTypeProvider = false;
 
     /// <summary>
     /// Delivery Client configuration.
@@ -28,6 +29,7 @@ public class CodeGeneratorOptions
     /// <summary>
     /// Indicates whether the CustomTypeProvider class should be generated
     /// </summary>
+    [Obsolete("TypeProvider is now generated via source generation in Delivery SDK 19.0.0-rc1+. This option will be removed in a future version.")]
     public bool WithTypeProvider { get; set; } = DefaultWithTypeProvider;
 
     /// <summary>
