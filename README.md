@@ -44,7 +44,7 @@ The recommended way of obtaining this tool is installing it as a [.NET Tool](htt
 #### Global Tool
 
 - `dotnet tool install -g Kontent.Ai.ModelGenerator`
-- `KontentModelGenerator --environmentid "<environmentId>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--baseclass "<base-class-name>"]`
+- `KontentModelGenerator --environmentId "<environmentId>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--baseclass "<base-class-name>"]`
 
 #### Local Tool
 
