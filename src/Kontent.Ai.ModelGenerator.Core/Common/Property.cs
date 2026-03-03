@@ -42,15 +42,15 @@ public class Property(string codename, string typeName, string id = null)
 
     private static readonly IImmutableDictionary<string, string> DeliverElementTypesDictionary = new Dictionary<string, string>
     {
-        { "text", "string" },
-        { RichTextElementType, "RichTextContent" },
+        { "text", "string?" },
+        { RichTextElementType, "RichTextContent?" },
         { "number", "double?" },
-        { DateTimeElementType, "DateTimeContent" },
-        { "multiple_choice", "IEnumerable<MultipleChoiceOption>"},
-        { "asset", "IEnumerable<Asset>" },
-        { ModularContentElementType, "IEnumerable<IEmbeddedContent>" },
-        { "taxonomy", "IEnumerable<TaxonomyTerm>" },
-        { "url_slug", "string" },
+        { DateTimeElementType, "DateTimeContent?" },
+        { "multiple_choice", "IEnumerable<MultipleChoiceOption>?"},
+        { "asset", "IEnumerable<Asset>?" },
+        { ModularContentElementType, "IEnumerable<IEmbeddedContent>?" },
+        { "taxonomy", "IEnumerable<TaxonomyTerm>?" },
+        { "url_slug", "string?" },
         { "custom", "string?" }
     }.ToImmutableDictionary();
 

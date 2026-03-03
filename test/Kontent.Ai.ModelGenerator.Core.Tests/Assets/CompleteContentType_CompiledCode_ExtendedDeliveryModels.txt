@@ -44,49 +44,49 @@ public partial record CompleteContentType
     public const string UrlSlugCodename = "url_slug";
 
     [JsonPropertyName("asset")]
-    public IEnumerable<Asset> Asset { get; init; } = default!;
+    public IEnumerable<Asset>? Asset { get; init; }
     [JsonPropertyName("custom")]
     public string? Custom { get; init; }
     [JsonPropertyName("date_time")]
-    public DateTimeContent DateTime { get; init; } = default!;
+    public DateTimeContent? DateTime { get; init; }
     [JsonPropertyName("date_time_structured")]
-    public DateTimeContent DateTimeStructured { get; init; } = default!;
+    public DateTimeContent? DateTimeStructured { get; init; }
     [JsonPropertyName("modular_content_article")]
-    public IEnumerable<IEmbeddedContent> ModularContentArticle { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? ModularContentArticle { get; init; }
     [JsonPropertyName("modular_content_blog")]
-    public IEnumerable<IEmbeddedContent> ModularContentBlog { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? ModularContentBlog { get; init; }
     [JsonPropertyName("modular_content_coffee")]
-    public IEnumerable<IEmbeddedContent> ModularContentCoffee { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? ModularContentCoffee { get; init; }
     [JsonPropertyName("modular_content_coffees")]
-    public IEnumerable<IEmbeddedContent> ModularContentCoffees { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? ModularContentCoffees { get; init; }
     [JsonPropertyName("modular_content_hero")]
-    public IEnumerable<IEmbeddedContent> ModularContentHero { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? ModularContentHero { get; init; }
     [JsonPropertyName("modular_content_heroes")]
-    public IEnumerable<IEmbeddedContent> ModularContentHeroes { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? ModularContentHeroes { get; init; }
     [JsonPropertyName("multiple_choice")]
-    public IEnumerable<MultipleChoiceOption> MultipleChoice { get; init; } = default!;
+    public IEnumerable<MultipleChoiceOption>? MultipleChoice { get; init; }
     [JsonPropertyName("number")]
     public double? Number { get; init; }
     [JsonPropertyName("rich_text")]
-    public RichTextContent RichText { get; init; } = default!;
+    public RichTextContent? RichText { get; init; }
     [JsonPropertyName("rich_text_structured")]
-    public RichTextContent RichTextStructured { get; init; } = default!;
+    public RichTextContent? RichTextStructured { get; init; }
     [JsonPropertyName("subpages_article")]
-    public IEnumerable<IEmbeddedContent> SubpagesArticle { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? SubpagesArticle { get; init; }
     [JsonPropertyName("subpages_blog")]
-    public IEnumerable<IEmbeddedContent> SubpagesBlog { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? SubpagesBlog { get; init; }
     [JsonPropertyName("subpages_coffee")]
-    public IEnumerable<IEmbeddedContent> SubpagesCoffee { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? SubpagesCoffee { get; init; }
     [JsonPropertyName("subpages_coffees")]
-    public IEnumerable<IEmbeddedContent> SubpagesCoffees { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? SubpagesCoffees { get; init; }
     [JsonPropertyName("subpages_hero")]
-    public IEnumerable<IEmbeddedContent> SubpagesHero { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? SubpagesHero { get; init; }
     [JsonPropertyName("subpages_heroes")]
-    public IEnumerable<IEmbeddedContent> SubpagesHeroes { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? SubpagesHeroes { get; init; }
     [JsonPropertyName("taxonomy")]
-    public IEnumerable<TaxonomyTerm> Taxonomy { get; init; } = default!;
+    public IEnumerable<TaxonomyTerm>? Taxonomy { get; init; }
     [JsonPropertyName("text")]
-    public string Text { get; init; } = default!;
+    public string? Text { get; init; }
     [JsonPropertyName("url_slug")]
-    public string UrlSlug { get; init; } = default!;
+    public string? UrlSlug { get; init; }
 }
