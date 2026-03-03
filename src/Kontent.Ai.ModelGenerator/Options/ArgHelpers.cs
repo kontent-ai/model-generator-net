@@ -22,14 +22,14 @@ internal static class ArgHelpers
 
     public static IDictionary<string, string> GetSwitchMappings(string[] args) => ArgMappingsRegister.GeneralMappings
         .Union(ArgMappingsRegister.DeliveryEnvironmentIdMappings)
-        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.OrdinalIgnoreCase);
 
     public static bool ContainsValidArgs(string[] args)
     {
         var containsValidArgs = true;
         var codeGeneratorOptionsProperties = typeof(CodeGeneratorOptions).GetProperties()
             .Where(p => p.PropertyType != DeliveryProgramOptionsData.Type)
-            .Select(p => p.Name.ToLower())
+            .Select(p => p.Name)
             .ToList();
 
         var brokenArgs = args.Where(a =>
@@ -58,9 +58,10 @@ internal static class ArgHelpers
             IsOptionPropertyValid(programOptionsData.OptionProperties.Select(prop => $"{programOptionsData.OptionsName}:{prop.Name}"), arg);
 
     private static bool IsOptionPropertyValid(IEnumerable<string> optionProperties, string arg) =>
-        optionProperties.Any(prop => GetPrefixedMappingName(prop, false) == arg);
+        optionProperties.Any(prop =>
+            string.Equals(GetPrefixedMappingName(prop), arg, StringComparison.OrdinalIgnoreCase));
 
-    private static string GetPrefixedMappingName(string mappingName, bool toLower = true) => $"--{(toLower ? mappingName.ToLower() : mappingName)}";
+    private static string GetPrefixedMappingName(string mappingName) => $"--{mappingName}";
 
     private static string[] SplitArgument(string arg) => arg.Split(NameAndValueSeparator);
 
