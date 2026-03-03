@@ -31,15 +31,15 @@ public class PropertyTests
     }
 
     [Theory]
-    [InlineData("text", "string")]
-    [InlineData("rich_text", "RichTextContent")]
+    [InlineData("text", "string?")]
+    [InlineData("rich_text", "RichTextContent?")]
     [InlineData("number", "double?")]
-    [InlineData("multiple_choice", "IEnumerable<MultipleChoiceOption>")]
-    [InlineData("date_time", "DateTimeContent")]
-    [InlineData("asset", "IEnumerable<Asset>")]
-    [InlineData("modular_content", "IEnumerable<IEmbeddedContent>")]
-    [InlineData("taxonomy", "IEnumerable<TaxonomyTerm>")]
-    [InlineData("url_slug", "string")]
+    [InlineData("multiple_choice", "IEnumerable<MultipleChoiceOption>?")]
+    [InlineData("date_time", "DateTimeContent?")]
+    [InlineData("asset", "IEnumerable<Asset>?")]
+    [InlineData("modular_content", "IEnumerable<IEmbeddedContent>?")]
+    [InlineData("taxonomy", "IEnumerable<TaxonomyTerm>?")]
+    [InlineData("url_slug", "string?")]
     [InlineData("custom", "string?")]
     public void FromContentTypeElement_DeliveryApiModel_Returns(string contentType, string expectedTypeName)
     {

@@ -31,23 +31,23 @@ public partial record CompleteContentType
     public const string UrlSlugCodename = "url_slug";
 
     [JsonPropertyName("asset")]
-    public IEnumerable<Asset> Asset { get; init; } = default!;
+    public IEnumerable<Asset>? Asset { get; init; }
     [JsonPropertyName("custom")]
     public string? Custom { get; init; }
     [JsonPropertyName("date_time")]
-    public DateTimeContent DateTime { get; init; } = default!;
+    public DateTimeContent? DateTime { get; init; }
     [JsonPropertyName("modular_content")]
-    public IEnumerable<IEmbeddedContent> ModularContent { get; init; } = default!;
+    public IEnumerable<IEmbeddedContent>? ModularContent { get; init; }
     [JsonPropertyName("multiple_choice")]
-    public IEnumerable<MultipleChoiceOption> MultipleChoice { get; init; } = default!;
+    public IEnumerable<MultipleChoiceOption>? MultipleChoice { get; init; }
     [JsonPropertyName("number")]
     public double? Number { get; init; }
     [JsonPropertyName("rich_text")]
-    public RichTextContent RichText { get; init; } = default!;
+    public RichTextContent? RichText { get; init; }
     [JsonPropertyName("taxonomy")]
-    public IEnumerable<TaxonomyTerm> Taxonomy { get; init; } = default!;
+    public IEnumerable<TaxonomyTerm>? Taxonomy { get; init; }
     [JsonPropertyName("text")]
-    public string Text { get; init; } = default!;
+    public string? Text { get; init; }
     [JsonPropertyName("url_slug")]
-    public string UrlSlug { get; init; } = default!;
+    public string? UrlSlug { get; init; }
 }
