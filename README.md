@@ -34,6 +34,7 @@ The generated models use modern C# features and patterns:
 - ✅ **Single file per model** - No `.Generated.cs` split files
 - ✅ **Partial records** - Easily extendable without modifying generated code
 - ✅ **`ContentTypeCodename` attribute** - For source-generated TypeProvider discovery
+- ✅ **Element codename constants** - Compile-time constants for query/filter building
 
 ## Installation & Usage
 
@@ -114,29 +115,31 @@ namespace KontentAiModels;
 [ContentTypeCodename("article")]
 public partial record Article
 {
-    [JsonPropertyName("title")]
-    public string Title { get; init; } = default!;
+    public const string BodyCopyCodename = "body_copy";
+    public const string CustomTrackingCodeCodename = "custom_tracking_code";
+    public const string PersonasCodename = "personas";
+    public const string PostDateCodename = "post_date";
+    public const string RelatedArticlesCodename = "related_articles";
+    public const string TeaserImageCodename = "teaser_image";
+    public const string TitleCodename = "title";
+    public const string UrlPatternCodename = "url_pattern";
 
     [JsonPropertyName("body_copy")]
-    public RichTextContent BodyCopy { get; init; } = default!;
-
-    [JsonPropertyName("post_date")]
-    public DateTimeContent PostDate { get; init; }
-
-    [JsonPropertyName("teaser_image")]
-    public IEnumerable<Asset> TeaserImage { get; init; } = default!;
-
-    [JsonPropertyName("related_articles")]
-    public IEnumerable<IEmbeddedContent> RelatedArticles { get; init; } = default!;
-
-    [JsonPropertyName("personas")]
-    public IEnumerable<TaxonomyTerm> Personas { get; init; } = default!;
-
-    [JsonPropertyName("url_pattern")]
-    public string UrlPattern { get; init; } = default!;
-
+    public RichTextContent? BodyCopy { get; init; }
     [JsonPropertyName("custom_tracking_code")]
     public string? CustomTrackingCode { get; init; }
+    [JsonPropertyName("personas")]
+    public IEnumerable<TaxonomyTerm>? Personas { get; init; }
+    [JsonPropertyName("post_date")]
+    public DateTimeContent? PostDate { get; init; }
+    [JsonPropertyName("related_articles")]
+    public IEnumerable<IEmbeddedContent>? RelatedArticles { get; init; }
+    [JsonPropertyName("teaser_image")]
+    public IEnumerable<Asset>? TeaserImage { get; init; }
+    [JsonPropertyName("title")]
+    public string? Title { get; init; }
+    [JsonPropertyName("url_pattern")]
+    public string? UrlPattern { get; init; }
 }
 ```
 
@@ -148,11 +151,13 @@ Since the generated models are **partial records**, you can extend them by creat
 ```csharp
 namespace KontentAiModels;
 
+[ContentTypeCodename("article")]
 public partial record Article
 {
+    public const string TitleCodename = "title";
+    // ... other constants and properties
     [JsonPropertyName("title")]
-    public string Title { get; init; } = default!;
-    // ... other properties
+    public string? Title { get; init; }
 }
 ```
 
@@ -163,10 +168,10 @@ namespace KontentAiModels;
 public partial record Article
 {
     // Add computed properties
-    public string Slug => Title.ToLowerInvariant().Replace(" ", "-");
+    public string Slug => Title?.ToLowerInvariant().Replace(" ", "-") ?? string.Empty;
 
     // Add custom methods
-    public bool IsPublished() => PostDate.HasValue && PostDate.Value <= DateTime.Now;
+    public bool IsPublished() => PostDate is { DateTime: var dt } && dt <= DateTime.Now;
 
     // Add validation
     public bool IsValid() => !string.IsNullOrEmpty(Title) && BodyCopy != null;
