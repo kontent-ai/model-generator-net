@@ -11,18 +11,23 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
     public DeliveryClassCodeGeneratorTests()
     {
         // Modern delivery models - always structured, no suffixes
-        ClassDefinition.AddProperty(Property.FromContentTypeElement("text", "text"));
-        ClassDefinition.AddProperty(Property.FromContentTypeElement("rich_text", "rich_text"));
-        ClassDefinition.AddProperty(Property.FromContentTypeElement("number", "number"));
-        ClassDefinition.AddProperty(Property.FromContentTypeElement("multiple_choice", "multiple_choice"));
-        ClassDefinition.AddProperty(Property.FromContentTypeElement("date_time", "date_time"));
-        ClassDefinition.AddProperty(Property.FromContentTypeElement("asset", "asset"));
-        ClassDefinition.AddProperty(Property.FromContentTypeElement("modular_content", "modular_content"));
-        ClassDefinition.AddProperty(Property.FromContentTypeElement("taxonomy", "taxonomy"));
-        ClassDefinition.AddProperty(Property.FromContentTypeElement("url_slug", "url_slug"));
-        ClassDefinition.AddProperty(Property.FromContentTypeElement("custom", "custom"));
+        AddElement("text", "text");
+        AddElement("rich_text", "rich_text");
+        AddElement("number", "number");
+        AddElement("multiple_choice", "multiple_choice");
+        AddElement("date_time", "date_time");
+        AddElement("asset", "asset");
+        AddElement("modular_content", "modular_content");
+        AddElement("taxonomy", "taxonomy");
+        AddElement("url_slug", "url_slug");
+        AddElement("custom", "custom");
+    }
 
-        // Modern delivery models don't include system property
+    private void AddElement(string codename, string elementType)
+    {
+        var property = Property.FromContentTypeElement(codename, elementType);
+        ClassDefinition.AddPropertyCodenameConstant(property.Codename);
+        ClassDefinition.AddProperty(property);
     }
 
     [Fact]

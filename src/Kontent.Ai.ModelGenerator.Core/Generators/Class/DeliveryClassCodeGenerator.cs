@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
-public class DeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = ClassCodeGenerator.DefaultNamespace) : ClassCodeGenerator(classDefinition, classFilename, @namespace)
+public class DeliveryClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = ClassCodeGenerator.DefaultNamespace) : DeliveryClassCodeGeneratorBase(classDefinition, classFilename, @namespace)
 {
     protected override bool IsRecord => true;
 
@@ -27,7 +27,8 @@ public class DeliveryClassCodeGenerator(ClassDefinition classDefinition, string 
                                         SyntaxKind.StringLiteralExpression,
                                         SyntaxFactory.Literal(ClassDefinition.Codename)))))))));
 
-        // Add properties
+        // Add element codename constants and properties
+        recordDeclaration = recordDeclaration.AddMembers(PropertyCodenameConstants);
         recordDeclaration = recordDeclaration.AddMembers(Properties);
 
         return recordDeclaration;
