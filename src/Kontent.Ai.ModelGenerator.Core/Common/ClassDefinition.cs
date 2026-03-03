@@ -25,10 +25,6 @@ public class ClassDefinition(string codeName)
         Properties.Add(property);
     }
 
-    /// <summary>
-    /// Adds a property codename constant. Not used by modern delivery models.
-    /// </summary>
-    [Obsolete("Modern delivery models don't use codename constants. This method is only used by legacy generators.")]
     public void AddPropertyCodenameConstant(string codeName)
     {
         if (PropertyCodenameConstants.Contains(codeName))

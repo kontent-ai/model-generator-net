@@ -19,6 +19,17 @@ namespace KontentAiModels;
 [ContentTypeCodename("Complete content type")]
 public partial record CompleteContentType
 {
+    public const string AssetCodename = "asset";
+    public const string CustomCodename = "custom";
+    public const string DateTimeCodename = "date_time";
+    public const string ModularContentCodename = "modular_content";
+    public const string MultipleChoiceCodename = "multiple_choice";
+    public const string NumberCodename = "number";
+    public const string RichTextCodename = "rich_text";
+    public const string TaxonomyCodename = "taxonomy";
+    public const string TextCodename = "text";
+    public const string UrlSlugCodename = "url_slug";
+
     [JsonPropertyName("asset")]
     public IEnumerable<Asset> Asset { get; init; } = default!;
     [JsonPropertyName("custom")]
@@ -40,10 +51,3 @@ public partial record CompleteContentType
     [JsonPropertyName("url_slug")]
     public string UrlSlug { get; init; } = default!;
 }
-
-
-
-
-
-
-

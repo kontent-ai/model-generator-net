@@ -19,6 +19,30 @@ namespace KontentAiModels;
 [ContentTypeCodename("Complete content type")]
 public partial record CompleteContentType
 {
+    public const string AssetCodename = "asset";
+    public const string CustomCodename = "custom";
+    public const string DateTimeCodename = "date_time";
+    public const string DateTimeStructuredCodename = "date_time_structured";
+    public const string ModularContentArticleCodename = "modular_content_article";
+    public const string ModularContentBlogCodename = "modular_content_blog";
+    public const string ModularContentCoffeeCodename = "modular_content_coffee";
+    public const string ModularContentCoffeesCodename = "modular_content_coffees";
+    public const string ModularContentHeroCodename = "modular_content_hero";
+    public const string ModularContentHeroesCodename = "modular_content_heroes";
+    public const string MultipleChoiceCodename = "multiple_choice";
+    public const string NumberCodename = "number";
+    public const string RichTextCodename = "rich_text";
+    public const string RichTextStructuredCodename = "rich_text_structured";
+    public const string SubpagesArticleCodename = "subpages_article";
+    public const string SubpagesBlogCodename = "subpages_blog";
+    public const string SubpagesCoffeeCodename = "subpages_coffee";
+    public const string SubpagesCoffeesCodename = "subpages_coffees";
+    public const string SubpagesHeroCodename = "subpages_hero";
+    public const string SubpagesHeroesCodename = "subpages_heroes";
+    public const string TaxonomyCodename = "taxonomy";
+    public const string TextCodename = "text";
+    public const string UrlSlugCodename = "url_slug";
+
     [JsonPropertyName("asset")]
     public IEnumerable<Asset> Asset { get; init; } = default!;
     [JsonPropertyName("custom")]
