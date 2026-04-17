@@ -26,15 +26,6 @@ public class ClassDefinitionTests
     }
 
     [Fact]
-    public void AddSystemProperty_SystemPropertyIsAdded()
-    {
-        var classDefinition = new ClassDefinition("Class name");
-        classDefinition.AddSystemProperty();
-
-        classDefinition.Properties.Should().ContainSingle(property => property.Codename == "system");
-    }
-
-    [Fact]
     public void AddPropertyCodenameConstant_PropertyIsAdded()
     {
         var elementCodename = "element_codename";

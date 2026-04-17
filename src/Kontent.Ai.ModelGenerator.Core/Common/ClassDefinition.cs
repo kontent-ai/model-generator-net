@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Kontent.Ai.Delivery.Abstractions;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
 
 namespace Kontent.Ai.ModelGenerator.Core.Common;
@@ -33,15 +32,6 @@ public class ClassDefinition(string codeName)
         }
 
         PropertyCodenameConstants.Add(codeName);
-    }
-
-    /// <summary>
-    /// Adds a system property. Not used by modern delivery models.
-    /// </summary>
-    [Obsolete("Modern delivery models don't include a System property. This method is only used by legacy generators.")]
-    public void AddSystemProperty()
-    {
-        AddProperty(new Property("system", nameof(IContentItemSystemAttributes)));
     }
 
     private bool PropertyIsAlreadyPresent(Property property)

@@ -37,7 +37,7 @@ internal class Program
                 .AddCommandLine(args, ArgHelpers.GetSwitchMappings(args))
                 .Build();
 
-            // Fill the DI container - modern beta version only supports Delivery SDK
+            // Fill the DI container
             services.Configure<CodeGeneratorOptions>(configuration);
             services.AddDeliveryClient(configuration);
             services.AddTransient<HttpClient>();
@@ -57,7 +57,7 @@ internal class Program
 
             PrintSdkVersion();
 
-            // Code generator entry point - modern beta only supports Delivery SDK
+            // Code generator entry point
             return await serviceProvider.GetService<DeliveryCodeGenerator>().RunAsync();
         }
         catch (AggregateException aex)

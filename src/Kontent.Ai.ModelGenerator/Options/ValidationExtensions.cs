@@ -6,7 +6,6 @@ namespace Kontent.Ai.ModelGenerator.Options;
 
 /// <summary>
 /// Extension methods meant for validation.
-/// Modern beta version only supports Delivery SDK models.
 /// </summary>
 public static class ValidationExtensions
 {

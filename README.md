@@ -1,40 +1,28 @@
 # Kontent.ai model generator utility for .NET
 
-[![Build & Test](https://github.com/kontent-ai/model-generator-net/actions/workflows/integrate.yml/badge.svg)](https://github.com/kontent-ai/model-generator-net/actions/workflows/integrate.yml)
-[![codecov](https://codecov.io/gh/kontent-ai/model-generator-net/branch/master/graph/badge.svg?token=9LvfJ7m8gT)](https://codecov.io/gh/kontent-ai/model-generator-net)
-[![Stack Overflow](https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?logo=stackoverflow&logoColor=white)](https://stackoverflow.com/tags/kontent-ai)
-[![Discord](https://img.shields.io/discord/821885171984891914?color=%237289DA&label=Kontent%20Discord&logo=discord)](https://discord.gg/SKCxwPtevJ)
+[![NuGet][nuget-badge]][nuget-url]
+[![License][license-badge]][license-url]
+[![Build & Test][build-badge]][build-url]
+[![codecov][codecov-badge]][codecov-url]
+[![Contributors][contributors-badge]][contributors-url]
+[![Last commit][last-commit-badge]][last-commit-url]
+[![GitHub Issues][issues-badge]][issues-url]
+[![Stack Overflow][stack-overflow-badge]][stack-overflow-url]
+[![Discord][discord-badge]][discord-url]
 
-## ⚠️ BETA VERSION - Modern Delivery SDK ONLY
+This utility generates strongly-typed **record-based models** for the [Kontent.ai Delivery SDK for .NET (v19+)](https://github.com/kontent-ai/delivery-sdk-net).
 
-**This beta version ONLY works with the modernized Kontent.ai Delivery SDK for .NET (19.0.0-rc1 and higher).**
+> [!IMPORTANT]
+> This version targets the **modern Delivery SDK (v19+)** only. If you need to generate models for the legacy Delivery SDK (v18.x and earlier), the Management SDK, or Extended Delivery, use the [previous stable release](https://github.com/kontent-ai/model-generator-net/releases).
 
-### What this version supports:
-- ✅ **Modern Delivery SDK (v19+)** - Generates record-based models with modern types
-
-### What this version does NOT support:
-- ❌ **Legacy Delivery SDK (v18.x and earlier)** - Use [previous stable release](https://github.com/kontent-ai/model-generator-net/releases) instead
-- ❌ **Management SDK models** - Use [previous stable release](https://github.com/kontent-ai/model-generator-net/releases) instead
-- ❌ **Extended Delivery models** - Not yet updated for modern SDK
-
-> **Need the old version?** If you're using the legacy Delivery SDK (v18.x), Management SDK, or Extended Delivery models, please use the [previous stable release](https://github.com/kontent-ai/model-generator-net/releases) from the releases page.
-
----
-
-This utility generates strongly-typed **record-based models** for the modern [Kontent.ai Delivery SDK for .NET (v19+)](https://github.com/kontent-ai/delivery-sdk-net).
-
-## What's New in Modern Delivery Models
+## What's New in Updated Delivery Models
 
 The generated models use modern C# features and patterns:
 
-- ✅ **Records** - Immutable `record` types with `{ get; init; }` accessors
-- ✅ **File-scoped namespaces** - Clean, modern C# syntax
-- ✅ **JSON attributes** - `[JsonPropertyName]` for explicit property mapping
-- ✅ **Modern types** - `RichTextContent`, `Asset`, `TaxonomyTerm`, `IEmbeddedContent`
-- ✅ **Single file per model** - No `.Generated.cs` split files
-- ✅ **Partial records** - Easily extendable without modifying generated code
-- ✅ **`ContentTypeCodename` attribute** - For source-generated TypeProvider discovery
-- ✅ **Element codename constants** - Compile-time constants for query/filter building
+- **Records** - Immutable `record` types with `{ get; init; }` accessors
+- **Modern types** - `RichTextContent`, `Asset`, `TaxonomyTerm`, `IEmbeddedContent`
+- **Partial records** - Easily extendable without modifying generated code
+- **`ContentTypeCodename` attribute** - For source-generated TypeProvider discovery
 
 ## Installation & Usage
 
@@ -44,48 +32,73 @@ The recommended way of obtaining this tool is installing it as a [.NET Tool](htt
 
 #### Global Tool
 
-- `dotnet tool install -g Kontent.Ai.ModelGenerator`
-- `KontentModelGenerator --environmentId "<environmentId>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--baseclass "<base-class-name>"]`
+```bash
+dotnet tool install -g Kontent.Ai.ModelGenerator
+```
+
+```bash
+KontentModelGenerator --environmentId "<environmentId>" \
+    [--namespace "<custom-namespace>"] \
+    [--outputdir "<output-directory>"] \
+    [--baseclass "<base-class-name>"]
+```
 
 #### Local Tool
 
-- `dotnet new tool-manifest` to initialize the tools manifest (if you haven't done that already)
-- `dotnet tool install Kontent.Ai.ModelGenerator` (to install the latest version
-- `dotnet tool run KontentModelGenerator --environmentId "<environmentId>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--baseclass "<base-class-name>"]`
+```bash
+dotnet new tool-manifest
+dotnet tool install Kontent.Ai.ModelGenerator
+```
 
-### Standalone apps for Windows 🗔, Linux 🐧, macOS 🍎
+```bash
+dotnet tool run KontentModelGenerator --environmentId "<environmentId>" \
+    [--namespace "<custom-namespace>"] \
+    [--outputdir "<output-directory>"] \
+    [--baseclass "<base-class-name>"]
+```
+
+### Standalone apps for Windows, Linux, macOS
 
 [Self-contained apps](https://docs.microsoft.com/en-us/dotnet/core/deploying/#publish-self-contained) are an ideal choice for machines without any version of .NET installed.
 
 Latest release: [Download](https://github.com/kontent-ai/model-generator-net/releases/latest)
 
-- `KontentModelGenerator --environmentId "<environmentId>" [--namespace "<custom-namespace>"] [--outputdir "<output-directory>"] [--withtypeprovider <True|False>] [--baseclass "<base-class-name>"]`
+<details>
+<summary>Building a self-contained binary for a specific platform</summary>
 
-To learn how to generate executables for your favorite target platform, follow the steps in the [docs](./docs/build-and-run.md).
+* Clone the repository
+* Navigate to `src/Kontent.Ai.ModelGenerator`
+* `dotnet build -r <RID>` to build (see the [list of all RIDs](https://learn.microsoft.com/en-us/dotnet/core/rid-catalog))
+* `dotnet publish -c release -r <RID>` to publish
+
+</details>
 
 ### Parameters
 
-| Short key |        Long key        | Required |   Default value   | Description                                                                                                                                                                      |
-| --------- | :--------------------: | :------: | :---------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-i`      |   `--environmentId`    |   True   |      `null`       | A GUID that can be found in [Kontent.ai](https://app.kontent.ai) -> Environment settings -> Environment ID                                                                       |
-| `-n`      |     `--namespace`      |  False   | `KontentAiModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx)                                                                                             |
-| `-o`      |     `--outputdir`      |  False   |       `\.`        | An output folder path                                                                                                                                                            |
-| `-t`      |  `--withtypeprovider`  |  False   |      `false`      | **(Obsolete)** Indicates whether the `CustomTypeProvider` class should be generated. TypeProvider is now source-generated by the Delivery SDK.                                  |
-| `-b`      |     `--baseclass`      |  False   |      `null`       | If provided, a base class type will be created and all generated classes will derive from that base class via partial extender classes                                          |
+| Short key | Long key | Required | Default value | Description |
+| --- | --- | :---: | --- | --- |
+| `-i` | `--environmentId` | Yes | `null` | A GUID that can be found in [Kontent.ai](https://app.kontent.ai) -> Environment settings -> Environment ID |
+| `-n` | `--namespace` | No | `KontentAiModels` | A name of the [C# namespace](https://msdn.microsoft.com/en-us/library/z2kcy19k.aspx) |
+| `-o` | `--outputdir` | No | `./` | An output folder path |
+| `-t` | `--withtypeprovider` | No | `false` | **(Obsolete)** TypeProvider is now source-generated by the Delivery SDK. |
+| `-b` | `--baseclass` | No | `null` | If provided, a base class type will be created and all generated classes will derive from it via partial extender classes |
 
 ### CLI Syntax
 
-Short keys such as `-t true` are interchangable with the long keys `--withtypeprovider true`. Other possible syntax is `-t=true` or `--withtypeprovider=true`. Parameter values are case-insensitive, so you can use both `-t=true` and `-t=True`. To see all aspects of the syntax, see the [MS docs](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.commandlineconfigurationextensions.addcommandline).
+Short keys such as `-n "MyModels"` are interchangeable with the long keys `--namespace "MyModels"`. Other possible syntax is `-n=MyModels` or `--namespace=MyModels`. Parameter values are case-insensitive. To see all aspects of the syntax, see the [MS docs](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.commandlineconfigurationextensions.addcommandline).
 
 ### Config file
 
-These parameters can also be set via the appSettings.json file located in the same directory as the executable file. Command-line parameters always take precedence.
+These parameters can also be set via the `appSettings.json` file located in the same directory as the executable file. Command-line parameters always take precedence.
 
 ### Advanced configuration (Preview API, Secure API)
 
 There are two ways of configuring advanced Delivery SDK options (such as secure API access, preview API access, and [others](https://github.com/kontent-ai/delivery-sdk-net/blob/master/Kontent.Ai.Delivery.Abstractions/Configuration/DeliveryOptions.cs)):
 
-1. Command-line arguments `--DeliveryOptions:UseSecureAccess true --DeliveryOptions:SecureAccessApiKey <SecuredApiKey>` ([syntax](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.configuration.commandlineconfigurationextensions.addcommandline))
+1. Command-line arguments:
+   ```bash
+   --DeliveryOptions:UseSecureAccess true --DeliveryOptions:SecureAccessApiKey <SecuredApiKey>
+   ```
 
 2. [`appSettings.json`](./src/Kontent.Ai.ModelGenerator/appSettings.json) - suitable for the standalone app release
 
@@ -182,23 +195,45 @@ The generator creates the base model, and you maintain customizations in separat
 
 ## Need Management SDK or Legacy Delivery SDK Support?
 
-This beta version **only supports the modern Delivery SDK (v19+)**.
-
-For other use cases, please use the [previous stable release](https://github.com/kontent-ai/model-generator-net/releases):
-- **Legacy Delivery SDK (v18.x and earlier)** models
-- **Management SDK** models
-- **Extended Delivery** models
+> [!NOTE]
+> This version supports the modern Delivery SDK (v19+) only. For other use cases, use the [previous stable release](https://github.com/kontent-ai/model-generator-net/releases):
+>
+> - **Legacy Delivery SDK (v18.x and earlier)** models
+> - **Management SDK** models
+> - **Extended Delivery** models
 
 ## Feedback & Contributing
 
-Check out the [contributing](./CONTRIBUTING.md) page to see the best places to file issues, start discussions and begin contributing.
+Found a bug or have a feature request? [Open an issue](https://github.com/kontent-ai/model-generator-net/issues). Pull requests are welcome!
 
 ### Wall of Fame
 
 We would like to express our thanks to the following people who contributed and made the project possible:
 
-- [Dražen Janjiček](https://github.com/djanjicek) - [EXLRT](http://www.exlrt.com/)
+- [Drazen Janjicek](https://github.com/djanjicek) - [EXLRT](http://www.exlrt.com/)
 - [Kashif Jamal Soofi](https://github.com/kashifsoofi)
 - [Casey Brown](https://github.com/MajorGrits)
 
-Would you like to become a hero too? Pick an [issue](https://github.com/kontent-ai/model-generator-net/issues) and send us a pull request!
+## License
+
+[MIT](./LICENSE)
+
+<!-- Badge references -->
+[nuget-badge]: https://img.shields.io/nuget/v/Kontent.Ai.ModelGenerator?style=for-the-badge
+[nuget-url]: https://www.nuget.org/packages/Kontent.Ai.ModelGenerator
+[license-badge]: https://img.shields.io/github/license/kontent-ai/model-generator-net?style=for-the-badge
+[license-url]: https://github.com/kontent-ai/model-generator-net/blob/master/LICENSE
+[build-badge]: https://img.shields.io/github/actions/workflow/status/kontent-ai/model-generator-net/integrate.yml?style=for-the-badge&label=Build%20%26%20Test
+[build-url]: https://github.com/kontent-ai/model-generator-net/actions/workflows/integrate.yml
+[codecov-badge]: https://img.shields.io/codecov/c/gh/kontent-ai/model-generator-net?style=for-the-badge&token=9LvfJ7m8gT
+[codecov-url]: https://codecov.io/gh/kontent-ai/model-generator-net
+[contributors-badge]: https://img.shields.io/github/contributors/kontent-ai/model-generator-net?style=for-the-badge
+[contributors-url]: https://github.com/kontent-ai/model-generator-net/graphs/contributors
+[last-commit-badge]: https://img.shields.io/github/last-commit/kontent-ai/model-generator-net?style=for-the-badge
+[last-commit-url]: https://github.com/kontent-ai/model-generator-net/commits
+[issues-badge]: https://img.shields.io/github/issues/kontent-ai/model-generator-net?style=for-the-badge
+[issues-url]: https://github.com/kontent-ai/model-generator-net/issues
+[stack-overflow-badge]: https://img.shields.io/badge/Stack%20Overflow-ASK%20NOW-FE7A16.svg?style=for-the-badge&logo=stackoverflow&logoColor=white
+[stack-overflow-url]: https://stackoverflow.com/tags/kontent-ai
+[discord-badge]: https://img.shields.io/discord/821885171984891914?style=for-the-badge&color=%237289DA&label=Kontent%20Discord&logo=discord
+[discord-url]: https://discord.gg/SKCxwPtevJ

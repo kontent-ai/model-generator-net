@@ -9,7 +9,7 @@
     <Copyright>© 2025 Kontent.ai s.r.o. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>tool;kontent-ai;generator</PackageTags>
-    <Description>This utility generates strongly-typed models based on content types in a Kontent.ai environment. The models are meant to be used together with the Kontent.ai Delivery/Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
+    <Description>Core library for the Kontent.ai model generator. Provides the code-generation primitives that emit modern record-based C# models for use with the Kontent.ai Delivery SDK for .NET (v19+). Typically consumed indirectly via the Kontent.Ai.ModelGenerator CLI tool.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>kontent-ai-k-icon-color.png</PackageIcon>
     <RepositoryType>git</RepositoryType>
@@ -25,14 +25,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kontent.Ai.Delivery" Version="19.0.0-rc1" />
-    <PackageReference Include="Kontent.Ai.Management" Version="6.6.0" />
+    <PackageReference Include="Kontent.Ai.Delivery" Version="19.0.0-rc5" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kontent.Ai.Delivery.Abstractions" Version="19.0.0-rc1" />
+    <PackageReference Include="Kontent.Ai.Delivery.Abstractions" Version="19.0.0-rc5" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.13.0" />
     <None Include="../../README.md" Pack="true" PackagePath="" />
     <None Include="../../kontent-ai-k-icon-color.png" Pack="true" PackagePath="" />
