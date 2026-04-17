@@ -8,7 +8,6 @@ namespace Kontent.Ai.ModelGenerator.Options;
 
 /// <summary>
 /// Argument mappings for the CLI tool.
-/// Modern beta version only supports Delivery SDK models.
 /// </summary>
 internal class ArgMappingsRegister
 {
@@ -17,7 +16,9 @@ internal class ArgMappingsRegister
         { "-n", nameof(CodeGeneratorOptions.Namespace) },
         { "-o", nameof(CodeGeneratorOptions.OutputDir) },
         { "-b", nameof(CodeGeneratorOptions.BaseClass) },
+#pragma warning disable CS0618 // CodeGeneratorOptions.WithTypeProvider is intentionally kept as [Obsolete] for one more major cycle.
         { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
+#pragma warning restore CS0618
     };
 
     public static readonly IDictionary<string, string> DeliveryEnvironmentIdMappings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)

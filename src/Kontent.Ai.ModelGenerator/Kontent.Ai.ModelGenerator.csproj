@@ -11,11 +11,11 @@
     <PackageIcon>kontent-ai-k-icon-color.png</PackageIcon>
     <PackageIconUrl>https://github.com/kontent-ai/.github/blob/main/logos/kontent-ai-k-icon-color.png?raw=true</PackageIconUrl>
     <RepositoryUrl>https://github.com/kontent-ai/model-generator-net</RepositoryUrl>
-    <Copyright>© 2022 Kontent.ai s.r.o. All rights reserved.</Copyright>
+    <Copyright>© 2025 Kontent.ai s.r.o. All rights reserved.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>tool;kontent-ai;generator</PackageTags>
     <PackAsTool>true</PackAsTool>
-    <Description>This utility generates strongly-typed models based on content types in a Kontent.ai project. The models are supposed to be used together with the Kontent.ai Delivery SDK for .NET or Kontent.ai Management SDK for .NET. Please read the documentation to see all benefits of this approach.</Description>
+    <Description>CLI tool that generates modern record-based C# models from your Kontent.ai content types for use with the Kontent.ai Delivery SDK for .NET (v19+). Install as a global or local .NET tool: `dotnet tool install -g Kontent.Ai.ModelGenerator`. See the README for usage.</Description>
     <RepositoryType>git</RepositoryType>
     <LangVersion>latest</LangVersion>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -50,7 +50,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AssemblyAttribute Include="Kontent.Ai.Management.Attributes.SourceTrackingHeader" />
     <AssemblyAttribute Include="Kontent.Ai.Delivery.DeliverySourceTrackingHeader" />
   </ItemGroup>
 
