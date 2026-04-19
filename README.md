@@ -13,7 +13,7 @@
 This utility generates strongly-typed **record-based models** for the [Kontent.ai Delivery SDK for .NET (v19+)](https://github.com/kontent-ai/delivery-sdk-net).
 
 > [!IMPORTANT]
-> This version targets the **modern Delivery SDK (v19+)** only. If you need to generate models for the legacy Delivery SDK (v18.x and earlier), the Management SDK, or Extended Delivery, use the [previous stable release](https://github.com/kontent-ai/model-generator-net/releases).
+> This version targets the **modern Delivery SDK (v19+)** only. If you need to generate models for the legacy Delivery SDK (v18.x and earlier), the Management SDK, or Extended Delivery, use the [previous stable release](https://github.com/kontent-ai/model-generator-net/tree/9.0.0).
 
 ## What's New in Updated Delivery Models
 
@@ -196,7 +196,7 @@ The generator creates the base model, and you maintain customizations in separat
 ## Need Management SDK or Legacy Delivery SDK Support?
 
 > [!NOTE]
-> This version supports the modern Delivery SDK (v19+) only. For other use cases, use the [previous stable release](https://github.com/kontent-ai/model-generator-net/releases):
+> This version supports the modern Delivery SDK (v19+) only. For other use cases, use the [previous stable release](https://github.com/kontent-ai/model-generator-net/tree/9.0.0):
 >
 > - **Legacy Delivery SDK (v18.x and earlier)** models
 > - **Management SDK** models
