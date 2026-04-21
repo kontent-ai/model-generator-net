@@ -32,7 +32,7 @@ public abstract class CodeGeneratorBase(
     {
         await GenerateContentTypeModels();
 
-        if (!string.IsNullOrEmpty(Options.BaseClass))
+        if (!string.IsNullOrEmpty(Options.BaseRecord))
         {
             await GenerateBaseClass();
         }
@@ -131,7 +131,7 @@ public abstract class CodeGeneratorBase(
         }
 
         var baseClassCode = baseClassCodeGenerator.GenerateBaseClassCode();
-        WriteToOutputProvider(baseClassCode, Options.BaseClass, false);
+        WriteToOutputProvider(baseClassCode, Options.BaseRecord, false);
 
         var baseClassExtenderCode = baseClassCodeGenerator.GenerateExtenderCode();
         WriteToOutputProvider(baseClassExtenderCode, baseClassCodeGenerator.ExtenderClassName, true);

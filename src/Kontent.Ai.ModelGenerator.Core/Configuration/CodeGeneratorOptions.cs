@@ -33,7 +33,17 @@ public class CodeGeneratorOptions
     public bool WithTypeProvider { get; set; } = DefaultWithTypeProvider;
 
     /// <summary>
-    /// Indicates whether a base class should be created and all output classes should derive from it using a partial class
+    /// Indicates whether a base record should be created and all output records should derive from it using a partial record.
     /// </summary>
-    public string BaseClass { get; set; }
+    public string BaseRecord { get; set; }
+
+    /// <summary>
+    /// Use <see cref="BaseRecord"/> instead.
+    /// </summary>
+    [Obsolete("Use BaseRecord instead. This property will be removed in a future version.")]
+    public string BaseClass
+    {
+        get => BaseRecord;
+        set => BaseRecord = value;
+    }
 }

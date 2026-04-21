@@ -5,9 +5,8 @@
 // Changes to this file will not be lost if the code is regenerated.
 // </auto-generated>
 
-namespace KontentAiModels
+namespace KontentAiModels;
+
+public partial record CompleteContentType
 {
-    public partial class CompleteContentType
-    {
-    }
 }
