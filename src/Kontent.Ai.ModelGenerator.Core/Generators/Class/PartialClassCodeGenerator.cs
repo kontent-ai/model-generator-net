@@ -8,6 +8,10 @@ namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
 public class PartialClassCodeGenerator(ClassDefinition classDefinition, string classFilename, string @namespace = ClassCodeGenerator.DefaultNamespace) : DeliveryClassCodeGeneratorBase(classDefinition, classFilename, @namespace)
 {
+    protected override bool IsRecord => true;
+
+    protected override bool UseFileScopedNamespace => true;
+
     protected override TypeDeclarationSyntax GetClassDeclaration()
     {
         var classDeclaration = base.GetClassDeclaration();

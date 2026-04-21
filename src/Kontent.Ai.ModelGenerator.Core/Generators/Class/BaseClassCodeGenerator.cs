@@ -22,7 +22,7 @@ public class BaseClassCodeGenerator(CodeGeneratorOptions options) : GeneralGener
     /// <summary>
     /// The calculated Extender Classname
     /// </summary>
-    public string ExtenderClassName => $"{_options.BaseClass}Extender";
+    public string ExtenderClassName => $"{_options.BaseRecord}Extender";
 
     /// <summary>
     /// Add string values for classes that should be added as partials so they inherit from the base class
@@ -48,12 +48,11 @@ public class BaseClassCodeGenerator(CodeGeneratorOptions options) : GeneralGener
             $@"using System;
 using Kontent.Ai.Delivery.Abstractions;
 
-namespace {Namespace}
+namespace {Namespace};
+
+public partial record {_options.BaseRecord}
 {{
-    public partial class {_options.BaseClass}
-    {{
-        // This class can be used to extend the generated classes. They inherit from this type in {ExtenderClassName}.cs.
-    }}
+    // This record can be used to extend the generated records. They inherit from this type in {ExtenderClassName}.cs.
 }}");
 
         var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
@@ -69,19 +68,18 @@ namespace {Namespace}
     public string GenerateExtenderCode()
     {
         var extenders = _classesToExtend.OrderBy(c => c)
-            .Select((c) => $"public partial class {c} : {_options.BaseClass} {{ }}")
+            .Select((c) => $"public partial record {c} : {_options.BaseRecord} {{ }}")
             .Aggregate((p, n) => p + Environment.NewLine + n);
 
         var tree = CSharpSyntaxTree.ParseText(
             $@"using System;
 using Kontent.Ai.Delivery.Abstractions;
 
-namespace {Namespace}
-{{
-        // These classes extend the generated models to all inherit from the common basetype {_options.BaseClass}.
+namespace {Namespace};
 
-        {extenders}
-}}");
+// These records extend the generated models to all inherit from the common basetype {_options.BaseRecord}.
+
+{extenders}");
 
         var cu = (CompilationUnitSyntax)tree.GetRoot().NormalizeWhitespace();
         cu = cu.WithLeadingTrivia(ExtenderClassDescription);
@@ -91,9 +89,9 @@ namespace {Namespace}
     }
 
     protected override SyntaxTrivia ClassDescription() =>
-        ClassDeclarationHelper.GenerateSyntaxTrivia(@"// You can make changes to this class and it will not get overwritten if it already exists.");
+        ClassDeclarationHelper.GenerateSyntaxTrivia(@"// You can make changes to this record and it will not get overwritten if it already exists.");
 
     private SyntaxTrivia ExtenderClassDescription => ClassDeclarationHelper.GenerateSyntaxTrivia(
         @$"{LostChangesComment}
-// For further modifications of the class, create or modify the '{_options.BaseClass}.cs' file with the partial class.");
+// For further modifications of the record, create or modify the '{_options.BaseRecord}.cs' file with the partial record.");
 }
