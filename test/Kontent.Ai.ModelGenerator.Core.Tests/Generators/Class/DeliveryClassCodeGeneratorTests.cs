@@ -58,11 +58,59 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         var classCodeGenerator = new DeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
         var compiledCode = classCodeGenerator.GenerateCode();
 
-        var compilation = CSharpCompilation.Create(
+        AssertCompiledCode(CreateCompilation(compiledCode));
+    }
+
+    [Fact]
+    public void Build_ContainsContentTypeCodenameProperty()
+    {
+        var classCodeGenerator = new DeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
+        var compiledCode = classCodeGenerator.GenerateCode();
+
+        compiledCode.Should().Contain("public string ContentTypeCodename => \"complete_content_type\";");
+    }
+
+    [Fact]
+    public void Build_ElementPropertyCollision_RenamesElementProperty()
+    {
+        var classDefinition = new ClassDefinition("test_type");
+        var property = Property.FromContentTypeElement("content_type_codename", "text");
+        classDefinition.AddPropertyCodenameConstant(property.Codename);
+        classDefinition.AddProperty(property);
+
+        var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, classDefinition.ClassName);
+        var compiledCode = classCodeGenerator.GenerateCode();
+
+        compiledCode.Should().Contain("public string ContentTypeCodename => \"test_type\";");
+        compiledCode.Should().Contain("public string? _ContentTypeCodename { get; init; }");
+
+        AssertCompiledCode(CreateCompilation(compiledCode));
+    }
+
+    [Fact]
+    public void Build_CodenameConstantCollision_RenamesConstant()
+    {
+        var classDefinition = new ClassDefinition("test_type");
+        var property = Property.FromContentTypeElement("content_type", "text");
+        classDefinition.AddPropertyCodenameConstant(property.Codename);
+        classDefinition.AddProperty(property);
+
+        var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, classDefinition.ClassName);
+        var compiledCode = classCodeGenerator.GenerateCode();
+
+        compiledCode.Should().Contain("public string ContentTypeCodename => \"test_type\";");
+        compiledCode.Should().Contain("public const string _ContentTypeCodename = \"content_type\";");
+        compiledCode.Should().Contain("public string? ContentType { get; init; }");
+
+        AssertCompiledCode(CreateCompilation(compiledCode));
+    }
+
+    private static CSharpCompilation CreateCompilation(string code) =>
+        CSharpCompilation.Create(
             assemblyName: Path.GetRandomFileName(),
             syntaxTrees:
             [
-                CSharpSyntaxTree.ParseText(compiledCode)
+                CSharpSyntaxTree.ParseText(code)
             ],
             references: [
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
@@ -76,7 +124,4 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
                 MetadataReference.CreateFromFile(Assembly.Load("netstandard").Location)
             ],
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-
-        AssertCompiledCode(compilation);
-    }
 }

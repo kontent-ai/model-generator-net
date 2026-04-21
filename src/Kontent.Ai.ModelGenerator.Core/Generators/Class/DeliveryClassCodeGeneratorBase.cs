@@ -12,7 +12,15 @@ public abstract class DeliveryClassCodeGeneratorBase(ClassDefinition classDefini
         => ClassDefinition.PropertyCodenameConstants
             .OrderBy(p => p)
             .Select(codename =>
-                GetFieldDeclaration("string", $"{TextHelpers.GetValidPascalCaseIdentifierName(codename)}Codename", codename))
+            {
+                var identifier = $"{TextHelpers.GetValidPascalCaseIdentifierName(codename)}Codename";
+                if (ClassDefinition.RenamedCodenameConstants.Contains(codename))
+                {
+                    identifier = "_" + identifier;
+                }
+
+                return GetFieldDeclaration("string", identifier, codename);
+            })
             .ToArray<MemberDeclarationSyntax>();
 
     protected static FieldDeclarationSyntax GetFieldDeclaration(string typeName, string identifier, string literal) =>

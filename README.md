@@ -23,6 +23,10 @@ The generated models use modern C# features and patterns:
 - **Modern types** - `RichTextContent`, `Asset`, `TaxonomyTerm`, `IEmbeddedContent`
 - **Partial records** - Easily extendable without modifying generated code
 - **`ContentTypeCodename` attribute** - For source-generated TypeProvider discovery
+- **`ContentTypeCodename` property** - Access the content type codename directly without reflection
+
+> [!NOTE]
+> If an element codename would produce a property or constant that collides with the built-in `ContentTypeCodename` property (e.g., an element named `content_type_codename` or `content_type`), the element's member is automatically prefixed with an underscore (`_ContentTypeCodename`) to avoid conflicts. The `[JsonPropertyName]` attribute ensures deserialization still works correctly.
 
 ## Installation & Usage
 
@@ -137,6 +141,8 @@ public partial record Article
     public const string TitleCodename = "title";
     public const string UrlPatternCodename = "url_pattern";
 
+    public string ContentTypeCodename => "article";
+
     [JsonPropertyName("body_copy")]
     public RichTextContent? BodyCopy { get; init; }
     [JsonPropertyName("custom_tracking_code")]
@@ -169,6 +175,9 @@ public partial record Article
 {
     public const string TitleCodename = "title";
     // ... other constants and properties
+
+    public string ContentTypeCodename => "article";
+
     [JsonPropertyName("title")]
     public string? Title { get; init; }
 }

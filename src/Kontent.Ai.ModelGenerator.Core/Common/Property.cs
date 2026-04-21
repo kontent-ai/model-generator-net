@@ -14,7 +14,9 @@ public class Property(string codename, string typeName, string id = null)
 
     public static string ObjectType => nameof(Object).ToLower(CultureInfo.InvariantCulture);
 
-    public string Identifier => TextHelpers.GetValidPascalCaseIdentifierName(Codename);
+    public string IdentifierOverride { get; init; }
+
+    public string Identifier => IdentifierOverride ?? TextHelpers.GetValidPascalCaseIdentifierName(Codename);
 
     public string Codename { get; } = codename;
 

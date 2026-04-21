@@ -8,7 +8,7 @@ public class PartialClassCodeGeneratorTests
     [Fact]
     public void Constructor_CreatesInstance()
     {
-        var classDefinition = new ClassDefinition("Complete content type");
+        var classDefinition = new ClassDefinition("complete_content_type");
 
         var classCodeGenerator = new PartialClassCodeGenerator(classDefinition, classDefinition.ClassName);
 
@@ -19,7 +19,7 @@ public class PartialClassCodeGeneratorTests
     [Fact]
     public void Build_CreatesCustomPartialContentType()
     {
-        var classDefinition = new ClassDefinition("Complete content type");
+        var classDefinition = new ClassDefinition("complete_content_type");
 
         var classCodeGenerator = new PartialClassCodeGenerator(classDefinition, classDefinition.ClassName);
 
