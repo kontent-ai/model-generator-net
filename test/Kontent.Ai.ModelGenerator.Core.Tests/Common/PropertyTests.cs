@@ -132,4 +132,20 @@ public class PropertyTests
 
         result.Should().BeTrue();
     }
+
+    [Fact]
+    public void Identifier_WithIdentifierOverride_ReturnsOverride()
+    {
+        var element = new Property("element_codename", "string") { IdentifierOverride = "_CustomName" };
+
+        element.Identifier.Should().Be("_CustomName");
+    }
+
+    [Fact]
+    public void Identifier_WithoutIdentifierOverride_ReturnsPascalCase()
+    {
+        var element = new Property("element_codename", "string");
+
+        element.Identifier.Should().Be("ElementCodename");
+    }
 }

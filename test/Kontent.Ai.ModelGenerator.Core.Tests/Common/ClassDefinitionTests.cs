@@ -61,4 +61,40 @@ public class ClassDefinitionTests
         call.Should().ThrowExactly<InvalidOperationException>();
         classDefinition.Properties.Should().ContainSingle();
     }
+
+    [Fact]
+    public void AddProperty_ContentTypeCodenameCollision_RenamesProperty()
+    {
+        var classDefinition = new ClassDefinition("Class name");
+        classDefinition.AddProperty(Property.FromContentTypeElement("content_type_codename", "text"));
+
+        classDefinition.Properties.Should().ContainSingle(p => p.Identifier == "_ContentTypeCodename");
+    }
+
+    [Fact]
+    public void AddProperty_NoCollision_IdentifierUnchanged()
+    {
+        var classDefinition = new ClassDefinition("Class name");
+        classDefinition.AddProperty(Property.FromContentTypeElement("text", "text"));
+
+        classDefinition.Properties.Should().ContainSingle(p => p.Identifier == "Text");
+    }
+
+    [Fact]
+    public void AddPropertyCodenameConstant_ContentTypeCodenameCollision_TracksRenamedConstant()
+    {
+        var classDefinition = new ClassDefinition("Class name");
+        classDefinition.AddPropertyCodenameConstant("content_type");
+
+        classDefinition.RenamedCodenameConstants.Should().Contain("content_type");
+    }
+
+    [Fact]
+    public void AddPropertyCodenameConstant_NoCollision_NotTrackedAsRenamed()
+    {
+        var classDefinition = new ClassDefinition("Class name");
+        classDefinition.AddPropertyCodenameConstant("text");
+
+        classDefinition.RenamedCodenameConstants.Should().BeEmpty();
+    }
 }

@@ -27,12 +27,28 @@ public class DeliveryClassCodeGenerator(ClassDefinition classDefinition, string 
                                         SyntaxKind.StringLiteralExpression,
                                         SyntaxFactory.Literal(ClassDefinition.Codename)))))))));
 
-        // Add element codename constants and properties
+        // Add element codename constants
         recordDeclaration = recordDeclaration.AddMembers(PropertyCodenameConstants);
+
+        // Add ContentTypeCodename expression-bodied property
+        recordDeclaration = recordDeclaration.AddMembers(GetContentTypeCodenameProperty());
+
+        // Add element properties
         recordDeclaration = recordDeclaration.AddMembers(Properties);
 
         return recordDeclaration;
     }
+
+    private MemberDeclarationSyntax GetContentTypeCodenameProperty() =>
+        SyntaxFactory
+            .PropertyDeclaration(SyntaxFactory.ParseTypeName("string"), ClassDefinition.ContentTypeCodenameIdentifier)
+            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+            .WithExpressionBody(
+                SyntaxFactory.ArrowExpressionClause(
+                    SyntaxFactory.LiteralExpression(
+                        SyntaxKind.StringLiteralExpression,
+                        SyntaxFactory.Literal(ClassDefinition.Codename))))
+            .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
     protected override UsingDirectiveSyntax[] GetApiUsings() =>
     [
