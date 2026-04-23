@@ -30,8 +30,8 @@ public class DeliveryClassCodeGenerator(ClassDefinition classDefinition, string 
         // Add element codename constants
         recordDeclaration = recordDeclaration.AddMembers(PropertyCodenameConstants);
 
-        // Add ContentTypeCodename expression-bodied property
-        recordDeclaration = recordDeclaration.AddMembers(GetContentTypeCodenameProperty());
+        // Add ContentTypeCodename constant
+        recordDeclaration = recordDeclaration.AddMembers(GetContentTypeCodenameConstant());
 
         // Add element properties
         recordDeclaration = recordDeclaration.AddMembers(Properties);
@@ -39,16 +39,8 @@ public class DeliveryClassCodeGenerator(ClassDefinition classDefinition, string 
         return recordDeclaration;
     }
 
-    private MemberDeclarationSyntax GetContentTypeCodenameProperty() =>
-        SyntaxFactory
-            .PropertyDeclaration(SyntaxFactory.ParseTypeName("string"), ClassDefinition.ContentTypeCodenameIdentifier)
-            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-            .WithExpressionBody(
-                SyntaxFactory.ArrowExpressionClause(
-                    SyntaxFactory.LiteralExpression(
-                        SyntaxKind.StringLiteralExpression,
-                        SyntaxFactory.Literal(ClassDefinition.Codename))))
-            .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+    private MemberDeclarationSyntax GetContentTypeCodenameConstant() =>
+        GetFieldDeclaration("string", ClassDefinition.ContentTypeCodenameIdentifier, ClassDefinition.Codename);
 
     protected override UsingDirectiveSyntax[] GetApiUsings() =>
     [

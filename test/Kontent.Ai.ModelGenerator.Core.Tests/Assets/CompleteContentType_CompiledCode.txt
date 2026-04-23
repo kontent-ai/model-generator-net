@@ -29,8 +29,7 @@ public partial record CompleteContentType
     public const string TaxonomyCodename = "taxonomy";
     public const string TextCodename = "text";
     public const string UrlSlugCodename = "url_slug";
-
-    public string ContentTypeCodename => "complete_content_type";
+    public const string ContentTypeCodename = "complete_content_type";
 
     [JsonPropertyName("asset")]
     public IEnumerable<Asset>? Asset { get; init; }

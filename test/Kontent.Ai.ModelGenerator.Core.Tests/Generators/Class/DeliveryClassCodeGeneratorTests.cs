@@ -62,12 +62,12 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
     }
 
     [Fact]
-    public void Build_ContainsContentTypeCodenameProperty()
+    public void Build_ContainsContentTypeCodenameConstant()
     {
         var classCodeGenerator = new DeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
         var compiledCode = classCodeGenerator.GenerateCode();
 
-        compiledCode.Should().Contain("public string ContentTypeCodename => \"complete_content_type\";");
+        compiledCode.Should().Contain("public const string ContentTypeCodename = \"complete_content_type\";");
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, classDefinition.ClassName);
         var compiledCode = classCodeGenerator.GenerateCode();
 
-        compiledCode.Should().Contain("public string ContentTypeCodename => \"test_type\";");
+        compiledCode.Should().Contain("public const string ContentTypeCodename = \"test_type\";");
         compiledCode.Should().Contain("public string? _ContentTypeCodename { get; init; }");
 
         AssertCompiledCode(CreateCompilation(compiledCode));
@@ -98,7 +98,7 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, classDefinition.ClassName);
         var compiledCode = classCodeGenerator.GenerateCode();
 
-        compiledCode.Should().Contain("public string ContentTypeCodename => \"test_type\";");
+        compiledCode.Should().Contain("public const string ContentTypeCodename = \"test_type\";");
         compiledCode.Should().Contain("public const string _ContentTypeCodename = \"content_type\";");
         compiledCode.Should().Contain("public string? ContentType { get; init; }");
 
