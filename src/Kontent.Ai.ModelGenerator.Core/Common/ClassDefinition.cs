@@ -24,7 +24,7 @@ public class ClassDefinition(string codeName)
     {
         if (property.Identifier == ContentTypeCodenameIdentifier)
         {
-            property = new Property(property.Codename, property.TypeName, property.Id)
+            property = new Property(property.Codename, property.TypeName, property.Id, property.Initializer)
             {
                 IdentifierOverride = "_" + ContentTypeCodenameIdentifier
             };

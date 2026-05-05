@@ -48,7 +48,78 @@ internal static class ArgHelpers
             containsValidArgs = false;
         }
 
+        foreach (var error in ValidateEnumArgValues(args))
+        {
+            Console.Error.WriteLine(error);
+            containsValidArgs = false;
+        }
+
         return containsValidArgs;
+    }
+
+    private static IEnumerable<string> ValidateEnumArgValues(string[] args)
+    {
+        var enumKeys = BuildEnumArgKeyMap();
+        if (enumKeys.Count == 0)
+        {
+            yield break;
+        }
+
+        for (var i = 0; i < args.Length; i++)
+        {
+            var arg = args[i];
+            if (!StartsWithArgumentName(arg)) continue;
+
+            string key;
+            string value;
+            var inlineSeparator = arg.IndexOf(NameAndValueSeparator);
+            if (inlineSeparator >= 0)
+            {
+                key = arg[..inlineSeparator];
+                value = arg[(inlineSeparator + 1)..];
+            }
+            else
+            {
+                key = arg;
+                if (i + 1 < args.Length && !StartsWithArgumentName(args[i + 1]))
+                {
+                    value = args[++i];
+                }
+                else
+                {
+                    value = null;
+                }
+            }
+
+            if (!enumKeys.TryGetValue(key, out var enumType)) continue;
+
+            if (string.IsNullOrEmpty(value) || !Enum.TryParse(enumType, value, ignoreCase: true, out _))
+            {
+                var allowed = string.Join(", ", Enum.GetNames(enumType).Select(n => n.ToLowerInvariant()));
+                yield return $"Invalid value for {key}: '{value ?? string.Empty}'. Allowed values: {allowed}.";
+            }
+        }
+    }
+
+    private static Dictionary<string, Type> BuildEnumArgKeyMap()
+    {
+        var enumProperties = typeof(CodeGeneratorOptions).GetProperties()
+            .Where(p => p.PropertyType.IsEnum)
+            .ToDictionary(p => p.Name, p => p.PropertyType, StringComparer.Ordinal);
+
+        var keys = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (name, type) in enumProperties)
+        {
+            keys[$"--{name}"] = type;
+        }
+        foreach (var (cliKey, target) in ArgMappingsRegister.GeneralMappings)
+        {
+            if (enumProperties.TryGetValue(target, out var type))
+            {
+                keys[cliKey] = type;
+            }
+        }
+        return keys;
     }
 
     public static UsedSdkInfo GetUsedSdkInfo() => DeliveryProgramOptionsData.UsedSdkInfo;

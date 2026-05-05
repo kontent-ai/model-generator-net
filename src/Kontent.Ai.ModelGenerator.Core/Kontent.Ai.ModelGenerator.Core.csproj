@@ -25,13 +25,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kontent.Ai.Delivery" Version="19.0.0" />
+    <PackageReference Include="Kontent.Ai.Delivery" Version="19.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kontent.Ai.Delivery.Abstractions" Version="19.0.0" />
+    <PackageReference Include="Kontent.Ai.Delivery.Abstractions" Version="19.2.0" />
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.13.0" />
     <None Include="../../README.md" Pack="true" PackagePath="" />
     <None Include="../../kontent-ai-k-icon-color.png" Pack="true" PackagePath="" />
