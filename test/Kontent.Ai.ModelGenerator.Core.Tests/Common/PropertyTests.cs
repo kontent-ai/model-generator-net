@@ -1,4 +1,5 @@
 using Kontent.Ai.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
 
 namespace Kontent.Ai.ModelGenerator.Core.Tests.Common;
 
@@ -55,6 +56,39 @@ public class PropertyTests
         var fromContentTypeElementCall = () => Property.FromContentTypeElement("codename", "unknown content type");
 
         fromContentTypeElementCall.Should().ThrowExactly<ArgumentException>();
+    }
+
+    [Theory]
+    [InlineData("text", "string", "string.Empty")]
+    [InlineData("rich_text", "RichTextContent", "RichTextContent.Empty")]
+    [InlineData("number", "double?", null)]
+    [InlineData("multiple_choice", "IEnumerable<MultipleChoiceOption>", "[]")]
+    [InlineData("date_time", "DateTimeContent?", null)]
+    [InlineData("asset", "IEnumerable<Asset>", "[]")]
+    [InlineData("modular_content", "IEnumerable<IEmbeddedContent>", "[]")]
+    [InlineData("taxonomy", "IEnumerable<TaxonomyTerm>", "[]")]
+    [InlineData("url_slug", "string", "string.Empty")]
+    [InlineData("custom", "string?", null)]
+    public void FromContentTypeElement_Semantic_ReturnsTypeAndInitializer(string contentType, string expectedTypeName, string expectedInitializer)
+    {
+        var element = Property.FromContentTypeElement("element_codename", contentType, NullabilityMode.Semantic);
+
+        element.TypeName.Should().Be(expectedTypeName);
+        element.Initializer.Should().Be(expectedInitializer);
+        element.HasInitializer.Should().Be(expectedInitializer is not null);
+    }
+
+    [Theory]
+    [InlineData("text", "string?")]
+    [InlineData("rich_text", "RichTextContent?")]
+    [InlineData("multiple_choice", "IEnumerable<MultipleChoiceOption>?")]
+    public void FromContentTypeElement_Strict_DoesNotProduceInitializer(string contentType, string expectedTypeName)
+    {
+        var element = Property.FromContentTypeElement("element_codename", contentType, NullabilityMode.Strict);
+
+        element.TypeName.Should().Be(expectedTypeName);
+        element.Initializer.Should().BeNull();
+        element.HasInitializer.Should().BeFalse();
     }
 
     [Theory]

@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kontent.Ai.Delivery.SourceGeneration" Version="19.0.0" />
+    <PackageReference Include="Kontent.Ai.Delivery.SourceGeneration" Version="19.2.0" />
     <PackageReference Include="FluentAssertions" Version="[7.2.0,8.0.0)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="Moq" Version="4.20.72" />

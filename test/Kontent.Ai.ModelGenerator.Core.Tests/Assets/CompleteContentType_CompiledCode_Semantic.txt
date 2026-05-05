@@ -34,23 +34,23 @@ public partial record CompleteContentType
     public const string ContentTypeCodename = "complete_content_type";
 
     [JsonPropertyName("asset")]
-    public IEnumerable<Asset>? Asset { get; init; }
+    public IEnumerable<Asset> Asset { get; init; } = [];
     [JsonPropertyName("custom")]
     public string? Custom { get; init; }
     [JsonPropertyName("date_time")]
     public DateTimeContent? DateTime { get; init; }
     [JsonPropertyName("modular_content")]
-    public IEnumerable<IEmbeddedContent>? ModularContent { get; init; }
+    public IEnumerable<IEmbeddedContent> ModularContent { get; init; } = [];
     [JsonPropertyName("multiple_choice")]
-    public IEnumerable<MultipleChoiceOption>? MultipleChoice { get; init; }
+    public IEnumerable<MultipleChoiceOption> MultipleChoice { get; init; } = [];
     [JsonPropertyName("number")]
     public double? Number { get; init; }
     [JsonPropertyName("rich_text")]
-    public RichTextContent? RichText { get; init; }
+    public RichTextContent RichText { get; init; } = RichTextContent.Empty;
     [JsonPropertyName("taxonomy")]
-    public IEnumerable<TaxonomyTerm>? Taxonomy { get; init; }
+    public IEnumerable<TaxonomyTerm> Taxonomy { get; init; } = [];
     [JsonPropertyName("text")]
-    public string? Text { get; init; }
+    public string Text { get; init; } = string.Empty;
     [JsonPropertyName("url_slug")]
-    public string? UrlSlug { get; init; }
+    public string UrlSlug { get; init; } = string.Empty;
 }

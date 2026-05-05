@@ -5,6 +5,8 @@
 // Changes to this file will not be lost if the code is regenerated.
 // </auto-generated>
 
+#nullable enable
+
 namespace KontentAiModels;
 
 public partial record CompleteContentType
