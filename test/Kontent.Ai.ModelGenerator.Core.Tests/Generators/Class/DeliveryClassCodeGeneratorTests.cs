@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Kontent.Ai.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Generators.Class;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -50,6 +51,44 @@ public class DeliveryClassCodeGeneratorTests : ClassCodeGeneratorTestsBase
         var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode.txt");
 
         compiledCode.Trim().Should().Be(expectedCode.Trim());
+    }
+
+    [Fact]
+    public void Build_EmitsNullableEnableDirective()
+    {
+        var classCodeGenerator = new DeliveryClassCodeGenerator(ClassDefinition, ClassDefinition.ClassName);
+
+        var compiledCode = classCodeGenerator.GenerateCode();
+
+        compiledCode.Should().Contain("#nullable enable");
+    }
+
+    [Fact]
+    public void Build_SemanticNullability_CreatesClassWithCompleteContentType()
+    {
+        var classDefinition = new ClassDefinition("complete_content_type");
+        foreach (var (codename, type) in new[]
+        {
+            ("text","text"), ("rich_text","rich_text"), ("number","number"),
+            ("multiple_choice","multiple_choice"), ("date_time","date_time"),
+            ("asset","asset"), ("modular_content","modular_content"),
+            ("taxonomy","taxonomy"), ("url_slug","url_slug"), ("custom","custom")
+        })
+        {
+            var property = Property.FromContentTypeElement(codename, type, NullabilityMode.Semantic);
+            classDefinition.AddPropertyCodenameConstant(property.Codename);
+            classDefinition.AddProperty(property);
+        }
+
+        var classCodeGenerator = new DeliveryClassCodeGenerator(classDefinition, classDefinition.ClassName);
+        var compiledCode = classCodeGenerator.GenerateCode();
+
+        var executingPath = AppContext.BaseDirectory;
+        var expectedCode = File.ReadAllText(executingPath + "/Assets/CompleteContentType_CompiledCode_Semantic.txt");
+
+        compiledCode.Trim().Should().Be(expectedCode.Trim());
+
+        AssertCompiledCode(CreateCompilation(compiledCode));
     }
 
     [Fact]
