@@ -38,6 +38,13 @@ public class CodeGeneratorOptions
     public string BaseRecord { get; set; }
 
     /// <summary>
+    /// Controls how nullability is expressed on generated element properties.
+    /// Defaults to <see cref="NullabilityMode.Strict"/>; will switch to
+    /// <see cref="NullabilityMode.Semantic"/> in the next major version.
+    /// </summary>
+    public NullabilityMode Nullability { get; set; } = NullabilityMode.Strict;
+
+    /// <summary>
     /// Use <see cref="BaseRecord"/> instead.
     /// </summary>
     [Obsolete("Use BaseRecord instead. This property will be removed in a future version.")]

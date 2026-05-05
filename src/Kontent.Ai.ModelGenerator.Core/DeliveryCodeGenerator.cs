@@ -62,7 +62,7 @@ public class DeliveryCodeGenerator : DeliveryCodeGeneratorBase
             try
             {
                 var elementType = DeliveryElementService.GetElementType(element.Value.Type);
-                var property = Property.FromContentTypeElement(element.Key, elementType);
+                var property = Property.FromContentTypeElement(element.Key, elementType, Options.Nullability);
                 classDefinition.AddPropertyCodenameConstant(property.Codename);
                 classDefinition.AddProperty(property);
             }

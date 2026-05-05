@@ -76,15 +76,12 @@ public abstract class ClassCodeGenerator : GeneralGenerator
                     GetAccessorDeclaration(SyntaxKind.GetAccessorDeclaration),
                     GetAccessorDeclaration(SyntaxKind.InitAccessorDeclaration));
 
-                // Add = default! for non-nullable properties
-                if (element.RequiresDefaultInitializer)
+                // Emit explicit initializer (e.g. = string.Empty / = [] / = RichTextContent.Empty)
+                // when the Property carries one. Used by Semantic nullability mode.
+                if (element.HasInitializer)
                 {
                     property = property.WithInitializer(
-                        SyntaxFactory.EqualsValueClause(
-                            SyntaxFactory.PostfixUnaryExpression(
-                                SyntaxKind.SuppressNullableWarningExpression,
-                                SyntaxFactory.LiteralExpression(SyntaxKind.DefaultLiteralExpression,
-                                    SyntaxFactory.Token(SyntaxKind.DefaultKeyword)))))
+                        SyntaxFactory.EqualsValueClause(SyntaxFactory.ParseExpression(element.Initializer)))
                         .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
                 }
             }
@@ -165,7 +162,14 @@ public abstract class ClassCodeGenerator : GeneralGenerator
                         .AddMembers(classDeclaration));
         }
 
-        compilationUnit = compilationUnit.WithLeadingTrivia(ClassDescription());
+        var leadingTrivia = SyntaxFactory.TriviaList(
+            ClassDescription(),
+            SyntaxFactory.Trivia(SyntaxFactory.NullableDirectiveTrivia(
+                SyntaxFactory.Token(SyntaxKind.EnableKeyword), isActive: true)),
+            SyntaxFactory.CarriageReturnLineFeed,
+            SyntaxFactory.CarriageReturnLineFeed);
+
+        compilationUnit = compilationUnit.WithLeadingTrivia(leadingTrivia);
 
         return compilationUnit;
     }

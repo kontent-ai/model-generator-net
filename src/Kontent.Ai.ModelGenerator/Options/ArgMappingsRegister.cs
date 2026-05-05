@@ -17,6 +17,7 @@ internal class ArgMappingsRegister
         { "-o", nameof(CodeGeneratorOptions.OutputDir) },
         { "-b", nameof(CodeGeneratorOptions.BaseRecord) },
         { "-r", nameof(CodeGeneratorOptions.BaseRecord) },
+        { "--nullability", nameof(CodeGeneratorOptions.Nullability) },
 #pragma warning disable CS0618 // CodeGeneratorOptions.WithTypeProvider is intentionally kept as [Obsolete] for one more major cycle.
         { "-t", nameof(CodeGeneratorOptions.WithTypeProvider) }
 #pragma warning restore CS0618
