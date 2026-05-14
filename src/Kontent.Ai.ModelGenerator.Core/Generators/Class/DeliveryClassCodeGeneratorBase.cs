@@ -8,6 +8,20 @@ namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
 public abstract class DeliveryClassCodeGeneratorBase(ClassDefinition classDefinition, string classFilename, string @namespace = ClassCodeGenerator.DefaultNamespace) : ClassCodeGenerator(classDefinition, classFilename, @namespace)
 {
+    protected override AttributeListSyntax[] BuildPropertyAttributes(Property property) =>
+    [
+        SyntaxFactory.AttributeList(
+            SyntaxFactory.SingletonSeparatedList(
+                SyntaxFactory.Attribute(
+                    SyntaxFactory.IdentifierName("JsonPropertyName"),
+                    SyntaxFactory.AttributeArgumentList(
+                        SyntaxFactory.SingletonSeparatedList(
+                            SyntaxFactory.AttributeArgument(
+                                SyntaxFactory.LiteralExpression(
+                                    SyntaxKind.StringLiteralExpression,
+                                    SyntaxFactory.Literal(property.Codename))))))))
+    ];
+
     protected MemberDeclarationSyntax[] PropertyCodenameConstants
         => ClassDefinition.PropertyCodenameConstants
             .OrderBy(p => p)
