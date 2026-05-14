@@ -48,6 +48,13 @@ public abstract class ClassCodeGenerator : GeneralGenerator
 
     protected abstract UsingDirectiveSyntax[] GetApiUsings();
 
+    /// <summary>
+    /// Returns the attribute lists to apply to each emitted property.
+    /// Override in subclasses to inject SDK-specific attributes (e.g. <c>[JsonPropertyName]</c> for Delivery,
+    /// <c>[KontentElement]</c> + constraint attributes for Management). Default emits nothing.
+    /// </summary>
+    protected virtual AttributeListSyntax[] BuildPropertyAttributes(Property property) => [];
+
     protected virtual MemberDeclarationSyntax[] Properties
         => ClassDefinition.Properties.OrderBy(p => p.Identifier).Select(element =>
         {
@@ -55,18 +62,11 @@ public abstract class ClassCodeGenerator : GeneralGenerator
                 .PropertyDeclaration(SyntaxFactory.ParseTypeName(element.TypeName), element.Identifier)
                 .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
 
-            // Add JSON attribute with property name
-            property = property.AddAttributeLists(
-                SyntaxFactory.AttributeList(
-                    SyntaxFactory.SingletonSeparatedList(
-                        SyntaxFactory.Attribute(
-                            SyntaxFactory.IdentifierName("JsonPropertyName"),
-                            SyntaxFactory.AttributeArgumentList(
-                                SyntaxFactory.SingletonSeparatedList(
-                                    SyntaxFactory.AttributeArgument(
-                                        SyntaxFactory.LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            SyntaxFactory.Literal(element.Codename)))))))));
+            var attributeLists = BuildPropertyAttributes(element);
+            if (attributeLists.Length > 0)
+            {
+                property = property.AddAttributeLists(attributeLists);
+            }
 
             // Add accessor list (init instead of set for records/modern delivery)
             if (IsRecord)
