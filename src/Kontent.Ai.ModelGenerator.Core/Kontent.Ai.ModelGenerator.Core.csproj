@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="Kontent.Ai.Delivery" Version="19.2.0" />
+    <PackageReference Include="Kontent.Ai.Management" Version="8.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.1" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
