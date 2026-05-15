@@ -208,7 +208,7 @@ public class ManagementCodeGeneratorTests
         await CreateGenerator().RunAsync();
 
         emitted.Should().NotBeNull();
-        emitted.Should().Contain("public IReadOnlyList<IContentItem>? Related { get; init; }");
+        emitted.Should().Contain("public IReadOnlyList<Reference>? Related { get; init; }");
         emitted.Should().Contain("[AllowedTypes(\"article\", \"blog_post\")]");
         emitted.Should().Contain("[MaxElements(3)]");
         emitted.Should().Contain("public IReadOnlyList<Reference>? Tags { get; init; }");

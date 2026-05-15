@@ -28,9 +28,9 @@ public sealed class ManagementElementService : IManagementElementService
             UrlSlugElementInput u => new ManagementElementOutput(BuildUrlSlug(u)),
             MultipleChoiceElementInput m => BuildMultipleChoice(m),
             LinkedItemsElementInput li => new ManagementElementOutput(
-                BuildContentItemCollection(li.Codename, li.Id, li.AllowedTypeCodenames, li.ItemCount)),
+                BuildItemReferenceCollection(li.Codename, li.Id, li.AllowedTypeCodenames, li.ItemCount)),
             SubpagesElementInput sp => new ManagementElementOutput(
-                BuildContentItemCollection(sp.Codename, sp.Id, sp.AllowedTypeCodenames, sp.ItemCount)),
+                BuildItemReferenceCollection(sp.Codename, sp.Id, sp.AllowedTypeCodenames, sp.ItemCount)),
             TaxonomyElementInput tx => new ManagementElementOutput(BuildTaxonomy(tx)),
             RichTextElementInput rt => new ManagementElementOutput(BuildRichText(rt)),
             AssetElementInput a => new ManagementElementOutput(BuildAsset(a)),
@@ -112,12 +112,16 @@ public sealed class ManagementElementService : IManagementElementService
         return new ManagementElementOutput(property, [enumDef]);
     }
 
-    private static ManagementProperty BuildContentItemCollection(
+    private static ManagementProperty BuildItemReferenceCollection(
         string codename,
         string id,
         IReadOnlyList<string> allowedTypeCodenames,
         CountLimit count)
     {
+        // The wire shape for both modular_content and subpages is an array of {id|codename|external_id}
+        // references — NOT inlined IContentItem instances. The IContentItem marker still appears on
+        // each generated content-type record (so the SDK validator can recognise them), but element
+        // values themselves are Reference instances.
         var attrs = new List<AttributeSpec> { KontentElement(codename, id) };
 
         if (allowedTypeCodenames is { Count: > 0 })
@@ -129,7 +133,7 @@ public sealed class ManagementElementService : IManagementElementService
 
         AddCountLimitAttribute(attrs, count);
 
-        return new ManagementProperty(codename, "IReadOnlyList<IContentItem>?", id, attrs);
+        return new ManagementProperty(codename, "IReadOnlyList<Reference>?", id, attrs);
     }
 
     private static ManagementProperty BuildRichText(RichTextElementInput input)

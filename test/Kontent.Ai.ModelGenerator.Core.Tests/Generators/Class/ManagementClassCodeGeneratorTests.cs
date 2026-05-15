@@ -255,7 +255,7 @@ public class ManagementClassCodeGeneratorTests
                 ]),
             ]),
         ]));
-        classDefinition.AddProperty(new ManagementProperty("related", "IReadOnlyList<IContentItem>?", "55555555-5555-5555-5555-555555555555",
+        classDefinition.AddProperty(new ManagementProperty("related", "IReadOnlyList<Reference>?", "55555555-5555-5555-5555-555555555555",
         [
             new AttributeSpec("KontentElement",
             [
