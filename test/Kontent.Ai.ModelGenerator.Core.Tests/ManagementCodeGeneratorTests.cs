@@ -127,6 +127,50 @@ public class ManagementCodeGeneratorTests
     }
 
     [Fact]
+    public async Task RunAsync_MultipleChoiceElement_EmitsPropertyAndSiblingEnum()
+    {
+        var type = new ContentTypeModel
+        {
+            Codename = "article",
+            Elements =
+            [
+                WithId(new MultipleChoiceElementMetadataModel
+                {
+                    Codename = "category",
+                    Mode = MultipleChoiceMode.Single,
+                    Options =
+                    [
+                        new MultipleChoiceOptionModel
+                        {
+                            Codename = "news",
+                            Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                        },
+                        new MultipleChoiceOptionModel
+                        {
+                            Codename = "release_note",
+                            Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+                        },
+                    ],
+                }, Guid.NewGuid()),
+            ],
+        };
+        SetupClientWithTypes(type);
+        string emitted = null;
+        _output
+            .Setup(o => o.Output(It.IsAny<string>(), "Article", true))
+            .Callback<string, string, bool>((content, _, _) => emitted = content);
+
+        await CreateGenerator().RunAsync();
+
+        emitted.Should().NotBeNull();
+        emitted.Should().Contain("public IReadOnlyList<ArticleCategory>? Category { get; init; }");
+        emitted.Should().Contain("[MaxElements(1)]");
+        emitted.Should().Contain("public enum ArticleCategory");
+        emitted.Should().Contain("News");
+        emitted.Should().Contain("ReleaseNote");
+    }
+
+    [Fact]
     public async Task RunAsync_PaginatedListing_WalksAllPages()
     {
         var page2 = BuildListingPage(hasNext: false, types: [BuildArticleType()]);

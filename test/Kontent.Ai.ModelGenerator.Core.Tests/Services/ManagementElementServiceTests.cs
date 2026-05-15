@@ -8,9 +8,9 @@ public class ManagementElementServiceTests
     private readonly ManagementElementService _sut = new();
 
     [Fact]
-    public void BuildProperty_NullInput_Throws()
+    public void Build_NullInput_Throws()
     {
-        var call = () => _sut.BuildProperty(null);
+        var call = () => _sut.Build(null);
 
         call.Should().Throw<ArgumentNullException>();
     }
@@ -22,14 +22,15 @@ public class ManagementElementServiceTests
     {
         var input = new TextElementInput("title", "abc-123");
 
-        var result = _sut.BuildProperty(input);
+        var result = _sut.Build(input);
 
-        result.Codename.Should().Be("title");
-        result.Id.Should().Be("abc-123");
-        result.Identifier.Should().Be("Title");
-        result.TypeName.Should().Be("string?");
-        result.Attributes.Should().HaveCount(1);
-        AssertIsKontentElement(result.Attributes[0], "title", "abc-123");
+        result.Property.Codename.Should().Be("title");
+        result.Property.Id.Should().Be("abc-123");
+        result.Property.Identifier.Should().Be("Title");
+        result.Property.TypeName.Should().Be("string?");
+        result.Property.Attributes.Should().HaveCount(1);
+        AssertIsKontentElement(result.Property.Attributes[0], "title", "abc-123");
+        result.Enums.Should().BeEmpty();
     }
 
     [Fact]
@@ -37,14 +38,14 @@ public class ManagementElementServiceTests
     {
         var input = new TextElementInput("title", "abc-123", MaximumCharacters: 100);
 
-        var result = _sut.BuildProperty(input);
+        var result = _sut.Build(input);
 
-        result.Attributes.Should().HaveCount(2);
-        AssertIsKontentElement(result.Attributes[0], "title", "abc-123");
-        result.Attributes[1].Name.Should().Be("StringLength");
-        result.Attributes[1].Arguments.Should().ContainSingle()
+        result.Property.Attributes.Should().HaveCount(2);
+        AssertIsKontentElement(result.Property.Attributes[0], "title", "abc-123");
+        result.Property.Attributes[1].Name.Should().Be("StringLength");
+        result.Property.Attributes[1].Arguments.Should().ContainSingle()
             .Which.Value.Should().Be(100);
-        result.Attributes[1].Arguments[0].Name.Should().BeNull();
+        result.Property.Attributes[1].Arguments[0].Name.Should().BeNull();
     }
 
     [Fact]
@@ -52,12 +53,12 @@ public class ManagementElementServiceTests
     {
         var input = new TextElementInput("slug", "id", Regex: "^[a-z0-9-]+$");
 
-        var result = _sut.BuildProperty(input);
+        var result = _sut.Build(input);
 
-        result.Attributes.Should().HaveCount(2);
-        AssertIsKontentElement(result.Attributes[0], "slug", "id");
-        result.Attributes[1].Name.Should().Be("RegularExpression");
-        result.Attributes[1].Arguments.Should().ContainSingle()
+        result.Property.Attributes.Should().HaveCount(2);
+        AssertIsKontentElement(result.Property.Attributes[0], "slug", "id");
+        result.Property.Attributes[1].Name.Should().Be("RegularExpression");
+        result.Property.Attributes[1].Arguments.Should().ContainSingle()
             .Which.Value.Should().Be("^[a-z0-9-]+$");
     }
 
@@ -69,9 +70,9 @@ public class ManagementElementServiceTests
     {
         var input = new TextElementInput("title", "id", Regex: regex);
 
-        var result = _sut.BuildProperty(input);
+        var result = _sut.Build(input);
 
-        result.Attributes.Should().ContainSingle();
+        result.Property.Attributes.Should().ContainSingle();
     }
 
     [Fact]
@@ -79,9 +80,9 @@ public class ManagementElementServiceTests
     {
         var input = new TextElementInput("title", "id", MaximumCharacters: 50, Regex: ".*");
 
-        var result = _sut.BuildProperty(input);
+        var result = _sut.Build(input);
 
-        result.Attributes.Select(a => a.Name).Should().Equal(
+        result.Property.Attributes.Select(a => a.Name).Should().Equal(
             "KontentElement", "StringLength", "RegularExpression");
     }
 
@@ -90,31 +91,31 @@ public class ManagementElementServiceTests
     [Fact]
     public void Number_EmitsDecimalNullable()
     {
-        var result = _sut.BuildProperty(new NumberElementInput("priority", "n-id"));
+        var result = _sut.Build(new NumberElementInput("priority", "n-id"));
 
-        result.TypeName.Should().Be("decimal?");
-        result.Attributes.Should().ContainSingle();
-        AssertIsKontentElement(result.Attributes[0], "priority", "n-id");
+        result.Property.TypeName.Should().Be("decimal?");
+        result.Property.Attributes.Should().ContainSingle();
+        AssertIsKontentElement(result.Property.Attributes[0], "priority", "n-id");
     }
 
     [Fact]
     public void DateTime_EmitsDateTimeOffsetNullable()
     {
-        var result = _sut.BuildProperty(new DateTimeElementInput("published_at", "d-id"));
+        var result = _sut.Build(new DateTimeElementInput("published_at", "d-id"));
 
-        result.TypeName.Should().Be("DateTimeOffset?");
-        result.Attributes.Should().ContainSingle();
-        AssertIsKontentElement(result.Attributes[0], "published_at", "d-id");
+        result.Property.TypeName.Should().Be("DateTimeOffset?");
+        result.Property.Attributes.Should().ContainSingle();
+        AssertIsKontentElement(result.Property.Attributes[0], "published_at", "d-id");
     }
 
     [Fact]
     public void Custom_EmitsStringNullable()
     {
-        var result = _sut.BuildProperty(new CustomElementInput("color_picker", "c-id"));
+        var result = _sut.Build(new CustomElementInput("color_picker", "c-id"));
 
-        result.TypeName.Should().Be("string?");
-        result.Attributes.Should().ContainSingle();
-        AssertIsKontentElement(result.Attributes[0], "color_picker", "c-id");
+        result.Property.TypeName.Should().Be("string?");
+        result.Property.Attributes.Should().ContainSingle();
+        AssertIsKontentElement(result.Property.Attributes[0], "color_picker", "c-id");
     }
 
     #region UrlSlug
@@ -122,21 +123,112 @@ public class ManagementElementServiceTests
     [Fact]
     public void UrlSlug_NoRegex_EmitsOnlyKontentElement()
     {
-        var result = _sut.BuildProperty(new UrlSlugElementInput("url_slug", "u-id"));
+        var result = _sut.Build(new UrlSlugElementInput("url_slug", "u-id"));
 
-        result.TypeName.Should().Be("string?");
-        result.Attributes.Should().ContainSingle();
-        AssertIsKontentElement(result.Attributes[0], "url_slug", "u-id");
+        result.Property.TypeName.Should().Be("string?");
+        result.Property.Attributes.Should().ContainSingle();
+        AssertIsKontentElement(result.Property.Attributes[0], "url_slug", "u-id");
     }
 
     [Fact]
     public void UrlSlug_WithRegex_EmitsRegularExpression()
     {
-        var result = _sut.BuildProperty(new UrlSlugElementInput("url_slug", "u-id", Regex: "^[a-z]+$"));
+        var result = _sut.Build(new UrlSlugElementInput("url_slug", "u-id", Regex: "^[a-z]+$"));
 
-        result.Attributes.Should().HaveCount(2);
-        result.Attributes[1].Name.Should().Be("RegularExpression");
-        result.Attributes[1].Arguments[0].Value.Should().Be("^[a-z]+$");
+        result.Property.Attributes.Should().HaveCount(2);
+        result.Property.Attributes[1].Name.Should().Be("RegularExpression");
+        result.Property.Attributes[1].Arguments[0].Value.Should().Be("^[a-z]+$");
+    }
+
+    #endregion
+
+    #region MultipleChoice
+
+    [Fact]
+    public void MultipleChoice_Single_EmitsListPropertyWithMaxElementsOne()
+    {
+        var input = new MultipleChoiceElementInput(
+            Codename: "category",
+            Id: "mc-id",
+            EnumTypeName: "ArticleCategory",
+            IsSingleSelect: true,
+            Options:
+            [
+                new MultipleChoiceOptionInput("news", "opt-1"),
+                new MultipleChoiceOptionInput("release", "opt-2"),
+            ]);
+
+        var result = _sut.Build(input);
+
+        result.Property.TypeName.Should().Be("IReadOnlyList<ArticleCategory>?");
+        result.Property.Attributes.Select(a => a.Name).Should().Equal("KontentElement", "MaxElements");
+        result.Property.Attributes[1].Arguments[0].Value.Should().Be(1);
+    }
+
+    [Fact]
+    public void MultipleChoice_Multiple_NoCountAttribute()
+    {
+        var input = new MultipleChoiceElementInput(
+            Codename: "tags",
+            Id: "mc-id",
+            EnumTypeName: "ArticleTags",
+            IsSingleSelect: false,
+            Options:
+            [
+                new MultipleChoiceOptionInput("a", "opt-a"),
+                new MultipleChoiceOptionInput("b", "opt-b"),
+            ]);
+
+        var result = _sut.Build(input);
+
+        result.Property.TypeName.Should().Be("IReadOnlyList<ArticleTags>?");
+        result.Property.Attributes.Should().ContainSingle()
+            .Which.Name.Should().Be("KontentElement");
+    }
+
+    [Fact]
+    public void MultipleChoice_EmitsEnumWithPascalCaseMembers()
+    {
+        var input = new MultipleChoiceElementInput(
+            Codename: "category",
+            Id: "mc-id",
+            EnumTypeName: "ArticleCategory",
+            IsSingleSelect: true,
+            Options:
+            [
+                new MultipleChoiceOptionInput("news", "opt-1"),
+                new MultipleChoiceOptionInput("release_note", "opt-2"),
+                new MultipleChoiceOptionInput("n3", "opt-3"),
+            ]);
+
+        var result = _sut.Build(input);
+
+        result.Enums.Should().ContainSingle();
+        var enumDef = result.Enums[0];
+        enumDef.Name.Should().Be("ArticleCategory");
+        enumDef.Members.Select(m => m.Identifier).Should().Equal("News", "ReleaseNote", "N3");
+
+        var newsAttr = enumDef.Members[0].Attributes.Should().ContainSingle().Subject;
+        newsAttr.Name.Should().Be("KontentEnumValue");
+        newsAttr.Arguments[0].Name.Should().Be("Codename");
+        newsAttr.Arguments[0].Value.Should().Be("news");
+        newsAttr.Arguments[1].Name.Should().Be("Id");
+        newsAttr.Arguments[1].Value.Should().Be("opt-1");
+    }
+
+    [Fact]
+    public void MultipleChoice_EmptyEnumTypeName_Throws()
+    {
+        var input = new MultipleChoiceElementInput(
+            Codename: "category",
+            Id: "mc-id",
+            EnumTypeName: "",
+            IsSingleSelect: true,
+            Options: [new MultipleChoiceOptionInput("news", "opt-1")]);
+
+        var call = () => _sut.Build(input);
+
+        call.Should().Throw<ArgumentException>().WithMessage("*EnumTypeName*");
     }
 
     #endregion

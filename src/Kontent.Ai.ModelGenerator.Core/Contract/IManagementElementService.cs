@@ -4,12 +4,15 @@ namespace Kontent.Ai.ModelGenerator.Core.Contract;
 
 /// <summary>
 /// Maps a Management API element (described by a <see cref="ManagementElementInput"/>) to the
-/// <see cref="ManagementProperty"/> the code emitter consumes. Pure function — no IO, no state.
+/// artifacts the code emitter consumes — a <see cref="ManagementProperty"/> and, for
+/// multiple-choice elements, an associated sidecar <c>EnumDefinition</c>. Pure function —
+/// no IO, no state.
 /// </summary>
 public interface IManagementElementService
 {
     /// <summary>
-    /// Build a <see cref="ManagementProperty"/> for the given element input.
+    /// Build a <see cref="ManagementElementOutput"/> (property + any sidecar enums)
+    /// for the given element input.
     /// </summary>
-    ManagementProperty BuildProperty(ManagementElementInput input);
+    ManagementElementOutput Build(ManagementElementInput input);
 }
