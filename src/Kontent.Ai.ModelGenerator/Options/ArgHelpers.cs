@@ -4,13 +4,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using Kontent.Ai.Delivery.Abstractions;
+using Kontent.Ai.Management.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 
 namespace Kontent.Ai.ModelGenerator.Options;
 
 /// <summary>
-/// Argument helpers for the CLI tool.
-/// Modern beta version only supports Delivery SDK models.
+/// Argument helpers for the CLI tool. Supports both Delivery and Management modes; the latter
+/// is opted into with the <c>-m</c> / <c>--management</c> flag.
 /// </summary>
 internal static class ArgHelpers
 {
@@ -20,15 +21,43 @@ internal static class ArgHelpers
     private static readonly ProgramOptionsData<DeliveryOptions> DeliveryProgramOptionsData =
         new(typeof(DeliveryOptions), "delivery-sdk-net");
 
-    public static IDictionary<string, string> GetSwitchMappings(string[] args) => ArgMappingsRegister.GeneralMappings
-        .Union(ArgMappingsRegister.DeliveryEnvironmentIdMappings)
-        .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.OrdinalIgnoreCase);
+    private static readonly ProgramOptionsData<ManagementOptions> ManagementProgramOptionsData =
+        new(typeof(ManagementOptions), "management-sdk-net");
+
+    /// <summary>
+    /// Returns true if <c>-m</c> or <c>--management</c> appears anywhere in <paramref name="args"/>.
+    /// </summary>
+    public static bool IsManagementMode(string[] args) => args.Any(IsModeSwitch);
+
+    /// <summary>
+    /// Strips mode-switch flags (<c>-m</c> / <c>--management</c>) from <paramref name="args"/>
+    /// so the remaining list can be fed to the configuration system (which would otherwise
+    /// reject them since they don't bind to a config property).
+    /// </summary>
+    public static string[] StripModeSwitches(string[] args) =>
+        args.Where(a => !IsModeSwitch(a)).ToArray();
+
+    private static bool IsModeSwitch(string arg) =>
+        string.Equals(arg, ArgMappingsRegister.ManagementShortFlag, StringComparison.OrdinalIgnoreCase) ||
+        string.Equals(arg, ArgMappingsRegister.ManagementLongFlag, StringComparison.OrdinalIgnoreCase);
+
+    public static IDictionary<string, string> GetSwitchMappings(string[] args)
+    {
+        var modeMappings = IsManagementMode(args)
+            ? ArgMappingsRegister.ManagementMappings
+            : ArgMappingsRegister.DeliveryEnvironmentIdMappings;
+
+        return ArgMappingsRegister.GeneralMappings
+            .Union(modeMappings)
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.OrdinalIgnoreCase);
+    }
 
     public static bool ContainsValidArgs(string[] args)
     {
         var containsValidArgs = true;
         var codeGeneratorOptionsProperties = typeof(CodeGeneratorOptions).GetProperties()
-            .Where(p => p.PropertyType != DeliveryProgramOptionsData.Type)
+            .Where(p => p.PropertyType != DeliveryProgramOptionsData.Type
+                        && p.PropertyType != ManagementProgramOptionsData.Type)
             .Select(p => p.Name)
             .ToList();
 
@@ -39,6 +68,7 @@ internal static class ArgHelpers
             var argumentName = SplitArgument(a).FirstOrDefault();
             return !ArgMappingsRegister.AllMappingsKeys.Contains(argumentName) &&
                    !IsOptionPropertyValid(DeliveryProgramOptionsData, argumentName) &&
+                   !IsOptionPropertyValid(ManagementProgramOptionsData, argumentName) &&
                    !IsOptionPropertyValid(codeGeneratorOptionsProperties, argumentName);
         });
 
@@ -122,7 +152,8 @@ internal static class ArgHelpers
         return keys;
     }
 
-    public static UsedSdkInfo GetUsedSdkInfo() => DeliveryProgramOptionsData.UsedSdkInfo;
+    public static UsedSdkInfo GetUsedSdkInfo(bool managementMode = false) =>
+        managementMode ? ManagementProgramOptionsData.UsedSdkInfo : DeliveryProgramOptionsData.UsedSdkInfo;
 
     private static bool IsOptionPropertyValid<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] T>
         (ProgramOptionsData<T> programOptionsData, string arg) =>

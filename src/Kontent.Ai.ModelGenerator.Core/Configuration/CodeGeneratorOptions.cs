@@ -1,5 +1,6 @@
 ﻿using System;
 using Kontent.Ai.Delivery.Abstractions;
+using Kontent.Ai.Management.Configuration;
 
 namespace Kontent.Ai.ModelGenerator.Core.Configuration;
 
@@ -12,9 +13,16 @@ public class CodeGeneratorOptions
     private const bool DefaultWithTypeProvider = false;
 
     /// <summary>
-    /// Delivery Client configuration.
+    /// Delivery Client configuration. Populated when generating Delivery models (the default mode).
     /// </summary>
     public DeliveryOptions DeliveryOptions { get; set; }
+
+    /// <summary>
+    /// Management Client configuration. Populated when generating Management models
+    /// (CLI flag <c>-m</c> / <c>--management</c>). Presence of a non-null value flips the
+    /// generator into management mode at the orchestrator level.
+    /// </summary>
+    public ManagementOptions ManagementOptions { get; set; }
 
     /// <summary>
     /// Namespace name of the generated classes
