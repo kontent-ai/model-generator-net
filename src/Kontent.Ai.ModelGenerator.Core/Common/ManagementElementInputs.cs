@@ -107,3 +107,35 @@ public sealed record TaxonomyElementInput(
     string Id,
     string TaxonomyGroup = null,
     CountLimit TermCount = null) : ManagementElementInput(Codename, Id);
+
+/// <summary>
+/// Rich text element. Wire type: <c>RichTextElement?</c>.
+/// Block / formatting / image-related constraints (allowed_blocks, allowed_formatting,
+/// image_width_limit, etc.) are deferred per plan — HTML-shape validation is the SDK's
+/// future responsibility, not currently emittable as machine-readable attributes.
+/// </summary>
+public sealed record RichTextElementInput(
+    string Codename,
+    string Id,
+    System.Collections.Generic.IReadOnlyList<string> AllowedTypeCodenames = null,
+    System.Collections.Generic.IReadOnlyList<string> AllowedItemLinkTypeCodenames = null,
+    int? MaximumCharacters = null) : ManagementElementInput(Codename, Id);
+
+/// <summary>
+/// Asset element. Wire type: <c>IReadOnlyList&lt;AssetReference&gt;?</c> (always a collection;
+/// single-asset constraints are encoded as <c>[MaxElements(1)]</c> per plan).
+/// <paramref name="AllowedFileType"/> is null when MAPI's <c>FileType.Any</c> applies
+/// (no constraint emitted). Image dimension limits are deferred.
+/// </summary>
+public sealed record AssetElementInput(
+    string Codename,
+    string Id,
+    CountLimit AssetCount = null,
+    long? MaximumFileSizeBytes = null,
+    AssetFileType? AllowedFileType = null) : ManagementElementInput(Codename, Id);
+
+/// <summary>
+/// File-type constraint for asset elements. Mirrors MAPI's <c>FileType</c> (minus <c>Any</c>,
+/// which the input encodes as null — no constraint to emit).
+/// </summary>
+public enum AssetFileType { Adjustable }

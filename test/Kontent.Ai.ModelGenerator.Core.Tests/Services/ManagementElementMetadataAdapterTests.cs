@@ -350,12 +350,93 @@ public class ManagementElementMetadataAdapterTests
 
     #endregion
 
+    #region RichText / Asset
+
+    [Fact]
+    public void ToInput_RichText_MapsAllowedTypesAndItemLinkTypes()
+    {
+        var element = WithId(new RichTextElementMetadataModel
+        {
+            Codename = "body",
+            AllowedTypes = [Reference.ByCodename("banner"), Reference.ByCodename("quote")],
+            AllowedItemLinkTypes = [Reference.ByCodename("article")],
+        }, SampleId);
+
+        var input = (RichTextElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.AllowedTypeCodenames.Should().Equal("banner", "quote");
+        input.AllowedItemLinkTypeCodenames.Should().Equal("article");
+    }
+
+    [Fact]
+    public void ToInput_RichText_CharacterLimit_MapsMaximumCharacters()
+    {
+        var element = WithId(new RichTextElementMetadataModel
+        {
+            Codename = "body",
+            MaximumTextLength = new MaximumTextLengthModel { Value = 5000, AppliesTo = TextLengthLimitType.Characters },
+        }, SampleId);
+
+        var input = (RichTextElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.MaximumCharacters.Should().Be(5000);
+    }
+
+    [Fact]
+    public void ToInput_RichText_WordLimit_IgnoredLikeText()
+    {
+        var element = WithId(new RichTextElementMetadataModel
+        {
+            Codename = "body",
+            MaximumTextLength = new MaximumTextLengthModel { Value = 5000, AppliesTo = TextLengthLimitType.Words },
+        }, SampleId);
+
+        var input = (RichTextElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.MaximumCharacters.Should().BeNull();
+    }
+
+    [Fact]
+    public void ToInput_Asset_MapsCountLimitAndFileSize()
+    {
+        var element = WithId(new AssetElementMetadataModel
+        {
+            Codename = "featured_image",
+            AssetCountLimit = new LimitModel { Value = 1, Condition = LimitType.AtMost },
+            MaximumFileSize = 5_242_880L,
+        }, SampleId);
+
+        var input = (AssetElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.AssetCount.Value.Should().Be(1);
+        input.AssetCount.Mode.Should().Be(CountLimitMode.AtMost);
+        input.MaximumFileSizeBytes.Should().Be(5_242_880L);
+    }
+
+    [Theory]
+    [InlineData(FileType.Any, null)]
+    [InlineData(FileType.Adjustable, AssetFileType.Adjustable)]
+    public void ToInput_Asset_FileTypeMapping(FileType mapiType, AssetFileType? expected)
+    {
+        var element = WithId(new AssetElementMetadataModel
+        {
+            Codename = "featured_image",
+            AllowedFileTypes = mapiType,
+        }, SampleId);
+
+        var input = (AssetElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.AllowedFileType.Should().Be(expected);
+    }
+
+    #endregion
+
     [Fact]
     public void ToInput_UnsupportedElementType_ReturnsNull()
     {
-        // Rich text and asset are not yet handled (slice 6); snippets land in slice 7.
-        // The orchestrator turns null into warn-and-skip.
-        var element = WithId(new RichTextElementMetadataModel { Codename = "body" }, SampleId);
+        // After slice 6, only ContentTypeSnippet remains unsupported (slice 7 expands it inline
+        // rather than emitting it as a property). Guidelines are dropped earlier in the orchestrator.
+        var element = WithId(new ContentTypeSnippetElementMetadataModel(), SampleId);
 
         var input = ManagementElementMetadataAdapter.ToInput(element, "Article");
 

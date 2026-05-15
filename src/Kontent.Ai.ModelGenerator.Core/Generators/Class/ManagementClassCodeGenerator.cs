@@ -126,6 +126,7 @@ public sealed class ManagementClassCodeGenerator(
     private static ExpressionSyntax BuildArgumentExpression(object value) =>
         value switch
         {
+            RawCodeAttributeValue raw => SyntaxFactory.ParseExpression(raw.Expression),
             string s => SyntaxFactory.LiteralExpression(
                 SyntaxKind.StringLiteralExpression,
                 SyntaxFactory.Literal(s)),
@@ -137,8 +138,6 @@ public sealed class ManagementClassCodeGenerator(
             long l => SyntaxFactory.LiteralExpression(
                 SyntaxKind.NumericLiteralExpression,
                 SyntaxFactory.Literal(l)),
-            // Strings of comma-separated values, enum members ("AssetFileType.Image"), etc.
-            // are rendered as raw C# expressions via ToString().
             _ => SyntaxFactory.ParseExpression(value.ToString()),
         };
 }
