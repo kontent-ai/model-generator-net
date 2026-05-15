@@ -20,7 +20,7 @@ public sealed class ManagementClassCodeGenerator(
     : ClassCodeGenerator(classDefinition, classFilename, @namespace)
 {
     private const string ContentItemInterfaceName = "IContentItem";
-    private const string KontentContentTypeAttribute = "KontentContentType";
+    private const string KontentTypeAttribute = "KontentType";
 
     protected override bool IsRecord => true;
 
@@ -50,9 +50,9 @@ public sealed class ManagementClassCodeGenerator(
                 SyntaxFactory.Token(SyntaxKind.SealedKeyword),
                 SyntaxFactory.Token(SyntaxKind.PartialKeyword)))
             .AddAttributeLists(BuildAttributeList(
-                new AttributeSpec(KontentContentTypeAttribute,
+                new AttributeSpec(KontentTypeAttribute,
                 [
-                    AttributeArg.Named("Codename", ClassDefinition.Codename),
+                    AttributeArg.Positional(ClassDefinition.Codename),
                 ])))
             .WithBaseList(SyntaxFactory.BaseList(
                 SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(
@@ -69,8 +69,12 @@ public sealed class ManagementClassCodeGenerator(
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.ComponentModel.DataAnnotations")),
+        // SDK layout: IContentItem at the root namespace, attributes (+ AssetFileType) in
+        // Annotations, content-value types (Reference, AssetReference, RichTextElement) in
+        // Models.Content.
+        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management.Annotations")),
-        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management.Models")),
+        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management.Models.Content")),
     ];
 
     protected override MemberDeclarationSyntax[] GetAdditionalNamespaceMembers() =>

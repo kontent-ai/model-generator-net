@@ -25,6 +25,14 @@
     <RuntimeHostConfigurationOption Include="System.Globalization.Invariant" Value="true" />
   </ItemGroup>
 
+  <!-- Default OutputDir is './output'; exclude anything matching that pattern from compile
+       so smoke-running the CLI in-place doesn't pollute the project with generated .cs files
+       (which would otherwise be picked up by the SDK-style implicit Compile glob). -->
+  <ItemGroup>
+    <Compile Remove="output/**/*.cs" />
+    <Compile Remove="output-*/**/*.cs" />
+  </ItemGroup>
+
   <PropertyGroup>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
