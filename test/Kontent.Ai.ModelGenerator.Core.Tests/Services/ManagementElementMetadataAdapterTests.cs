@@ -14,7 +14,7 @@ public class ManagementElementMetadataAdapterTests
     {
         var element = WithId(new TextElementMetadataModel { Codename = "title" }, SampleId);
 
-        var input = (TextElementInput)ManagementElementMetadataAdapter.ToInput(element);
+        var input = (TextElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
 
         input.Codename.Should().Be("title");
         input.Id.Should().Be(SampleId.ToString());
@@ -33,7 +33,7 @@ public class ManagementElementMetadataAdapterTests
             },
             SampleId);
 
-        var input = (TextElementInput)ManagementElementMetadataAdapter.ToInput(element);
+        var input = (TextElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
 
         input.MaximumCharacters.Should().Be(100);
     }
@@ -50,7 +50,7 @@ public class ManagementElementMetadataAdapterTests
             },
             SampleId);
 
-        var input = (TextElementInput)ManagementElementMetadataAdapter.ToInput(element);
+        var input = (TextElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
 
         input.MaximumCharacters.Should().BeNull();
     }
@@ -66,7 +66,7 @@ public class ManagementElementMetadataAdapterTests
             },
             SampleId);
 
-        var input = (TextElementInput)ManagementElementMetadataAdapter.ToInput(element);
+        var input = (TextElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
 
         input.Regex.Should().Be("^[a-z]+$");
     }
@@ -82,7 +82,7 @@ public class ManagementElementMetadataAdapterTests
             },
             SampleId);
 
-        var input = (TextElementInput)ManagementElementMetadataAdapter.ToInput(element);
+        var input = (TextElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
 
         input.Regex.Should().BeNull();
     }
@@ -92,7 +92,7 @@ public class ManagementElementMetadataAdapterTests
     {
         var element = WithId(new NumberElementMetadataModel { Codename = "priority" }, SampleId);
 
-        var input = ManagementElementMetadataAdapter.ToInput(element);
+        var input = ManagementElementMetadataAdapter.ToInput(element, "Article");
 
         input.Should().BeOfType<NumberElementInput>();
         input.Codename.Should().Be("priority");
@@ -104,7 +104,7 @@ public class ManagementElementMetadataAdapterTests
     {
         var element = WithId(new DateTimeElementMetadataModel { Codename = "published_at" }, SampleId);
 
-        var input = ManagementElementMetadataAdapter.ToInput(element);
+        var input = ManagementElementMetadataAdapter.ToInput(element, "Article");
 
         input.Should().BeOfType<DateTimeElementInput>();
         input.Codename.Should().Be("published_at");
@@ -115,7 +115,7 @@ public class ManagementElementMetadataAdapterTests
     {
         var element = WithId(new CustomElementMetadataModel { Codename = "color_picker" }, SampleId);
 
-        var input = ManagementElementMetadataAdapter.ToInput(element);
+        var input = ManagementElementMetadataAdapter.ToInput(element, "Article");
 
         input.Should().BeOfType<CustomElementInput>();
     }
@@ -131,7 +131,7 @@ public class ManagementElementMetadataAdapterTests
             },
             SampleId);
 
-        var input = (UrlSlugElementInput)ManagementElementMetadataAdapter.ToInput(element);
+        var input = (UrlSlugElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
 
         input.Regex.Should().Be("^[a-z-]+$");
     }
@@ -141,9 +141,63 @@ public class ManagementElementMetadataAdapterTests
     {
         var element = WithId(new UrlSlugElementMetadataModel { Codename = "slug" }, SampleId);
 
-        var input = (UrlSlugElementInput)ManagementElementMetadataAdapter.ToInput(element);
+        var input = (UrlSlugElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
 
         input.Regex.Should().BeNull();
+    }
+
+    [Fact]
+    public void ToInput_MultipleChoice_Single_MapsModeAndOptions()
+    {
+        var element = WithId(new MultipleChoiceElementMetadataModel
+        {
+            Codename = "category",
+            Mode = MultipleChoiceMode.Single,
+            Options =
+            [
+                new MultipleChoiceOptionModel { Codename = "news", Id = Guid.Parse("11111111-1111-1111-1111-111111111111") },
+                new MultipleChoiceOptionModel { Codename = "release_note", Id = Guid.Parse("22222222-2222-2222-2222-222222222222") },
+            ],
+        }, SampleId);
+
+        var input = (MultipleChoiceElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.IsSingleSelect.Should().BeTrue();
+        input.EnumTypeName.Should().Be("ArticleCategory");
+        input.Options.Should().HaveCount(2);
+        input.Options[0].Codename.Should().Be("news");
+        input.Options[0].Id.Should().Be("11111111-1111-1111-1111-111111111111");
+    }
+
+    [Fact]
+    public void ToInput_MultipleChoice_Multiple_FlagsMultiSelect()
+    {
+        var element = WithId(new MultipleChoiceElementMetadataModel
+        {
+            Codename = "tags",
+            Mode = MultipleChoiceMode.Multiple,
+            Options = [new MultipleChoiceOptionModel { Codename = "x", Id = Guid.NewGuid() }],
+        }, SampleId);
+
+        var input = (MultipleChoiceElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.IsSingleSelect.Should().BeFalse();
+        input.EnumTypeName.Should().Be("ArticleTags");
+    }
+
+    [Fact]
+    public void ToInput_MultipleChoice_NullOptions_TreatedAsEmpty()
+    {
+        var element = WithId(new MultipleChoiceElementMetadataModel
+        {
+            Codename = "category",
+            Mode = MultipleChoiceMode.Single,
+            Options = null,
+        }, SampleId);
+
+        var input = (MultipleChoiceElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.Options.Should().BeEmpty();
     }
 
     [Fact]
@@ -153,7 +207,7 @@ public class ManagementElementMetadataAdapterTests
         // guidelines aren't handled in slice 3; the orchestrator turns null into warn-and-skip.
         var element = WithId(new LinkedItemsElementMetadataModel { Codename = "related" }, SampleId);
 
-        var input = ManagementElementMetadataAdapter.ToInput(element);
+        var input = ManagementElementMetadataAdapter.ToInput(element, "Article");
 
         input.Should().BeNull();
     }

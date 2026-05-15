@@ -91,9 +91,9 @@ public class ManagementCodeGenerator : CodeGeneratorBase
             return;
         }
 
-        // Snippets / multi-choice / rich text / asset / linked-items / taxonomy / subpages are
-        // handled in later slices. The adapter returns null for those today.
-        var input = ManagementElementMetadataAdapter.ToInput(element);
+        // Snippets / rich text / asset / linked-items / taxonomy / subpages are handled in
+        // later slices. The adapter returns null for those today.
+        var input = ManagementElementMetadataAdapter.ToInput(element, classDefinition.ClassName);
         if (input is null)
         {
             Logger.LogWarning(
@@ -102,8 +102,13 @@ public class ManagementCodeGenerator : CodeGeneratorBase
             return;
         }
 
-        var property = _elementService.BuildProperty(input);
-        classDefinition.AddPropertyCodenameConstant(property.Codename);
-        classDefinition.AddProperty(property);
+        var output = _elementService.Build(input);
+        classDefinition.AddPropertyCodenameConstant(output.Property.Codename);
+        classDefinition.AddProperty(output.Property);
+
+        foreach (var enumDef in output.Enums)
+        {
+            classDefinition.AddEnum(enumDef);
+        }
     }
 }

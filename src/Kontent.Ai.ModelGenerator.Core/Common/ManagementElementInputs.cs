@@ -44,3 +44,26 @@ public sealed record UrlSlugElementInput(
     string Codename,
     string Id,
     string Regex = null) : ManagementElementInput(Codename, Id);
+
+/// <summary>
+/// Multiple-choice element — both single-select (mode=single) and multi-select (mode=multiple)
+/// use the same input shape. The wire value is always an array of option references, so the
+/// generator always emits <c>IReadOnlyList&lt;TEnum&gt;?</c>; <see cref="IsSingleSelect"/> only
+/// controls whether a <c>[MaxElements(1)]</c> attribute is emitted.
+/// <para>
+/// <see cref="EnumTypeName"/> is set by the orchestrator (typically <c>{ContentTypeClassName}{PascalElementCodename}</c>)
+/// so the same multiple-choice element on two content types produces two distinct, collision-free enum types.
+/// </para>
+/// </summary>
+public sealed record MultipleChoiceElementInput(
+    string Codename,
+    string Id,
+    string EnumTypeName,
+    bool IsSingleSelect,
+    System.Collections.Generic.IReadOnlyList<MultipleChoiceOptionInput> Options)
+    : ManagementElementInput(Codename, Id);
+
+/// <summary>
+/// A single option of a multiple-choice element.
+/// </summary>
+public sealed record MultipleChoiceOptionInput(string Codename, string Id);

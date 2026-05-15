@@ -117,6 +117,72 @@ public class ManagementClassCodeGeneratorTests
     }
 
     [Fact]
+    public void Build_WithEnum_EmitsEnumAsSiblingType()
+    {
+        var classDefinition = new ClassDefinition("article");
+        classDefinition.AddProperty(new ManagementProperty("category", "IReadOnlyList<ArticleCategory>?", "mc-id",
+        [
+            new AttributeSpec("KontentElement",
+            [
+                AttributeArg.Named("Codename", "category"),
+                AttributeArg.Named("Id", "mc-id"),
+            ]),
+            new AttributeSpec("MaxElements", [AttributeArg.Positional(1)]),
+        ]));
+        classDefinition.AddEnum(new EnumDefinition("ArticleCategory",
+        [
+            new EnumMember("News",
+            [
+                new AttributeSpec("KontentEnumValue",
+                [
+                    AttributeArg.Named("Codename", "news"),
+                    AttributeArg.Named("Id", "opt-1"),
+                ]),
+            ]),
+            new EnumMember("Release",
+            [
+                new AttributeSpec("KontentEnumValue",
+                [
+                    AttributeArg.Named("Codename", "release"),
+                    AttributeArg.Named("Id", "opt-2"),
+                ]),
+            ]),
+        ]));
+
+        var code = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName).GenerateCode();
+
+        code.Should().Contain("public IReadOnlyList<ArticleCategory>? Category { get; init; }");
+        code.Should().Contain("[MaxElements(1)]");
+        code.Should().Contain("public enum ArticleCategory");
+        code.Should().Contain("[KontentEnumValue(Codename = \"news\", Id = \"opt-1\")]");
+        code.Should().Contain("News");
+        code.Should().Contain("[KontentEnumValue(Codename = \"release\", Id = \"opt-2\")]");
+        code.Should().Contain("Release");
+        // Enum should be a sibling, not nested — appears outside the record's braces
+        var recordEndIndex = code.IndexOf("public sealed partial record Article");
+        var enumStartIndex = code.IndexOf("public enum ArticleCategory");
+        enumStartIndex.Should().BeGreaterThan(recordEndIndex);
+    }
+
+    [Fact]
+    public void Build_NoEnums_NoEnumDeclarations()
+    {
+        var classDefinition = new ClassDefinition("article");
+        classDefinition.AddProperty(new ManagementProperty("title", "string?", "t-id",
+        [
+            new AttributeSpec("KontentElement",
+            [
+                AttributeArg.Named("Codename", "title"),
+                AttributeArg.Named("Id", "t-id"),
+            ]),
+        ]));
+
+        var code = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName).GenerateCode();
+
+        code.Should().NotContain("public enum");
+    }
+
+    [Fact]
     public void IntegrationTest_EmittedCodeCompilesAgainstSdkStubs()
     {
         var classDefinition = new ClassDefinition("article");
@@ -144,6 +210,34 @@ public class ManagementClassCodeGeneratorTests
             [
                 AttributeArg.Named("Codename", "published_at"),
                 AttributeArg.Named("Id", "33333333-3333-3333-3333-333333333333"),
+            ]),
+        ]));
+        classDefinition.AddProperty(new ManagementProperty("category", "IReadOnlyList<ArticleCategory>?", "44444444-4444-4444-4444-444444444444",
+        [
+            new AttributeSpec("KontentElement",
+            [
+                AttributeArg.Named("Codename", "category"),
+                AttributeArg.Named("Id", "44444444-4444-4444-4444-444444444444"),
+            ]),
+            new AttributeSpec("MaxElements", [AttributeArg.Positional(1)]),
+        ]));
+        classDefinition.AddEnum(new EnumDefinition("ArticleCategory",
+        [
+            new EnumMember("News",
+            [
+                new AttributeSpec("KontentEnumValue",
+                [
+                    AttributeArg.Named("Codename", "news"),
+                    AttributeArg.Named("Id", "opt-1"),
+                ]),
+            ]),
+            new EnumMember("Release",
+            [
+                new AttributeSpec("KontentEnumValue",
+                [
+                    AttributeArg.Named("Codename", "release"),
+                    AttributeArg.Named("Id", "opt-2"),
+                ]),
             ]),
         ]));
 
@@ -177,9 +271,10 @@ public class ManagementClassCodeGeneratorTests
         result.Success.Should().BeTrue(errors);
     }
 
-    // Minimal stubs for the SDK types the emitted code references. Slice 3 only references
-    // [KontentContentType], [KontentElement], and IContentItem from the SDK side; constraint
-    // attributes ([StringLength], [RegularExpression]) come from BCL.
+    // Minimal stubs for the SDK types the emitted code references. The generator pulls in
+    // [KontentContentType] / [KontentElement] / [KontentEnumValue] / [MaxElements] /
+    // IContentItem from the SDK side; constraint attributes ([StringLength],
+    // [RegularExpression]) come from BCL.
     private const string SdkStubsSource = @"
 namespace Kontent.Ai.Management.Models
 {
@@ -202,6 +297,20 @@ namespace Kontent.Ai.Management.Annotations
     {
         public string Codename { get; init; }
         public string Id { get; init; }
+    }
+
+    [AttributeUsage(AttributeTargets.Field)]
+    public sealed class KontentEnumValueAttribute : Attribute
+    {
+        public string Codename { get; init; }
+        public string Id { get; init; }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class MaxElementsAttribute : Attribute
+    {
+        public MaxElementsAttribute(int n) { N = n; }
+        public int N { get; }
     }
 }
 ";

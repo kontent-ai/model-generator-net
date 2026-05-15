@@ -1,5 +1,7 @@
+using System.Linq;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.ModelGenerator.Core.Common;
+using Kontent.Ai.ModelGenerator.Core.Helpers;
 
 namespace Kontent.Ai.ModelGenerator.Core.Services;
 
@@ -11,7 +13,13 @@ namespace Kontent.Ai.ModelGenerator.Core.Services;
 /// </summary>
 internal static class ManagementElementMetadataAdapter
 {
-    public static ManagementElementInput ToInput(ElementMetadataBase element) =>
+    /// <param name="contentTypeClassName">
+    /// PascalCased name of the content-type class the element lives on. Used to build unique
+    /// per-element enum names (e.g. <c>{ClassName}{PascalElementCodename}</c>) so the same
+    /// multiple-choice element on two content types produces two distinct, collision-free enums.
+    /// Unused for non-enum-producing element types.
+    /// </param>
+    public static ManagementElementInput ToInput(ElementMetadataBase element, string contentTypeClassName) =>
         element switch
         {
             TextElementMetadataModel t => new TextElementInput(
@@ -31,6 +39,14 @@ internal static class ManagementElementMetadataAdapter
                 Id: u.Id.ToString(),
                 Regex: ResolveRegex(u.ValidationRegex)),
 
+            MultipleChoiceElementMetadataModel mc => new MultipleChoiceElementInput(
+                Codename: mc.Codename,
+                Id: mc.Id.ToString(),
+                EnumTypeName: BuildEnumTypeName(contentTypeClassName, mc.Codename),
+                IsSingleSelect: mc.Mode == MultipleChoiceMode.Single,
+                Options: (mc.Options ?? []).Select(o =>
+                    new MultipleChoiceOptionInput(o.Codename, o.Id.ToString())).ToList()),
+
             _ => null,
         };
 
@@ -43,4 +59,7 @@ internal static class ManagementElementMetadataAdapter
         regex is { IsActive: true } && !string.IsNullOrWhiteSpace(regex.Regex)
             ? regex.Regex
             : null;
+
+    private static string BuildEnumTypeName(string contentTypeClassName, string elementCodename) =>
+        contentTypeClassName + TextHelpers.GetValidPascalCaseIdentifierName(elementCodename);
 }

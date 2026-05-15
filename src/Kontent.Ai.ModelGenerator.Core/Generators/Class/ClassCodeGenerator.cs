@@ -137,8 +137,23 @@ public abstract class ClassCodeGenerator : GeneralGenerator
     protected static AccessorDeclarationSyntax GetAccessorDeclaration(SyntaxKind kind) =>
         SyntaxFactory.AccessorDeclaration(kind).WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
 
+    /// <summary>
+    /// Returns sibling type declarations (e.g. enums) to emit alongside the main type, under
+    /// the same namespace. Default empty. Management mode overrides to emit per-element enums
+    /// for multiple-choice fields.
+    /// </summary>
+    protected virtual MemberDeclarationSyntax[] GetAdditionalNamespaceMembers() => [];
+
     private CompilationUnitSyntax GetCompilationUnit(TypeDeclarationSyntax classDeclaration, UsingDirectiveSyntax[] usings)
     {
+        var siblingTypes = GetAdditionalNamespaceMembers();
+        var namespaceMembers = new MemberDeclarationSyntax[1 + siblingTypes.Length];
+        namespaceMembers[0] = classDeclaration;
+        for (var i = 0; i < siblingTypes.Length; i++)
+        {
+            namespaceMembers[i + 1] = siblingTypes[i];
+        }
+
         CompilationUnitSyntax compilationUnit;
 
         if (UseFileScopedNamespace)
@@ -146,7 +161,7 @@ public abstract class ClassCodeGenerator : GeneralGenerator
             // File-scoped namespace: namespace Foo;
             var fileScopedNamespace = SyntaxFactory.FileScopedNamespaceDeclaration(
                 SyntaxFactory.IdentifierName(Namespace))
-                .AddMembers(classDeclaration);
+                .AddMembers(namespaceMembers);
 
             compilationUnit = SyntaxFactory.CompilationUnit()
                 .AddUsings(usings)
@@ -159,7 +174,7 @@ public abstract class ClassCodeGenerator : GeneralGenerator
                 .AddUsings(usings)
                 .AddMembers(
                     SyntaxFactory.NamespaceDeclaration(SyntaxFactory.IdentifierName(Namespace))
-                        .AddMembers(classDeclaration));
+                        .AddMembers(namespaceMembers));
         }
 
         var leadingTrivia = SyntaxFactory.TriviaList(

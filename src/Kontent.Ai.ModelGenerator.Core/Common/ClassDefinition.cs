@@ -12,6 +12,12 @@ public class ClassDefinition(string codeName)
 
     public List<Property> Properties { get; } = [];
 
+    /// <summary>
+    /// Sibling enum types to emit alongside the content-type record. Populated by the
+    /// Management emission path for multiple-choice elements; the Delivery path leaves this empty.
+    /// </summary>
+    public List<EnumDefinition> Enums { get; } = [];
+
     public List<string> PropertyCodenameConstants { get; } = [];
 
     public IReadOnlySet<string> RenamedCodenameConstants => _renamedCodenameConstants;
@@ -52,6 +58,19 @@ public class ClassDefinition(string codeName)
         }
 
         PropertyCodenameConstants.Add(codeName);
+    }
+
+    public void AddEnum(EnumDefinition definition)
+    {
+        ArgumentNullException.ThrowIfNull(definition);
+
+        if (Enums.Exists(e => e.Name == definition.Name))
+        {
+            throw new InvalidOperationException(
+                $"Enum with name '{definition.Name}' is already included.");
+        }
+
+        Enums.Add(definition);
     }
 
     private bool PropertyIsAlreadyPresent(Property property)

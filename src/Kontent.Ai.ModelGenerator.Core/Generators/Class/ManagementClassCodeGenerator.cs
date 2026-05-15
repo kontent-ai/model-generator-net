@@ -67,10 +67,35 @@ public sealed class ManagementClassCodeGenerator(
     protected override UsingDirectiveSyntax[] GetApiUsings() =>
     [
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")),
+        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.ComponentModel.DataAnnotations")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management.Annotations")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management.Models")),
     ];
+
+    protected override MemberDeclarationSyntax[] GetAdditionalNamespaceMembers() =>
+        ClassDefinition.Enums.Select(BuildEnumDeclaration).ToArray<MemberDeclarationSyntax>();
+
+    private static EnumDeclarationSyntax BuildEnumDeclaration(EnumDefinition definition)
+    {
+        var enumDecl = SyntaxFactory.EnumDeclaration(definition.Name)
+            .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+        foreach (var member in definition.Members)
+        {
+            var memberDecl = SyntaxFactory.EnumMemberDeclaration(member.Identifier);
+
+            if (member.Attributes.Count > 0)
+            {
+                memberDecl = memberDecl.AddAttributeLists(
+                    member.Attributes.Select(BuildAttributeList).ToArray());
+            }
+
+            enumDecl = enumDecl.AddMembers(memberDecl);
+        }
+
+        return enumDecl;
+    }
 
     private static AttributeListSyntax BuildAttributeList(AttributeSpec spec)
     {
