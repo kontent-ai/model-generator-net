@@ -352,6 +352,94 @@ public class ManagementElementServiceTests
 
     #endregion
 
+    #region RichText
+
+    [Fact]
+    public void RichText_NoConstraints_EmitsOnlyKontentElement()
+    {
+        var result = _sut.Build(new RichTextElementInput("body", "rt-id"));
+
+        result.Property.TypeName.Should().Be("RichTextElement?");
+        result.Property.Attributes.Should().ContainSingle();
+        AssertIsKontentElement(result.Property.Attributes[0], "body", "rt-id");
+    }
+
+    [Fact]
+    public void RichText_WithAllowedTypesAndLinkTypes_EmitsBothAttributes()
+    {
+        var result = _sut.Build(new RichTextElementInput("body", "rt-id",
+            AllowedTypeCodenames: ["banner", "quote"],
+            AllowedItemLinkTypeCodenames: ["article"]));
+
+        result.Property.Attributes.Select(a => a.Name)
+            .Should().Equal("KontentElement", "AllowedTypes", "AllowedItemLinkTypes");
+        result.Property.Attributes[1].Arguments.Select(a => a.Value).Should().Equal("banner", "quote");
+        result.Property.Attributes[2].Arguments.Select(a => a.Value).Should().Equal("article");
+    }
+
+    [Fact]
+    public void RichText_WithMaxCharacters_EmitsStringLength()
+    {
+        var result = _sut.Build(new RichTextElementInput("body", "rt-id", MaximumCharacters: 5000));
+
+        result.Property.Attributes.Select(a => a.Name)
+            .Should().Equal("KontentElement", "StringLength");
+        result.Property.Attributes[1].Arguments[0].Value.Should().Be(5000);
+    }
+
+    #endregion
+
+    #region Asset
+
+    [Fact]
+    public void Asset_NoConstraints_EmitsOnlyKontentElement()
+    {
+        var result = _sut.Build(new AssetElementInput("featured_image", "a-id"));
+
+        result.Property.TypeName.Should().Be("IReadOnlyList<AssetReference>?");
+        result.Property.Attributes.Should().ContainSingle();
+        AssertIsKontentElement(result.Property.Attributes[0], "featured_image", "a-id");
+    }
+
+    [Fact]
+    public void Asset_WithMaxFileSize_EmitsMaxAssetSizeBytes()
+    {
+        var result = _sut.Build(new AssetElementInput("featured_image", "a-id",
+            MaximumFileSizeBytes: 5_242_880L));
+
+        result.Property.Attributes.Select(a => a.Name)
+            .Should().Equal("KontentElement", "MaxAssetSize");
+        result.Property.Attributes[1].Arguments[0].Value.Should().Be(5_242_880L);
+    }
+
+    [Fact]
+    public void Asset_WithAdjustableConstraint_EmitsAllowedFileTypesAsRawEnumExpression()
+    {
+        var result = _sut.Build(new AssetElementInput("featured_image", "a-id",
+            AllowedFileType: AssetFileType.Adjustable));
+
+        result.Property.Attributes.Select(a => a.Name)
+            .Should().Equal("KontentElement", "AllowedAssetFileTypes");
+        // Raw-code marker — emitter parses it as a C# expression rather than a string literal.
+        result.Property.Attributes[1].Arguments[0].Value
+            .Should().BeOfType<RawCodeAttributeValue>()
+            .Which.Expression.Should().Be("AssetFileType.Adjustable");
+    }
+
+    [Fact]
+    public void Asset_AllConstraints_EmitsAllAttributesInOrder()
+    {
+        var result = _sut.Build(new AssetElementInput("gallery", "a-id",
+            AssetCount: new CountLimit(10, CountLimitMode.AtMost),
+            MaximumFileSizeBytes: 1_000_000L,
+            AllowedFileType: AssetFileType.Adjustable));
+
+        result.Property.Attributes.Select(a => a.Name).Should().Equal(
+            "KontentElement", "MaxElements", "MaxAssetSize", "AllowedAssetFileTypes");
+    }
+
+    #endregion
+
     private static void AssertIsKontentElement(AttributeSpec attr, string codename, string id)
     {
         attr.Name.Should().Be("KontentElement");

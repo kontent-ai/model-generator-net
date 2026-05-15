@@ -69,6 +69,20 @@ internal static class ManagementElementMetadataAdapter
                 TaxonomyGroup: ResolveReferenceKey(tx.TaxonomyGroup),
                 TermCount: ResolveCountLimit(tx.TermCountLimit)),
 
+            RichTextElementMetadataModel rt => new RichTextElementInput(
+                Codename: rt.Codename,
+                Id: rt.Id.ToString(),
+                AllowedTypeCodenames: ResolveAllowedTypeCodenames(rt.AllowedTypes),
+                AllowedItemLinkTypeCodenames: ResolveAllowedTypeCodenames(rt.AllowedItemLinkTypes),
+                MaximumCharacters: ResolveCharacterLimit(rt.MaximumTextLength)),
+
+            AssetElementMetadataModel a => new AssetElementInput(
+                Codename: a.Codename,
+                Id: a.Id.ToString(),
+                AssetCount: ResolveCountLimit(a.AssetCountLimit),
+                MaximumFileSizeBytes: a.MaximumFileSize,
+                AllowedFileType: ResolveAssetFileType(a.AllowedFileTypes)),
+
             _ => null,
         };
 
@@ -135,5 +149,12 @@ internal static class ManagementElementMetadataAdapter
         LimitType.AtMost => CountLimitMode.AtMost,
         LimitType.Exactly => CountLimitMode.Exactly,
         _ => throw new ArgumentOutOfRangeException(nameof(limitType), limitType, "Unknown limit type."),
+    };
+
+    private static AssetFileType? ResolveAssetFileType(FileType fileType) => fileType switch
+    {
+        FileType.Adjustable => AssetFileType.Adjustable,
+        // FileType.Any → null (no constraint to emit).
+        _ => null,
     };
 }

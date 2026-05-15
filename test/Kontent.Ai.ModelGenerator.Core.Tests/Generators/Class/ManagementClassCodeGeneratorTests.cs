@@ -264,6 +264,31 @@ public class ManagementClassCodeGeneratorTests
             new AttributeSpec("AllowedTaxonomyGroup", [AttributeArg.Positional("content_tags")]),
             new AttributeSpec("MinElements", [AttributeArg.Positional(1)]),
         ]));
+        classDefinition.AddProperty(new ManagementProperty("body", "RichTextElement?", "77777777-7777-7777-7777-777777777777",
+        [
+            new AttributeSpec("KontentElement",
+            [
+                AttributeArg.Named("Codename", "body"),
+                AttributeArg.Named("Id", "77777777-7777-7777-7777-777777777777"),
+            ]),
+            new AttributeSpec("AllowedTypes", [AttributeArg.Positional("banner")]),
+            new AttributeSpec("AllowedItemLinkTypes", [AttributeArg.Positional("article")]),
+            new AttributeSpec("StringLength", [AttributeArg.Positional(5000)]),
+        ]));
+        classDefinition.AddProperty(new ManagementProperty("featured_image", "IReadOnlyList<AssetReference>?", "88888888-8888-8888-8888-888888888888",
+        [
+            new AttributeSpec("KontentElement",
+            [
+                AttributeArg.Named("Codename", "featured_image"),
+                AttributeArg.Named("Id", "88888888-8888-8888-8888-888888888888"),
+            ]),
+            new AttributeSpec("MaxElements", [AttributeArg.Positional(1)]),
+            new AttributeSpec("MaxAssetSize", [AttributeArg.Positional(5_242_880L)]),
+            new AttributeSpec("AllowedAssetFileTypes",
+            [
+                AttributeArg.PositionalRawCode("AssetFileType.Adjustable"),
+            ]),
+        ]));
 
         var code = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName).GenerateCode();
 
@@ -308,6 +333,21 @@ namespace Kontent.Ai.Management.Models
     {
         // Stub — real type has ById/ByCodename/ByExternalId factories. The generator only
         // emits the type name in declarative positions, so a marker is enough for the gate.
+    }
+
+    public sealed class RichTextElement
+    {
+        // Stub — real type has Value/Components.
+    }
+
+    public sealed class AssetReference
+    {
+        // Stub — real type has Id, Renditions, etc.
+    }
+
+    public enum AssetFileType
+    {
+        Adjustable,
     }
 }
 
@@ -369,6 +409,30 @@ namespace Kontent.Ai.Management.Annotations
     {
         public AllowedTaxonomyGroupAttribute(string key) { Key = key; }
         public string Key { get; }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class AllowedItemLinkTypesAttribute : Attribute
+    {
+        public AllowedItemLinkTypesAttribute(params string[] codenames) { Codenames = codenames; }
+        public string[] Codenames { get; }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class MaxAssetSizeAttribute : Attribute
+    {
+        public MaxAssetSizeAttribute(long bytes) { Bytes = bytes; }
+        public long Bytes { get; }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class AllowedAssetFileTypesAttribute : Attribute
+    {
+        public AllowedAssetFileTypesAttribute(Kontent.Ai.Management.Models.AssetFileType fileType)
+        {
+            FileType = fileType;
+        }
+        public Kontent.Ai.Management.Models.AssetFileType FileType { get; }
     }
 }
 ";

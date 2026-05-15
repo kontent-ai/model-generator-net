@@ -10,8 +10,8 @@ namespace Kontent.Ai.ModelGenerator.Core.Services;
 /// <summary>
 /// Maps Management API element inputs to <see cref="ManagementElementOutput"/> records ready
 /// for emission. Covers text, number, date_time, custom, url_slug, multiple_choice,
-/// modular_content, subpages, and taxonomy in this slice; rich text, asset, and snippets are
-/// added in later slices.
+/// modular_content, subpages, taxonomy, rich_text, and asset in this slice; snippets land
+/// in slice 7 (expanded inline by the orchestrator rather than emitted by the service).
 /// </summary>
 public sealed class ManagementElementService : IManagementElementService
 {
@@ -32,6 +32,8 @@ public sealed class ManagementElementService : IManagementElementService
             SubpagesElementInput sp => new ManagementElementOutput(
                 BuildContentItemCollection(sp.Codename, sp.Id, sp.AllowedTypeCodenames, sp.ItemCount)),
             TaxonomyElementInput tx => new ManagementElementOutput(BuildTaxonomy(tx)),
+            RichTextElementInput rt => new ManagementElementOutput(BuildRichText(rt)),
+            AssetElementInput a => new ManagementElementOutput(BuildAsset(a)),
             _ => throw new ArgumentException(
                 $"Unsupported management element input type: {input.GetType().Name}",
                 nameof(input)),
@@ -128,6 +130,53 @@ public sealed class ManagementElementService : IManagementElementService
         AddCountLimitAttribute(attrs, count);
 
         return new ManagementProperty(codename, "IReadOnlyList<IContentItem>?", id, attrs);
+    }
+
+    private static ManagementProperty BuildRichText(RichTextElementInput input)
+    {
+        var attrs = new List<AttributeSpec> { KontentElement(input.Codename, input.Id) };
+
+        if (input.AllowedTypeCodenames is { Count: > 0 })
+        {
+            attrs.Add(new AttributeSpec(
+                "AllowedTypes",
+                input.AllowedTypeCodenames.Select(c => AttributeArg.Positional(c)).ToList()));
+        }
+
+        if (input.AllowedItemLinkTypeCodenames is { Count: > 0 })
+        {
+            attrs.Add(new AttributeSpec(
+                "AllowedItemLinkTypes",
+                input.AllowedItemLinkTypeCodenames.Select(c => AttributeArg.Positional(c)).ToList()));
+        }
+
+        if (input.MaximumCharacters is int max)
+        {
+            attrs.Add(new AttributeSpec("StringLength", [AttributeArg.Positional(max)]));
+        }
+
+        return new ManagementProperty(input.Codename, "RichTextElement?", input.Id, attrs);
+    }
+
+    private static ManagementProperty BuildAsset(AssetElementInput input)
+    {
+        var attrs = new List<AttributeSpec> { KontentElement(input.Codename, input.Id) };
+
+        AddCountLimitAttribute(attrs, input.AssetCount);
+
+        if (input.MaximumFileSizeBytes is long bytes)
+        {
+            attrs.Add(new AttributeSpec("MaxAssetSize", [AttributeArg.Positional(bytes)]));
+        }
+
+        if (input.AllowedFileType is AssetFileType fileType)
+        {
+            attrs.Add(new AttributeSpec(
+                "AllowedAssetFileTypes",
+                [AttributeArg.PositionalRawCode($"AssetFileType.{fileType}")]));
+        }
+
+        return new ManagementProperty(input.Codename, "IReadOnlyList<AssetReference>?", input.Id, attrs);
     }
 
     private static ManagementProperty BuildTaxonomy(TaxonomyElementInput input)

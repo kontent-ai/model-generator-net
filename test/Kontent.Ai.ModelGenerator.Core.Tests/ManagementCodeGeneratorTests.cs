@@ -93,13 +93,15 @@ public class ManagementCodeGeneratorTests
     [Fact]
     public async Task RunAsync_UnsupportedElementType_LogsWarningAndSkips()
     {
+        // After slice 6, the only remaining "unsupported" element type is the snippet
+        // (slice 7 will expand it inline rather than emit a property for it).
         var type = new ContentTypeModel
         {
             Codename = "article",
             Elements =
             [
                 WithId(new TextElementMetadataModel { Codename = "title" }, Guid.NewGuid()),
-                WithId(new RichTextElementMetadataModel { Codename = "body" }, Guid.NewGuid()),
+                WithId(new ContentTypeSnippetElementMetadataModel(), Guid.NewGuid()),
             ],
         };
         SetupClientWithTypes(type);
@@ -111,9 +113,8 @@ public class ManagementCodeGeneratorTests
         await CreateGenerator().RunAsync();
 
         _logger.Verify(
-            l => l.LogWarning(It.Is<string>(s => s.Contains("body") && s.Contains("RichText"))),
+            l => l.LogWarning(It.Is<string>(s => s.Contains("ContentTypeSnippet"))),
             Times.Once);
-        emitted.Should().NotContain("Body");
         emitted.Should().Contain("Title");
     }
 
@@ -208,6 +209,49 @@ public class ManagementCodeGeneratorTests
         emitted.Should().Contain("public IReadOnlyList<Reference>? Tags { get; init; }");
         emitted.Should().Contain("[AllowedTaxonomyGroup(\"content_tags\")]");
         emitted.Should().Contain("[MinElements(1)]");
+    }
+
+    [Fact]
+    public async Task RunAsync_RichTextAndAsset_EmitExpectedShapes()
+    {
+        var type = new ContentTypeModel
+        {
+            Codename = "article",
+            Elements =
+            [
+                WithId(new RichTextElementMetadataModel
+                {
+                    Codename = "body",
+                    AllowedTypes = [Reference.ByCodename("banner")],
+                    AllowedItemLinkTypes = [Reference.ByCodename("article")],
+                    MaximumTextLength = new MaximumTextLengthModel { Value = 5000, AppliesTo = TextLengthLimitType.Characters },
+                }, Guid.NewGuid()),
+                WithId(new AssetElementMetadataModel
+                {
+                    Codename = "featured_image",
+                    AssetCountLimit = new LimitModel { Value = 1, Condition = LimitType.AtMost },
+                    MaximumFileSize = 5_242_880L,
+                    AllowedFileTypes = FileType.Adjustable,
+                }, Guid.NewGuid()),
+            ],
+        };
+        SetupClientWithTypes(type);
+        string emitted = null;
+        _output
+            .Setup(o => o.Output(It.IsAny<string>(), "Article", true))
+            .Callback<string, string, bool>((content, _, _) => emitted = content);
+
+        await CreateGenerator().RunAsync();
+
+        emitted.Should().NotBeNull();
+        emitted.Should().Contain("public RichTextElement? Body { get; init; }");
+        emitted.Should().Contain("[AllowedTypes(\"banner\")]");
+        emitted.Should().Contain("[AllowedItemLinkTypes(\"article\")]");
+        emitted.Should().Contain("[StringLength(5000)]");
+        emitted.Should().Contain("public IReadOnlyList<AssetReference>? FeaturedImage { get; init; }");
+        emitted.Should().Contain("[MaxElements(1)]");
+        emitted.Should().Contain("[MaxAssetSize(5242880L)]");
+        emitted.Should().Contain("[AllowedAssetFileTypes(AssetFileType.Adjustable)]");
     }
 
     [Fact]
