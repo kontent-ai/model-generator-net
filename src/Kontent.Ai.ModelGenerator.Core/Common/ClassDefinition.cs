@@ -26,6 +26,13 @@ public class ClassDefinition(string codeName)
 
     public string Codename { get; } = codeName;
 
+    /// <summary>
+    /// Optional content-type identifier (GUID, formatted as a string). Populated by the Management
+    /// emission path so the generated <c>[KontentType]</c> attribute carries both codename and id;
+    /// left <c>null</c> by the Delivery path.
+    /// </summary>
+    public string Id { get; set; }
+
     public void AddProperty(Property property)
     {
         if (property.Identifier == ContentTypeCodenameIdentifier)

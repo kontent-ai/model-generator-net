@@ -24,8 +24,22 @@ public class ManagementClassCodeGeneratorTests
 
         var code = sut.GenerateCode();
 
+        // No Id on the ClassDefinition → KontentType emits with codename only (single arg).
         code.Should().Contain("[KontentType(\"article\")]");
         code.Should().MatchRegex(@"public\s+sealed\s+partial\s+record\s+Article\s*:\s*IContentItem");
+    }
+
+    [Fact]
+    public void Build_WithTypeId_EmitsKontentTypeWithBothArgs()
+    {
+        var classDefinition = new ClassDefinition("article")
+        {
+            Id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+        };
+
+        var code = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName).GenerateCode();
+
+        code.Should().Contain("[KontentType(\"article\", \"aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\")]");
     }
 
     [Fact]

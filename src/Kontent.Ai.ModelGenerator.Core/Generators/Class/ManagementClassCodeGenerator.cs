@@ -42,6 +42,15 @@ public sealed class ManagementClassCodeGenerator(
     {
         var declaration = (RecordDeclarationSyntax)base.GetClassDeclaration();
 
+        var kontentTypeArgs = new List<AttributeArg>
+        {
+            AttributeArg.Positional(ClassDefinition.Codename),
+        };
+        if (!string.IsNullOrWhiteSpace(ClassDefinition.Id))
+        {
+            kontentTypeArgs.Add(AttributeArg.Positional(ClassDefinition.Id));
+        }
+
         // C# requires 'partial' immediately before the type keyword. Base emits 'public partial';
         // 'sealed' has to slot between them, hence WithModifiers (not AddModifiers, which appends).
         declaration = declaration
@@ -50,10 +59,7 @@ public sealed class ManagementClassCodeGenerator(
                 SyntaxFactory.Token(SyntaxKind.SealedKeyword),
                 SyntaxFactory.Token(SyntaxKind.PartialKeyword)))
             .AddAttributeLists(BuildAttributeList(
-                new AttributeSpec(KontentTypeAttribute,
-                [
-                    AttributeArg.Positional(ClassDefinition.Codename),
-                ])))
+                new AttributeSpec(KontentTypeAttribute, kontentTypeArgs)))
             .WithBaseList(SyntaxFactory.BaseList(
                 SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(
                     SyntaxFactory.SimpleBaseType(

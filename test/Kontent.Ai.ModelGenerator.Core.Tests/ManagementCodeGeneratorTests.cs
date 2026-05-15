@@ -40,7 +40,10 @@ public class ManagementCodeGeneratorTests
     [Fact]
     public async Task RunAsync_EmittedCode_ContainsKontentTypeAttribute()
     {
-        SetupClientWithTypes(BuildArticleType());
+        var typeId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+        var type = BuildArticleType();
+        type.Id = typeId;
+        SetupClientWithTypes(type);
         string emitted = null;
         _output
             .Setup(o => o.Output(It.IsAny<string>(), "Article", true))
@@ -49,7 +52,8 @@ public class ManagementCodeGeneratorTests
         await CreateGenerator(@namespace: "MyProject.Models").RunAsync();
 
         emitted.Should().NotBeNull();
-        emitted.Should().Contain("[KontentType(\"article\")]");
+        // Both args emitted: codename + id (positional).
+        emitted.Should().Contain($"[KontentType(\"article\", \"{typeId}\")]");
         emitted.Should().Contain(": IContentItem");
         emitted.Should().Contain("namespace MyProject.Models;");
     }
