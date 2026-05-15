@@ -91,4 +91,88 @@ public class ArgHelpersTests
 
         options.Nullability.Should().Be(NullabilityMode.Strict);
     }
+
+    [Theory]
+    [InlineData("-m")]
+    [InlineData("--management")]
+    [InlineData("--MANAGEMENT")]
+    [InlineData("-M")]
+    public void IsManagementMode_FlagPresent_ReturnsTrue(string flag)
+    {
+        ArgHelpers.IsManagementMode([flag]).Should().BeTrue();
+    }
+
+    [Fact]
+    public void IsManagementMode_NoFlag_ReturnsFalse()
+    {
+        ArgHelpers.IsManagementMode(["-i", "abc"]).Should().BeFalse();
+    }
+
+    [Fact]
+    public void StripModeSwitches_RemovesModeFlagsOnly()
+    {
+        var result = ArgHelpers.StripModeSwitches(["-m", "-i", "abc", "--management", "-k", "xyz"]);
+
+        result.Should().Equal("-i", "abc", "-k", "xyz");
+    }
+
+    [Fact]
+    public void GetSwitchMappings_ManagementMode_MapsIToManagementEnvironmentId()
+    {
+        var mappings = ArgHelpers.GetSwitchMappings(["-m"]);
+
+        mappings["-i"].Should().Be("ManagementOptions:EnvironmentId");
+        mappings["--environmentId"].Should().Be("ManagementOptions:EnvironmentId");
+        mappings["-k"].Should().Be("ManagementOptions:ApiKey");
+        mappings["--apiKey"].Should().Be("ManagementOptions:ApiKey");
+    }
+
+    [Fact]
+    public void GetSwitchMappings_DeliveryMode_MapsIToDeliveryEnvironmentId()
+    {
+        var mappings = ArgHelpers.GetSwitchMappings([]);
+
+        mappings["-i"].Should().Be("DeliveryOptions:EnvironmentId");
+        mappings.Should().NotContainKey("-k");
+        mappings.Should().NotContainKey("--apiKey");
+    }
+
+    public static TheoryData<string[]> ManagementSwitchArgs => new()
+    {
+        new[] { "-m" },
+        new[] { "--management" },
+        new[] { "-m", "--apiKey=xxx" },
+    };
+
+    [Theory]
+    [MemberData(nameof(ManagementSwitchArgs))]
+    public void ContainsValidArgs_ManagementSwitch_Accepted(string[] args)
+    {
+        ArgHelpers.ContainsValidArgs(args).Should().BeTrue();
+    }
+
+    [Fact]
+    public void ContainsValidArgs_ManagementOptionsLongForm_Accepted()
+    {
+        ArgHelpers.ContainsValidArgs(["--ManagementOptions:EnvironmentId=abc"]).Should().BeTrue();
+        ArgHelpers.ContainsValidArgs(["--ManagementOptions:ApiKey=xyz"]).Should().BeTrue();
+    }
+
+    [Fact]
+    public void ConfigurationBinding_ManagementMode_PopulatesManagementOptions()
+    {
+        var args = new[] { "-m", "-i", "abc-123", "-k", "secret" };
+        var bindableArgs = ArgHelpers.StripModeSwitches(args);
+        var configuration = new ConfigurationBuilder()
+            .AddCommandLine(bindableArgs, ArgHelpers.GetSwitchMappings(args))
+            .Build();
+
+        var options = configuration.Get<CodeGeneratorOptions>();
+
+        options.ManagementOptions.Should().NotBeNull();
+        options.ManagementOptions.EnvironmentId.Should().Be("abc-123");
+        options.ManagementOptions.ApiKey.Should().Be("secret");
+        // -i in management mode should NOT also populate DeliveryOptions.
+        options.DeliveryOptions?.EnvironmentId.Should().BeNullOrEmpty();
+    }
 }
