@@ -1,4 +1,6 @@
 using System.Reflection;
+using Kontent.Ai.Management.Models.Shared;
+using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Services;
@@ -200,12 +202,160 @@ public class ManagementElementMetadataAdapterTests
         input.Options.Should().BeEmpty();
     }
 
+    #region LinkedItems / Subpages / Taxonomy
+
+    [Fact]
+    public void ToInput_LinkedItems_MapsAllowedTypesByCodename()
+    {
+        var element = WithId(new LinkedItemsElementMetadataModel
+        {
+            Codename = "related",
+            AllowedTypes =
+            [
+                Reference.ByCodename("article"),
+                Reference.ByCodename("blog_post"),
+            ],
+        }, SampleId);
+
+        var input = (LinkedItemsElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.AllowedTypeCodenames.Should().Equal("article", "blog_post");
+    }
+
+    [Fact]
+    public void ToInput_LinkedItems_IdOnlyRefs_FilteredOut()
+    {
+        var element = WithId(new LinkedItemsElementMetadataModel
+        {
+            Codename = "related",
+            AllowedTypes =
+            [
+                Reference.ByCodename("article"),
+                Reference.ById(Guid.NewGuid()),  // id-only — should be dropped
+            ],
+        }, SampleId);
+
+        var input = (LinkedItemsElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.AllowedTypeCodenames.Should().Equal("article");
+    }
+
+    [Fact]
+    public void ToInput_LinkedItems_AllIdOnly_ReturnsNullCodenames()
+    {
+        var element = WithId(new LinkedItemsElementMetadataModel
+        {
+            Codename = "related",
+            AllowedTypes = [Reference.ById(Guid.NewGuid())],
+        }, SampleId);
+
+        var input = (LinkedItemsElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        // All refs filtered → null, so the service skips emitting [AllowedTypes()].
+        input.AllowedTypeCodenames.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData(LimitType.AtLeast, CountLimitMode.AtLeast)]
+    [InlineData(LimitType.AtMost, CountLimitMode.AtMost)]
+    [InlineData(LimitType.Exactly, CountLimitMode.Exactly)]
+    public void ToInput_LinkedItems_CountLimit_MapsConditionCorrectly(LimitType mapiType, CountLimitMode expectedMode)
+    {
+        var element = WithId(new LinkedItemsElementMetadataModel
+        {
+            Codename = "related",
+            ItemCountLimit = new LimitModel { Value = 3, Condition = mapiType },
+        }, SampleId);
+
+        var input = (LinkedItemsElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.ItemCount.Should().NotBeNull();
+        input.ItemCount.Value.Should().Be(3);
+        input.ItemCount.Mode.Should().Be(expectedMode);
+    }
+
+    [Fact]
+    public void ToInput_Subpages_MapsToSubpagesInput()
+    {
+        var element = WithId(new SubpagesElementMetadataModel
+        {
+            Codename = "children",
+            AllowedContentTypes = [Reference.ByCodename("page")],
+            ItemCountLimit = new LimitModel { Value = 10, Condition = LimitType.AtMost },
+        }, SampleId);
+
+        var input = ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.Should().BeOfType<SubpagesElementInput>();
+        var sp = (SubpagesElementInput)input;
+        sp.AllowedTypeCodenames.Should().Equal("page");
+        sp.ItemCount.Value.Should().Be(10);
+        sp.ItemCount.Mode.Should().Be(CountLimitMode.AtMost);
+    }
+
+    [Fact]
+    public void ToInput_Taxonomy_GroupCodenamePreferred()
+    {
+        var element = WithId(new TaxonomyElementMetadataModel
+        {
+            Codename = "tags",
+            TaxonomyGroup = Reference.ByCodename("content_tags"),
+        }, SampleId);
+
+        var input = (TaxonomyElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.TaxonomyGroup.Should().Be("content_tags");
+    }
+
+    [Fact]
+    public void ToInput_Taxonomy_IdOnlyGroup_FallsBackToIdString()
+    {
+        var groupId = Guid.Parse("f30c7f72-e9ab-8832-2a57-62944a038809");
+        var element = WithId(new TaxonomyElementMetadataModel
+        {
+            Codename = "tags",
+            TaxonomyGroup = Reference.ById(groupId),
+        }, SampleId);
+
+        var input = (TaxonomyElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.TaxonomyGroup.Should().Be(groupId.ToString());
+    }
+
+    [Fact]
+    public void ToInput_Taxonomy_NoGroup_GroupIsNull()
+    {
+        var element = WithId(new TaxonomyElementMetadataModel { Codename = "tags" }, SampleId);
+
+        var input = (TaxonomyElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.TaxonomyGroup.Should().BeNull();
+    }
+
+    [Fact]
+    public void ToInput_Taxonomy_WithTermCount_MapsCountLimit()
+    {
+        var element = WithId(new TaxonomyElementMetadataModel
+        {
+            Codename = "tags",
+            TermCountLimit = new LimitModel { Value = 2, Condition = LimitType.Exactly },
+        }, SampleId);
+
+        var input = (TaxonomyElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+
+        input.TermCount.Should().NotBeNull();
+        input.TermCount.Value.Should().Be(2);
+        input.TermCount.Mode.Should().Be(CountLimitMode.Exactly);
+    }
+
+    #endregion
+
     [Fact]
     public void ToInput_UnsupportedElementType_ReturnsNull()
     {
-        // Linked items / asset / multiple choice / rich text / taxonomy / subpages / snippets /
-        // guidelines aren't handled in slice 3; the orchestrator turns null into warn-and-skip.
-        var element = WithId(new LinkedItemsElementMetadataModel { Codename = "related" }, SampleId);
+        // Rich text and asset are not yet handled (slice 6); snippets land in slice 7.
+        // The orchestrator turns null into warn-and-skip.
+        var element = WithId(new RichTextElementMetadataModel { Codename = "body" }, SampleId);
 
         var input = ManagementElementMetadataAdapter.ToInput(element, "Article");
 

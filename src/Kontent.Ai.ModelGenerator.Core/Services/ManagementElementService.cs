@@ -9,9 +9,9 @@ namespace Kontent.Ai.ModelGenerator.Core.Services;
 
 /// <summary>
 /// Maps Management API element inputs to <see cref="ManagementElementOutput"/> records ready
-/// for emission. Covers text, number, date_time, custom, url_slug, and multiple_choice in this
-/// slice; rich text, asset, taxonomy, linked items, subpages, and snippets are added in later
-/// slices.
+/// for emission. Covers text, number, date_time, custom, url_slug, multiple_choice,
+/// modular_content, subpages, and taxonomy in this slice; rich text, asset, and snippets are
+/// added in later slices.
 /// </summary>
 public sealed class ManagementElementService : IManagementElementService
 {
@@ -27,6 +27,11 @@ public sealed class ManagementElementService : IManagementElementService
             CustomElementInput c => new ManagementElementOutput(BuildSimple(c.Codename, c.Id, "string?")),
             UrlSlugElementInput u => new ManagementElementOutput(BuildUrlSlug(u)),
             MultipleChoiceElementInput m => BuildMultipleChoice(m),
+            LinkedItemsElementInput li => new ManagementElementOutput(
+                BuildContentItemCollection(li.Codename, li.Id, li.AllowedTypeCodenames, li.ItemCount)),
+            SubpagesElementInput sp => new ManagementElementOutput(
+                BuildContentItemCollection(sp.Codename, sp.Id, sp.AllowedTypeCodenames, sp.ItemCount)),
+            TaxonomyElementInput tx => new ManagementElementOutput(BuildTaxonomy(tx)),
             _ => throw new ArgumentException(
                 $"Unsupported management element input type: {input.GetType().Name}",
                 nameof(input)),
@@ -103,6 +108,60 @@ public sealed class ManagementElementService : IManagementElementService
         var enumDef = new EnumDefinition(input.EnumTypeName, members);
 
         return new ManagementElementOutput(property, [enumDef]);
+    }
+
+    private static ManagementProperty BuildContentItemCollection(
+        string codename,
+        string id,
+        IReadOnlyList<string> allowedTypeCodenames,
+        CountLimit count)
+    {
+        var attrs = new List<AttributeSpec> { KontentElement(codename, id) };
+
+        if (allowedTypeCodenames is { Count: > 0 })
+        {
+            attrs.Add(new AttributeSpec(
+                "AllowedTypes",
+                allowedTypeCodenames.Select(c => AttributeArg.Positional(c)).ToList()));
+        }
+
+        AddCountLimitAttribute(attrs, count);
+
+        return new ManagementProperty(codename, "IReadOnlyList<IContentItem>?", id, attrs);
+    }
+
+    private static ManagementProperty BuildTaxonomy(TaxonomyElementInput input)
+    {
+        var attrs = new List<AttributeSpec> { KontentElement(input.Codename, input.Id) };
+
+        if (!string.IsNullOrWhiteSpace(input.TaxonomyGroup))
+        {
+            attrs.Add(new AttributeSpec(
+                "AllowedTaxonomyGroup",
+                [AttributeArg.Positional(input.TaxonomyGroup)]));
+        }
+
+        AddCountLimitAttribute(attrs, input.TermCount);
+
+        return new ManagementProperty(input.Codename, "IReadOnlyList<Reference>?", input.Id, attrs);
+    }
+
+    private static void AddCountLimitAttribute(List<AttributeSpec> attrs, CountLimit count)
+    {
+        if (count is null)
+        {
+            return;
+        }
+
+        var attrName = count.Mode switch
+        {
+            CountLimitMode.AtLeast => "MinElements",
+            CountLimitMode.AtMost => "MaxElements",
+            CountLimitMode.Exactly => "ExactElements",
+            _ => throw new ArgumentOutOfRangeException(nameof(count), count.Mode, "Unknown count limit mode."),
+        };
+
+        attrs.Add(new AttributeSpec(attrName, [AttributeArg.Positional(count.Value)]));
     }
 
     private static AttributeSpec KontentElement(string codename, string id) =>

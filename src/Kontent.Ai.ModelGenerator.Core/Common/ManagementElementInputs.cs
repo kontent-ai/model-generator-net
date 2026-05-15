@@ -67,3 +67,43 @@ public sealed record MultipleChoiceElementInput(
 /// A single option of a multiple-choice element.
 /// </summary>
 public sealed record MultipleChoiceOptionInput(string Codename, string Id);
+
+/// <summary>
+/// A per-collection count constraint (linked items, subpages, taxonomy, asset).
+/// Maps MAPI's <c>LimitModel { Value, Condition }</c>; the generator picks the
+/// corresponding <c>[MinElements]</c> / <c>[MaxElements]</c> / <c>[ExactElements]</c>.
+/// </summary>
+public sealed record CountLimit(int Value, CountLimitMode Mode);
+
+public enum CountLimitMode { AtLeast, AtMost, Exactly }
+
+/// <summary>
+/// Linked items element. Wire type: <c>IReadOnlyList&lt;IContentItem&gt;?</c>.
+/// <paramref name="AllowedTypeCodenames"/> is null/empty when there's no allowlist.
+/// </summary>
+public sealed record LinkedItemsElementInput(
+    string Codename,
+    string Id,
+    System.Collections.Generic.IReadOnlyList<string> AllowedTypeCodenames = null,
+    CountLimit ItemCount = null) : ManagementElementInput(Codename, Id);
+
+/// <summary>
+/// Subpages element (Web Spotlight). Same wire shape as linked items; different MAPI element type.
+/// </summary>
+public sealed record SubpagesElementInput(
+    string Codename,
+    string Id,
+    System.Collections.Generic.IReadOnlyList<string> AllowedTypeCodenames = null,
+    CountLimit ItemCount = null) : ManagementElementInput(Codename, Id);
+
+/// <summary>
+/// Taxonomy element. Wire type: <c>IReadOnlyList&lt;Reference&gt;?</c>.
+/// <paramref name="TaxonomyGroup"/> carries the codename (preferred) or id (fallback) of
+/// the taxonomy group the element pulls terms from; null when the MAPI response had
+/// neither (rare — the SDK would still let the API reject the upsert).
+/// </summary>
+public sealed record TaxonomyElementInput(
+    string Codename,
+    string Id,
+    string TaxonomyGroup = null,
+    CountLimit TermCount = null) : ManagementElementInput(Codename, Id);
