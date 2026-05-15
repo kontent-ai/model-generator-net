@@ -23,61 +23,72 @@ internal static class ManagementElementMetadataAdapter
     /// multiple-choice element on two content types produces two distinct, collision-free enums.
     /// Unused for non-enum-producing element types.
     /// </param>
-    public static ManagementElementInput ToInput(ElementMetadataBase element, string contentTypeClassName) =>
-        element switch
+    /// <param name="codenameOverride">
+    /// When non-null, overrides the element's own codename. Used by the orchestrator after
+    /// snippet expansion to prefix codenames with <c>{snippetCodename}__</c>. The element's
+    /// <c>Id</c> stays unchanged regardless.
+    /// </param>
+    public static ManagementElementInput ToInput(
+        ElementMetadataBase element,
+        string contentTypeClassName,
+        string codenameOverride = null)
+    {
+        var codename = codenameOverride ?? element.Codename;
+
+        return element switch
         {
             TextElementMetadataModel t => new TextElementInput(
-                Codename: t.Codename,
+                Codename: codename,
                 Id: t.Id.ToString(),
                 MaximumCharacters: ResolveCharacterLimit(t.MaximumTextLength),
                 Regex: ResolveRegex(t.ValidationRegex)),
 
-            NumberElementMetadataModel n => new NumberElementInput(n.Codename, n.Id.ToString()),
+            NumberElementMetadataModel n => new NumberElementInput(codename, n.Id.ToString()),
 
-            DateTimeElementMetadataModel d => new DateTimeElementInput(d.Codename, d.Id.ToString()),
+            DateTimeElementMetadataModel d => new DateTimeElementInput(codename, d.Id.ToString()),
 
-            CustomElementMetadataModel c => new CustomElementInput(c.Codename, c.Id.ToString()),
+            CustomElementMetadataModel c => new CustomElementInput(codename, c.Id.ToString()),
 
             UrlSlugElementMetadataModel u => new UrlSlugElementInput(
-                Codename: u.Codename,
+                Codename: codename,
                 Id: u.Id.ToString(),
                 Regex: ResolveRegex(u.ValidationRegex)),
 
             MultipleChoiceElementMetadataModel mc => new MultipleChoiceElementInput(
-                Codename: mc.Codename,
+                Codename: codename,
                 Id: mc.Id.ToString(),
-                EnumTypeName: BuildEnumTypeName(contentTypeClassName, mc.Codename),
+                EnumTypeName: BuildEnumTypeName(contentTypeClassName, codename),
                 IsSingleSelect: mc.Mode == MultipleChoiceMode.Single,
                 Options: (mc.Options ?? []).Select(o =>
                     new MultipleChoiceOptionInput(o.Codename, o.Id.ToString())).ToList()),
 
             LinkedItemsElementMetadataModel li => new LinkedItemsElementInput(
-                Codename: li.Codename,
+                Codename: codename,
                 Id: li.Id.ToString(),
                 AllowedTypeCodenames: ResolveAllowedTypeCodenames(li.AllowedTypes),
                 ItemCount: ResolveCountLimit(li.ItemCountLimit)),
 
             SubpagesElementMetadataModel sp => new SubpagesElementInput(
-                Codename: sp.Codename,
+                Codename: codename,
                 Id: sp.Id.ToString(),
                 AllowedTypeCodenames: ResolveAllowedTypeCodenames(sp.AllowedContentTypes),
                 ItemCount: ResolveCountLimit(sp.ItemCountLimit)),
 
             TaxonomyElementMetadataModel tx => new TaxonomyElementInput(
-                Codename: tx.Codename,
+                Codename: codename,
                 Id: tx.Id.ToString(),
                 TaxonomyGroup: ResolveReferenceKey(tx.TaxonomyGroup),
                 TermCount: ResolveCountLimit(tx.TermCountLimit)),
 
             RichTextElementMetadataModel rt => new RichTextElementInput(
-                Codename: rt.Codename,
+                Codename: codename,
                 Id: rt.Id.ToString(),
                 AllowedTypeCodenames: ResolveAllowedTypeCodenames(rt.AllowedTypes),
                 AllowedItemLinkTypeCodenames: ResolveAllowedTypeCodenames(rt.AllowedItemLinkTypes),
                 MaximumCharacters: ResolveCharacterLimit(rt.MaximumTextLength)),
 
             AssetElementMetadataModel a => new AssetElementInput(
-                Codename: a.Codename,
+                Codename: codename,
                 Id: a.Id.ToString(),
                 AssetCount: ResolveCountLimit(a.AssetCountLimit),
                 MaximumFileSizeBytes: a.MaximumFileSize,
@@ -85,6 +96,7 @@ internal static class ManagementElementMetadataAdapter
 
             _ => null,
         };
+    }
 
     private static int? ResolveCharacterLimit(MaximumTextLengthModel limit) =>
         limit is { AppliesTo: TextLengthLimitType.Characters }

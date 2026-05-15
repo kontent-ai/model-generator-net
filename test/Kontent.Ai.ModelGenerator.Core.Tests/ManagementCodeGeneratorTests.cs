@@ -2,6 +2,7 @@ using System.Collections;
 using System.Reflection;
 using Kontent.Ai.Management;
 using Kontent.Ai.Management.Models.Shared;
+using Kontent.Ai.Management.Models.TypeSnippets;
 using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.Management.Models.Types.Elements;
 using LimitType = Kontent.Ai.Management.Models.Types.LimitType;
@@ -91,31 +92,31 @@ public class ManagementCodeGeneratorTests
     }
 
     [Fact]
-    public async Task RunAsync_UnsupportedElementType_LogsWarningAndSkips()
+    public async Task RunAsync_UnresolvableSnippetReference_LogsWarningAndSkips()
     {
-        // After slice 6, the only remaining "unsupported" element type is the snippet
-        // (slice 7 will expand it inline rather than emit a property for it).
+        // After slice 7, every MAPI element type is handled. The closest "warn-and-skip" path
+        // is a snippet element whose reference doesn't point at any snippet the generator fetched.
         var type = new ContentTypeModel
         {
             Codename = "article",
             Elements =
             [
                 WithId(new TextElementMetadataModel { Codename = "title" }, Guid.NewGuid()),
-                WithId(new ContentTypeSnippetElementMetadataModel(), Guid.NewGuid()),
+                WithId(
+                    new ContentTypeSnippetElementMetadataModel
+                    {
+                        SnippetIdentifier = Reference.ByCodename("ghost_snippet"),
+                    },
+                    Guid.NewGuid()),
             ],
         };
         SetupClientWithTypes(type);
-        string emitted = null;
-        _output
-            .Setup(o => o.Output(It.IsAny<string>(), "Article", true))
-            .Callback<string, string, bool>((content, _, _) => emitted = content);
 
         await CreateGenerator().RunAsync();
 
         _logger.Verify(
-            l => l.LogWarning(It.Is<string>(s => s.Contains("ContentTypeSnippet"))),
+            l => l.LogWarning(It.Is<string>(s => s.Contains("snippet"))),
             Times.Once);
-        emitted.Should().Contain("Title");
     }
 
     [Fact]
@@ -255,11 +256,88 @@ public class ManagementCodeGeneratorTests
     }
 
     [Fact]
+    public async Task RunAsync_SnippetReference_InlinesPrefixedElements()
+    {
+        var seoSnippet = new ContentTypeSnippetModel
+        {
+            Id = Guid.NewGuid(),
+            Codename = "seo",
+            Elements =
+            [
+                WithId(new TextElementMetadataModel { Codename = "meta_title" }, Guid.NewGuid()),
+                WithId(new TextElementMetadataModel { Codename = "meta_description" }, Guid.NewGuid()),
+            ],
+        };
+        var type = new ContentTypeModel
+        {
+            Codename = "article",
+            Elements =
+            [
+                WithId(new TextElementMetadataModel { Codename = "title" }, Guid.NewGuid()),
+                WithId(
+                    new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = Reference.ById(seoSnippet.Id) },
+                    Guid.NewGuid()),
+            ],
+        };
+        SetupClientWith(types: [type], snippets: [seoSnippet]);
+
+        string emitted = null;
+        _output
+            .Setup(o => o.Output(It.IsAny<string>(), "Article", true))
+            .Callback<string, string, bool>((content, _, _) => emitted = content);
+
+        await CreateGenerator().RunAsync();
+
+        emitted.Should().NotBeNull();
+        emitted.Should().Contain("public string? Title { get; init; }");
+        // Snippet-contributed property: identifier is PascalCased prefixed codename,
+        // wire codename in the attribute is double-underscore-prefixed.
+        emitted.Should().Contain("public string? SeoMetaTitle { get; init; }");
+        emitted.Should().Contain("[KontentElement(Codename = \"seo__meta_title\"");
+        emitted.Should().Contain("public string? SeoMetaDescription { get; init; }");
+        emitted.Should().Contain("[KontentElement(Codename = \"seo__meta_description\"");
+    }
+
+    [Fact]
+    public async Task RunAsync_SnippetReferenceByCodename_ResolvesCorrectly()
+    {
+        var snippet = new ContentTypeSnippetModel
+        {
+            Id = Guid.NewGuid(),
+            Codename = "seo",
+            Elements = [WithId(new TextElementMetadataModel { Codename = "meta_title" }, Guid.NewGuid())],
+        };
+        var type = new ContentTypeModel
+        {
+            Codename = "article",
+            Elements =
+            [
+                WithId(
+                    new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = Reference.ByCodename("seo") },
+                    Guid.NewGuid()),
+            ],
+        };
+        SetupClientWith(types: [type], snippets: [snippet]);
+
+        string emitted = null;
+        _output
+            .Setup(o => o.Output(It.IsAny<string>(), "Article", true))
+            .Callback<string, string, bool>((content, _, _) => emitted = content);
+
+        await CreateGenerator().RunAsync();
+
+        emitted.Should().Contain("SeoMetaTitle");
+        _logger.Verify(l => l.LogWarning(It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
     public async Task RunAsync_PaginatedListing_WalksAllPages()
     {
-        var page2 = BuildListingPage(hasNext: false, types: [BuildArticleType()]);
-        var page1 = BuildListingPage(hasNext: true, types: [BuildArticleType("first")], nextPage: page2);
+        var page2 = BuildListingPage<ContentTypeModel>(hasNext: false, items: [BuildArticleType()]);
+        var page1 = BuildListingPage<ContentTypeModel>(hasNext: true, items: [BuildArticleType("first")], nextPage: page2);
         _client.Setup(c => c.ListContentTypesAsync()).ReturnsAsync(page1);
+        _client.Setup(c => c.ListContentTypeSnippetsAsync())
+            .ReturnsAsync(BuildListingPage<ContentTypeSnippetModel>(hasNext: false, items: []));
 
         await CreateGenerator().RunAsync();
 
@@ -269,18 +347,31 @@ public class ManagementCodeGeneratorTests
 
     private void SetupClientWithTypes(params ContentTypeModel[] types)
     {
-        var page = BuildListingPage(hasNext: false, types: types);
-        _client.Setup(c => c.ListContentTypesAsync()).ReturnsAsync(page);
+        SetupClientWith(types, snippets: []);
     }
 
-    private static IListingResponseModel<ContentTypeModel> BuildListingPage(
-        bool hasNext,
+    private void SetupClientWith(
         IEnumerable<ContentTypeModel> types,
-        IListingResponseModel<ContentTypeModel> nextPage = null)
+        IEnumerable<ContentTypeSnippetModel> snippets)
     {
-        var mock = new Mock<IListingResponseModel<ContentTypeModel>>();
-        var list = types.ToList();
+        _client.Setup(c => c.ListContentTypesAsync())
+            .ReturnsAsync(BuildListingPage(hasNext: false, items: types));
+        _client.Setup(c => c.ListContentTypeSnippetsAsync())
+            .ReturnsAsync(BuildListingPage(hasNext: false, items: snippets));
+    }
+
+    private static IListingResponseModel<T> BuildListingPage<T>(
+        bool hasNext,
+        IEnumerable<T> items,
+        IListingResponseModel<T> nextPage = null)
+    {
+        var mock = new Mock<IListingResponseModel<T>>();
+        var list = items.ToList();
+        // IListingResponseModel<T> redeclares GetEnumerator with `new`, so consumers reaching
+        // through the IEnumerable<T> contract (e.g. List<T>.AddRange) hit a separate slot —
+        // set up both.
         mock.Setup(m => m.GetEnumerator()).Returns(() => list.GetEnumerator());
+        mock.As<IEnumerable<T>>().Setup(m => m.GetEnumerator()).Returns(() => list.GetEnumerator());
         mock.As<IEnumerable>().Setup(m => m.GetEnumerator()).Returns(() => list.GetEnumerator());
         mock.Setup(m => m.HasNextPage()).Returns(hasNext);
         mock.Setup(m => m.GetNextPage()).ReturnsAsync(nextPage);
