@@ -102,8 +102,8 @@ public sealed class ManagementElementService : IManagementElementService
             [
                 new AttributeSpec("KontentEnumValue",
                 [
-                    AttributeArg.Named("Codename", opt.Codename),
-                    AttributeArg.Named("Id", opt.Id),
+                    AttributeArg.Positional(opt.Codename),
+                    AttributeArg.Positional(opt.Id),
                 ])
             ])).ToList();
 
@@ -216,7 +216,7 @@ public sealed class ManagementElementService : IManagementElementService
     private static AttributeSpec KontentElement(string codename, string id) =>
         new("KontentElement",
         [
-            AttributeArg.Named("Codename", codename),
-            AttributeArg.Named("Id", id),
+            AttributeArg.Positional(codename),
+            AttributeArg.Positional(id),
         ]);
 }

@@ -38,7 +38,7 @@ public class ManagementCodeGeneratorTests
     }
 
     [Fact]
-    public async Task RunAsync_EmittedCode_ContainsKontentContentTypeAttribute()
+    public async Task RunAsync_EmittedCode_ContainsKontentTypeAttribute()
     {
         SetupClientWithTypes(BuildArticleType());
         string emitted = null;
@@ -49,7 +49,7 @@ public class ManagementCodeGeneratorTests
         await CreateGenerator(@namespace: "MyProject.Models").RunAsync();
 
         emitted.Should().NotBeNull();
-        emitted.Should().Contain("[KontentContentType(Codename = \"article\")]");
+        emitted.Should().Contain("[KontentType(\"article\")]");
         emitted.Should().Contain(": IContentItem");
         emitted.Should().Contain("namespace MyProject.Models;");
     }
@@ -293,9 +293,9 @@ public class ManagementCodeGeneratorTests
         // Snippet-contributed property: identifier is PascalCased prefixed codename,
         // wire codename in the attribute is double-underscore-prefixed.
         emitted.Should().Contain("public string? SeoMetaTitle { get; init; }");
-        emitted.Should().Contain("[KontentElement(Codename = \"seo__meta_title\"");
+        emitted.Should().Contain("[KontentElement(\"seo__meta_title\"");
         emitted.Should().Contain("public string? SeoMetaDescription { get; init; }");
-        emitted.Should().Contain("[KontentElement(Codename = \"seo__meta_description\"");
+        emitted.Should().Contain("[KontentElement(\"seo__meta_description\"");
     }
 
     [Fact]

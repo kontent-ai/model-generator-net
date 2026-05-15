@@ -288,8 +288,8 @@ KontentModelGenerator --management \
 | --- | --- | --- |
 | Use case | Read content, frontend rendering | CRUD via the Management API |
 | Marker interface | None | `IContentItem` (empty marker) |
-| Element identity | `[JsonPropertyName("codename")]` | `[KontentElement(Codename, Id)]` — both required (codename for request serialization, ID for response deserialization) |
-| Type-level metadata | `[ContentTypeCodename]` | `[KontentContentType(Codename)]` |
+| Element identity | `[JsonPropertyName("codename")]` | `[KontentElement(codename, id)]` — both required (codename for request serialization, ID for response deserialization) |
+| Type-level metadata | `[ContentTypeCodename]` | `[KontentType(codename)]` |
 | Collections | `IEnumerable<T>?` | `IReadOnlyList<T>?` (always; single-asset becomes `[MaxElements(1)]`) |
 | Element constraints | Implicit at API layer | `[StringLength]`, `[RegularExpression]`, `[MinElements]` / `[MaxElements]` / `[ExactElements]`, `[AllowedTypes]`, `[AllowedTaxonomyGroup]`, `[MaxAssetSize]`, `[AllowedAssetFileTypes]` — consumed by the SDK validator before send |
 | Multiple-choice | `IEnumerable<MultipleChoiceOption>?` | Per-element enum + `IReadOnlyList<{ContentType}{Element}>?` |
@@ -308,55 +308,56 @@ KontentModelGenerator --management \
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Kontent.Ai.Management;
 using Kontent.Ai.Management.Annotations;
-using Kontent.Ai.Management.Models;
+using Kontent.Ai.Management.Models.Content;
 
 namespace MyProject.Models;
 
-[KontentContentType(Codename = "article")]
+[KontentType("article")]
 public sealed partial record Article : IContentItem
 {
-    [KontentElement(Codename = "body", Id = "7ed15846-...")]
+    [KontentElement("body", "7ed15846-...")]
     [AllowedTypes("banner", "quote")]
     [AllowedItemLinkTypes("article")]
     public RichTextElement? Body { get; init; }
 
-    [KontentElement(Codename = "category", Id = "f6d310a3-...")]
+    [KontentElement("category", "f6d310a3-...")]
     [MaxElements(1)]
     public IReadOnlyList<ArticleCategory>? Category { get; init; }
 
-    [KontentElement(Codename = "featured_image", Id = "8d2c...")]
+    [KontentElement("featured_image", "8d2c...")]
     [MaxElements(1)]
     [MaxAssetSize(5242880L)]
     [AllowedAssetFileTypes(AssetFileType.Adjustable)]
     public IReadOnlyList<AssetReference>? FeaturedImage { get; init; }
 
-    [KontentElement(Codename = "priority", Id = "88ae3d9b-...")]
+    [KontentElement("priority", "88ae3d9b-...")]
     public decimal? Priority { get; init; }
 
-    [KontentElement(Codename = "related_teasers", Id = "a3155ec4-...")]
+    [KontentElement("related_teasers", "a3155ec4-...")]
     [AllowedTypes("article", "blog_post")]
     [MaxElements(3)]
     public IReadOnlyList<IContentItem>? RelatedTeasers { get; init; }
 
-    [KontentElement(Codename = "seo__meta_title", Id = "09398b24-...")]
+    [KontentElement("seo__meta_title", "09398b24-...")]
     [StringLength(70)]
     public string? SeoMetaTitle { get; init; }
 
-    [KontentElement(Codename = "tags", Id = "1314993e-...")]
+    [KontentElement("tags", "1314993e-...")]
     [AllowedTaxonomyGroup("content_tags")]
     public IReadOnlyList<Reference>? Tags { get; init; }
 
-    [KontentElement(Codename = "title", Id = "a47451eb-...")]
+    [KontentElement("title", "a47451eb-...")]
     [StringLength(100)]
     public string? Title { get; init; }
 }
 
 public enum ArticleCategory
 {
-    [KontentEnumValue(Codename = "news", Id = "d65a2212-...")] News,
-    [KontentEnumValue(Codename = "release", Id = "709b1208-...")] Release,
-    [KontentEnumValue(Codename = "blog", Id = "ae79c5a6-...")] Blog,
+    [KontentEnumValue("news", "d65a2212-...")] News,
+    [KontentEnumValue("release", "709b1208-...")] Release,
+    [KontentEnumValue("blog", "ae79c5a6-...")] Blog,
 }
 ```
 

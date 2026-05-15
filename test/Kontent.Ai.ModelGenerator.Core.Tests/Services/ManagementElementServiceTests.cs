@@ -210,9 +210,9 @@ public class ManagementElementServiceTests
 
         var newsAttr = enumDef.Members[0].Attributes.Should().ContainSingle().Subject;
         newsAttr.Name.Should().Be("KontentEnumValue");
-        newsAttr.Arguments[0].Name.Should().Be("Codename");
+        newsAttr.Arguments[0].Name.Should().BeNull();
         newsAttr.Arguments[0].Value.Should().Be("news");
-        newsAttr.Arguments[1].Name.Should().Be("Id");
+        newsAttr.Arguments[1].Name.Should().BeNull();
         newsAttr.Arguments[1].Value.Should().Be("opt-1");
     }
 
@@ -444,9 +444,9 @@ public class ManagementElementServiceTests
     {
         attr.Name.Should().Be("KontentElement");
         attr.Arguments.Should().HaveCount(2);
-        attr.Arguments[0].Name.Should().Be("Codename");
+        attr.Arguments[0].Name.Should().BeNull();
         attr.Arguments[0].Value.Should().Be(codename);
-        attr.Arguments[1].Name.Should().Be("Id");
+        attr.Arguments[1].Name.Should().BeNull();
         attr.Arguments[1].Value.Should().Be(id);
     }
 }

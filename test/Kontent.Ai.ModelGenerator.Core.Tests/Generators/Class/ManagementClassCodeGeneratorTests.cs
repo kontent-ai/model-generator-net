@@ -24,7 +24,7 @@ public class ManagementClassCodeGeneratorTests
 
         var code = sut.GenerateCode();
 
-        code.Should().Contain("[KontentContentType(Codename = \"article\")]");
+        code.Should().Contain("[KontentType(\"article\")]");
         code.Should().MatchRegex(@"public\s+sealed\s+partial\s+record\s+Article\s*:\s*IContentItem");
     }
 
@@ -38,8 +38,9 @@ public class ManagementClassCodeGeneratorTests
 
         code.Should().Contain("using System;");
         code.Should().Contain("using System.ComponentModel.DataAnnotations;");
+        code.Should().Contain("using Kontent.Ai.Management;");
         code.Should().Contain("using Kontent.Ai.Management.Annotations;");
-        code.Should().Contain("using Kontent.Ai.Management.Models;");
+        code.Should().Contain("using Kontent.Ai.Management.Models.Content;");
     }
 
     [Fact]
@@ -54,8 +55,8 @@ public class ManagementClassCodeGeneratorTests
             [
                 new AttributeSpec("KontentElement",
                 [
-                    AttributeArg.Named("Codename", "title"),
-                    AttributeArg.Named("Id", "11111111-2222-3333-4444-555555555555"),
+                    AttributeArg.Positional("title"),
+                    AttributeArg.Positional("11111111-2222-3333-4444-555555555555"),
                 ]),
                 new AttributeSpec("StringLength", [AttributeArg.Positional(100)]),
             ]);
@@ -64,7 +65,7 @@ public class ManagementClassCodeGeneratorTests
         var code = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName).GenerateCode();
 
         code.Should().Contain(
-            "[KontentElement(Codename = \"title\", Id = \"11111111-2222-3333-4444-555555555555\")]");
+            "[KontentElement(\"title\", \"11111111-2222-3333-4444-555555555555\")]");
         code.Should().Contain("[StringLength(100)]");
         code.Should().Contain("public string? Title { get; init; }");
     }
@@ -74,9 +75,9 @@ public class ManagementClassCodeGeneratorTests
     {
         var classDefinition = new ClassDefinition("article");
         classDefinition.AddProperty(new ManagementProperty("zeta", "string?", "id-z",
-            [new AttributeSpec("KontentElement", [AttributeArg.Named("Codename", "zeta"), AttributeArg.Named("Id", "id-z")])]));
+            [new AttributeSpec("KontentElement", [AttributeArg.Positional("zeta"), AttributeArg.Positional("id-z")])]));
         classDefinition.AddProperty(new ManagementProperty("alpha", "string?", "id-a",
-            [new AttributeSpec("KontentElement", [AttributeArg.Named("Codename", "alpha"), AttributeArg.Named("Id", "id-a")])]));
+            [new AttributeSpec("KontentElement", [AttributeArg.Positional("alpha"), AttributeArg.Positional("id-a")])]));
 
         var code = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName).GenerateCode();
 
@@ -91,9 +92,9 @@ public class ManagementClassCodeGeneratorTests
     {
         var classDefinition = new ClassDefinition("article");
         classDefinition.AddProperty(new ManagementProperty("priority", "decimal?", "id-p",
-            [new AttributeSpec("KontentElement", [AttributeArg.Named("Codename", "priority"), AttributeArg.Named("Id", "id-p")])]));
+            [new AttributeSpec("KontentElement", [AttributeArg.Positional("priority"), AttributeArg.Positional("id-p")])]));
         classDefinition.AddProperty(new ManagementProperty("published_at", "DateTimeOffset?", "id-d",
-            [new AttributeSpec("KontentElement", [AttributeArg.Named("Codename", "published_at"), AttributeArg.Named("Id", "id-d")])]));
+            [new AttributeSpec("KontentElement", [AttributeArg.Positional("published_at"), AttributeArg.Positional("id-d")])]));
 
         var code = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName).GenerateCode();
 
@@ -124,8 +125,8 @@ public class ManagementClassCodeGeneratorTests
         [
             new AttributeSpec("KontentElement",
             [
-                AttributeArg.Named("Codename", "category"),
-                AttributeArg.Named("Id", "mc-id"),
+                AttributeArg.Positional("category"),
+                AttributeArg.Positional("mc-id"),
             ]),
             new AttributeSpec("MaxElements", [AttributeArg.Positional(1)]),
         ]));
@@ -135,16 +136,16 @@ public class ManagementClassCodeGeneratorTests
             [
                 new AttributeSpec("KontentEnumValue",
                 [
-                    AttributeArg.Named("Codename", "news"),
-                    AttributeArg.Named("Id", "opt-1"),
+                    AttributeArg.Positional("news"),
+                    AttributeArg.Positional("opt-1"),
                 ]),
             ]),
             new EnumMember("Release",
             [
                 new AttributeSpec("KontentEnumValue",
                 [
-                    AttributeArg.Named("Codename", "release"),
-                    AttributeArg.Named("Id", "opt-2"),
+                    AttributeArg.Positional("release"),
+                    AttributeArg.Positional("opt-2"),
                 ]),
             ]),
         ]));
@@ -154,9 +155,9 @@ public class ManagementClassCodeGeneratorTests
         code.Should().Contain("public IReadOnlyList<ArticleCategory>? Category { get; init; }");
         code.Should().Contain("[MaxElements(1)]");
         code.Should().Contain("public enum ArticleCategory");
-        code.Should().Contain("[KontentEnumValue(Codename = \"news\", Id = \"opt-1\")]");
+        code.Should().Contain("[KontentEnumValue(\"news\", \"opt-1\")]");
         code.Should().Contain("News");
-        code.Should().Contain("[KontentEnumValue(Codename = \"release\", Id = \"opt-2\")]");
+        code.Should().Contain("[KontentEnumValue(\"release\", \"opt-2\")]");
         code.Should().Contain("Release");
         // Enum should be a sibling, not nested — appears outside the record's braces
         var recordEndIndex = code.IndexOf("public sealed partial record Article");
@@ -172,8 +173,8 @@ public class ManagementClassCodeGeneratorTests
         [
             new AttributeSpec("KontentElement",
             [
-                AttributeArg.Named("Codename", "title"),
-                AttributeArg.Named("Id", "t-id"),
+                AttributeArg.Positional("title"),
+                AttributeArg.Positional("t-id"),
             ]),
         ]));
 
@@ -191,8 +192,8 @@ public class ManagementClassCodeGeneratorTests
         [
             new AttributeSpec("KontentElement",
             [
-                AttributeArg.Named("Codename", "title"),
-                AttributeArg.Named("Id", "11111111-1111-1111-1111-111111111111"),
+                AttributeArg.Positional("title"),
+                AttributeArg.Positional("11111111-1111-1111-1111-111111111111"),
             ]),
             new AttributeSpec("StringLength", [AttributeArg.Positional(100)]),
         ]));
@@ -200,24 +201,24 @@ public class ManagementClassCodeGeneratorTests
         [
             new AttributeSpec("KontentElement",
             [
-                AttributeArg.Named("Codename", "priority"),
-                AttributeArg.Named("Id", "22222222-2222-2222-2222-222222222222"),
+                AttributeArg.Positional("priority"),
+                AttributeArg.Positional("22222222-2222-2222-2222-222222222222"),
             ]),
         ]));
         classDefinition.AddProperty(new ManagementProperty("published_at", "DateTimeOffset?", "33333333-3333-3333-3333-333333333333",
         [
             new AttributeSpec("KontentElement",
             [
-                AttributeArg.Named("Codename", "published_at"),
-                AttributeArg.Named("Id", "33333333-3333-3333-3333-333333333333"),
+                AttributeArg.Positional("published_at"),
+                AttributeArg.Positional("33333333-3333-3333-3333-333333333333"),
             ]),
         ]));
         classDefinition.AddProperty(new ManagementProperty("category", "IReadOnlyList<ArticleCategory>?", "44444444-4444-4444-4444-444444444444",
         [
             new AttributeSpec("KontentElement",
             [
-                AttributeArg.Named("Codename", "category"),
-                AttributeArg.Named("Id", "44444444-4444-4444-4444-444444444444"),
+                AttributeArg.Positional("category"),
+                AttributeArg.Positional("44444444-4444-4444-4444-444444444444"),
             ]),
             new AttributeSpec("MaxElements", [AttributeArg.Positional(1)]),
         ]));
@@ -227,16 +228,16 @@ public class ManagementClassCodeGeneratorTests
             [
                 new AttributeSpec("KontentEnumValue",
                 [
-                    AttributeArg.Named("Codename", "news"),
-                    AttributeArg.Named("Id", "opt-1"),
+                    AttributeArg.Positional("news"),
+                    AttributeArg.Positional("opt-1"),
                 ]),
             ]),
             new EnumMember("Release",
             [
                 new AttributeSpec("KontentEnumValue",
                 [
-                    AttributeArg.Named("Codename", "release"),
-                    AttributeArg.Named("Id", "opt-2"),
+                    AttributeArg.Positional("release"),
+                    AttributeArg.Positional("opt-2"),
                 ]),
             ]),
         ]));
@@ -244,8 +245,8 @@ public class ManagementClassCodeGeneratorTests
         [
             new AttributeSpec("KontentElement",
             [
-                AttributeArg.Named("Codename", "related"),
-                AttributeArg.Named("Id", "55555555-5555-5555-5555-555555555555"),
+                AttributeArg.Positional("related"),
+                AttributeArg.Positional("55555555-5555-5555-5555-555555555555"),
             ]),
             new AttributeSpec("AllowedTypes",
             [
@@ -258,8 +259,8 @@ public class ManagementClassCodeGeneratorTests
         [
             new AttributeSpec("KontentElement",
             [
-                AttributeArg.Named("Codename", "tags"),
-                AttributeArg.Named("Id", "66666666-6666-6666-6666-666666666666"),
+                AttributeArg.Positional("tags"),
+                AttributeArg.Positional("66666666-6666-6666-6666-666666666666"),
             ]),
             new AttributeSpec("AllowedTaxonomyGroup", [AttributeArg.Positional("content_tags")]),
             new AttributeSpec("MinElements", [AttributeArg.Positional(1)]),
@@ -268,8 +269,8 @@ public class ManagementClassCodeGeneratorTests
         [
             new AttributeSpec("KontentElement",
             [
-                AttributeArg.Named("Codename", "body"),
-                AttributeArg.Named("Id", "77777777-7777-7777-7777-777777777777"),
+                AttributeArg.Positional("body"),
+                AttributeArg.Positional("77777777-7777-7777-7777-777777777777"),
             ]),
             new AttributeSpec("AllowedTypes", [AttributeArg.Positional("banner")]),
             new AttributeSpec("AllowedItemLinkTypes", [AttributeArg.Positional("article")]),
@@ -279,8 +280,8 @@ public class ManagementClassCodeGeneratorTests
         [
             new AttributeSpec("KontentElement",
             [
-                AttributeArg.Named("Codename", "featured_image"),
-                AttributeArg.Named("Id", "88888888-8888-8888-8888-888888888888"),
+                AttributeArg.Positional("featured_image"),
+                AttributeArg.Positional("88888888-8888-8888-8888-888888888888"),
             ]),
             new AttributeSpec("MaxElements", [AttributeArg.Positional(1)]),
             new AttributeSpec("MaxAssetSize", [AttributeArg.Positional(5_242_880L)]),
@@ -320,60 +321,51 @@ public class ManagementClassCodeGeneratorTests
         result.Success.Should().BeTrue(errors);
     }
 
-    // Minimal stubs for the SDK types the emitted code references. The generator pulls in
-    // [KontentContentType] / [KontentElement] / [KontentEnumValue] / [MaxElements] /
-    // IContentItem from the SDK side; constraint attributes ([StringLength],
-    // [RegularExpression]) come from BCL.
+    // Minimal stubs for the SDK types the emitted code references. Layout mirrors the real
+    // management-sdk-net (vnext, phase 3): IContentItem at the root namespace, content-value
+    // types in Models.Content, attributes + AssetFileType in Annotations. Constraint attributes
+    // [StringLength] / [RegularExpression] come from BCL.
     private const string SdkStubsSource = @"
-namespace Kontent.Ai.Management.Models
+namespace Kontent.Ai.Management
 {
     public interface IContentItem { }
+}
 
-    public sealed class Reference
-    {
-        // Stub — real type has ById/ByCodename/ByExternalId factories. The generator only
-        // emits the type name in declarative positions, so a marker is enough for the gate.
-    }
-
-    public sealed class RichTextElement
-    {
-        // Stub — real type has Value/Components.
-    }
-
-    public sealed class AssetReference
-    {
-        // Stub — real type has Id, Renditions, etc.
-    }
-
-    public enum AssetFileType
-    {
-        Adjustable,
-    }
+namespace Kontent.Ai.Management.Models.Content
+{
+    public sealed class Reference { }
+    public sealed class RichTextElement { }
+    public sealed class AssetReference { }
 }
 
 namespace Kontent.Ai.Management.Annotations
 {
     using System;
 
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct)]
-    public sealed class KontentContentTypeAttribute : Attribute
+    public enum AssetFileType { Any, Adjustable, Image }
+
+    [AttributeUsage(AttributeTargets.Class)]
+    public sealed class KontentTypeAttribute : Attribute
     {
-        public string Codename { get; init; }
-        public string Id { get; init; }
+        public KontentTypeAttribute(string codename, string id = null) { Codename = codename; Id = id; }
+        public string Codename { get; }
+        public string Id { get; }
     }
 
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class KontentElementAttribute : Attribute
     {
-        public string Codename { get; init; }
-        public string Id { get; init; }
+        public KontentElementAttribute(string codename, string id) { Codename = codename; Id = id; }
+        public string Codename { get; }
+        public string Id { get; }
     }
 
     [AttributeUsage(AttributeTargets.Field)]
     public sealed class KontentEnumValueAttribute : Attribute
     {
-        public string Codename { get; init; }
-        public string Id { get; init; }
+        public KontentEnumValueAttribute(string codename, string id) { Codename = codename; Id = id; }
+        public string Codename { get; }
+        public string Id { get; }
     }
 
     [AttributeUsage(AttributeTargets.Property)]
@@ -407,8 +399,8 @@ namespace Kontent.Ai.Management.Annotations
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class AllowedTaxonomyGroupAttribute : Attribute
     {
-        public AllowedTaxonomyGroupAttribute(string key) { Key = key; }
-        public string Key { get; }
+        public AllowedTaxonomyGroupAttribute(string codenameOrId) { CodenameOrId = codenameOrId; }
+        public string CodenameOrId { get; }
     }
 
     [AttributeUsage(AttributeTargets.Property)]
@@ -428,11 +420,8 @@ namespace Kontent.Ai.Management.Annotations
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class AllowedAssetFileTypesAttribute : Attribute
     {
-        public AllowedAssetFileTypesAttribute(Kontent.Ai.Management.Models.AssetFileType fileType)
-        {
-            FileType = fileType;
-        }
-        public Kontent.Ai.Management.Models.AssetFileType FileType { get; }
+        public AllowedAssetFileTypesAttribute(AssetFileType types) { Types = types; }
+        public AssetFileType Types { get; }
     }
 }
 ";

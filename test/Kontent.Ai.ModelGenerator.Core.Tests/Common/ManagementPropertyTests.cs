@@ -11,8 +11,8 @@ public class ManagementPropertyTests
         {
             new AttributeSpec("KontentElement",
             [
-                AttributeArg.Named("Codename", "title"),
-                AttributeArg.Named("Id", "abc-123"),
+                AttributeArg.Positional("title"),
+                AttributeArg.Positional("abc-123"),
             ]),
             new AttributeSpec("StringLength", [AttributeArg.Positional(100)]),
         };
