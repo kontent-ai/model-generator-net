@@ -338,7 +338,7 @@ public sealed partial record Article : IContentItem
     [KontentElement("related_teasers", "a3155ec4-...")]
     [AllowedTypes("article", "blog_post")]
     [MaxElements(3)]
-    public IReadOnlyList<IContentItem>? RelatedTeasers { get; init; }
+    public IReadOnlyList<Reference>? RelatedTeasers { get; init; }
 
     [KontentElement("seo__meta_title", "09398b24-...")]
     [StringLength(70)]

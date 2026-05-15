@@ -240,7 +240,7 @@ public class ManagementElementServiceTests
     {
         var result = _sut.Build(new LinkedItemsElementInput("related", "li-id"));
 
-        result.Property.TypeName.Should().Be("IReadOnlyList<IContentItem>?");
+        result.Property.TypeName.Should().Be("IReadOnlyList<Reference>?");
         result.Property.Attributes.Should().ContainSingle();
         AssertIsKontentElement(result.Property.Attributes[0], "related", "li-id");
     }
@@ -290,7 +290,7 @@ public class ManagementElementServiceTests
             AllowedTypeCodenames: ["page"],
             ItemCount: new CountLimit(10, CountLimitMode.AtMost)));
 
-        result.Property.TypeName.Should().Be("IReadOnlyList<IContentItem>?");
+        result.Property.TypeName.Should().Be("IReadOnlyList<Reference>?");
         result.Property.Attributes.Select(a => a.Name)
             .Should().Equal("KontentElement", "AllowedTypes", "MaxElements");
     }
