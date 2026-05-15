@@ -28,10 +28,22 @@ internal static class ManagementElementMetadataAdapter
     /// snippet expansion to prefix codenames with <c>{snippetCodename}__</c>. The element's
     /// <c>Id</c> stays unchanged regardless.
     /// </param>
+    /// <param name="resolveTypeCodename">
+    /// Resolves a content-type id to its codename. MAPI returns <c>allowed_content_types</c>
+    /// references as id-only on type metadata responses; without resolution, the generator would
+    /// drop the constraint entirely. The orchestrator builds this from the pre-fetched type list.
+    /// Returns <c>null</c> when the id can't be resolved (e.g. type was deleted but a stale
+    /// reference lingers) — the adapter then warns via <paramref name="warn"/> and drops that entry.
+    /// </param>
+    /// <param name="warn">
+    /// Optional callback for soft constraint losses (e.g. an unresolvable allowed-type reference).
+    /// </param>
     public static ManagementElementInput ToInput(
         ElementMetadataBase element,
         string contentTypeClassName,
-        string codenameOverride = null)
+        string codenameOverride = null,
+        Func<Guid, string> resolveTypeCodename = null,
+        Action<string> warn = null)
     {
         var codename = codenameOverride ?? element.Codename;
 
@@ -65,13 +77,13 @@ internal static class ManagementElementMetadataAdapter
             LinkedItemsElementMetadataModel li => new LinkedItemsElementInput(
                 Codename: codename,
                 Id: li.Id.ToString(),
-                AllowedTypeCodenames: ResolveAllowedTypeCodenames(li.AllowedTypes),
+                AllowedTypeCodenames: ResolveAllowedTypeCodenames(li.AllowedTypes, resolveTypeCodename, warn, codename),
                 ItemCount: ResolveCountLimit(li.ItemCountLimit)),
 
             SubpagesElementMetadataModel sp => new SubpagesElementInput(
                 Codename: codename,
                 Id: sp.Id.ToString(),
-                AllowedTypeCodenames: ResolveAllowedTypeCodenames(sp.AllowedContentTypes),
+                AllowedTypeCodenames: ResolveAllowedTypeCodenames(sp.AllowedContentTypes, resolveTypeCodename, warn, codename),
                 ItemCount: ResolveCountLimit(sp.ItemCountLimit)),
 
             TaxonomyElementMetadataModel tx => new TaxonomyElementInput(
@@ -83,8 +95,8 @@ internal static class ManagementElementMetadataAdapter
             RichTextElementMetadataModel rt => new RichTextElementInput(
                 Codename: codename,
                 Id: rt.Id.ToString(),
-                AllowedTypeCodenames: ResolveAllowedTypeCodenames(rt.AllowedTypes),
-                AllowedItemLinkTypeCodenames: ResolveAllowedTypeCodenames(rt.AllowedItemLinkTypes),
+                AllowedTypeCodenames: ResolveAllowedTypeCodenames(rt.AllowedTypes, resolveTypeCodename, warn, codename),
+                AllowedItemLinkTypeCodenames: ResolveAllowedTypeCodenames(rt.AllowedItemLinkTypes, resolveTypeCodename, warn, codename),
                 MaximumCharacters: ResolveCharacterLimit(rt.MaximumTextLength)),
 
             AssetElementMetadataModel a => new AssetElementInput(
@@ -112,21 +124,48 @@ internal static class ManagementElementMetadataAdapter
         contentTypeClassName + TextHelpers.GetValidPascalCaseIdentifierName(elementCodename);
 
     /// <summary>
-    /// Returns codenames for the given references, filtering out id-only refs (where codename
-    /// is missing). Codenames are environment-portable; ids are not. If filtering drops every
-    /// entry, returns null so the service can skip emitting an empty <c>[AllowedTypes()]</c>.
+    /// Returns codenames for the given references. Each reference is resolved to a codename:
+    /// preferred from <see cref="Reference.Codename"/> if present, else looked up via the
+    /// <paramref name="resolveTypeCodename"/> callback (MAPI typically returns id-only refs on
+    /// type metadata responses). An entry that resolves to nothing emits a warning and is dropped.
+    /// Returns null when no entries survive — the service then skips emitting an empty
+    /// <c>[AllowedTypes()]</c>. A non-null but empty input also returns null (matches MAPI's
+    /// "no constraint" semantics for an empty <c>allowed_content_types</c>).
     /// </summary>
-    private static IReadOnlyList<string> ResolveAllowedTypeCodenames(IEnumerable<Reference> references)
+    private static IReadOnlyList<string> ResolveAllowedTypeCodenames(
+        IEnumerable<Reference> references,
+        Func<Guid, string> resolveTypeCodename,
+        Action<string> warn,
+        string ownerElementCodename)
     {
         if (references is null)
         {
             return null;
         }
 
-        var codenames = references
-            .Where(r => !string.IsNullOrWhiteSpace(r.Codename))
-            .Select(r => r.Codename)
-            .ToList();
+        var codenames = new List<string>();
+        foreach (var reference in references)
+        {
+            if (!string.IsNullOrWhiteSpace(reference.Codename))
+            {
+                codenames.Add(reference.Codename);
+                continue;
+            }
+
+            if (reference.Id is Guid id && resolveTypeCodename is not null)
+            {
+                var resolved = resolveTypeCodename(id);
+                if (!string.IsNullOrWhiteSpace(resolved))
+                {
+                    codenames.Add(resolved);
+                    continue;
+                }
+            }
+
+            warn?.Invoke(
+                $"Could not resolve allowed-type reference (id={reference.Id?.ToString() ?? "?"}) " +
+                $"on element '{ownerElementCodename}'; constraint entry dropped.");
+        }
 
         return codenames.Count == 0 ? null : codenames;
     }

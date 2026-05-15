@@ -46,24 +46,24 @@ public class ManagementCodeGenerator : CodeGeneratorBase
         var snippets = await FetchAllSnippets();
         var resolveSnippet = BuildSnippetResolver(snippets);
 
+        // Pre-fetch all content types into memory (instead of streaming) so [AllowedTypes] can
+        // resolve id-only references in `allowed_content_types` to portable codenames. MAPI
+        // returns those references without codenames on type metadata responses; without this
+        // lookup the constraint would silently disappear from the generated models.
+        var types = await FetchAllTypes();
+        var resolveTypeCodename = BuildTypeCodenameResolver(types);
+
         var generators = new List<ClassCodeGenerator>();
-
-        var page = await _managementClient.ListContentTypesAsync();
-        while (page != null)
+        foreach (var contentType in types)
         {
-            foreach (var contentType in page)
+            try
             {
-                try
-                {
-                    generators.Add(BuildClassCodeGenerator(contentType, resolveSnippet));
-                }
-                catch (InvalidIdentifierException)
-                {
-                    WriteConsoleErrorMessage(contentType.Codename);
-                }
+                generators.Add(BuildClassCodeGenerator(contentType, resolveSnippet, resolveTypeCodename));
             }
-
-            page = page.HasNextPage() ? await page.GetNextPage() : null;
+            catch (InvalidIdentifierException)
+            {
+                WriteConsoleErrorMessage(contentType.Codename);
+            }
         }
 
         return generators;
@@ -71,15 +71,20 @@ public class ManagementCodeGenerator : CodeGeneratorBase
 
     internal ClassCodeGenerator BuildClassCodeGenerator(
         ContentTypeModel contentType,
-        Func<Reference, ContentTypeSnippetModel> resolveSnippet)
+        Func<Reference, ContentTypeSnippetModel> resolveSnippet,
+        Func<Guid, string> resolveTypeCodename = null)
     {
         var classDefinition = ClassDefinitionFactory.CreateClassDefinition(contentType.Codename);
+        if (contentType.Id != Guid.Empty)
+        {
+            classDefinition.Id = contentType.Id.ToString();
+        }
 
         foreach (var expanded in SnippetExpander.Expand(contentType.Elements, resolveSnippet, Logger.LogWarning))
         {
             try
             {
-                AddElement(classDefinition, contentType.Codename, expanded.Element, expanded.CodenameOverride);
+                AddElement(classDefinition, contentType.Codename, expanded.Element, expanded.CodenameOverride, resolveTypeCodename);
             }
             catch (Exception ex)
             {
@@ -101,6 +106,36 @@ public class ManagementCodeGenerator : CodeGeneratorBase
             page = page.HasNextPage() ? await page.GetNextPage() : null;
         }
         return all;
+    }
+
+    private async Task<IReadOnlyList<ContentTypeModel>> FetchAllTypes()
+    {
+        var all = new List<ContentTypeModel>();
+        var page = await _managementClient.ListContentTypesAsync();
+        while (page != null)
+        {
+            all.AddRange(page);
+            page = page.HasNextPage() ? await page.GetNextPage() : null;
+        }
+        return all;
+    }
+
+    /// <summary>
+    /// Builds an id → codename lookup for content types. Used to hydrate the id-only
+    /// references that MAPI returns in <c>allowed_content_types</c> on type metadata responses.
+    /// Codenames are environment-portable; ids are not — so we always emit codenames.
+    /// </summary>
+    private static Func<Guid, string> BuildTypeCodenameResolver(IReadOnlyList<ContentTypeModel> types)
+    {
+        var byId = new Dictionary<Guid, string>();
+        foreach (var t in types)
+        {
+            if (t.Id != Guid.Empty && !string.IsNullOrEmpty(t.Codename))
+            {
+                byId[t.Id] = t.Codename;
+            }
+        }
+        return id => byId.TryGetValue(id, out var codename) ? codename : null;
     }
 
     /// <summary>
@@ -153,7 +188,8 @@ public class ManagementCodeGenerator : CodeGeneratorBase
         ClassDefinition classDefinition,
         string contentTypeCodename,
         ElementMetadataBase element,
-        string codenameOverride)
+        string codenameOverride,
+        Func<Guid, string> resolveTypeCodename = null)
     {
         // Guidelines are editor-only — no wire value, nothing to emit. (The expander also drops
         // guidelines inside snippets; this guard handles type-level ones.)
@@ -162,7 +198,12 @@ public class ManagementCodeGenerator : CodeGeneratorBase
             return;
         }
 
-        var input = ManagementElementMetadataAdapter.ToInput(element, classDefinition.ClassName, codenameOverride);
+        var input = ManagementElementMetadataAdapter.ToInput(
+            element,
+            classDefinition.ClassName,
+            codenameOverride,
+            resolveTypeCodename,
+            Logger.LogWarning);
         if (input is null)
         {
             Logger.LogWarning(

@@ -241,18 +241,76 @@ public class ManagementElementMetadataAdapterTests
     }
 
     [Fact]
-    public void ToInput_LinkedItems_AllIdOnly_ReturnsNullCodenames()
+    public void ToInput_LinkedItems_AllIdOnly_NoResolver_DropsAllAndWarns()
     {
         var element = WithId(new LinkedItemsElementMetadataModel
         {
             Codename = "related",
             AllowedTypes = [Reference.ById(Guid.NewGuid())],
         }, SampleId);
+        var warnings = new List<string>();
 
-        var input = (LinkedItemsElementInput)ManagementElementMetadataAdapter.ToInput(element, "Article");
+        var input = (LinkedItemsElementInput)ManagementElementMetadataAdapter.ToInput(
+            element, "Article", warn: warnings.Add);
 
-        // All refs filtered → null, so the service skips emitting [AllowedTypes()].
         input.AllowedTypeCodenames.Should().BeNull();
+        warnings.Should().ContainSingle().Which.Should().Contain("allowed-type reference");
+    }
+
+    [Fact]
+    public void ToInput_LinkedItems_IdOnly_ResolverHydratesCodename()
+    {
+        var typeId = Guid.NewGuid();
+        var element = WithId(new LinkedItemsElementMetadataModel
+        {
+            Codename = "related",
+            AllowedTypes = [Reference.ById(typeId)],
+        }, SampleId);
+        var warnings = new List<string>();
+        Func<Guid, string> resolver = id => id == typeId ? "article" : null;
+
+        var input = (LinkedItemsElementInput)ManagementElementMetadataAdapter.ToInput(
+            element, "Article", resolveTypeCodename: resolver, warn: warnings.Add);
+
+        input.AllowedTypeCodenames.Should().Equal("article");
+        warnings.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void ToInput_LinkedItems_MixedRefs_ResolverFillsMissingCodenames()
+    {
+        // First ref has codename; second is id-only and resolver supplies the codename.
+        var idOnly = Guid.NewGuid();
+        var element = WithId(new LinkedItemsElementMetadataModel
+        {
+            Codename = "related",
+            AllowedTypes = [Reference.ByCodename("article"), Reference.ById(idOnly)],
+        }, SampleId);
+        Func<Guid, string> resolver = id => id == idOnly ? "blog_post" : null;
+
+        var input = (LinkedItemsElementInput)ManagementElementMetadataAdapter.ToInput(
+            element, "Article", resolveTypeCodename: resolver);
+
+        input.AllowedTypeCodenames.Should().Equal("article", "blog_post");
+    }
+
+    [Fact]
+    public void ToInput_LinkedItems_UnresolvableId_DropsEntryAndWarns()
+    {
+        var element = WithId(new LinkedItemsElementMetadataModel
+        {
+            Codename = "related",
+            AllowedTypes = [Reference.ByCodename("article"), Reference.ById(Guid.NewGuid())],
+        }, SampleId);
+        var warnings = new List<string>();
+        Func<Guid, string> resolver = _ => null;  // type was deleted; ref is stale
+
+        var input = (LinkedItemsElementInput)ManagementElementMetadataAdapter.ToInput(
+            element, "Article", resolveTypeCodename: resolver, warn: warnings.Add);
+
+        input.AllowedTypeCodenames.Should().Equal("article");
+        warnings.Should().ContainSingle()
+            .Which.Should().Contain("related");
     }
 
     [Theory]
