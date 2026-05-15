@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using Kontent.Ai.Management.Models.Shared;
+using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.Management.Models.Types.Elements;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Helpers;
@@ -47,6 +51,24 @@ internal static class ManagementElementMetadataAdapter
                 Options: (mc.Options ?? []).Select(o =>
                     new MultipleChoiceOptionInput(o.Codename, o.Id.ToString())).ToList()),
 
+            LinkedItemsElementMetadataModel li => new LinkedItemsElementInput(
+                Codename: li.Codename,
+                Id: li.Id.ToString(),
+                AllowedTypeCodenames: ResolveAllowedTypeCodenames(li.AllowedTypes),
+                ItemCount: ResolveCountLimit(li.ItemCountLimit)),
+
+            SubpagesElementMetadataModel sp => new SubpagesElementInput(
+                Codename: sp.Codename,
+                Id: sp.Id.ToString(),
+                AllowedTypeCodenames: ResolveAllowedTypeCodenames(sp.AllowedContentTypes),
+                ItemCount: ResolveCountLimit(sp.ItemCountLimit)),
+
+            TaxonomyElementMetadataModel tx => new TaxonomyElementInput(
+                Codename: tx.Codename,
+                Id: tx.Id.ToString(),
+                TaxonomyGroup: ResolveReferenceKey(tx.TaxonomyGroup),
+                TermCount: ResolveCountLimit(tx.TermCountLimit)),
+
             _ => null,
         };
 
@@ -62,4 +84,56 @@ internal static class ManagementElementMetadataAdapter
 
     private static string BuildEnumTypeName(string contentTypeClassName, string elementCodename) =>
         contentTypeClassName + TextHelpers.GetValidPascalCaseIdentifierName(elementCodename);
+
+    /// <summary>
+    /// Returns codenames for the given references, filtering out id-only refs (where codename
+    /// is missing). Codenames are environment-portable; ids are not. If filtering drops every
+    /// entry, returns null so the service can skip emitting an empty <c>[AllowedTypes()]</c>.
+    /// </summary>
+    private static IReadOnlyList<string> ResolveAllowedTypeCodenames(IEnumerable<Reference> references)
+    {
+        if (references is null)
+        {
+            return null;
+        }
+
+        var codenames = references
+            .Where(r => !string.IsNullOrWhiteSpace(r.Codename))
+            .Select(r => r.Codename)
+            .ToList();
+
+        return codenames.Count == 0 ? null : codenames;
+    }
+
+    /// <summary>
+    /// Returns the reference's codename (preferred) or id (fallback) as a single string —
+    /// used for the taxonomy-group key. Null if the reference has neither.
+    /// </summary>
+    private static string ResolveReferenceKey(Reference reference)
+    {
+        if (reference is null)
+        {
+            return null;
+        }
+
+        if (!string.IsNullOrWhiteSpace(reference.Codename))
+        {
+            return reference.Codename;
+        }
+
+        return reference.Id?.ToString();
+    }
+
+    private static CountLimit ResolveCountLimit(LimitModel limit) =>
+        limit is null
+            ? null
+            : new CountLimit(limit.Value, MapLimitMode(limit.Condition));
+
+    private static CountLimitMode MapLimitMode(LimitType limitType) => limitType switch
+    {
+        LimitType.AtLeast => CountLimitMode.AtLeast,
+        LimitType.AtMost => CountLimitMode.AtMost,
+        LimitType.Exactly => CountLimitMode.Exactly,
+        _ => throw new ArgumentOutOfRangeException(nameof(limitType), limitType, "Unknown limit type."),
+    };
 }

@@ -4,6 +4,7 @@ using Kontent.Ai.Management;
 using Kontent.Ai.Management.Models.Shared;
 using Kontent.Ai.Management.Models.Types;
 using Kontent.Ai.Management.Models.Types.Elements;
+using LimitType = Kontent.Ai.Management.Models.Types.LimitType;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Contract;
@@ -98,7 +99,7 @@ public class ManagementCodeGeneratorTests
             Elements =
             [
                 WithId(new TextElementMetadataModel { Codename = "title" }, Guid.NewGuid()),
-                WithId(new LinkedItemsElementMetadataModel { Codename = "related" }, Guid.NewGuid()),
+                WithId(new RichTextElementMetadataModel { Codename = "body" }, Guid.NewGuid()),
             ],
         };
         SetupClientWithTypes(type);
@@ -110,9 +111,9 @@ public class ManagementCodeGeneratorTests
         await CreateGenerator().RunAsync();
 
         _logger.Verify(
-            l => l.LogWarning(It.Is<string>(s => s.Contains("related") && s.Contains("LinkedItems"))),
+            l => l.LogWarning(It.Is<string>(s => s.Contains("body") && s.Contains("RichText"))),
             Times.Once);
-        emitted.Should().NotContain("Related");
+        emitted.Should().NotContain("Body");
         emitted.Should().Contain("Title");
     }
 
@@ -168,6 +169,45 @@ public class ManagementCodeGeneratorTests
         emitted.Should().Contain("public enum ArticleCategory");
         emitted.Should().Contain("News");
         emitted.Should().Contain("ReleaseNote");
+    }
+
+    [Fact]
+    public async Task RunAsync_LinkedItemsAndTaxonomy_EmitExpectedShapes()
+    {
+        var type = new ContentTypeModel
+        {
+            Codename = "article",
+            Elements =
+            [
+                WithId(new LinkedItemsElementMetadataModel
+                {
+                    Codename = "related",
+                    AllowedTypes = [Reference.ByCodename("article"), Reference.ByCodename("blog_post")],
+                    ItemCountLimit = new LimitModel { Value = 3, Condition = LimitType.AtMost },
+                }, Guid.NewGuid()),
+                WithId(new TaxonomyElementMetadataModel
+                {
+                    Codename = "tags",
+                    TaxonomyGroup = Reference.ByCodename("content_tags"),
+                    TermCountLimit = new LimitModel { Value = 1, Condition = LimitType.AtLeast },
+                }, Guid.NewGuid()),
+            ],
+        };
+        SetupClientWithTypes(type);
+        string emitted = null;
+        _output
+            .Setup(o => o.Output(It.IsAny<string>(), "Article", true))
+            .Callback<string, string, bool>((content, _, _) => emitted = content);
+
+        await CreateGenerator().RunAsync();
+
+        emitted.Should().NotBeNull();
+        emitted.Should().Contain("public IReadOnlyList<IContentItem>? Related { get; init; }");
+        emitted.Should().Contain("[AllowedTypes(\"article\", \"blog_post\")]");
+        emitted.Should().Contain("[MaxElements(3)]");
+        emitted.Should().Contain("public IReadOnlyList<Reference>? Tags { get; init; }");
+        emitted.Should().Contain("[AllowedTaxonomyGroup(\"content_tags\")]");
+        emitted.Should().Contain("[MinElements(1)]");
     }
 
     [Fact]

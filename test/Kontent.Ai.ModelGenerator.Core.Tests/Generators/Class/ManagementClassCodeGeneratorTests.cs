@@ -240,6 +240,30 @@ public class ManagementClassCodeGeneratorTests
                 ]),
             ]),
         ]));
+        classDefinition.AddProperty(new ManagementProperty("related", "IReadOnlyList<IContentItem>?", "55555555-5555-5555-5555-555555555555",
+        [
+            new AttributeSpec("KontentElement",
+            [
+                AttributeArg.Named("Codename", "related"),
+                AttributeArg.Named("Id", "55555555-5555-5555-5555-555555555555"),
+            ]),
+            new AttributeSpec("AllowedTypes",
+            [
+                AttributeArg.Positional("article"),
+                AttributeArg.Positional("blog_post"),
+            ]),
+            new AttributeSpec("MaxElements", [AttributeArg.Positional(3)]),
+        ]));
+        classDefinition.AddProperty(new ManagementProperty("tags", "IReadOnlyList<Reference>?", "66666666-6666-6666-6666-666666666666",
+        [
+            new AttributeSpec("KontentElement",
+            [
+                AttributeArg.Named("Codename", "tags"),
+                AttributeArg.Named("Id", "66666666-6666-6666-6666-666666666666"),
+            ]),
+            new AttributeSpec("AllowedTaxonomyGroup", [AttributeArg.Positional("content_tags")]),
+            new AttributeSpec("MinElements", [AttributeArg.Positional(1)]),
+        ]));
 
         var code = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName).GenerateCode();
 
@@ -279,6 +303,12 @@ public class ManagementClassCodeGeneratorTests
 namespace Kontent.Ai.Management.Models
 {
     public interface IContentItem { }
+
+    public sealed class Reference
+    {
+        // Stub — real type has ById/ByCodename/ByExternalId factories. The generator only
+        // emits the type name in declarative positions, so a marker is enough for the gate.
+    }
 }
 
 namespace Kontent.Ai.Management.Annotations
@@ -307,10 +337,38 @@ namespace Kontent.Ai.Management.Annotations
     }
 
     [AttributeUsage(AttributeTargets.Property)]
+    public sealed class MinElementsAttribute : Attribute
+    {
+        public MinElementsAttribute(int n) { N = n; }
+        public int N { get; }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
     public sealed class MaxElementsAttribute : Attribute
     {
         public MaxElementsAttribute(int n) { N = n; }
         public int N { get; }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class ExactElementsAttribute : Attribute
+    {
+        public ExactElementsAttribute(int n) { N = n; }
+        public int N { get; }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class AllowedTypesAttribute : Attribute
+    {
+        public AllowedTypesAttribute(params string[] codenames) { Codenames = codenames; }
+        public string[] Codenames { get; }
+    }
+
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class AllowedTaxonomyGroupAttribute : Attribute
+    {
+        public AllowedTaxonomyGroupAttribute(string key) { Key = key; }
+        public string Key { get; }
     }
 }
 ";

@@ -233,6 +233,125 @@ public class ManagementElementServiceTests
 
     #endregion
 
+    #region LinkedItems / Subpages
+
+    [Fact]
+    public void LinkedItems_NoConstraints_EmitsOnlyKontentElement()
+    {
+        var result = _sut.Build(new LinkedItemsElementInput("related", "li-id"));
+
+        result.Property.TypeName.Should().Be("IReadOnlyList<IContentItem>?");
+        result.Property.Attributes.Should().ContainSingle();
+        AssertIsKontentElement(result.Property.Attributes[0], "related", "li-id");
+    }
+
+    [Fact]
+    public void LinkedItems_WithAllowedTypes_EmitsAllowedTypesAttribute()
+    {
+        var result = _sut.Build(new LinkedItemsElementInput("related", "li-id",
+            AllowedTypeCodenames: ["article", "blog_post"]));
+
+        result.Property.Attributes.Should().HaveCount(2);
+        result.Property.Attributes[1].Name.Should().Be("AllowedTypes");
+        result.Property.Attributes[1].Arguments.Select(a => a.Value)
+            .Should().Equal("article", "blog_post");
+        result.Property.Attributes[1].Arguments.Should().AllSatisfy(a => a.Name.Should().BeNull());
+    }
+
+    [Theory]
+    [InlineData(CountLimitMode.AtLeast, "MinElements")]
+    [InlineData(CountLimitMode.AtMost, "MaxElements")]
+    [InlineData(CountLimitMode.Exactly, "ExactElements")]
+    public void LinkedItems_CountLimit_DispatchesToCorrectAttribute(CountLimitMode mode, string expectedAttrName)
+    {
+        var result = _sut.Build(new LinkedItemsElementInput("related", "li-id",
+            ItemCount: new CountLimit(3, mode)));
+
+        result.Property.Attributes.Should().HaveCount(2);
+        result.Property.Attributes[1].Name.Should().Be(expectedAttrName);
+        result.Property.Attributes[1].Arguments[0].Value.Should().Be(3);
+    }
+
+    [Fact]
+    public void LinkedItems_AllConstraints_EmitsAllAttributesInOrder()
+    {
+        var result = _sut.Build(new LinkedItemsElementInput("related", "li-id",
+            AllowedTypeCodenames: ["article"],
+            ItemCount: new CountLimit(5, CountLimitMode.AtMost)));
+
+        result.Property.Attributes.Select(a => a.Name)
+            .Should().Equal("KontentElement", "AllowedTypes", "MaxElements");
+    }
+
+    [Fact]
+    public void Subpages_SameShapeAsLinkedItems()
+    {
+        var result = _sut.Build(new SubpagesElementInput("children", "sp-id",
+            AllowedTypeCodenames: ["page"],
+            ItemCount: new CountLimit(10, CountLimitMode.AtMost)));
+
+        result.Property.TypeName.Should().Be("IReadOnlyList<IContentItem>?");
+        result.Property.Attributes.Select(a => a.Name)
+            .Should().Equal("KontentElement", "AllowedTypes", "MaxElements");
+    }
+
+    [Fact]
+    public void LinkedItems_EmptyAllowedTypes_NoAttribute()
+    {
+        var result = _sut.Build(new LinkedItemsElementInput("related", "li-id",
+            AllowedTypeCodenames: []));
+
+        result.Property.Attributes.Should().ContainSingle()
+            .Which.Name.Should().Be("KontentElement");
+    }
+
+    #endregion
+
+    #region Taxonomy
+
+    [Fact]
+    public void Taxonomy_NoConstraints_EmitsOnlyKontentElement()
+    {
+        var result = _sut.Build(new TaxonomyElementInput("tags", "tx-id"));
+
+        result.Property.TypeName.Should().Be("IReadOnlyList<Reference>?");
+        result.Property.Attributes.Should().ContainSingle();
+        AssertIsKontentElement(result.Property.Attributes[0], "tags", "tx-id");
+    }
+
+    [Fact]
+    public void Taxonomy_WithGroupCodename_EmitsAllowedTaxonomyGroup()
+    {
+        var result = _sut.Build(new TaxonomyElementInput("tags", "tx-id",
+            TaxonomyGroup: "content_tags"));
+
+        result.Property.Attributes.Should().HaveCount(2);
+        result.Property.Attributes[1].Name.Should().Be("AllowedTaxonomyGroup");
+        result.Property.Attributes[1].Arguments[0].Value.Should().Be("content_tags");
+    }
+
+    [Fact]
+    public void Taxonomy_WithCountLimit_EmitsCountAttribute()
+    {
+        var result = _sut.Build(new TaxonomyElementInput("tags", "tx-id",
+            TaxonomyGroup: "content_tags",
+            TermCount: new CountLimit(1, CountLimitMode.AtLeast)));
+
+        result.Property.Attributes.Select(a => a.Name)
+            .Should().Equal("KontentElement", "AllowedTaxonomyGroup", "MinElements");
+        result.Property.Attributes[2].Arguments[0].Value.Should().Be(1);
+    }
+
+    [Fact]
+    public void Taxonomy_BlankGroup_NoAttribute()
+    {
+        var result = _sut.Build(new TaxonomyElementInput("tags", "tx-id", TaxonomyGroup: "   "));
+
+        result.Property.Attributes.Should().ContainSingle();
+    }
+
+    #endregion
+
     private static void AssertIsKontentElement(AttributeSpec attr, string codename, string id)
     {
         attr.Name.Should().Be("KontentElement");
