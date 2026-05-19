@@ -23,11 +23,6 @@ internal static class ManagementElementMetadataAdapter
     /// multiple-choice element on two content types produces two distinct, collision-free enums.
     /// Unused for non-enum-producing element types.
     /// </param>
-    /// <param name="codenameOverride">
-    /// When non-null, overrides the element's own codename. Used by the orchestrator after
-    /// snippet expansion to prefix codenames with <c>{snippetCodename}__</c>. The element's
-    /// <c>Id</c> stays unchanged regardless.
-    /// </param>
     /// <param name="resolveTypeCodename">
     /// Resolves a content-type id to its codename. MAPI returns <c>allowed_content_types</c>
     /// references as id-only on type metadata responses; without resolution, the generator would
@@ -41,11 +36,10 @@ internal static class ManagementElementMetadataAdapter
     public static ManagementElementInput ToInput(
         ElementMetadataBase element,
         string contentTypeClassName,
-        string codenameOverride = null,
         Func<Guid, string> resolveTypeCodename = null,
         Action<string> warn = null)
     {
-        var codename = codenameOverride ?? element.Codename;
+        var codename = element.Codename;
 
         return element switch
         {

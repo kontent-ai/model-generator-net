@@ -266,10 +266,11 @@ public class ManagementCodeGeneratorTests
         {
             Id = Guid.NewGuid(),
             Codename = "seo",
+            // MAPI returns snippet element codenames already prefixed with the snippet codename.
             Elements =
             [
-                WithId(new TextElementMetadataModel { Codename = "meta_title" }, Guid.NewGuid()),
-                WithId(new TextElementMetadataModel { Codename = "meta_description" }, Guid.NewGuid()),
+                WithId(new TextElementMetadataModel { Codename = "seo__meta_title" }, Guid.NewGuid()),
+                WithId(new TextElementMetadataModel { Codename = "seo__meta_description" }, Guid.NewGuid()),
             ],
         };
         var type = new ContentTypeModel
@@ -294,8 +295,8 @@ public class ManagementCodeGeneratorTests
 
         emitted.Should().NotBeNull();
         emitted.Should().Contain("public string? Title { get; init; }");
-        // Snippet-contributed property: identifier is PascalCased prefixed codename,
-        // wire codename in the attribute is double-underscore-prefixed.
+        // Snippet-contributed codename arrives from MAPI already `seo__`-prefixed and passes
+        // through verbatim — not re-prefixed (regression guard against double `seo__seo__`).
         emitted.Should().Contain("public string? SeoMetaTitle { get; init; }");
         emitted.Should().Contain("[KontentElement(\"seo__meta_title\"");
         emitted.Should().Contain("public string? SeoMetaDescription { get; init; }");
@@ -309,7 +310,7 @@ public class ManagementCodeGeneratorTests
         {
             Id = Guid.NewGuid(),
             Codename = "seo",
-            Elements = [WithId(new TextElementMetadataModel { Codename = "meta_title" }, Guid.NewGuid())],
+            Elements = [WithId(new TextElementMetadataModel { Codename = "seo__meta_title" }, Guid.NewGuid())],
         };
         var type = new ContentTypeModel
         {

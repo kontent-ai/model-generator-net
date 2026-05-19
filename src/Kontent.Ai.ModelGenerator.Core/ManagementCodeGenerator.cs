@@ -17,8 +17,8 @@ namespace Kontent.Ai.ModelGenerator.Core;
 
 /// <summary>
 /// Orchestrates Management-mode generation: pre-fetches snippets, lists content types via
-/// <see cref="IManagementClient"/>, expands snippet references inline (codenames prefixed with
-/// <c>{snippetCodename}__</c>), adapts each element's MAPI metadata into a
+/// <see cref="IManagementClient"/>, expands snippet references inline (MAPI already prefixes
+/// their codenames as <c>{snippetCodename}__</c>), adapts each element's MAPI metadata into a
 /// <see cref="ManagementElementInput"/>, and assembles a <see cref="ManagementClassCodeGenerator"/>
 /// per content type.
 /// </summary>
@@ -80,15 +80,15 @@ public class ManagementCodeGenerator : CodeGeneratorBase
             classDefinition.Id = contentType.Id.ToString();
         }
 
-        foreach (var expanded in SnippetExpander.Expand(contentType.Elements, resolveSnippet, Logger.LogWarning))
+        foreach (var element in SnippetExpander.Expand(contentType.Elements, resolveSnippet, Logger.LogWarning))
         {
             try
             {
-                AddElement(classDefinition, contentType.Codename, expanded.Element, expanded.CodenameOverride, resolveTypeCodename);
+                AddElement(classDefinition, contentType.Codename, element, resolveTypeCodename);
             }
             catch (Exception ex)
             {
-                WriteConsoleErrorMessage(ex, expanded.Element.Codename, expanded.Element.Type.ToString(), classDefinition.ClassName);
+                WriteConsoleErrorMessage(ex, element.Codename, element.Type.ToString(), classDefinition.ClassName);
             }
         }
 
@@ -188,7 +188,6 @@ public class ManagementCodeGenerator : CodeGeneratorBase
         ClassDefinition classDefinition,
         string contentTypeCodename,
         ElementMetadataBase element,
-        string codenameOverride,
         Func<Guid, string> resolveTypeCodename = null)
     {
         // Guidelines are editor-only — no wire value, nothing to emit. (The expander also drops
@@ -201,13 +200,12 @@ public class ManagementCodeGenerator : CodeGeneratorBase
         var input = ManagementElementMetadataAdapter.ToInput(
             element,
             classDefinition.ClassName,
-            codenameOverride,
             resolveTypeCodename,
             Logger.LogWarning);
         if (input is null)
         {
             Logger.LogWarning(
-                $"Element '{codenameOverride ?? element.Codename}' on content type '{contentTypeCodename}' has type " +
+                $"Element '{element.Codename}' on content type '{contentTypeCodename}' has type " +
                 $"'{element.Type}', which is not yet supported by the Management generator. Skipping.");
             return;
         }
