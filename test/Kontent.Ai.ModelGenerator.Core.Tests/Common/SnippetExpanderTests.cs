@@ -20,28 +20,27 @@ public class SnippetExpanderTests
     }
 
     [Fact]
-    public void Expand_NonSnippetElement_PassesThroughWithNoOverride()
+    public void Expand_NonSnippetElement_PassesThroughUnchanged()
     {
         var element = WithId(new TextElementMetadataModel { Codename = "title" }, Guid.NewGuid());
 
         var result = SnippetExpander.Expand([element], _ => null, _warnings.Add).ToList();
 
-        result.Should().ContainSingle();
-        result[0].Element.Should().BeSameAs(element);
-        result[0].CodenameOverride.Should().BeNull();
+        result.Should().ContainSingle()
+            .Which.Should().BeSameAs(element);
+        _warnings.Should().BeEmpty();
     }
 
     [Fact]
-    public void Expand_SnippetElement_InlinesInnerElementsWithPrefixedCodenames()
+    public void Expand_SnippetElement_InlinesInnerElementsWithMapiCodenamesUnchanged()
     {
+        // MAPI returns snippet element codenames already prefixed with the snippet codename.
+        var metaTitle = WithId(new TextElementMetadataModel { Codename = "seo__meta_title" }, Guid.NewGuid());
+        var metaDescription = WithId(new TextElementMetadataModel { Codename = "seo__meta_description" }, Guid.NewGuid());
         var snippet = new ContentTypeSnippetModel
         {
             Codename = "seo",
-            Elements =
-            [
-                WithId(new TextElementMetadataModel { Codename = "meta_title" }, Guid.NewGuid()),
-                WithId(new TextElementMetadataModel { Codename = "meta_description" }, Guid.NewGuid()),
-            ],
+            Elements = [metaTitle, metaDescription],
         };
         var snippetEl = WithId(
             new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = Reference.ByCodename("seo") },
@@ -50,8 +49,11 @@ public class SnippetExpanderTests
         var result = SnippetExpander.Expand([snippetEl], _ => snippet, _warnings.Add).ToList();
 
         result.Should().HaveCount(2);
-        result[0].CodenameOverride.Should().Be("seo__meta_title");
-        result[1].CodenameOverride.Should().Be("seo__meta_description");
+        // Inlined by reference; codenames pass through verbatim — NOT re-prefixed to seo__seo__*.
+        result[0].Should().BeSameAs(metaTitle);
+        result[0].Codename.Should().Be("seo__meta_title");
+        result[1].Should().BeSameAs(metaDescription);
+        result[1].Codename.Should().Be("seo__meta_description");
         _warnings.Should().BeEmpty();
     }
 
@@ -64,10 +66,11 @@ public class SnippetExpanderTests
             Guid.NewGuid());
         var body = WithId(new TextElementMetadataModel { Codename = "body" }, Guid.NewGuid());
 
+        var metaTitle = WithId(new TextElementMetadataModel { Codename = "seo__meta_title" }, Guid.NewGuid());
         var snippet = new ContentTypeSnippetModel
         {
             Codename = "seo",
-            Elements = [WithId(new TextElementMetadataModel { Codename = "meta_title" }, Guid.NewGuid())],
+            Elements = [metaTitle],
         };
 
         var result = SnippetExpander.Expand(
@@ -76,9 +79,11 @@ public class SnippetExpanderTests
             _warnings.Add).ToList();
 
         result.Should().HaveCount(3);
-        result[0].CodenameOverride.Should().BeNull();
-        result[1].CodenameOverride.Should().Be("seo__meta_title");
-        result[2].CodenameOverride.Should().BeNull();
+        result[0].Should().BeSameAs(title);
+        result[1].Should().BeSameAs(metaTitle);
+        result[1].Codename.Should().Be("seo__meta_title");
+        result[2].Should().BeSameAs(body);
+        _warnings.Should().BeEmpty();
     }
 
     [Fact]
@@ -109,12 +114,13 @@ public class SnippetExpanderTests
     [Fact]
     public void Expand_NestedSnippet_WarnsAndSkipsInnerSnippetElement()
     {
+        var x = WithId(new TextElementMetadataModel { Codename = "outer__x" }, Guid.NewGuid());
         var outerSnippet = new ContentTypeSnippetModel
         {
             Codename = "outer",
             Elements =
             [
-                WithId(new TextElementMetadataModel { Codename = "x" }, Guid.NewGuid()),
+                x,
                 // MAPI shouldn't allow this but defend if it ever appears.
                 WithId(new ContentTypeSnippetElementMetadataModel(), Guid.NewGuid()),
             ],
@@ -126,7 +132,7 @@ public class SnippetExpanderTests
         var result = SnippetExpander.Expand([snippetEl], _ => outerSnippet, _warnings.Add).ToList();
 
         result.Should().ContainSingle()
-            .Which.CodenameOverride.Should().Be("outer__x");
+            .Which.Should().BeSameAs(x);
         _warnings.Should().ContainSingle()
             .Which.Should().Contain("nested snippet");
     }
@@ -134,12 +140,13 @@ public class SnippetExpanderTests
     [Fact]
     public void Expand_GuidelinesInsideSnippet_SilentlyDropped()
     {
+        var metaTitle = WithId(new TextElementMetadataModel { Codename = "seo__meta_title" }, Guid.NewGuid());
         var snippet = new ContentTypeSnippetModel
         {
             Codename = "seo",
             Elements =
             [
-                WithId(new TextElementMetadataModel { Codename = "meta_title" }, Guid.NewGuid()),
+                metaTitle,
                 new GuidelinesElementMetadataModel(),
             ],
         };
@@ -150,7 +157,7 @@ public class SnippetExpanderTests
         var result = SnippetExpander.Expand([snippetEl], _ => snippet, _warnings.Add).ToList();
 
         result.Should().ContainSingle()
-            .Which.CodenameOverride.Should().Be("seo__meta_title");
+            .Which.Should().BeSameAs(metaTitle);
         _warnings.Should().BeEmpty();
     }
 

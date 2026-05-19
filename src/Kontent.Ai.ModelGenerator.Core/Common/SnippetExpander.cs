@@ -7,22 +7,16 @@ using Kontent.Ai.Management.Models.Types.Elements;
 namespace Kontent.Ai.ModelGenerator.Core.Common;
 
 /// <summary>
-/// Flattens snippet references in a content type's element list. Snippet elements are
-/// replaced by the snippet's own elements with prefixed codenames
-/// (<c>{snippetCodename}__{elementCodename}</c>) — matching MAPI's wire shape for
-/// snippet-contributed elements in variant responses. Non-snippet elements pass through
-/// unchanged with no codename override.
+/// Flattens snippet references in a content type's element list: each snippet element is
+/// replaced inline by the snippet's own elements. MAPI already returns snippet-contributed
+/// element codenames pre-prefixed as <c>{snippetCodename}__{elementCodename}</c> — both on the
+/// snippet metadata endpoint and in variant responses — so codenames pass through untouched.
+/// Expansion only inlines; it does not rewrite codenames. Non-snippet elements pass through
+/// unchanged.
 /// </summary>
 public static class SnippetExpander
 {
-    /// <summary>
-    /// One element ready for downstream emission. <paramref name="CodenameOverride"/> is non-null
-    /// for elements contributed by a snippet — the orchestrator must pass it to the adapter
-    /// instead of reading <see cref="ElementMetadataBase.Codename"/> from the inner element.
-    /// </summary>
-    public sealed record ExpandedElement(ElementMetadataBase Element, string CodenameOverride);
-
-    public static IEnumerable<ExpandedElement> Expand(
+    public static IEnumerable<ElementMetadataBase> Expand(
         IEnumerable<ElementMetadataBase> elements,
         Func<Reference, ContentTypeSnippetModel> resolveSnippet,
         Action<string> warn)
@@ -65,12 +59,12 @@ public static class SnippetExpander
                         continue;
                     }
 
-                    yield return new ExpandedElement(inner, $"{snippet.Codename}__{inner.Codename}");
+                    yield return inner;
                 }
             }
             else
             {
-                yield return new ExpandedElement(element, CodenameOverride: null);
+                yield return element;
             }
         }
     }
