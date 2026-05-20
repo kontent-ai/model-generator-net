@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
 using Kontent.Ai.ModelGenerator.Core.Contract;
 using Microsoft.Extensions.Options;
@@ -33,7 +34,16 @@ public class FileSystemOutputProvider(IOptions<CodeGeneratorOptions> options) : 
         // Make sure the output dir exists
         Directory.CreateDirectory(OutputDir);
 
-        string outputPath = Path.Combine(OutputDir, $"{fileName}.cs");
+        var outputPath = Path.GetFullPath(Path.Combine(OutputDir, $"{fileName}.cs"));
+
+        // Guard against path traversal: fileName must be a bare class name, not a path.
+        // The resolved file must stay directly inside OutputDir.
+        if (Path.GetDirectoryName(outputPath) != OutputDir.TrimEnd(Path.DirectorySeparatorChar))
+        {
+            throw new ArgumentException(
+                $"Invalid file name '{fileName}': the resolved path escapes the output directory.", nameof(fileName));
+        }
+
         bool fileExists = File.Exists(outputPath);
         if (!fileExists || overwriteExisting)
         {
