@@ -72,7 +72,7 @@ public class ManagementCodeGeneratorTests
         emitted.Should().Contain("public string? Title { get; init; }");
         emitted.Should().Contain("[StringLength(100)]");
         emitted.Should().Contain("public decimal? Priority { get; init; }");
-        emitted.Should().Contain("public DateTimeOffset? PublishedAt { get; init; }");
+        emitted.Should().Contain("public DateTimeValue? PublishedAt { get; init; }");
     }
 
     [Fact]

@@ -266,9 +266,10 @@ The generator creates the base model, and you maintain customizations in separat
 > [!IMPORTANT]
 > Preview. The emitted code references types and attributes that ship with the upcoming
 > `management-sdk-net` vnext release (phase 3) — `IContentItem`, `[KontentContentType]`,
-> `[KontentElement]`, `RichTextElement`, `AssetReference`, `Reference`, the validator, and
-> the System.Text.Json converter. Until that release lands, the generated models won't
-> compile against the published `Kontent.Ai.Management` v8.2.0.
+> `[KontentElement]`, `RichTextElement`, `AssetReference`, `Reference`, `UrlSlugValue`,
+> `DateTimeValue`, `CustomValue`, the validator, and the System.Text.Json converter. Until
+> that release lands, the generated models won't compile against the published
+> `Kontent.Ai.Management` v8.2.0.
 
 When you need to **write** content to Kontent.ai (create / update / delete / publish via the Management API), pass `-m` / `--management` to switch the generator from Delivery mode into Management mode. The emitter produces strongly-typed records you can construct with object-initializer syntax and pass to `IManagementClient`.
 
@@ -335,6 +336,12 @@ public sealed partial record Article : IContentItem
     [KontentElement("priority", "88ae3d9b-...")]
     public decimal? Priority { get; init; }
 
+    [KontentElement("publish_at", "b12f0a44-...")]
+    public DateTimeValue? PublishAt { get; init; }
+
+    [KontentElement("rating_widget", "c93b71de-...")]
+    public CustomValue? RatingWidget { get; init; }
+
     [KontentElement("related_teasers", "a3155ec4-...")]
     [AllowedTypes("article", "blog_post")]
     [MaxElements(3)]
@@ -351,6 +358,10 @@ public sealed partial record Article : IContentItem
     [KontentElement("title", "a47451eb-...")]
     [StringLength(100)]
     public string? Title { get; init; }
+
+    [KontentElement("url", "e5a8c0f1-...")]
+    [RegularExpression("^[a-z0-9-]+$")]
+    public UrlSlugValue? Url { get; init; }
 }
 
 public enum ArticleCategory

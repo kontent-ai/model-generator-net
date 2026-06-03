@@ -23,8 +23,8 @@ public sealed class ManagementElementService : IManagementElementService
         {
             TextElementInput t => new ManagementElementOutput(BuildText(t)),
             NumberElementInput n => new ManagementElementOutput(BuildSimple(n.Codename, n.Id, "decimal?")),
-            DateTimeElementInput d => new ManagementElementOutput(BuildSimple(d.Codename, d.Id, "DateTimeOffset?")),
-            CustomElementInput c => new ManagementElementOutput(BuildSimple(c.Codename, c.Id, "string?")),
+            DateTimeElementInput d => new ManagementElementOutput(BuildSimple(d.Codename, d.Id, "DateTimeValue?")),
+            CustomElementInput c => new ManagementElementOutput(BuildSimple(c.Codename, c.Id, "CustomValue?")),
             UrlSlugElementInput u => new ManagementElementOutput(BuildUrlSlug(u)),
             MultipleChoiceElementInput m => BuildMultipleChoice(m),
             LinkedItemsElementInput li => new ManagementElementOutput(
@@ -66,7 +66,7 @@ public sealed class ManagementElementService : IManagementElementService
             attrs.Add(new AttributeSpec("RegularExpression", [AttributeArg.Positional(input.Regex)]));
         }
 
-        return new ManagementProperty(input.Codename, "string?", input.Id, attrs);
+        return new ManagementProperty(input.Codename, "UrlSlugValue?", input.Id, attrs);
     }
 
     private static ManagementProperty BuildSimple(string codename, string id, string typeName) =>
