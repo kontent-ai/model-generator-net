@@ -99,21 +99,21 @@ public class ManagementElementServiceTests
     }
 
     [Fact]
-    public void DateTime_EmitsDateTimeOffsetNullable()
+    public void DateTime_EmitsDateTimeValueNullable()
     {
         var result = _sut.Build(new DateTimeElementInput("published_at", "d-id"));
 
-        result.Property.TypeName.Should().Be("DateTimeOffset?");
+        result.Property.TypeName.Should().Be("DateTimeValue?");
         result.Property.Attributes.Should().ContainSingle();
         AssertIsKontentElement(result.Property.Attributes[0], "published_at", "d-id");
     }
 
     [Fact]
-    public void Custom_EmitsStringNullable()
+    public void Custom_EmitsCustomValueNullable()
     {
         var result = _sut.Build(new CustomElementInput("color_picker", "c-id"));
 
-        result.Property.TypeName.Should().Be("string?");
+        result.Property.TypeName.Should().Be("CustomValue?");
         result.Property.Attributes.Should().ContainSingle();
         AssertIsKontentElement(result.Property.Attributes[0], "color_picker", "c-id");
     }
@@ -125,7 +125,7 @@ public class ManagementElementServiceTests
     {
         var result = _sut.Build(new UrlSlugElementInput("url_slug", "u-id"));
 
-        result.Property.TypeName.Should().Be("string?");
+        result.Property.TypeName.Should().Be("UrlSlugValue?");
         result.Property.Attributes.Should().ContainSingle();
         AssertIsKontentElement(result.Property.Attributes[0], "url_slug", "u-id");
     }
