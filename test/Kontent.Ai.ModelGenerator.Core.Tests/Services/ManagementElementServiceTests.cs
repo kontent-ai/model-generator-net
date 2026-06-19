@@ -160,7 +160,7 @@ public class ManagementElementServiceTests
 
         var result = _sut.Build(input);
 
-        result.Property.TypeName.Should().Be("IReadOnlyList<ArticleCategory>?");
+        result.Property.TypeName.Should().Be("IEnumerable<ArticleCategory>?");
         result.Property.Attributes.Select(a => a.Name).Should().Equal("KontentElement", "MaxElements");
         result.Property.Attributes[1].Arguments[0].Value.Should().Be(1);
     }
@@ -181,7 +181,7 @@ public class ManagementElementServiceTests
 
         var result = _sut.Build(input);
 
-        result.Property.TypeName.Should().Be("IReadOnlyList<ArticleTags>?");
+        result.Property.TypeName.Should().Be("IEnumerable<ArticleTags>?");
         result.Property.Attributes.Should().ContainSingle()
             .Which.Name.Should().Be("KontentElement");
     }
@@ -240,7 +240,7 @@ public class ManagementElementServiceTests
     {
         var result = _sut.Build(new LinkedItemsElementInput("related", "li-id"));
 
-        result.Property.TypeName.Should().Be("IReadOnlyList<Reference>?");
+        result.Property.TypeName.Should().Be("IEnumerable<Reference>?");
         result.Property.Attributes.Should().ContainSingle();
         AssertIsKontentElement(result.Property.Attributes[0], "related", "li-id");
     }
@@ -290,7 +290,7 @@ public class ManagementElementServiceTests
             AllowedTypeCodenames: ["page"],
             ItemCount: new CountLimit(10, CountLimitMode.AtMost)));
 
-        result.Property.TypeName.Should().Be("IReadOnlyList<Reference>?");
+        result.Property.TypeName.Should().Be("IEnumerable<Reference>?");
         result.Property.Attributes.Select(a => a.Name)
             .Should().Equal("KontentElement", "AllowedTypes", "MaxElements");
     }
@@ -314,7 +314,7 @@ public class ManagementElementServiceTests
     {
         var result = _sut.Build(new TaxonomyElementInput("tags", "tx-id"));
 
-        result.Property.TypeName.Should().Be("IReadOnlyList<Reference>?");
+        result.Property.TypeName.Should().Be("IEnumerable<Reference>?");
         result.Property.Attributes.Should().ContainSingle();
         AssertIsKontentElement(result.Property.Attributes[0], "tags", "tx-id");
     }
@@ -396,7 +396,7 @@ public class ManagementElementServiceTests
     {
         var result = _sut.Build(new AssetElementInput("featured_image", "a-id"));
 
-        result.Property.TypeName.Should().Be("IReadOnlyList<AssetReference>?");
+        result.Property.TypeName.Should().Be("IEnumerable<AssetReference>?");
         result.Property.Attributes.Should().ContainSingle();
         AssertIsKontentElement(result.Property.Attributes[0], "featured_image", "a-id");
     }
@@ -423,7 +423,7 @@ public class ManagementElementServiceTests
         // Raw-code marker — emitter parses it as a C# expression rather than a string literal.
         result.Property.Attributes[1].Arguments[0].Value
             .Should().BeOfType<RawCodeAttributeValue>()
-            .Which.Expression.Should().Be("AssetFileType.Adjustable");
+            .Which.Expression.Should().Be("FileType.Adjustable");
     }
 
     [Fact]

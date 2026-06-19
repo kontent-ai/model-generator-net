@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
 /// <summary>
-/// Emits a content type as a <c>sealed partial record</c> implementing <c>IContentItem</c>,
+/// Emits a content type as a <c>sealed partial record</c> implementing <c>IElementsModel</c>,
 /// with <c>[KontentContentType]</c> at the type level and <c>[KontentElement]</c> + constraint
 /// attributes per property. Constraint attributes come from each <see cref="ManagementProperty"/>'s
 /// <see cref="ManagementProperty.Attributes"/> list.
@@ -19,7 +19,7 @@ public sealed class ManagementClassCodeGenerator(
     string @namespace = ClassCodeGenerator.DefaultNamespace)
     : ClassCodeGenerator(classDefinition, classFilename, @namespace)
 {
-    private const string ContentItemInterfaceName = "IContentItem";
+    private const string ElementsModelInterfaceName = "IElementsModel";
     private const string KontentTypeAttribute = "KontentType";
 
     protected override bool IsRecord => true;
@@ -63,7 +63,7 @@ public sealed class ManagementClassCodeGenerator(
             .WithBaseList(SyntaxFactory.BaseList(
                 SyntaxFactory.SingletonSeparatedList<BaseTypeSyntax>(
                     SyntaxFactory.SimpleBaseType(
-                        SyntaxFactory.IdentifierName(ContentItemInterfaceName)))));
+                        SyntaxFactory.IdentifierName(ElementsModelInterfaceName)))));
 
         declaration = declaration.AddMembers(Properties);
 
@@ -75,12 +75,13 @@ public sealed class ManagementClassCodeGenerator(
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.ComponentModel.DataAnnotations")),
-        // SDK layout: IContentItem at the root namespace, attributes (+ AssetFileType) in
-        // Annotations, content-value types (Reference, AssetReference, RichTextElement) in
-        // Models.Content.
+        // SDK layout: IElementsModel at the root namespace, attributes in Annotations,
+        // content-value types (Reference, AssetReference, RichTextElement) in Models.Content,
+        // and FileType (the AllowedAssetFileTypes argument) in Models.Types.Elements.
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management.Annotations")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management.Models.Content")),
+        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management.Models.Types.Elements")),
     ];
 
     protected override MemberDeclarationSyntax[] GetAdditionalNamespaceMembers() =>

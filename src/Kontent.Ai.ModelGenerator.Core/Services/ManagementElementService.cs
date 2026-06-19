@@ -92,7 +92,7 @@ public sealed class ManagementElementService : IManagementElementService
 
         var property = new ManagementProperty(
             input.Codename,
-            $"IReadOnlyList<{input.EnumTypeName}>?",
+            $"IEnumerable<{input.EnumTypeName}>?",
             input.Id,
             attrs);
 
@@ -119,7 +119,7 @@ public sealed class ManagementElementService : IManagementElementService
         CountLimit count)
     {
         // The wire shape for both modular_content and subpages is an array of {id|codename|external_id}
-        // references — NOT inlined IContentItem instances. The IContentItem marker still appears on
+        // references — NOT inlined IElementsModel instances. The IElementsModel marker still appears on
         // each generated content-type record (so the SDK validator can recognise them), but element
         // values themselves are Reference instances.
         var attrs = new List<AttributeSpec> { KontentElement(codename, id) };
@@ -133,7 +133,7 @@ public sealed class ManagementElementService : IManagementElementService
 
         AddCountLimitAttribute(attrs, count);
 
-        return new ManagementProperty(codename, "IReadOnlyList<Reference>?", id, attrs);
+        return new ManagementProperty(codename, "IEnumerable<Reference>?", id, attrs);
     }
 
     private static ManagementProperty BuildRichText(RichTextElementInput input)
@@ -177,10 +177,10 @@ public sealed class ManagementElementService : IManagementElementService
         {
             attrs.Add(new AttributeSpec(
                 "AllowedAssetFileTypes",
-                [AttributeArg.PositionalRawCode($"AssetFileType.{fileType}")]));
+                [AttributeArg.PositionalRawCode($"FileType.{fileType}")]));
         }
 
-        return new ManagementProperty(input.Codename, "IReadOnlyList<AssetReference>?", input.Id, attrs);
+        return new ManagementProperty(input.Codename, "IEnumerable<AssetReference>?", input.Id, attrs);
     }
 
     private static ManagementProperty BuildTaxonomy(TaxonomyElementInput input)
@@ -196,7 +196,7 @@ public sealed class ManagementElementService : IManagementElementService
 
         AddCountLimitAttribute(attrs, input.TermCount);
 
-        return new ManagementProperty(input.Codename, "IReadOnlyList<Reference>?", input.Id, attrs);
+        return new ManagementProperty(input.Codename, "IEnumerable<Reference>?", input.Id, attrs);
     }
 
     private static void AddCountLimitAttribute(List<AttributeSpec> attrs, CountLimit count)
