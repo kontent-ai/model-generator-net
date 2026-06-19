@@ -54,7 +54,7 @@ public class ManagementCodeGeneratorTests
         emitted.Should().NotBeNull();
         // Both args emitted: codename + id (positional).
         emitted.Should().Contain($"[KontentType(\"article\", \"{typeId}\")]");
-        emitted.Should().Contain(": IContentItem");
+        emitted.Should().Contain(": IElementsModel");
         emitted.Should().Contain("namespace MyProject.Models;");
     }
 
@@ -170,7 +170,7 @@ public class ManagementCodeGeneratorTests
         await CreateGenerator().RunAsync();
 
         emitted.Should().NotBeNull();
-        emitted.Should().Contain("public IReadOnlyList<ArticleCategory>? Category { get; init; }");
+        emitted.Should().Contain("public IEnumerable<ArticleCategory>? Category { get; init; }");
         emitted.Should().Contain("[MaxElements(1)]");
         emitted.Should().Contain("public enum ArticleCategory");
         emitted.Should().Contain("News");
@@ -208,10 +208,10 @@ public class ManagementCodeGeneratorTests
         await CreateGenerator().RunAsync();
 
         emitted.Should().NotBeNull();
-        emitted.Should().Contain("public IReadOnlyList<Reference>? Related { get; init; }");
+        emitted.Should().Contain("public IEnumerable<Reference>? Related { get; init; }");
         emitted.Should().Contain("[AllowedTypes(\"article\", \"blog_post\")]");
         emitted.Should().Contain("[MaxElements(3)]");
-        emitted.Should().Contain("public IReadOnlyList<Reference>? Tags { get; init; }");
+        emitted.Should().Contain("public IEnumerable<Reference>? Tags { get; init; }");
         emitted.Should().Contain("[AllowedTaxonomyGroup(\"content_tags\")]");
         emitted.Should().Contain("[MinElements(1)]");
     }
@@ -253,10 +253,10 @@ public class ManagementCodeGeneratorTests
         emitted.Should().Contain("[AllowedTypes(\"banner\")]");
         emitted.Should().Contain("[AllowedItemLinkTypes(\"article\")]");
         emitted.Should().Contain("[StringLength(5000)]");
-        emitted.Should().Contain("public IReadOnlyList<AssetReference>? FeaturedImage { get; init; }");
+        emitted.Should().Contain("public IEnumerable<AssetReference>? FeaturedImage { get; init; }");
         emitted.Should().Contain("[MaxElements(1)]");
         emitted.Should().Contain("[MaxAssetSize(5242880L)]");
-        emitted.Should().Contain("[AllowedAssetFileTypes(AssetFileType.Adjustable)]");
+        emitted.Should().Contain("[AllowedAssetFileTypes(FileType.Adjustable)]");
     }
 
     [Fact]

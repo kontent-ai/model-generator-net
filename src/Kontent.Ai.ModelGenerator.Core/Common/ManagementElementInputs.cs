@@ -78,7 +78,7 @@ public sealed record CountLimit(int Value, CountLimitMode Mode);
 public enum CountLimitMode { AtLeast, AtMost, Exactly }
 
 /// <summary>
-/// Linked items element. Wire type: <c>IReadOnlyList&lt;IContentItem&gt;?</c>.
+/// Linked items element. Wire type: <c>IReadOnlyList&lt;IElementsModel&gt;?</c>.
 /// <paramref name="AllowedTypeCodenames"/> is null/empty when there's no allowlist.
 /// </summary>
 public sealed record LinkedItemsElementInput(

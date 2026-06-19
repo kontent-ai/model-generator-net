@@ -17,7 +17,7 @@ public class ManagementClassCodeGeneratorTests
     }
 
     [Fact]
-    public void Build_EmptyType_EmitsSealedPartialRecordImplementingIContentItem()
+    public void Build_EmptyType_EmitsSealedPartialRecordImplementingIElementsModel()
     {
         var classDefinition = new ClassDefinition("article");
         var sut = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName);
@@ -26,7 +26,7 @@ public class ManagementClassCodeGeneratorTests
 
         // No Id on the ClassDefinition → KontentType emits with codename only (single arg).
         code.Should().Contain("[KontentType(\"article\")]");
-        code.Should().MatchRegex(@"public\s+sealed\s+partial\s+record\s+Article\s*:\s*IContentItem");
+        code.Should().MatchRegex(@"public\s+sealed\s+partial\s+record\s+Article\s*:\s*IElementsModel");
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public class ManagementClassCodeGeneratorTests
     public void Build_WithEnum_EmitsEnumAsSiblingType()
     {
         var classDefinition = new ClassDefinition("article");
-        classDefinition.AddProperty(new ManagementProperty("category", "IReadOnlyList<ArticleCategory>?", "mc-id",
+        classDefinition.AddProperty(new ManagementProperty("category", "IEnumerable<ArticleCategory>?", "mc-id",
         [
             new AttributeSpec("KontentElement",
             [
@@ -166,7 +166,7 @@ public class ManagementClassCodeGeneratorTests
 
         var code = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName).GenerateCode();
 
-        code.Should().Contain("public IReadOnlyList<ArticleCategory>? Category { get; init; }");
+        code.Should().Contain("public IEnumerable<ArticleCategory>? Category { get; init; }");
         code.Should().Contain("[MaxElements(1)]");
         code.Should().Contain("public enum ArticleCategory");
         code.Should().Contain("[KontentEnumValue(\"news\", \"opt-1\")]");
@@ -227,7 +227,7 @@ public class ManagementClassCodeGeneratorTests
                 AttributeArg.Positional("33333333-3333-3333-3333-333333333333"),
             ]),
         ]));
-        classDefinition.AddProperty(new ManagementProperty("category", "IReadOnlyList<ArticleCategory>?", "44444444-4444-4444-4444-444444444444",
+        classDefinition.AddProperty(new ManagementProperty("category", "IEnumerable<ArticleCategory>?", "44444444-4444-4444-4444-444444444444",
         [
             new AttributeSpec("KontentElement",
             [
@@ -255,7 +255,7 @@ public class ManagementClassCodeGeneratorTests
                 ]),
             ]),
         ]));
-        classDefinition.AddProperty(new ManagementProperty("related", "IReadOnlyList<Reference>?", "55555555-5555-5555-5555-555555555555",
+        classDefinition.AddProperty(new ManagementProperty("related", "IEnumerable<Reference>?", "55555555-5555-5555-5555-555555555555",
         [
             new AttributeSpec("KontentElement",
             [
@@ -269,7 +269,7 @@ public class ManagementClassCodeGeneratorTests
             ]),
             new AttributeSpec("MaxElements", [AttributeArg.Positional(3)]),
         ]));
-        classDefinition.AddProperty(new ManagementProperty("tags", "IReadOnlyList<Reference>?", "66666666-6666-6666-6666-666666666666",
+        classDefinition.AddProperty(new ManagementProperty("tags", "IEnumerable<Reference>?", "66666666-6666-6666-6666-666666666666",
         [
             new AttributeSpec("KontentElement",
             [
@@ -290,7 +290,7 @@ public class ManagementClassCodeGeneratorTests
             new AttributeSpec("AllowedItemLinkTypes", [AttributeArg.Positional("article")]),
             new AttributeSpec("StringLength", [AttributeArg.Positional(5000)]),
         ]));
-        classDefinition.AddProperty(new ManagementProperty("featured_image", "IReadOnlyList<AssetReference>?", "88888888-8888-8888-8888-888888888888",
+        classDefinition.AddProperty(new ManagementProperty("featured_image", "IEnumerable<AssetReference>?", "88888888-8888-8888-8888-888888888888",
         [
             new AttributeSpec("KontentElement",
             [
@@ -301,7 +301,7 @@ public class ManagementClassCodeGeneratorTests
             new AttributeSpec("MaxAssetSize", [AttributeArg.Positional(5_242_880L)]),
             new AttributeSpec("AllowedAssetFileTypes",
             [
-                AttributeArg.PositionalRawCode("AssetFileType.Adjustable"),
+                AttributeArg.PositionalRawCode("FileType.Adjustable"),
             ]),
         ]));
 
@@ -336,13 +336,13 @@ public class ManagementClassCodeGeneratorTests
     }
 
     // Minimal stubs for the SDK types the emitted code references. Layout mirrors the real
-    // management-sdk-net (vnext, phase 3): IContentItem at the root namespace, content-value
-    // types in Models.Content, attributes + AssetFileType in Annotations. Constraint attributes
-    // [StringLength] / [RegularExpression] come from BCL.
+    // management-sdk-net (vnext, phase 3): IElementsModel at the root namespace, content-value
+    // types in Models.Content, attributes in Annotations, and FileType in Models.Types.Elements.
+    // Constraint attributes [StringLength] / [RegularExpression] come from BCL.
     private const string SdkStubsSource = @"
 namespace Kontent.Ai.Management
 {
-    public interface IContentItem { }
+    public interface IElementsModel { }
 }
 
 namespace Kontent.Ai.Management.Models.Content
@@ -352,11 +352,15 @@ namespace Kontent.Ai.Management.Models.Content
     public sealed class AssetReference { }
 }
 
+namespace Kontent.Ai.Management.Models.Types.Elements
+{
+    public enum FileType { Any, Adjustable }
+}
+
 namespace Kontent.Ai.Management.Annotations
 {
     using System;
-
-    public enum AssetFileType { Any, Adjustable, Image }
+    using Kontent.Ai.Management.Models.Types.Elements;
 
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class KontentTypeAttribute : Attribute
@@ -434,8 +438,8 @@ namespace Kontent.Ai.Management.Annotations
     [AttributeUsage(AttributeTargets.Property)]
     public sealed class AllowedAssetFileTypesAttribute : Attribute
     {
-        public AllowedAssetFileTypesAttribute(AssetFileType types) { Types = types; }
-        public AssetFileType Types { get; }
+        public AllowedAssetFileTypesAttribute(FileType types) { Types = types; }
+        public FileType Types { get; }
     }
 }
 ";
