@@ -11,9 +11,8 @@ namespace Kontent.Ai.ModelGenerator.Core.Common;
 public sealed class ManagementProperty : Property
 {
     /// <summary>
-    /// Attributes to emit on the generated property, in declaration order.
-    /// Always includes at least the element-identity attribute (<c>[KontentElement]</c>);
-    /// constraint attributes (<c>[StringLength]</c>, <c>[AllowedTypes]</c>, ...) follow.
+    /// Attributes to emit on the generated property, in declaration order — the element-identity
+    /// attribute (<c>[KontentElement]</c>).
     /// </summary>
     public IReadOnlyList<AttributeSpec> Attributes { get; }
 

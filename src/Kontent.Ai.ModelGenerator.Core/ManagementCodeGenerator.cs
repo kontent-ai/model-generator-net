@@ -46,19 +46,14 @@ public class ManagementCodeGenerator : CodeGeneratorBase
         var snippets = await FetchAllSnippets();
         var resolveSnippet = BuildSnippetResolver(snippets);
 
-        // Pre-fetch all content types into memory (instead of streaming) so [AllowedTypes] can
-        // resolve id-only references in `allowed_content_types` to portable codenames. MAPI
-        // returns those references without codenames on type metadata responses; without this
-        // lookup the constraint would silently disappear from the generated models.
         var types = await FetchAllTypes();
-        var resolveTypeCodename = BuildTypeCodenameResolver(types);
 
         var generators = new List<ClassCodeGenerator>();
         foreach (var contentType in types)
         {
             try
             {
-                generators.Add(BuildClassCodeGenerator(contentType, resolveSnippet, resolveTypeCodename));
+                generators.Add(BuildClassCodeGenerator(contentType, resolveSnippet));
             }
             catch (InvalidIdentifierException)
             {
@@ -71,8 +66,7 @@ public class ManagementCodeGenerator : CodeGeneratorBase
 
     internal ClassCodeGenerator BuildClassCodeGenerator(
         ContentTypeModel contentType,
-        Func<Reference, ContentTypeSnippetModel> resolveSnippet,
-        Func<Guid, string> resolveTypeCodename = null)
+        Func<Reference, ContentTypeSnippetModel> resolveSnippet)
     {
         var classDefinition = ClassDefinitionFactory.CreateClassDefinition(contentType.Codename);
         if (contentType.Id != Guid.Empty)
@@ -84,7 +78,7 @@ public class ManagementCodeGenerator : CodeGeneratorBase
         {
             try
             {
-                AddElement(classDefinition, contentType.Codename, element, resolveTypeCodename);
+                AddElement(classDefinition, contentType.Codename, element);
             }
             catch (Exception ex)
             {
@@ -98,44 +92,33 @@ public class ManagementCodeGenerator : CodeGeneratorBase
 
     private async Task<IReadOnlyList<ContentTypeSnippetModel>> FetchAllSnippets()
     {
-        var all = new List<ContentTypeSnippetModel>();
-        var page = await _managementClient.ListContentTypeSnippetsAsync();
-        while (page != null)
-        {
-            all.AddRange(page);
-            page = page.HasNextPage() ? await page.GetNextPage() : null;
-        }
-        return all;
+        var result = await _managementClient.ListContentTypeSnippetsAsync();
+        return UnwrapListing(result, "content type snippets");
     }
 
     private async Task<IReadOnlyList<ContentTypeModel>> FetchAllTypes()
     {
-        var all = new List<ContentTypeModel>();
-        var page = await _managementClient.ListContentTypesAsync();
-        while (page != null)
-        {
-            all.AddRange(page);
-            page = page.HasNextPage() ? await page.GetNextPage() : null;
-        }
-        return all;
+        var result = await _managementClient.ListContentTypesAsync();
+        return UnwrapListing(result, "content types");
     }
 
     /// <summary>
-    /// Builds an id → codename lookup for content types. Used to hydrate the id-only
-    /// references that MAPI returns in <c>allowed_content_types</c> on type metadata responses.
-    /// Codenames are environment-portable; ids are not — so we always emit codenames.
+    /// Reads a materialized listing out of an <see cref="IManagementResult{T}"/>. The modern Management
+    /// client never throws on API errors — it surfaces them via <see cref="IManagementResult.IsSuccess"/> —
+    /// so a failed listing is turned into an exception here to abort generation with a readable message.
     /// </summary>
-    private static Func<Guid, string> BuildTypeCodenameResolver(IReadOnlyList<ContentTypeModel> types)
+    private static IReadOnlyList<T> UnwrapListing<T>(IManagementResult<IReadOnlyList<T>> result, string resourceName)
     {
-        var byId = new Dictionary<Guid, string>();
-        foreach (var t in types)
+        if (!result.IsSuccess)
         {
-            if (t.Id != Guid.Empty && !string.IsNullOrEmpty(t.Codename))
-            {
-                byId[t.Id] = t.Codename;
-            }
+            throw new InvalidOperationException(
+                $"Failed to list {resourceName} from the Management API: {result.Error?.Message ?? "unknown error"}");
         }
-        return id => byId.TryGetValue(id, out var codename) ? codename : null;
+
+        // A success result with a null body shouldn't happen, but guard so a downstream
+        // NullReferenceException can't mask it — abort with the same readable message instead.
+        return result.Value ?? throw new InvalidOperationException(
+            $"The Management API reported success but returned no {resourceName}.");
     }
 
     /// <summary>
@@ -187,8 +170,7 @@ public class ManagementCodeGenerator : CodeGeneratorBase
     private void AddElement(
         ClassDefinition classDefinition,
         string contentTypeCodename,
-        ElementMetadataBase element,
-        Func<Guid, string> resolveTypeCodename = null)
+        ElementMetadataBase element)
     {
         // Guidelines are editor-only — no wire value, nothing to emit. (The expander also drops
         // guidelines inside snippets; this guard handles type-level ones.)
@@ -197,11 +179,7 @@ public class ManagementCodeGenerator : CodeGeneratorBase
             return;
         }
 
-        var input = ManagementElementMetadataAdapter.ToInput(
-            element,
-            classDefinition.ClassName,
-            resolveTypeCodename,
-            Logger.LogWarning);
+        var input = ManagementElementMetadataAdapter.ToInput(element, classDefinition.ClassName);
         if (input is null)
         {
             Logger.LogWarning(

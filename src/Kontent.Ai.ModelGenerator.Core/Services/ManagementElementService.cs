@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Contract;
@@ -8,10 +7,11 @@ using Kontent.Ai.ModelGenerator.Core.Helpers;
 namespace Kontent.Ai.ModelGenerator.Core.Services;
 
 /// <summary>
-/// Maps Management API element inputs to <see cref="ManagementElementOutput"/> records ready
-/// for emission. Covers text, number, date_time, custom, url_slug, multiple_choice,
-/// modular_content, subpages, taxonomy, rich_text, and asset in this slice; snippets land
-/// in slice 7 (expanded inline by the orchestrator rather than emitted by the service).
+/// Maps Management API element inputs to <see cref="ManagementElementOutput"/> records ready for
+/// emission. Each element projects to a property carrying a single <c>[KontentElement]</c> identity
+/// attribute (multiple-choice options additionally carry <c>[KontentEnumValue]</c>); content-model
+/// constraints are enforced server-side by the Management API, not mirrored onto the generated type.
+/// The element subtype selects the C# value type.
 /// </summary>
 public sealed class ManagementElementService : IManagementElementService
 {
@@ -21,52 +21,21 @@ public sealed class ManagementElementService : IManagementElementService
 
         return input switch
         {
-            TextElementInput t => new ManagementElementOutput(BuildText(t)),
+            TextElementInput t => new ManagementElementOutput(BuildSimple(t.Codename, t.Id, "string?")),
             NumberElementInput n => new ManagementElementOutput(BuildSimple(n.Codename, n.Id, "decimal?")),
             DateTimeElementInput d => new ManagementElementOutput(BuildSimple(d.Codename, d.Id, "DateTimeValue?")),
             CustomElementInput c => new ManagementElementOutput(BuildSimple(c.Codename, c.Id, "CustomValue?")),
-            UrlSlugElementInput u => new ManagementElementOutput(BuildUrlSlug(u)),
+            UrlSlugElementInput u => new ManagementElementOutput(BuildSimple(u.Codename, u.Id, "UrlSlugValue?")),
             MultipleChoiceElementInput m => BuildMultipleChoice(m),
-            LinkedItemsElementInput li => new ManagementElementOutput(
-                BuildItemReferenceCollection(li.Codename, li.Id, li.AllowedTypeCodenames, li.ItemCount)),
-            SubpagesElementInput sp => new ManagementElementOutput(
-                BuildItemReferenceCollection(sp.Codename, sp.Id, sp.AllowedTypeCodenames, sp.ItemCount)),
-            TaxonomyElementInput tx => new ManagementElementOutput(BuildTaxonomy(tx)),
-            RichTextElementInput rt => new ManagementElementOutput(BuildRichText(rt)),
-            AssetElementInput a => new ManagementElementOutput(BuildAsset(a)),
+            LinkedItemsElementInput li => new ManagementElementOutput(BuildSimple(li.Codename, li.Id, "IEnumerable<Reference>?")),
+            SubpagesElementInput sp => new ManagementElementOutput(BuildSimple(sp.Codename, sp.Id, "IEnumerable<Reference>?")),
+            TaxonomyElementInput tx => new ManagementElementOutput(BuildSimple(tx.Codename, tx.Id, "IEnumerable<Reference>?")),
+            RichTextElementInput rt => new ManagementElementOutput(BuildSimple(rt.Codename, rt.Id, "RichTextValue?")),
+            AssetElementInput a => new ManagementElementOutput(BuildSimple(a.Codename, a.Id, "IEnumerable<AssetReference>?")),
             _ => throw new ArgumentException(
                 $"Unsupported management element input type: {input.GetType().Name}",
                 nameof(input)),
         };
-    }
-
-    private static ManagementProperty BuildText(TextElementInput input)
-    {
-        var attrs = new List<AttributeSpec> { KontentElement(input.Codename, input.Id) };
-
-        if (input.MaximumCharacters is int max)
-        {
-            attrs.Add(new AttributeSpec("StringLength", [AttributeArg.Positional(max)]));
-        }
-
-        if (!string.IsNullOrWhiteSpace(input.Regex))
-        {
-            attrs.Add(new AttributeSpec("RegularExpression", [AttributeArg.Positional(input.Regex)]));
-        }
-
-        return new ManagementProperty(input.Codename, "string?", input.Id, attrs);
-    }
-
-    private static ManagementProperty BuildUrlSlug(UrlSlugElementInput input)
-    {
-        var attrs = new List<AttributeSpec> { KontentElement(input.Codename, input.Id) };
-
-        if (!string.IsNullOrWhiteSpace(input.Regex))
-        {
-            attrs.Add(new AttributeSpec("RegularExpression", [AttributeArg.Positional(input.Regex)]));
-        }
-
-        return new ManagementProperty(input.Codename, "UrlSlugValue?", input.Id, attrs);
     }
 
     private static ManagementProperty BuildSimple(string codename, string id, string typeName) =>
@@ -81,20 +50,11 @@ public sealed class ManagementElementService : IManagementElementService
                 nameof(input));
         }
 
-        var attrs = new List<AttributeSpec> { KontentElement(input.Codename, input.Id) };
-
-        // Single-select still serializes as a length-1 array on the wire; we constrain the
-        // collection size rather than changing the property's C# type.
-        if (input.IsSingleSelect)
-        {
-            attrs.Add(new AttributeSpec("MaxElements", [AttributeArg.Positional(1)]));
-        }
-
         var property = new ManagementProperty(
             input.Codename,
             $"IEnumerable<{input.EnumTypeName}>?",
             input.Id,
-            attrs);
+            [KontentElement(input.Codename, input.Id)]);
 
         var members = input.Options.Select(opt => new EnumMember(
             identifier: TextHelpers.GetValidPascalCaseIdentifierName(opt.Codename),
@@ -110,111 +70,6 @@ public sealed class ManagementElementService : IManagementElementService
         var enumDef = new EnumDefinition(input.EnumTypeName, members);
 
         return new ManagementElementOutput(property, [enumDef]);
-    }
-
-    private static ManagementProperty BuildItemReferenceCollection(
-        string codename,
-        string id,
-        IReadOnlyList<string> allowedTypeCodenames,
-        CountLimit count)
-    {
-        // The wire shape for both modular_content and subpages is an array of {id|codename|external_id}
-        // references — NOT inlined IElementsModel instances. The IElementsModel marker still appears on
-        // each generated content-type record (so the SDK validator can recognise them), but element
-        // values themselves are Reference instances.
-        var attrs = new List<AttributeSpec> { KontentElement(codename, id) };
-
-        if (allowedTypeCodenames is { Count: > 0 })
-        {
-            attrs.Add(new AttributeSpec(
-                "AllowedTypes",
-                allowedTypeCodenames.Select(c => AttributeArg.Positional(c)).ToList()));
-        }
-
-        AddCountLimitAttribute(attrs, count);
-
-        return new ManagementProperty(codename, "IEnumerable<Reference>?", id, attrs);
-    }
-
-    private static ManagementProperty BuildRichText(RichTextElementInput input)
-    {
-        var attrs = new List<AttributeSpec> { KontentElement(input.Codename, input.Id) };
-
-        if (input.AllowedTypeCodenames is { Count: > 0 })
-        {
-            attrs.Add(new AttributeSpec(
-                "AllowedTypes",
-                input.AllowedTypeCodenames.Select(c => AttributeArg.Positional(c)).ToList()));
-        }
-
-        if (input.AllowedItemLinkTypeCodenames is { Count: > 0 })
-        {
-            attrs.Add(new AttributeSpec(
-                "AllowedItemLinkTypes",
-                input.AllowedItemLinkTypeCodenames.Select(c => AttributeArg.Positional(c)).ToList()));
-        }
-
-        if (input.MaximumCharacters is int max)
-        {
-            attrs.Add(new AttributeSpec("StringLength", [AttributeArg.Positional(max)]));
-        }
-
-        return new ManagementProperty(input.Codename, "RichTextElement?", input.Id, attrs);
-    }
-
-    private static ManagementProperty BuildAsset(AssetElementInput input)
-    {
-        var attrs = new List<AttributeSpec> { KontentElement(input.Codename, input.Id) };
-
-        AddCountLimitAttribute(attrs, input.AssetCount);
-
-        if (input.MaximumFileSizeBytes is long bytes)
-        {
-            attrs.Add(new AttributeSpec("MaxAssetSize", [AttributeArg.Positional(bytes)]));
-        }
-
-        if (input.AllowedFileType is AssetFileType fileType)
-        {
-            attrs.Add(new AttributeSpec(
-                "AllowedAssetFileTypes",
-                [AttributeArg.PositionalRawCode($"FileType.{fileType}")]));
-        }
-
-        return new ManagementProperty(input.Codename, "IEnumerable<AssetReference>?", input.Id, attrs);
-    }
-
-    private static ManagementProperty BuildTaxonomy(TaxonomyElementInput input)
-    {
-        var attrs = new List<AttributeSpec> { KontentElement(input.Codename, input.Id) };
-
-        if (!string.IsNullOrWhiteSpace(input.TaxonomyGroup))
-        {
-            attrs.Add(new AttributeSpec(
-                "AllowedTaxonomyGroup",
-                [AttributeArg.Positional(input.TaxonomyGroup)]));
-        }
-
-        AddCountLimitAttribute(attrs, input.TermCount);
-
-        return new ManagementProperty(input.Codename, "IEnumerable<Reference>?", input.Id, attrs);
-    }
-
-    private static void AddCountLimitAttribute(List<AttributeSpec> attrs, CountLimit count)
-    {
-        if (count is null)
-        {
-            return;
-        }
-
-        var attrName = count.Mode switch
-        {
-            CountLimitMode.AtLeast => "MinElements",
-            CountLimitMode.AtMost => "MaxElements",
-            CountLimitMode.Exactly => "ExactElements",
-            _ => throw new ArgumentOutOfRangeException(nameof(count), count.Mode, "Unknown count limit mode."),
-        };
-
-        attrs.Add(new AttributeSpec(attrName, [AttributeArg.Positional(count.Value)]));
     }
 
     private static AttributeSpec KontentElement(string codename, string id) =>

@@ -12,7 +12,7 @@ public sealed class AttributeSpec
 {
     /// <summary>
     /// Attribute name without the <c>[]</c> brackets and without a trailing <c>Attribute</c> suffix
-    /// (e.g. <c>"KontentElement"</c>, <c>"StringLength"</c>).
+    /// (e.g. <c>"KontentElement"</c>, <c>"KontentEnumValue"</c>).
     /// </summary>
     public string Name { get; }
 
@@ -43,8 +43,7 @@ public sealed class AttributeArg
 
     /// <summary>
     /// The literal value the emitter will render. Supported runtime types: <c>string</c>,
-    /// <c>int</c>, <c>long</c>, <c>bool</c>, <c>double</c>, <c>string[]</c>. Other types are rendered
-    /// via their <see cref="object.ToString"/> as raw C# code (e.g. <c>"AssetFileType.Image"</c>).
+    /// <c>int</c>, <c>long</c>, <c>bool</c>; other values are rendered via <see cref="object.ToString"/>.
     /// </summary>
     public object Value { get; }
 
@@ -57,24 +56,4 @@ public sealed class AttributeArg
     public static AttributeArg Positional(object value) => new(value);
 
     public static AttributeArg Named(string name, object value) => new(value, name);
-
-    /// <summary>
-    /// Positional argument rendered as a raw C# expression (member access, enum value, etc.)
-    /// rather than as a string literal. Use for things like <c>AssetFileType.Adjustable</c>.
-    /// </summary>
-    public static AttributeArg PositionalRawCode(string expression) =>
-        new(new RawCodeAttributeValue(expression));
-
-    /// <summary>
-    /// Named argument rendered as a raw C# expression. See <see cref="PositionalRawCode"/>.
-    /// </summary>
-    public static AttributeArg NamedRawCode(string name, string expression) =>
-        new(new RawCodeAttributeValue(expression), name);
 }
-
-/// <summary>
-/// Marker wrapping a raw C# expression string. The emitter recognizes this type and parses
-/// the wrapped string as an expression instead of rendering it as a literal — used for things
-/// like enum member access (<c>AssetFileType.Adjustable</c>) where a literal would be wrong.
-/// </summary>
-public sealed record RawCodeAttributeValue(string Expression);

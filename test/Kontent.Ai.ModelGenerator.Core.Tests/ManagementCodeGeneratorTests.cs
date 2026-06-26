@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Reflection;
 using Kontent.Ai.Management;
 using Kontent.Ai.Management.Models.Shared;
@@ -41,8 +40,7 @@ public class ManagementCodeGeneratorTests
     public async Task RunAsync_EmittedCode_ContainsKontentTypeAttribute()
     {
         var typeId = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
-        var type = BuildArticleType();
-        type.Id = typeId;
+        var type = BuildArticleType(id: typeId);
         SetupClientWithTypes(type);
         string emitted = null;
         _output
@@ -70,9 +68,10 @@ public class ManagementCodeGeneratorTests
         await CreateGenerator().RunAsync();
 
         emitted.Should().Contain("public string? Title { get; init; }");
-        emitted.Should().Contain("[StringLength(100)]");
         emitted.Should().Contain("public decimal? Priority { get; init; }");
         emitted.Should().Contain("public DateTimeValue? PublishedAt { get; init; }");
+        // The title element carries a MAPI character limit; it must not surface as a client-side attribute.
+        emitted.Should().NotContain("[StringLength");
     }
 
     [Fact]
@@ -80,11 +79,15 @@ public class ManagementCodeGeneratorTests
     {
         var type = new ContentTypeModel
         {
+            Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "Article",
+            ContentGroups = [],
             Codename = "article",
             Elements =
             [
-                WithId(new TextElementMetadataModel { Codename = "title" }, Guid.NewGuid()),
-                new GuidelinesElementMetadataModel(),
+                WithId(new TextElementMetadataModel { Name = "n", Codename = "title" }, Guid.NewGuid()),
+                new GuidelinesElementMetadataModel { Guidelines = "g" },
             ],
         };
         SetupClientWithTypes(type);
@@ -102,10 +105,14 @@ public class ManagementCodeGeneratorTests
         // is a snippet element whose reference doesn't point at any snippet the generator fetched.
         var type = new ContentTypeModel
         {
+            Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "Article",
+            ContentGroups = [],
             Codename = "article",
             Elements =
             [
-                WithId(new TextElementMetadataModel { Codename = "title" }, Guid.NewGuid()),
+                WithId(new TextElementMetadataModel { Name = "n", Codename = "title" }, Guid.NewGuid()),
                 WithId(
                     new ContentTypeSnippetElementMetadataModel
                     {
@@ -138,22 +145,29 @@ public class ManagementCodeGeneratorTests
     {
         var type = new ContentTypeModel
         {
+            Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "Article",
+            ContentGroups = [],
             Codename = "article",
             Elements =
             [
                 WithId(new MultipleChoiceElementMetadataModel
                 {
+                    Name = "n",
                     Codename = "category",
                     Mode = MultipleChoiceMode.Single,
                     Options =
                     [
                         new MultipleChoiceOptionModel
                         {
+                            Name = "n",
                             Codename = "news",
                             Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
                         },
                         new MultipleChoiceOptionModel
                         {
+                            Name = "n",
                             Codename = "release_note",
                             Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
                         },
@@ -171,10 +185,11 @@ public class ManagementCodeGeneratorTests
 
         emitted.Should().NotBeNull();
         emitted.Should().Contain("public IEnumerable<ArticleCategory>? Category { get; init; }");
-        emitted.Should().Contain("[MaxElements(1)]");
         emitted.Should().Contain("public enum ArticleCategory");
         emitted.Should().Contain("News");
         emitted.Should().Contain("ReleaseNote");
+        // Single-select is a server-side rule, not a generated [MaxElements(1)].
+        emitted.Should().NotContain("[MaxElements");
     }
 
     [Fact]
@@ -182,13 +197,18 @@ public class ManagementCodeGeneratorTests
     {
         var type = new ContentTypeModel
         {
+            Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "Article",
+            ContentGroups = [],
             Codename = "article",
             Elements =
             [
                 WithId(new LinkedItemsElementMetadataModel
                 {
+                    Name = "n",
                     Codename = "related",
-                    AllowedTypes = [Reference.ByCodename("article"), Reference.ByCodename("blog_post")],
+                    AllowedContentTypes = [Reference.ByCodename("article"), Reference.ByCodename("blog_post")],
                     ItemCountLimit = new LimitModel { Value = 3, Condition = LimitType.AtMost },
                 }, Guid.NewGuid()),
                 WithId(new TaxonomyElementMetadataModel
@@ -209,11 +229,12 @@ public class ManagementCodeGeneratorTests
 
         emitted.Should().NotBeNull();
         emitted.Should().Contain("public IEnumerable<Reference>? Related { get; init; }");
-        emitted.Should().Contain("[AllowedTypes(\"article\", \"blog_post\")]");
-        emitted.Should().Contain("[MaxElements(3)]");
         emitted.Should().Contain("public IEnumerable<Reference>? Tags { get; init; }");
-        emitted.Should().Contain("[AllowedTaxonomyGroup(\"content_tags\")]");
-        emitted.Should().Contain("[MinElements(1)]");
+        // Allowed types, count limits, and taxonomy group are all server-enforced — none emitted.
+        emitted.Should().NotContain("[AllowedTypes");
+        emitted.Should().NotContain("[MaxElements");
+        emitted.Should().NotContain("[AllowedTaxonomyGroup");
+        emitted.Should().NotContain("[MinElements");
     }
 
     [Fact]
@@ -221,18 +242,24 @@ public class ManagementCodeGeneratorTests
     {
         var type = new ContentTypeModel
         {
+            Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "Article",
+            ContentGroups = [],
             Codename = "article",
             Elements =
             [
                 WithId(new RichTextElementMetadataModel
                 {
+                    Name = "n",
                     Codename = "body",
-                    AllowedTypes = [Reference.ByCodename("banner")],
+                    AllowedContentTypes = [Reference.ByCodename("banner")],
                     AllowedItemLinkTypes = [Reference.ByCodename("article")],
                     MaximumTextLength = new MaximumTextLengthModel { Value = 5000, AppliesTo = TextLengthLimitType.Characters },
                 }, Guid.NewGuid()),
                 WithId(new AssetElementMetadataModel
                 {
+                    Name = "n",
                     Codename = "featured_image",
                     AssetCountLimit = new LimitModel { Value = 1, Condition = LimitType.AtMost },
                     MaximumFileSize = 5_242_880L,
@@ -249,14 +276,15 @@ public class ManagementCodeGeneratorTests
         await CreateGenerator().RunAsync();
 
         emitted.Should().NotBeNull();
-        emitted.Should().Contain("public RichTextElement? Body { get; init; }");
-        emitted.Should().Contain("[AllowedTypes(\"banner\")]");
-        emitted.Should().Contain("[AllowedItemLinkTypes(\"article\")]");
-        emitted.Should().Contain("[StringLength(5000)]");
+        emitted.Should().Contain("public RichTextValue? Body { get; init; }");
         emitted.Should().Contain("public IEnumerable<AssetReference>? FeaturedImage { get; init; }");
-        emitted.Should().Contain("[MaxElements(1)]");
-        emitted.Should().Contain("[MaxAssetSize(5242880L)]");
-        emitted.Should().Contain("[AllowedAssetFileTypes(FileType.Adjustable)]");
+        // Every rich-text / asset constraint is server-enforced — only the identity attribute is emitted.
+        emitted.Should().NotContain("[AllowedTypes");
+        emitted.Should().NotContain("[AllowedItemLinkTypes");
+        emitted.Should().NotContain("[StringLength");
+        emitted.Should().NotContain("[MaxElements");
+        emitted.Should().NotContain("[MaxAssetSize");
+        emitted.Should().NotContain("[AllowedAssetFileTypes");
     }
 
     [Fact]
@@ -265,20 +293,26 @@ public class ManagementCodeGeneratorTests
         var seoSnippet = new ContentTypeSnippetModel
         {
             Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "SEO",
             Codename = "seo",
             // MAPI returns snippet element codenames already prefixed with the snippet codename.
             Elements =
             [
-                WithId(new TextElementMetadataModel { Codename = "seo__meta_title" }, Guid.NewGuid()),
-                WithId(new TextElementMetadataModel { Codename = "seo__meta_description" }, Guid.NewGuid()),
+                WithId(new TextElementMetadataModel { Name = "n", Codename = "seo__meta_title" }, Guid.NewGuid()),
+                WithId(new TextElementMetadataModel { Name = "n", Codename = "seo__meta_description" }, Guid.NewGuid()),
             ],
         };
         var type = new ContentTypeModel
         {
+            Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "Article",
+            ContentGroups = [],
             Codename = "article",
             Elements =
             [
-                WithId(new TextElementMetadataModel { Codename = "title" }, Guid.NewGuid()),
+                WithId(new TextElementMetadataModel { Name = "n", Codename = "title" }, Guid.NewGuid()),
                 WithId(
                     new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = Reference.ById(seoSnippet.Id) },
                     Guid.NewGuid()),
@@ -309,11 +343,17 @@ public class ManagementCodeGeneratorTests
         var snippet = new ContentTypeSnippetModel
         {
             Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "SEO",
             Codename = "seo",
-            Elements = [WithId(new TextElementMetadataModel { Codename = "seo__meta_title" }, Guid.NewGuid())],
+            Elements = [WithId(new TextElementMetadataModel { Name = "n", Codename = "seo__meta_title" }, Guid.NewGuid())],
         };
         var type = new ContentTypeModel
         {
+            Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "Article",
+            ContentGroups = [],
             Codename = "article",
             Elements =
             [
@@ -336,18 +376,30 @@ public class ManagementCodeGeneratorTests
     }
 
     [Fact]
-    public async Task RunAsync_PaginatedListing_WalksAllPages()
+    public async Task RunAsync_MultipleTypes_WritesFileForEach()
     {
-        var page2 = BuildListingPage<ContentTypeModel>(hasNext: false, items: [BuildArticleType()]);
-        var page1 = BuildListingPage<ContentTypeModel>(hasNext: true, items: [BuildArticleType("first")], nextPage: page2);
-        _client.Setup(c => c.ListContentTypesAsync()).ReturnsAsync(page1);
-        _client.Setup(c => c.ListContentTypeSnippetsAsync())
-            .ReturnsAsync(BuildListingPage<ContentTypeSnippetModel>(hasNext: false, items: []));
+        // Listings are materialized (the modern client returns the whole IReadOnlyList in one
+        // IManagementResult — no continuation-token paging to walk).
+        SetupClientWithTypes(BuildArticleType("first"), BuildArticleType());
 
         await CreateGenerator().RunAsync();
 
         _output.Verify(o => o.Output(It.IsAny<string>(), "First", true), Times.Once);
         _output.Verify(o => o.Output(It.IsAny<string>(), "Article", true), Times.Once);
+    }
+
+    [Fact]
+    public async Task RunAsync_FailedTypeListing_Throws()
+    {
+        _client.Setup(c => c.ListContentTypeSnippetsAsync())
+            .ReturnsAsync(SuccessListing<IReadOnlyList<ContentTypeSnippetModel>>([]));
+        _client.Setup(c => c.ListContentTypesAsync())
+            .ReturnsAsync(FailedListing<IReadOnlyList<ContentTypeModel>>("Invalid API key."));
+
+        var act = async () => await CreateGenerator().RunAsync();
+
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*content types*Invalid API key.*");
     }
 
     private void SetupClientWithTypes(params ContentTypeModel[] types)
@@ -360,43 +412,50 @@ public class ManagementCodeGeneratorTests
         IEnumerable<ContentTypeSnippetModel> snippets)
     {
         _client.Setup(c => c.ListContentTypesAsync())
-            .ReturnsAsync(BuildListingPage(hasNext: false, items: types));
+            .ReturnsAsync(SuccessListing<IReadOnlyList<ContentTypeModel>>(types.ToList()));
         _client.Setup(c => c.ListContentTypeSnippetsAsync())
-            .ReturnsAsync(BuildListingPage(hasNext: false, items: snippets));
+            .ReturnsAsync(SuccessListing<IReadOnlyList<ContentTypeSnippetModel>>(snippets.ToList()));
     }
 
-    private static IListingResponseModel<T> BuildListingPage<T>(
-        bool hasNext,
-        IEnumerable<T> items,
-        IListingResponseModel<T> nextPage = null)
+    private static IManagementResult<T> SuccessListing<T>(T value)
     {
-        var mock = new Mock<IListingResponseModel<T>>();
-        var list = items.ToList();
-        // IListingResponseModel<T> redeclares GetEnumerator with `new`, so consumers reaching
-        // through the IEnumerable<T> contract (e.g. List<T>.AddRange) hit a separate slot —
-        // set up both.
-        mock.Setup(m => m.GetEnumerator()).Returns(() => list.GetEnumerator());
-        mock.As<IEnumerable<T>>().Setup(m => m.GetEnumerator()).Returns(() => list.GetEnumerator());
-        mock.As<IEnumerable>().Setup(m => m.GetEnumerator()).Returns(() => list.GetEnumerator());
-        mock.Setup(m => m.HasNextPage()).Returns(hasNext);
-        mock.Setup(m => m.GetNextPage()).ReturnsAsync(nextPage);
+        var mock = new Mock<IManagementResult<T>>();
+        mock.SetupGet(m => m.IsSuccess).Returns(true);
+        mock.SetupGet(m => m.Value).Returns(value);
         return mock.Object;
     }
 
-    private static ContentTypeModel BuildArticleType(string codename = "article") => new()
+    private static IManagementResult<T> FailedListing<T>(string message)
     {
+        var error = new Mock<IError>();
+        error.SetupGet(e => e.Message).Returns(message);
+
+        var mock = new Mock<IManagementResult<T>>();
+        mock.SetupGet(m => m.IsSuccess).Returns(false);
+        mock.SetupGet(m => m.Error).Returns(error.Object);
+        return mock.Object;
+    }
+
+    private static ContentTypeModel BuildArticleType(string codename = "article", Guid? id = null) => new()
+    {
+        // Guid.Empty by default — the generator only emits the type id attribute when Id != Empty.
+        Id = id ?? Guid.Empty,
+        LastModified = default,
+        Name = codename,
+        ContentGroups = [],
         Codename = codename,
         Elements =
         [
             WithId(
                 new TextElementMetadataModel
                 {
+                    Name = "n",
                     Codename = "title",
                     MaximumTextLength = new MaximumTextLengthModel { Value = 100, AppliesTo = TextLengthLimitType.Characters },
                 },
                 Guid.NewGuid()),
-            WithId(new NumberElementMetadataModel { Codename = "priority" }, Guid.NewGuid()),
-            WithId(new DateTimeElementMetadataModel { Codename = "published_at" }, Guid.NewGuid()),
+            WithId(new NumberElementMetadataModel { Name = "n", Codename = "priority" }, Guid.NewGuid()),
+            WithId(new DateTimeElementMetadataModel { Name = "n", Codename = "published_at" }, Guid.NewGuid()),
         ],
     };
 

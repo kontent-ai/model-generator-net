@@ -1,55 +1,40 @@
 namespace Kontent.Ai.ModelGenerator.Core.Common;
 
 /// <summary>
-/// Input shape for <see cref="Services.ManagementElementService"/>. One concrete subtype
-/// per Management API element type the generator emits. The orchestrator (slice 3) adapts
-/// MAPI's <c>ElementMetadataBase</c> hierarchy into these records; tests construct them
-/// directly without going through MAPI serialization.
+/// Input shape for <see cref="Services.ManagementElementService"/>. One concrete subtype per
+/// Management API element type the generator emits — the subtype selects the C# value type the
+/// element projects to. The orchestrator adapts MAPI's <c>ElementMetadataBase</c> hierarchy into
+/// these records; tests construct them directly without going through MAPI serialization.
 /// </summary>
 public abstract record ManagementElementInput(string Codename, string Id);
 
-/// <summary>
-/// Text element. <paramref name="MaximumCharacters"/> is the character-count constraint
-/// (null when not set, or when the MAPI constraint applied to words rather than characters
-/// — <c>words</c> is not currently emittable; see plan §3 in management-models-plan.md).
-/// <paramref name="Regex"/> is the validation pattern (null when not set or inactive).
-/// </summary>
-public sealed record TextElementInput(
-    string Codename,
-    string Id,
-    int? MaximumCharacters = null,
-    string Regex = null) : ManagementElementInput(Codename, Id);
+/// <summary>Text element → <c>string?</c>.</summary>
+public sealed record TextElementInput(string Codename, string Id)
+    : ManagementElementInput(Codename, Id);
 
-/// <summary>Number element. Has no consumer-facing constraints beyond identity.</summary>
+/// <summary>Number element → <c>decimal?</c>.</summary>
 public sealed record NumberElementInput(string Codename, string Id)
     : ManagementElementInput(Codename, Id);
 
-/// <summary>Date-time element. Has no consumer-facing constraints beyond identity.</summary>
+/// <summary>Date-time element → <c>DateTimeValue?</c>.</summary>
 public sealed record DateTimeElementInput(string Codename, string Id)
     : ManagementElementInput(Codename, Id);
 
 /// <summary>
-/// Custom element. The value is an opaque string from the generator's perspective;
-/// <c>source_url</c> / <c>json_parameters</c> / <c>allowed_elements</c> are owner-of-custom-element
-/// concerns, not emitted on the consuming type.
+/// Custom element → <c>CustomValue?</c>. The value is an opaque string from the generator's
+/// perspective; <c>source_url</c> / <c>json_parameters</c> / <c>allowed_elements</c> are
+/// owner-of-custom-element concerns, not emitted on the consuming type.
 /// </summary>
 public sealed record CustomElementInput(string Codename, string Id)
     : ManagementElementInput(Codename, Id);
 
-/// <summary>
-/// URL slug element. <paramref name="Regex"/> is the validation pattern (null when not set
-/// or inactive). The <c>depends_on</c> source-element reference is deferred per plan.
-/// </summary>
-public sealed record UrlSlugElementInput(
-    string Codename,
-    string Id,
-    string Regex = null) : ManagementElementInput(Codename, Id);
+/// <summary>URL slug element → <c>UrlSlugValue?</c>.</summary>
+public sealed record UrlSlugElementInput(string Codename, string Id)
+    : ManagementElementInput(Codename, Id);
 
 /// <summary>
-/// Multiple-choice element — both single-select (mode=single) and multi-select (mode=multiple)
-/// use the same input shape. The wire value is always an array of option references, so the
-/// generator always emits <c>IReadOnlyList&lt;TEnum&gt;?</c>; <see cref="IsSingleSelect"/> only
-/// controls whether a <c>[MaxElements(1)]</c> attribute is emitted.
+/// Multiple-choice element (single- and multi-select alike) → <c>IEnumerable&lt;TEnum&gt;?</c>; the
+/// wire value is always an array of option references.
 /// <para>
 /// <see cref="EnumTypeName"/> is set by the orchestrator (typically <c>{ContentTypeClassName}{PascalElementCodename}</c>)
 /// so the same multiple-choice element on two content types produces two distinct, collision-free enum types.
@@ -59,83 +44,28 @@ public sealed record MultipleChoiceElementInput(
     string Codename,
     string Id,
     string EnumTypeName,
-    bool IsSingleSelect,
     System.Collections.Generic.IReadOnlyList<MultipleChoiceOptionInput> Options)
     : ManagementElementInput(Codename, Id);
 
-/// <summary>
-/// A single option of a multiple-choice element.
-/// </summary>
+/// <summary>A single option of a multiple-choice element.</summary>
 public sealed record MultipleChoiceOptionInput(string Codename, string Id);
 
-/// <summary>
-/// A per-collection count constraint (linked items, subpages, taxonomy, asset).
-/// Maps MAPI's <c>LimitModel { Value, Condition }</c>; the generator picks the
-/// corresponding <c>[MinElements]</c> / <c>[MaxElements]</c> / <c>[ExactElements]</c>.
-/// </summary>
-public sealed record CountLimit(int Value, CountLimitMode Mode);
+/// <summary>Linked items element → <c>IEnumerable&lt;Reference&gt;?</c> (an array of item references, not inlined models).</summary>
+public sealed record LinkedItemsElementInput(string Codename, string Id)
+    : ManagementElementInput(Codename, Id);
 
-public enum CountLimitMode { AtLeast, AtMost, Exactly }
+/// <summary>Subpages element (Web Spotlight) → <c>IEnumerable&lt;Reference&gt;?</c>. Same wire shape as linked items; different MAPI element type.</summary>
+public sealed record SubpagesElementInput(string Codename, string Id)
+    : ManagementElementInput(Codename, Id);
 
-/// <summary>
-/// Linked items element. Wire type: <c>IReadOnlyList&lt;IElementsModel&gt;?</c>.
-/// <paramref name="AllowedTypeCodenames"/> is null/empty when there's no allowlist.
-/// </summary>
-public sealed record LinkedItemsElementInput(
-    string Codename,
-    string Id,
-    System.Collections.Generic.IReadOnlyList<string> AllowedTypeCodenames = null,
-    CountLimit ItemCount = null) : ManagementElementInput(Codename, Id);
+/// <summary>Taxonomy element → <c>IEnumerable&lt;Reference&gt;?</c>.</summary>
+public sealed record TaxonomyElementInput(string Codename, string Id)
+    : ManagementElementInput(Codename, Id);
 
-/// <summary>
-/// Subpages element (Web Spotlight). Same wire shape as linked items; different MAPI element type.
-/// </summary>
-public sealed record SubpagesElementInput(
-    string Codename,
-    string Id,
-    System.Collections.Generic.IReadOnlyList<string> AllowedTypeCodenames = null,
-    CountLimit ItemCount = null) : ManagementElementInput(Codename, Id);
+/// <summary>Rich text element → <c>RichTextValue?</c>.</summary>
+public sealed record RichTextElementInput(string Codename, string Id)
+    : ManagementElementInput(Codename, Id);
 
-/// <summary>
-/// Taxonomy element. Wire type: <c>IReadOnlyList&lt;Reference&gt;?</c>.
-/// <paramref name="TaxonomyGroup"/> carries the codename (preferred) or id (fallback) of
-/// the taxonomy group the element pulls terms from; null when the MAPI response had
-/// neither (rare — the SDK would still let the API reject the upsert).
-/// </summary>
-public sealed record TaxonomyElementInput(
-    string Codename,
-    string Id,
-    string TaxonomyGroup = null,
-    CountLimit TermCount = null) : ManagementElementInput(Codename, Id);
-
-/// <summary>
-/// Rich text element. Wire type: <c>RichTextElement?</c>.
-/// Block / formatting / image-related constraints (allowed_blocks, allowed_formatting,
-/// image_width_limit, etc.) are deferred per plan — HTML-shape validation is the SDK's
-/// future responsibility, not currently emittable as machine-readable attributes.
-/// </summary>
-public sealed record RichTextElementInput(
-    string Codename,
-    string Id,
-    System.Collections.Generic.IReadOnlyList<string> AllowedTypeCodenames = null,
-    System.Collections.Generic.IReadOnlyList<string> AllowedItemLinkTypeCodenames = null,
-    int? MaximumCharacters = null) : ManagementElementInput(Codename, Id);
-
-/// <summary>
-/// Asset element. Wire type: <c>IReadOnlyList&lt;AssetReference&gt;?</c> (always a collection;
-/// single-asset constraints are encoded as <c>[MaxElements(1)]</c> per plan).
-/// <paramref name="AllowedFileType"/> is null when MAPI's <c>FileType.Any</c> applies
-/// (no constraint emitted). Image dimension limits are deferred.
-/// </summary>
-public sealed record AssetElementInput(
-    string Codename,
-    string Id,
-    CountLimit AssetCount = null,
-    long? MaximumFileSizeBytes = null,
-    AssetFileType? AllowedFileType = null) : ManagementElementInput(Codename, Id);
-
-/// <summary>
-/// File-type constraint for asset elements. Mirrors MAPI's <c>FileType</c> (minus <c>Any</c>,
-/// which the input encodes as null — no constraint to emit).
-/// </summary>
-public enum AssetFileType { Adjustable }
+/// <summary>Asset element → <c>IEnumerable&lt;AssetReference&gt;?</c>.</summary>
+public sealed record AssetElementInput(string Codename, string Id)
+    : ManagementElementInput(Codename, Id);

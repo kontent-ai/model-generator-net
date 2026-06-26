@@ -51,14 +51,16 @@ public class ManagementClassCodeGeneratorTests
         var code = sut.GenerateCode();
 
         code.Should().Contain("using System;");
-        code.Should().Contain("using System.ComponentModel.DataAnnotations;");
         code.Should().Contain("using Kontent.Ai.Management;");
         code.Should().Contain("using Kontent.Ai.Management.Annotations;");
         code.Should().Contain("using Kontent.Ai.Management.Models.Content;");
+        // No constraint attributes are emitted, so neither DataAnnotations nor the FileType namespace is pulled in.
+        code.Should().NotContain("using System.ComponentModel.DataAnnotations;");
+        code.Should().NotContain("using Kontent.Ai.Management.Models.Types.Elements;");
     }
 
     [Fact]
-    public void Build_TextPropertyWithStringLength_EmitsExpectedAttributesAndType()
+    public void Build_TextProperty_EmitsKontentElementAndType()
     {
         var classDefinition = new ClassDefinition("article");
         var property = new ManagementProperty(
@@ -72,7 +74,6 @@ public class ManagementClassCodeGeneratorTests
                     AttributeArg.Positional("title"),
                     AttributeArg.Positional("11111111-2222-3333-4444-555555555555"),
                 ]),
-                new AttributeSpec("StringLength", [AttributeArg.Positional(100)]),
             ]);
         classDefinition.AddProperty(property);
 
@@ -80,7 +81,6 @@ public class ManagementClassCodeGeneratorTests
 
         code.Should().Contain(
             "[KontentElement(\"title\", \"11111111-2222-3333-4444-555555555555\")]");
-        code.Should().Contain("[StringLength(100)]");
         code.Should().Contain("public string? Title { get; init; }");
     }
 
@@ -142,7 +142,6 @@ public class ManagementClassCodeGeneratorTests
                 AttributeArg.Positional("category"),
                 AttributeArg.Positional("mc-id"),
             ]),
-            new AttributeSpec("MaxElements", [AttributeArg.Positional(1)]),
         ]));
         classDefinition.AddEnum(new EnumDefinition("ArticleCategory",
         [
@@ -167,7 +166,6 @@ public class ManagementClassCodeGeneratorTests
         var code = new ManagementClassCodeGenerator(classDefinition, classDefinition.ClassName).GenerateCode();
 
         code.Should().Contain("public IEnumerable<ArticleCategory>? Category { get; init; }");
-        code.Should().Contain("[MaxElements(1)]");
         code.Should().Contain("public enum ArticleCategory");
         code.Should().Contain("[KontentEnumValue(\"news\", \"opt-1\")]");
         code.Should().Contain("News");
@@ -209,7 +207,6 @@ public class ManagementClassCodeGeneratorTests
                 AttributeArg.Positional("title"),
                 AttributeArg.Positional("11111111-1111-1111-1111-111111111111"),
             ]),
-            new AttributeSpec("StringLength", [AttributeArg.Positional(100)]),
         ]));
         classDefinition.AddProperty(new ManagementProperty("priority", "decimal?", "22222222-2222-2222-2222-222222222222",
         [
@@ -234,7 +231,6 @@ public class ManagementClassCodeGeneratorTests
                 AttributeArg.Positional("category"),
                 AttributeArg.Positional("44444444-4444-4444-4444-444444444444"),
             ]),
-            new AttributeSpec("MaxElements", [AttributeArg.Positional(1)]),
         ]));
         classDefinition.AddEnum(new EnumDefinition("ArticleCategory",
         [
@@ -262,33 +258,14 @@ public class ManagementClassCodeGeneratorTests
                 AttributeArg.Positional("related"),
                 AttributeArg.Positional("55555555-5555-5555-5555-555555555555"),
             ]),
-            new AttributeSpec("AllowedTypes",
-            [
-                AttributeArg.Positional("article"),
-                AttributeArg.Positional("blog_post"),
-            ]),
-            new AttributeSpec("MaxElements", [AttributeArg.Positional(3)]),
         ]));
-        classDefinition.AddProperty(new ManagementProperty("tags", "IEnumerable<Reference>?", "66666666-6666-6666-6666-666666666666",
-        [
-            new AttributeSpec("KontentElement",
-            [
-                AttributeArg.Positional("tags"),
-                AttributeArg.Positional("66666666-6666-6666-6666-666666666666"),
-            ]),
-            new AttributeSpec("AllowedTaxonomyGroup", [AttributeArg.Positional("content_tags")]),
-            new AttributeSpec("MinElements", [AttributeArg.Positional(1)]),
-        ]));
-        classDefinition.AddProperty(new ManagementProperty("body", "RichTextElement?", "77777777-7777-7777-7777-777777777777",
+        classDefinition.AddProperty(new ManagementProperty("body", "RichTextValue?", "77777777-7777-7777-7777-777777777777",
         [
             new AttributeSpec("KontentElement",
             [
                 AttributeArg.Positional("body"),
                 AttributeArg.Positional("77777777-7777-7777-7777-777777777777"),
             ]),
-            new AttributeSpec("AllowedTypes", [AttributeArg.Positional("banner")]),
-            new AttributeSpec("AllowedItemLinkTypes", [AttributeArg.Positional("article")]),
-            new AttributeSpec("StringLength", [AttributeArg.Positional(5000)]),
         ]));
         classDefinition.AddProperty(new ManagementProperty("featured_image", "IEnumerable<AssetReference>?", "88888888-8888-8888-8888-888888888888",
         [
@@ -296,12 +273,6 @@ public class ManagementClassCodeGeneratorTests
             [
                 AttributeArg.Positional("featured_image"),
                 AttributeArg.Positional("88888888-8888-8888-8888-888888888888"),
-            ]),
-            new AttributeSpec("MaxElements", [AttributeArg.Positional(1)]),
-            new AttributeSpec("MaxAssetSize", [AttributeArg.Positional(5_242_880L)]),
-            new AttributeSpec("AllowedAssetFileTypes",
-            [
-                AttributeArg.PositionalRawCode("FileType.Adjustable"),
             ]),
         ]));
 
@@ -317,7 +288,6 @@ public class ManagementClassCodeGeneratorTests
             references:
             [
                 MetadataReference.CreateFromFile(typeof(object).GetTypeInfo().Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.StringLengthAttribute).Assembly.Location),
                 MetadataReference.CreateFromFile(Assembly.Load("System.Runtime").Location),
                 MetadataReference.CreateFromFile(Assembly.Load("netstandard").Location),
             ],
@@ -336,9 +306,9 @@ public class ManagementClassCodeGeneratorTests
     }
 
     // Minimal stubs for the SDK types the emitted code references. Layout mirrors the real
-    // management-sdk-net (vnext, phase 3): IElementsModel at the root namespace, content-value
-    // types in Models.Content, attributes in Annotations, and FileType in Models.Types.Elements.
-    // Constraint attributes [StringLength] / [RegularExpression] come from BCL.
+    // management-sdk-net (vnext): IElementsModel at the root namespace, content-value types in
+    // Models.Content, and the three identity attributes in Annotations. No constraint attributes —
+    // the SDK no longer defines them, so a generated model that referenced one would fail to compile.
     private const string SdkStubsSource = @"
 namespace Kontent.Ai.Management
 {
@@ -348,19 +318,13 @@ namespace Kontent.Ai.Management
 namespace Kontent.Ai.Management.Models.Content
 {
     public sealed class Reference { }
-    public sealed class RichTextElement { }
+    public sealed class RichTextValue { }
     public sealed class AssetReference { }
-}
-
-namespace Kontent.Ai.Management.Models.Types.Elements
-{
-    public enum FileType { Any, Adjustable }
 }
 
 namespace Kontent.Ai.Management.Annotations
 {
     using System;
-    using Kontent.Ai.Management.Models.Types.Elements;
 
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class KontentTypeAttribute : Attribute
@@ -384,62 +348,6 @@ namespace Kontent.Ai.Management.Annotations
         public KontentEnumValueAttribute(string codename, string id) { Codename = codename; Id = id; }
         public string Codename { get; }
         public string Id { get; }
-    }
-
-    [AttributeUsage(AttributeTargets.Property)]
-    public sealed class MinElementsAttribute : Attribute
-    {
-        public MinElementsAttribute(int n) { N = n; }
-        public int N { get; }
-    }
-
-    [AttributeUsage(AttributeTargets.Property)]
-    public sealed class MaxElementsAttribute : Attribute
-    {
-        public MaxElementsAttribute(int n) { N = n; }
-        public int N { get; }
-    }
-
-    [AttributeUsage(AttributeTargets.Property)]
-    public sealed class ExactElementsAttribute : Attribute
-    {
-        public ExactElementsAttribute(int n) { N = n; }
-        public int N { get; }
-    }
-
-    [AttributeUsage(AttributeTargets.Property)]
-    public sealed class AllowedTypesAttribute : Attribute
-    {
-        public AllowedTypesAttribute(params string[] codenames) { Codenames = codenames; }
-        public string[] Codenames { get; }
-    }
-
-    [AttributeUsage(AttributeTargets.Property)]
-    public sealed class AllowedTaxonomyGroupAttribute : Attribute
-    {
-        public AllowedTaxonomyGroupAttribute(string codenameOrId) { CodenameOrId = codenameOrId; }
-        public string CodenameOrId { get; }
-    }
-
-    [AttributeUsage(AttributeTargets.Property)]
-    public sealed class AllowedItemLinkTypesAttribute : Attribute
-    {
-        public AllowedItemLinkTypesAttribute(params string[] codenames) { Codenames = codenames; }
-        public string[] Codenames { get; }
-    }
-
-    [AttributeUsage(AttributeTargets.Property)]
-    public sealed class MaxAssetSizeAttribute : Attribute
-    {
-        public MaxAssetSizeAttribute(long bytes) { Bytes = bytes; }
-        public long Bytes { get; }
-    }
-
-    [AttributeUsage(AttributeTargets.Property)]
-    public sealed class AllowedAssetFileTypesAttribute : Attribute
-    {
-        public AllowedAssetFileTypesAttribute(FileType types) { Types = types; }
-        public FileType Types { get; }
     }
 }
 ";
