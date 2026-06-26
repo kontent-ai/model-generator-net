@@ -9,9 +9,8 @@ namespace Kontent.Ai.ModelGenerator.Core.Generators.Class;
 
 /// <summary>
 /// Emits a content type as a <c>sealed partial record</c> implementing <c>IElementsModel</c>,
-/// with <c>[KontentContentType]</c> at the type level and <c>[KontentElement]</c> + constraint
-/// attributes per property. Constraint attributes come from each <see cref="ManagementProperty"/>'s
-/// <see cref="ManagementProperty.Attributes"/> list.
+/// with <c>[KontentType]</c> at the type level and <c>[KontentElement]</c> per property. Property
+/// attributes come from each <see cref="ManagementProperty"/>'s <see cref="ManagementProperty.Attributes"/> list.
 /// </summary>
 public sealed class ManagementClassCodeGenerator(
     ClassDefinition classDefinition,
@@ -74,14 +73,11 @@ public sealed class ManagementClassCodeGenerator(
     [
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.Collections.Generic")),
-        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("System.ComponentModel.DataAnnotations")),
         // SDK layout: IElementsModel at the root namespace, attributes in Annotations,
-        // content-value types (Reference, AssetReference, RichTextElement) in Models.Content,
-        // and FileType (the AllowedAssetFileTypes argument) in Models.Types.Elements.
+        // content-value types (Reference, AssetReference, RichTextValue) in Models.Content.
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management.Annotations")),
         SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management.Models.Content")),
-        SyntaxFactory.UsingDirective(SyntaxFactory.ParseName("Kontent.Ai.Management.Models.Types.Elements")),
     ];
 
     protected override MemberDeclarationSyntax[] GetAdditionalNamespaceMembers() =>
@@ -137,7 +133,6 @@ public sealed class ManagementClassCodeGenerator(
     private static ExpressionSyntax BuildArgumentExpression(object value) =>
         value switch
         {
-            RawCodeAttributeValue raw => SyntaxFactory.ParseExpression(raw.Expression),
             string s => SyntaxFactory.LiteralExpression(
                 SyntaxKind.StringLiteralExpression,
                 SyntaxFactory.Literal(s)),

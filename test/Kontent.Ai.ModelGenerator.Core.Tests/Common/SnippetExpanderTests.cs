@@ -22,7 +22,7 @@ public class SnippetExpanderTests
     [Fact]
     public void Expand_NonSnippetElement_PassesThroughUnchanged()
     {
-        var element = WithId(new TextElementMetadataModel { Codename = "title" }, Guid.NewGuid());
+        var element = WithId(new TextElementMetadataModel { Name = "n", Codename = "title" }, Guid.NewGuid());
 
         var result = SnippetExpander.Expand([element], _ => null, _warnings.Add).ToList();
 
@@ -35,10 +35,13 @@ public class SnippetExpanderTests
     public void Expand_SnippetElement_InlinesInnerElementsWithMapiCodenamesUnchanged()
     {
         // MAPI returns snippet element codenames already prefixed with the snippet codename.
-        var metaTitle = WithId(new TextElementMetadataModel { Codename = "seo__meta_title" }, Guid.NewGuid());
-        var metaDescription = WithId(new TextElementMetadataModel { Codename = "seo__meta_description" }, Guid.NewGuid());
+        var metaTitle = WithId(new TextElementMetadataModel { Name = "n", Codename = "seo__meta_title" }, Guid.NewGuid());
+        var metaDescription = WithId(new TextElementMetadataModel { Name = "n", Codename = "seo__meta_description" }, Guid.NewGuid());
         var snippet = new ContentTypeSnippetModel
         {
+            Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "n",
             Codename = "seo",
             Elements = [metaTitle, metaDescription],
         };
@@ -60,15 +63,18 @@ public class SnippetExpanderTests
     [Fact]
     public void Expand_MixedListWithSnippetAndOwnElements_PreservesOrderAndFlattens()
     {
-        var title = WithId(new TextElementMetadataModel { Codename = "title" }, Guid.NewGuid());
+        var title = WithId(new TextElementMetadataModel { Name = "n", Codename = "title" }, Guid.NewGuid());
         var snippetEl = WithId(
             new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = Reference.ByCodename("seo") },
             Guid.NewGuid());
-        var body = WithId(new TextElementMetadataModel { Codename = "body" }, Guid.NewGuid());
+        var body = WithId(new TextElementMetadataModel { Name = "n", Codename = "body" }, Guid.NewGuid());
 
-        var metaTitle = WithId(new TextElementMetadataModel { Codename = "seo__meta_title" }, Guid.NewGuid());
+        var metaTitle = WithId(new TextElementMetadataModel { Name = "n", Codename = "seo__meta_title" }, Guid.NewGuid());
         var snippet = new ContentTypeSnippetModel
         {
+            Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "n",
             Codename = "seo",
             Elements = [metaTitle],
         };
@@ -103,7 +109,7 @@ public class SnippetExpanderTests
     [Fact]
     public void Expand_SnippetWithNullIdentifier_WarnsAndSkips()
     {
-        var snippetEl = WithId(new ContentTypeSnippetElementMetadataModel(), Guid.NewGuid());
+        var snippetEl = WithId(new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = null }, Guid.NewGuid());
 
         var result = SnippetExpander.Expand([snippetEl], _ => null, _warnings.Add).ToList();
 
@@ -114,15 +120,18 @@ public class SnippetExpanderTests
     [Fact]
     public void Expand_NestedSnippet_WarnsAndSkipsInnerSnippetElement()
     {
-        var x = WithId(new TextElementMetadataModel { Codename = "outer__x" }, Guid.NewGuid());
+        var x = WithId(new TextElementMetadataModel { Name = "n", Codename = "outer__x" }, Guid.NewGuid());
         var outerSnippet = new ContentTypeSnippetModel
         {
+            Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "n",
             Codename = "outer",
             Elements =
             [
                 x,
                 // MAPI shouldn't allow this but defend if it ever appears.
-                WithId(new ContentTypeSnippetElementMetadataModel(), Guid.NewGuid()),
+                WithId(new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = null }, Guid.NewGuid()),
             ],
         };
         var snippetEl = WithId(
@@ -140,14 +149,17 @@ public class SnippetExpanderTests
     [Fact]
     public void Expand_GuidelinesInsideSnippet_SilentlyDropped()
     {
-        var metaTitle = WithId(new TextElementMetadataModel { Codename = "seo__meta_title" }, Guid.NewGuid());
+        var metaTitle = WithId(new TextElementMetadataModel { Name = "n", Codename = "seo__meta_title" }, Guid.NewGuid());
         var snippet = new ContentTypeSnippetModel
         {
+            Id = Guid.NewGuid(),
+            LastModified = default,
+            Name = "n",
             Codename = "seo",
             Elements =
             [
                 metaTitle,
-                new GuidelinesElementMetadataModel(),
+                new GuidelinesElementMetadataModel { Guidelines = "g" },
             ],
         };
         var snippetEl = WithId(

@@ -13,10 +13,10 @@
 This utility generates strongly-typed **record-based models** for:
 
 - the [Kontent.ai Delivery SDK for .NET (v19+)](https://github.com/kontent-ai/delivery-sdk-net) — default mode, for reading content
-- the [Kontent.ai Management SDK for .NET](https://github.com/kontent-ai/management-sdk-net) — opt-in mode (`-m` / `--management`), for CRUD workflows. Preview — coordinated with the upcoming `management-sdk-net` vnext release.
+- the [Kontent.ai Management SDK for .NET](https://github.com/kontent-ai/management-sdk-net) — opt-in mode (`-m` / `--management`), for CRUD workflows. Beta — targets `Kontent.Ai.Management 9.0.0-beta-1`.
 
 > [!IMPORTANT]
-> Management mode emits code that references the future `IContentItem` marker, `[KontentContentType]` / `[KontentElement]` attributes, validator, and STJ converter, all shipped by the `management-sdk-net` vnext branch (phase 3). Until that release lands, generated management models won't compile against the published Management SDK (v8.2.0).
+> Management mode emits code that references the `IElementsModel` marker, the `[KontentType]` / `[KontentElement]` / `[KontentEnumValue]` attributes, and the value types (`RichTextValue`, `AssetReference`, `Reference`, `UrlSlugValue`, `DateTimeValue`, `CustomValue`) shipped by `Kontent.Ai.Management 9.0.0-beta-1`. Generated management models require **`Kontent.Ai.Management 9.0.0-beta-1` or newer** — they won't compile against v8.2.0 or earlier. The mode is a beta: the generated shapes may still change before the SDK stabilizes.
 >
 > If you need models for the legacy Delivery SDK (v18.x and earlier) or for Extended Delivery, use the [previous stable release](https://github.com/kontent-ai/model-generator-net/tree/9.0.0).
 
@@ -55,7 +55,7 @@ KontentModelGenerator --environmentId "<environmentId>" \
     [--nullability strict|semantic]
 ```
 
-Management (preview — see [Management Models](#management-models)):
+Management (beta — see [Management Models](#management-models)):
 
 ```bash
 KontentModelGenerator --management \
@@ -264,12 +264,12 @@ The generator creates the base model, and you maintain customizations in separat
 ## Management Models
 
 > [!IMPORTANT]
-> Preview. The emitted code references types and attributes that ship with the upcoming
-> `management-sdk-net` vnext release (phase 3) — `IContentItem`, `[KontentContentType]`,
-> `[KontentElement]`, `RichTextElement`, `AssetReference`, `Reference`, `UrlSlugValue`,
-> `DateTimeValue`, `CustomValue`, the validator, and the System.Text.Json converter. Until
-> that release lands, the generated models won't compile against the published
-> `Kontent.Ai.Management` v8.2.0.
+> Beta. The emitted code references types and attributes shipped by `Kontent.Ai.Management
+> 9.0.0-beta-1` — `IElementsModel`, `[KontentType]`, `[KontentElement]`, `[KontentEnumValue]`,
+> `RichTextValue`, `AssetReference`, `Reference`, `UrlSlugValue`, `DateTimeValue`, and
+> `CustomValue`. Generated models require **`Kontent.Ai.Management 9.0.0-beta-1` or newer** and
+> won't compile against v8.2.0 or earlier. The generated shapes may still change before the SDK
+> stabilizes.
 
 When you need to **write** content to Kontent.ai (create / update / delete / publish via the Management API), pass `-m` / `--management` to switch the generator from Delivery mode into Management mode. The emitter produces strongly-typed records you can construct with object-initializer syntax and pass to `IManagementClient`.
 
@@ -288,12 +288,12 @@ KontentModelGenerator --management \
 | | Delivery | Management |
 | --- | --- | --- |
 | Use case | Read content, frontend rendering | CRUD via the Management API |
-| Marker interface | None | `IContentItem` (empty marker) |
+| Marker interface | None | `IElementsModel` (empty marker) |
 | Element identity | `[JsonPropertyName("codename")]` | `[KontentElement(codename, id)]` — both required (codename for request serialization, ID for response deserialization) |
 | Type-level metadata | `[ContentTypeCodename]` | `[KontentType(codename)]` |
-| Collections | `IEnumerable<T>?` | `IReadOnlyList<T>?` (always; single-asset becomes `[MaxElements(1)]`) |
-| Element constraints | Implicit at API layer | `[StringLength]`, `[RegularExpression]`, `[MinElements]` / `[MaxElements]` / `[ExactElements]`, `[AllowedTypes]`, `[AllowedTaxonomyGroup]`, `[MaxAssetSize]`, `[AllowedAssetFileTypes]` — consumed by the SDK validator before send |
-| Multiple-choice | `IEnumerable<MultipleChoiceOption>?` | Per-element enum + `IReadOnlyList<{ContentType}{Element}>?` |
+| Collections | `IEnumerable<T>?` | `IEnumerable<T>?` |
+| Element constraints | Implicit at API layer | **Not mirrored on the model.** Content-model rules (length, regex, allowed types, count limits, asset rules, ...) are enforced server-side by the Management API — the generated models carry identity only. |
+| Multiple-choice | `IEnumerable<MultipleChoiceOption>?` | Per-element enum (`[KontentEnumValue]` members) + `IEnumerable<{ContentType}{Element}>?` |
 | Snippets | Implicit; values come back flattened | Flattened at generation time; properties carry `{snippet}__{element}` codenames |
 | Required elements | Not exposed | **Not enforced on the model.** `is_required` is a publish-workflow gate in MAPI, not an upsert-shape constraint — every property stays nullable so partial draft saves work. |
 
@@ -308,7 +308,6 @@ KontentModelGenerator --management \
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Kontent.Ai.Management;
 using Kontent.Ai.Management.Annotations;
 using Kontent.Ai.Management.Models.Content;
@@ -316,22 +315,16 @@ using Kontent.Ai.Management.Models.Content;
 namespace MyProject.Models;
 
 [KontentType("article")]
-public sealed partial record Article : IContentItem
+public sealed partial record Article : IElementsModel
 {
     [KontentElement("body", "7ed15846-...")]
-    [AllowedTypes("banner", "quote")]
-    [AllowedItemLinkTypes("article")]
-    public RichTextElement? Body { get; init; }
+    public RichTextValue? Body { get; init; }
 
     [KontentElement("category", "f6d310a3-...")]
-    [MaxElements(1)]
-    public IReadOnlyList<ArticleCategory>? Category { get; init; }
+    public IEnumerable<ArticleCategory>? Category { get; init; }
 
     [KontentElement("featured_image", "8d2c...")]
-    [MaxElements(1)]
-    [MaxAssetSize(5242880L)]
-    [AllowedAssetFileTypes(AssetFileType.Adjustable)]
-    public IReadOnlyList<AssetReference>? FeaturedImage { get; init; }
+    public IEnumerable<AssetReference>? FeaturedImage { get; init; }
 
     [KontentElement("priority", "88ae3d9b-...")]
     public decimal? Priority { get; init; }
@@ -343,24 +336,18 @@ public sealed partial record Article : IContentItem
     public CustomValue? RatingWidget { get; init; }
 
     [KontentElement("related_teasers", "a3155ec4-...")]
-    [AllowedTypes("article", "blog_post")]
-    [MaxElements(3)]
-    public IReadOnlyList<Reference>? RelatedTeasers { get; init; }
+    public IEnumerable<Reference>? RelatedTeasers { get; init; }
 
     [KontentElement("seo__meta_title", "09398b24-...")]
-    [StringLength(70)]
     public string? SeoMetaTitle { get; init; }
 
     [KontentElement("tags", "1314993e-...")]
-    [AllowedTaxonomyGroup("content_tags")]
-    public IReadOnlyList<Reference>? Tags { get; init; }
+    public IEnumerable<Reference>? Tags { get; init; }
 
     [KontentElement("title", "a47451eb-...")]
-    [StringLength(100)]
     public string? Title { get; init; }
 
     [KontentElement("url", "e5a8c0f1-...")]
-    [RegularExpression("^[a-z0-9-]+$")]
     public UrlSlugValue? Url { get; init; }
 }
 
@@ -376,7 +363,7 @@ public enum ArticleCategory
 
 - **Models are environment-specific** by virtue of their element IDs. Cloning an environment via data-ops produces logically identical content models with different element IDs — regenerate after cloning.
 - **Snippets are flattened**. If your content type uses an `seo` snippet that contributes `meta_title` and `meta_description`, the generated record has `SeoMetaTitle` and `SeoMetaDescription` properties; the `[KontentElement]` attributes carry the `seo__meta_title` / `seo__meta_description` codenames the API expects.
-- **Validation runs at the SDK layer before the HTTP request**, surfaced via `IManagementResult` — same shape as remote validation errors.
+- **Content-model constraints are not on the model.** Length, regex, allowed types, count limits, asset rules, and the like are enforced server-side by the Management API and surfaced via `IManagementResult` — the generated records carry element identity and value types only.
 
 ## Need Legacy Delivery SDK or Extended Delivery Support?
 

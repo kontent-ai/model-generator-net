@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Kontent.Ai.Delivery;
 using Kontent.Ai.Delivery.Extensions;
-using Kontent.Ai.Management;
+using Kontent.Ai.Management.Extensions;
 using Kontent.Ai.ModelGenerator.Core;
 using Kontent.Ai.ModelGenerator.Core.Common;
 using Kontent.Ai.ModelGenerator.Core.Configuration;
@@ -92,14 +92,10 @@ internal class Program
 
     private static Type ConfigureManagementMode(IServiceCollection services, IConfiguration configuration)
     {
-        // 8.2.0 doesn't ship an AddManagementClient DI extension yet; build the client manually
-        // from the bound options. ManagementClient owns its HttpClient; the DI container disposes
-        // the singleton when the process exits.
-        services.AddSingleton<IManagementClient>(sp =>
-        {
-            var options = sp.GetRequiredService<IOptions<CodeGeneratorOptions>>().Value;
-            return new ManagementClient(options.ManagementOptions);
-        });
+        // Binds the "ManagementOptions" configuration section (the CLI maps --environmentid / --apikey
+        // onto ManagementOptions:EnvironmentId / ManagementOptions:ApiKey) and registers IManagementClient,
+        // mirroring AddDeliveryClient. The container owns the client's HttpClient lifetime.
+        services.AddManagementClient(configuration);
 
         services.AddTransient<IOutputProvider, FileSystemOutputProvider>();
         services.AddSingleton<IUserMessageLogger, UserMessageLogger>();

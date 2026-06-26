@@ -15,143 +15,45 @@ public class ManagementElementServiceTests
         call.Should().Throw<ArgumentNullException>();
     }
 
-    #region Text
-
-    [Fact]
-    public void Text_NoConstraints_EmitsOnlyKontentElement()
+    [Theory]
+    [MemberData(nameof(SimpleElements))]
+    public void Build_SimpleElement_EmitsTypedPropertyWithOnlyKontentElement(
+        ManagementElementInput input, string expectedTypeName, string expectedIdentifier)
     {
-        var input = new TextElementInput("title", "abc-123");
-
         var result = _sut.Build(input);
 
-        result.Property.Codename.Should().Be("title");
-        result.Property.Id.Should().Be("abc-123");
-        result.Property.Identifier.Should().Be("Title");
-        result.Property.TypeName.Should().Be("string?");
-        result.Property.Attributes.Should().HaveCount(1);
-        AssertIsKontentElement(result.Property.Attributes[0], "title", "abc-123");
+        result.Property.Codename.Should().Be(input.Codename);
+        result.Property.Id.Should().Be(input.Id);
+        result.Property.Identifier.Should().Be(expectedIdentifier);
+        result.Property.TypeName.Should().Be(expectedTypeName);
+        result.Property.Attributes.Should().ContainSingle();
+        AssertIsKontentElement(result.Property.Attributes[0], input.Codename, input.Id);
         result.Enums.Should().BeEmpty();
     }
 
-    [Fact]
-    public void Text_WithMaxCharacters_EmitsStringLength()
+    public static TheoryData<ManagementElementInput, string, string> SimpleElements() => new()
     {
-        var input = new TextElementInput("title", "abc-123", MaximumCharacters: 100);
-
-        var result = _sut.Build(input);
-
-        result.Property.Attributes.Should().HaveCount(2);
-        AssertIsKontentElement(result.Property.Attributes[0], "title", "abc-123");
-        result.Property.Attributes[1].Name.Should().Be("StringLength");
-        result.Property.Attributes[1].Arguments.Should().ContainSingle()
-            .Which.Value.Should().Be(100);
-        result.Property.Attributes[1].Arguments[0].Name.Should().BeNull();
-    }
-
-    [Fact]
-    public void Text_WithRegex_EmitsRegularExpression()
-    {
-        var input = new TextElementInput("slug", "id", Regex: "^[a-z0-9-]+$");
-
-        var result = _sut.Build(input);
-
-        result.Property.Attributes.Should().HaveCount(2);
-        AssertIsKontentElement(result.Property.Attributes[0], "slug", "id");
-        result.Property.Attributes[1].Name.Should().Be("RegularExpression");
-        result.Property.Attributes[1].Arguments.Should().ContainSingle()
-            .Which.Value.Should().Be("^[a-z0-9-]+$");
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData("   ")]
-    [InlineData(null)]
-    public void Text_BlankOrNullRegex_NotEmitted(string regex)
-    {
-        var input = new TextElementInput("title", "id", Regex: regex);
-
-        var result = _sut.Build(input);
-
-        result.Property.Attributes.Should().ContainSingle();
-    }
-
-    [Fact]
-    public void Text_BothConstraints_EmitsAllAttributesInOrder()
-    {
-        var input = new TextElementInput("title", "id", MaximumCharacters: 50, Regex: ".*");
-
-        var result = _sut.Build(input);
-
-        result.Property.Attributes.Select(a => a.Name).Should().Equal(
-            "KontentElement", "StringLength", "RegularExpression");
-    }
-
-    #endregion
-
-    [Fact]
-    public void Number_EmitsDecimalNullable()
-    {
-        var result = _sut.Build(new NumberElementInput("priority", "n-id"));
-
-        result.Property.TypeName.Should().Be("decimal?");
-        result.Property.Attributes.Should().ContainSingle();
-        AssertIsKontentElement(result.Property.Attributes[0], "priority", "n-id");
-    }
-
-    [Fact]
-    public void DateTime_EmitsDateTimeValueNullable()
-    {
-        var result = _sut.Build(new DateTimeElementInput("published_at", "d-id"));
-
-        result.Property.TypeName.Should().Be("DateTimeValue?");
-        result.Property.Attributes.Should().ContainSingle();
-        AssertIsKontentElement(result.Property.Attributes[0], "published_at", "d-id");
-    }
-
-    [Fact]
-    public void Custom_EmitsCustomValueNullable()
-    {
-        var result = _sut.Build(new CustomElementInput("color_picker", "c-id"));
-
-        result.Property.TypeName.Should().Be("CustomValue?");
-        result.Property.Attributes.Should().ContainSingle();
-        AssertIsKontentElement(result.Property.Attributes[0], "color_picker", "c-id");
-    }
-
-    #region UrlSlug
-
-    [Fact]
-    public void UrlSlug_NoRegex_EmitsOnlyKontentElement()
-    {
-        var result = _sut.Build(new UrlSlugElementInput("url_slug", "u-id"));
-
-        result.Property.TypeName.Should().Be("UrlSlugValue?");
-        result.Property.Attributes.Should().ContainSingle();
-        AssertIsKontentElement(result.Property.Attributes[0], "url_slug", "u-id");
-    }
-
-    [Fact]
-    public void UrlSlug_WithRegex_EmitsRegularExpression()
-    {
-        var result = _sut.Build(new UrlSlugElementInput("url_slug", "u-id", Regex: "^[a-z]+$"));
-
-        result.Property.Attributes.Should().HaveCount(2);
-        result.Property.Attributes[1].Name.Should().Be("RegularExpression");
-        result.Property.Attributes[1].Arguments[0].Value.Should().Be("^[a-z]+$");
-    }
-
-    #endregion
+        { new TextElementInput("title", "t-id"), "string?", "Title" },
+        { new NumberElementInput("priority", "n-id"), "decimal?", "Priority" },
+        { new DateTimeElementInput("published_at", "d-id"), "DateTimeValue?", "PublishedAt" },
+        { new CustomElementInput("color_picker", "c-id"), "CustomValue?", "ColorPicker" },
+        { new UrlSlugElementInput("url_slug", "u-id"), "UrlSlugValue?", "UrlSlug" },
+        { new LinkedItemsElementInput("related", "li-id"), "IEnumerable<Reference>?", "Related" },
+        { new SubpagesElementInput("children", "sp-id"), "IEnumerable<Reference>?", "Children" },
+        { new TaxonomyElementInput("tags", "tx-id"), "IEnumerable<Reference>?", "Tags" },
+        { new RichTextElementInput("body", "rt-id"), "RichTextValue?", "Body" },
+        { new AssetElementInput("featured_image", "a-id"), "IEnumerable<AssetReference>?", "FeaturedImage" },
+    };
 
     #region MultipleChoice
 
     [Fact]
-    public void MultipleChoice_Single_EmitsListPropertyWithMaxElementsOne()
+    public void MultipleChoice_EmitsListPropertyWithOnlyKontentElement()
     {
         var input = new MultipleChoiceElementInput(
             Codename: "category",
             Id: "mc-id",
             EnumTypeName: "ArticleCategory",
-            IsSingleSelect: true,
             Options:
             [
                 new MultipleChoiceOptionInput("news", "opt-1"),
@@ -161,27 +63,6 @@ public class ManagementElementServiceTests
         var result = _sut.Build(input);
 
         result.Property.TypeName.Should().Be("IEnumerable<ArticleCategory>?");
-        result.Property.Attributes.Select(a => a.Name).Should().Equal("KontentElement", "MaxElements");
-        result.Property.Attributes[1].Arguments[0].Value.Should().Be(1);
-    }
-
-    [Fact]
-    public void MultipleChoice_Multiple_NoCountAttribute()
-    {
-        var input = new MultipleChoiceElementInput(
-            Codename: "tags",
-            Id: "mc-id",
-            EnumTypeName: "ArticleTags",
-            IsSingleSelect: false,
-            Options:
-            [
-                new MultipleChoiceOptionInput("a", "opt-a"),
-                new MultipleChoiceOptionInput("b", "opt-b"),
-            ]);
-
-        var result = _sut.Build(input);
-
-        result.Property.TypeName.Should().Be("IEnumerable<ArticleTags>?");
         result.Property.Attributes.Should().ContainSingle()
             .Which.Name.Should().Be("KontentElement");
     }
@@ -193,7 +74,6 @@ public class ManagementElementServiceTests
             Codename: "category",
             Id: "mc-id",
             EnumTypeName: "ArticleCategory",
-            IsSingleSelect: true,
             Options:
             [
                 new MultipleChoiceOptionInput("news", "opt-1"),
@@ -223,219 +103,11 @@ public class ManagementElementServiceTests
             Codename: "category",
             Id: "mc-id",
             EnumTypeName: "",
-            IsSingleSelect: true,
             Options: [new MultipleChoiceOptionInput("news", "opt-1")]);
 
         var call = () => _sut.Build(input);
 
         call.Should().Throw<ArgumentException>().WithMessage("*EnumTypeName*");
-    }
-
-    #endregion
-
-    #region LinkedItems / Subpages
-
-    [Fact]
-    public void LinkedItems_NoConstraints_EmitsOnlyKontentElement()
-    {
-        var result = _sut.Build(new LinkedItemsElementInput("related", "li-id"));
-
-        result.Property.TypeName.Should().Be("IEnumerable<Reference>?");
-        result.Property.Attributes.Should().ContainSingle();
-        AssertIsKontentElement(result.Property.Attributes[0], "related", "li-id");
-    }
-
-    [Fact]
-    public void LinkedItems_WithAllowedTypes_EmitsAllowedTypesAttribute()
-    {
-        var result = _sut.Build(new LinkedItemsElementInput("related", "li-id",
-            AllowedTypeCodenames: ["article", "blog_post"]));
-
-        result.Property.Attributes.Should().HaveCount(2);
-        result.Property.Attributes[1].Name.Should().Be("AllowedTypes");
-        result.Property.Attributes[1].Arguments.Select(a => a.Value)
-            .Should().Equal("article", "blog_post");
-        result.Property.Attributes[1].Arguments.Should().AllSatisfy(a => a.Name.Should().BeNull());
-    }
-
-    [Theory]
-    [InlineData(CountLimitMode.AtLeast, "MinElements")]
-    [InlineData(CountLimitMode.AtMost, "MaxElements")]
-    [InlineData(CountLimitMode.Exactly, "ExactElements")]
-    public void LinkedItems_CountLimit_DispatchesToCorrectAttribute(CountLimitMode mode, string expectedAttrName)
-    {
-        var result = _sut.Build(new LinkedItemsElementInput("related", "li-id",
-            ItemCount: new CountLimit(3, mode)));
-
-        result.Property.Attributes.Should().HaveCount(2);
-        result.Property.Attributes[1].Name.Should().Be(expectedAttrName);
-        result.Property.Attributes[1].Arguments[0].Value.Should().Be(3);
-    }
-
-    [Fact]
-    public void LinkedItems_AllConstraints_EmitsAllAttributesInOrder()
-    {
-        var result = _sut.Build(new LinkedItemsElementInput("related", "li-id",
-            AllowedTypeCodenames: ["article"],
-            ItemCount: new CountLimit(5, CountLimitMode.AtMost)));
-
-        result.Property.Attributes.Select(a => a.Name)
-            .Should().Equal("KontentElement", "AllowedTypes", "MaxElements");
-    }
-
-    [Fact]
-    public void Subpages_SameShapeAsLinkedItems()
-    {
-        var result = _sut.Build(new SubpagesElementInput("children", "sp-id",
-            AllowedTypeCodenames: ["page"],
-            ItemCount: new CountLimit(10, CountLimitMode.AtMost)));
-
-        result.Property.TypeName.Should().Be("IEnumerable<Reference>?");
-        result.Property.Attributes.Select(a => a.Name)
-            .Should().Equal("KontentElement", "AllowedTypes", "MaxElements");
-    }
-
-    [Fact]
-    public void LinkedItems_EmptyAllowedTypes_NoAttribute()
-    {
-        var result = _sut.Build(new LinkedItemsElementInput("related", "li-id",
-            AllowedTypeCodenames: []));
-
-        result.Property.Attributes.Should().ContainSingle()
-            .Which.Name.Should().Be("KontentElement");
-    }
-
-    #endregion
-
-    #region Taxonomy
-
-    [Fact]
-    public void Taxonomy_NoConstraints_EmitsOnlyKontentElement()
-    {
-        var result = _sut.Build(new TaxonomyElementInput("tags", "tx-id"));
-
-        result.Property.TypeName.Should().Be("IEnumerable<Reference>?");
-        result.Property.Attributes.Should().ContainSingle();
-        AssertIsKontentElement(result.Property.Attributes[0], "tags", "tx-id");
-    }
-
-    [Fact]
-    public void Taxonomy_WithGroupCodename_EmitsAllowedTaxonomyGroup()
-    {
-        var result = _sut.Build(new TaxonomyElementInput("tags", "tx-id",
-            TaxonomyGroup: "content_tags"));
-
-        result.Property.Attributes.Should().HaveCount(2);
-        result.Property.Attributes[1].Name.Should().Be("AllowedTaxonomyGroup");
-        result.Property.Attributes[1].Arguments[0].Value.Should().Be("content_tags");
-    }
-
-    [Fact]
-    public void Taxonomy_WithCountLimit_EmitsCountAttribute()
-    {
-        var result = _sut.Build(new TaxonomyElementInput("tags", "tx-id",
-            TaxonomyGroup: "content_tags",
-            TermCount: new CountLimit(1, CountLimitMode.AtLeast)));
-
-        result.Property.Attributes.Select(a => a.Name)
-            .Should().Equal("KontentElement", "AllowedTaxonomyGroup", "MinElements");
-        result.Property.Attributes[2].Arguments[0].Value.Should().Be(1);
-    }
-
-    [Fact]
-    public void Taxonomy_BlankGroup_NoAttribute()
-    {
-        var result = _sut.Build(new TaxonomyElementInput("tags", "tx-id", TaxonomyGroup: "   "));
-
-        result.Property.Attributes.Should().ContainSingle();
-    }
-
-    #endregion
-
-    #region RichText
-
-    [Fact]
-    public void RichText_NoConstraints_EmitsOnlyKontentElement()
-    {
-        var result = _sut.Build(new RichTextElementInput("body", "rt-id"));
-
-        result.Property.TypeName.Should().Be("RichTextElement?");
-        result.Property.Attributes.Should().ContainSingle();
-        AssertIsKontentElement(result.Property.Attributes[0], "body", "rt-id");
-    }
-
-    [Fact]
-    public void RichText_WithAllowedTypesAndLinkTypes_EmitsBothAttributes()
-    {
-        var result = _sut.Build(new RichTextElementInput("body", "rt-id",
-            AllowedTypeCodenames: ["banner", "quote"],
-            AllowedItemLinkTypeCodenames: ["article"]));
-
-        result.Property.Attributes.Select(a => a.Name)
-            .Should().Equal("KontentElement", "AllowedTypes", "AllowedItemLinkTypes");
-        result.Property.Attributes[1].Arguments.Select(a => a.Value).Should().Equal("banner", "quote");
-        result.Property.Attributes[2].Arguments.Select(a => a.Value).Should().Equal("article");
-    }
-
-    [Fact]
-    public void RichText_WithMaxCharacters_EmitsStringLength()
-    {
-        var result = _sut.Build(new RichTextElementInput("body", "rt-id", MaximumCharacters: 5000));
-
-        result.Property.Attributes.Select(a => a.Name)
-            .Should().Equal("KontentElement", "StringLength");
-        result.Property.Attributes[1].Arguments[0].Value.Should().Be(5000);
-    }
-
-    #endregion
-
-    #region Asset
-
-    [Fact]
-    public void Asset_NoConstraints_EmitsOnlyKontentElement()
-    {
-        var result = _sut.Build(new AssetElementInput("featured_image", "a-id"));
-
-        result.Property.TypeName.Should().Be("IEnumerable<AssetReference>?");
-        result.Property.Attributes.Should().ContainSingle();
-        AssertIsKontentElement(result.Property.Attributes[0], "featured_image", "a-id");
-    }
-
-    [Fact]
-    public void Asset_WithMaxFileSize_EmitsMaxAssetSizeBytes()
-    {
-        var result = _sut.Build(new AssetElementInput("featured_image", "a-id",
-            MaximumFileSizeBytes: 5_242_880L));
-
-        result.Property.Attributes.Select(a => a.Name)
-            .Should().Equal("KontentElement", "MaxAssetSize");
-        result.Property.Attributes[1].Arguments[0].Value.Should().Be(5_242_880L);
-    }
-
-    [Fact]
-    public void Asset_WithAdjustableConstraint_EmitsAllowedFileTypesAsRawEnumExpression()
-    {
-        var result = _sut.Build(new AssetElementInput("featured_image", "a-id",
-            AllowedFileType: AssetFileType.Adjustable));
-
-        result.Property.Attributes.Select(a => a.Name)
-            .Should().Equal("KontentElement", "AllowedAssetFileTypes");
-        // Raw-code marker — emitter parses it as a C# expression rather than a string literal.
-        result.Property.Attributes[1].Arguments[0].Value
-            .Should().BeOfType<RawCodeAttributeValue>()
-            .Which.Expression.Should().Be("FileType.Adjustable");
-    }
-
-    [Fact]
-    public void Asset_AllConstraints_EmitsAllAttributesInOrder()
-    {
-        var result = _sut.Build(new AssetElementInput("gallery", "a-id",
-            AssetCount: new CountLimit(10, CountLimitMode.AtMost),
-            MaximumFileSizeBytes: 1_000_000L,
-            AllowedFileType: AssetFileType.Adjustable));
-
-        result.Property.Attributes.Select(a => a.Name).Should().Equal(
-            "KontentElement", "MaxElements", "MaxAssetSize", "AllowedAssetFileTypes");
     }
 
     #endregion

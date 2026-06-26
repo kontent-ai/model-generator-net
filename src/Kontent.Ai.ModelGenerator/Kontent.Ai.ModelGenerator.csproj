@@ -45,9 +45,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.13.0" />
+    <!-- AddManagementClient's overloads expose RefitSettings in their signatures, so the type
+         must be referenced here even though we don't touch Refit directly. Matches the Refit
+         version pulled in transitively by the Management/Delivery SDKs. -->
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="9.0.15" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.15" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.15" />
+    <PackageReference Include="Refit" Version="10.1.6" />
 
     <None Include="../../README.md" Pack="true" PackagePath="" />
     <None Include="../../kontent-ai-k-icon-color.png" Pack="true" PackagePath="" />
