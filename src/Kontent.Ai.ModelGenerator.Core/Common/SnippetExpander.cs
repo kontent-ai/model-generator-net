@@ -33,9 +33,14 @@ public static class SnippetExpander
         {
             if (element is ContentTypeSnippetElementMetadataModel snippetEl)
             {
-                var snippet = snippetEl.SnippetIdentifier is null
+                // Management 9.0.0-beta-3 renamed SnippetIdentifier -> Snippet, unifying
+                // identifier-pair properties on the bare style (wire format unchanged).
+                // The null guard stays: `required` enforces that the property is PRESENT,
+                // not that it is non-null, so a payload carrying "snippet": null still
+                // deserializes to null here.
+                var snippet = snippetEl.Snippet is null
                     ? null
-                    : resolveSnippet(snippetEl.SnippetIdentifier);
+                    : resolveSnippet(snippetEl.Snippet);
 
                 if (snippet is null)
                 {

@@ -162,7 +162,7 @@ public class ManagementElementMetadataAdapterTests
     {
         // ContentTypeSnippet is expanded inline by the orchestrator rather than emitted as a property;
         // guidelines are dropped earlier in the orchestrator.
-        var element = WithId(new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = null }, SampleId);
+        var element = WithId(new ContentTypeSnippetElementMetadataModel { Snippet = null }, SampleId);
 
         ManagementElementMetadataAdapter.ToInput(element, "Article").Should().BeNull();
     }

@@ -40,19 +40,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.13.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis" />
     <!-- AddManagementClient's overloads expose RefitSettings in their signatures, so the type
          must be referenced here even though we don't touch Refit directly. Matches the Refit
          version pulled in transitively by the Management/Delivery SDKs. 10.2.0 is 10.1.6
          re-signed with a valid certificate (the 10.1.6 cert was revoked, NU3012). -->
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="9.0.15" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.15" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.15" />
-    <PackageReference Include="Refit" Version="10.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Refit" />
 
     <None Include="../../README.md" Pack="true" PackagePath="" />
     <None Include="../../kontent-ai-k-icon-color.png" Pack="true" PackagePath="" />

@@ -1,0 +1,39 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Build infrastructure -->
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.202" />
+
+    <!-- Kontent.ai SDKs consumed by the generator -->
+    <PackageVersion Include="Kontent.Ai.Delivery" Version="19.4.0" />
+    <PackageVersion Include="Kontent.Ai.Delivery.Abstractions" Version="19.4.0" />
+    <PackageVersion Include="Kontent.Ai.Delivery.SourceGeneration" Version="19.4.0" />
+    <PackageVersion Include="Kontent.Ai.Management" Version="9.0.0-beta-4" />
+
+    <!-- Core dependencies -->
+    <PackageVersion Include="Microsoft.CodeAnalysis" Version="4.13.0" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.CommandLine" Version="9.0.15" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.15" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="9.0.15" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="9.0.15" />
+    <!-- AddManagementClient's overloads expose RefitSettings in their signatures, so the type
+         must be referenced directly even though the generator never calls Refit itself.
+         Matches the version the Management and Delivery SDKs pull in transitively. -->
+    <PackageVersion Include="Refit" Version="10.2.0" />
+
+    <!-- Test dependencies. AwesomeAssertions is the community Apache-2.0 successor to FluentAssertions (which went
+         commercial at v8). v9 uses its own `AwesomeAssertions` namespace (not a `FluentAssertions`-namespace
+         drop-in), so test code imports `AwesomeAssertions`. -->
+    <PackageVersion Include="AwesomeAssertions" Version="9.4.0" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.4" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
+    <PackageVersion Include="Moq" Version="4.20.72" />
+    <PackageVersion Include="RichardSzalay.MockHttp" Version="7.0.0" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
+  </ItemGroup>
+</Project>

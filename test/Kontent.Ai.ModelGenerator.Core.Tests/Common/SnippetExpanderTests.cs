@@ -46,7 +46,7 @@ public class SnippetExpanderTests
             Elements = [metaTitle, metaDescription],
         };
         var snippetEl = WithId(
-            new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = Reference.ByCodename("seo") },
+            new ContentTypeSnippetElementMetadataModel { Snippet = Reference.ByCodename("seo") },
             Guid.NewGuid());
 
         var result = SnippetExpander.Expand([snippetEl], _ => snippet, _warnings.Add).ToList();
@@ -65,7 +65,7 @@ public class SnippetExpanderTests
     {
         var title = WithId(new TextElementMetadataModel { Name = "n", Codename = "title" }, Guid.NewGuid());
         var snippetEl = WithId(
-            new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = Reference.ByCodename("seo") },
+            new ContentTypeSnippetElementMetadataModel { Snippet = Reference.ByCodename("seo") },
             Guid.NewGuid());
         var body = WithId(new TextElementMetadataModel { Name = "n", Codename = "body" }, Guid.NewGuid());
 
@@ -96,7 +96,7 @@ public class SnippetExpanderTests
     public void Expand_UnresolvableSnippetReference_WarnsAndSkips()
     {
         var snippetEl = WithId(
-            new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = Reference.ByCodename("missing") },
+            new ContentTypeSnippetElementMetadataModel { Snippet = Reference.ByCodename("missing") },
             Guid.NewGuid());
 
         var result = SnippetExpander.Expand([snippetEl], _ => null, _warnings.Add).ToList();
@@ -107,9 +107,9 @@ public class SnippetExpanderTests
     }
 
     [Fact]
-    public void Expand_SnippetWithNullIdentifier_WarnsAndSkips()
+    public void Expand_SnippetWithNullReference_WarnsAndSkips()
     {
-        var snippetEl = WithId(new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = null }, Guid.NewGuid());
+        var snippetEl = WithId(new ContentTypeSnippetElementMetadataModel { Snippet = null }, Guid.NewGuid());
 
         var result = SnippetExpander.Expand([snippetEl], _ => null, _warnings.Add).ToList();
 
@@ -131,11 +131,11 @@ public class SnippetExpanderTests
             [
                 x,
                 // MAPI shouldn't allow this but defend if it ever appears.
-                WithId(new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = null }, Guid.NewGuid()),
+                WithId(new ContentTypeSnippetElementMetadataModel { Snippet = null }, Guid.NewGuid()),
             ],
         };
         var snippetEl = WithId(
-            new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = Reference.ByCodename("outer") },
+            new ContentTypeSnippetElementMetadataModel { Snippet = Reference.ByCodename("outer") },
             Guid.NewGuid());
 
         var result = SnippetExpander.Expand([snippetEl], _ => outerSnippet, _warnings.Add).ToList();
@@ -163,7 +163,7 @@ public class SnippetExpanderTests
             ],
         };
         var snippetEl = WithId(
-            new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = Reference.ByCodename("seo") },
+            new ContentTypeSnippetElementMetadataModel { Snippet = Reference.ByCodename("seo") },
             Guid.NewGuid());
 
         var result = SnippetExpander.Expand([snippetEl], _ => snippet, _warnings.Add).ToList();

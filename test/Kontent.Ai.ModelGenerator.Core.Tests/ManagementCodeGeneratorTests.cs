@@ -116,7 +116,7 @@ public class ManagementCodeGeneratorTests
                 WithId(
                     new ContentTypeSnippetElementMetadataModel
                     {
-                        SnippetIdentifier = Reference.ByCodename("ghost_snippet"),
+                        Snippet = Reference.ByCodename("ghost_snippet"),
                     },
                     Guid.NewGuid()),
             ],
@@ -314,7 +314,7 @@ public class ManagementCodeGeneratorTests
             [
                 WithId(new TextElementMetadataModel { Name = "n", Codename = "title" }, Guid.NewGuid()),
                 WithId(
-                    new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = Reference.ById(seoSnippet.Id) },
+                    new ContentTypeSnippetElementMetadataModel { Snippet = Reference.ById(seoSnippet.Id) },
                     Guid.NewGuid()),
             ],
         };
@@ -358,7 +358,7 @@ public class ManagementCodeGeneratorTests
             Elements =
             [
                 WithId(
-                    new ContentTypeSnippetElementMetadataModel { SnippetIdentifier = Reference.ByCodename("seo") },
+                    new ContentTypeSnippetElementMetadataModel { Snippet = Reference.ByCodename("seo") },
                     Guid.NewGuid()),
             ],
         };
